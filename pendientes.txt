@@ -1,0 +1,11 @@
+deshabilitarlosdemas cargos alingresar nuevo cargo
+procesos gerenciales
+ingresar en historial de partidas
+ingresar en historial de componentes
+ingreso de partida nueva
+
+val general con nuevos metrados
+
+git add .
+git commit -am "avance de metrado"
+git push heroku master

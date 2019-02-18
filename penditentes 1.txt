@@ -1,0 +1,2 @@
+agregar telefono a usuario
+formato a lista de partidas
