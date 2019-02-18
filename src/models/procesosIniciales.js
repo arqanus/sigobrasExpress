@@ -25,7 +25,7 @@ userModel.getObras = (callback)=>{
     
     pool.getConnection(function(err,conn){
         if(err){ callback(err);}       
-        conn.query('select *from Fichas left join (SELECT historialestados.Fichas_id_ficha, estados.nombre estado_nombre FROM historialestados INNER JOIN (SELECT MAX(historialestados.id_historialEstado) id_historialEstado FROM historialestados LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado GROUP BY historialestados.Fichas_id_ficha) he ON he.id_historialEstado = historialestados.id_historialEstado INNER JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado) estado ON estado.Fichas_id_ficha = fichas.id_ficha', (error,res)=>{
+        conn.query('select *from fichas left join (SELECT historialestados.Fichas_id_ficha, estados.nombre estado_nombre FROM historialestados INNER JOIN (SELECT MAX(historialestados.id_historialEstado) id_historialEstado FROM historialestados LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado GROUP BY historialestados.Fichas_id_ficha) he ON he.id_historialEstado = historialestados.id_historialEstado INNER JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado) estado ON estado.Fichas_id_ficha = fichas.id_ficha', (error,res)=>{
             if(error) callback(error);            
             callback(null,res);
             conn.destroy()
@@ -60,7 +60,7 @@ userModel.postCargo = (data,callback)=>{
     pool.getConnection(function(err,conn){
         if(err){ callback(err);}
         else{     
-            conn.query('INSERT INTO Cargos SET ?', data,(error,res)=>{
+            conn.query('INSERT INTO cargos SET ?', data,(error,res)=>{
                 if(error) callback(error);
                 console.log("affectedRows",res.affectedRows); 
                 callback(null,res.affectedRows);
@@ -73,7 +73,7 @@ userModel.getCargos = (callback)=>{
     
     pool.getConnection(function(err,conn){
         if(err){ callback(err);}       
-        conn.query('select *from Cargos', (error,res)=>{
+        conn.query('select *from cargos', (error,res)=>{
             if(error) callback(error);            
             callback(null,res);
             conn.destroy()
@@ -85,7 +85,7 @@ userModel.postPrivilegios = (data,callback)=>{
     pool.getConnection(function(err,conn){
         if(err){ callback(err);}
         else{     
-            conn.query('INSERT INTO Privilegios SET ?', data,(error,res)=>{
+            conn.query('INSERT INTO privilegios SET ?', data,(error,res)=>{
                 if(error) {callback(error);}
                 else{
                     console.log("affectedRows",res); 
@@ -101,7 +101,7 @@ userModel.getPrivilegios = (callback)=>{
     
     pool.getConnection(function(err,conn){
         if(err){ callback(err);}       
-        conn.query('select *from Privilegios', (error,res)=>{
+        conn.query('select *from privilegios', (error,res)=>{
             if(error) callback(error);            
             callback(null,res);
             conn.destroy()
@@ -114,7 +114,7 @@ userModel.postAcceso = (data,callback)=>{
         console.log("data",data);
         if(err){ callback(err);}
         else{     
-            conn.query('INSERT INTO Accesos SET ?', data,(error,res)=>{
+            conn.query('INSERT INTO accesos SET ?', data,(error,res)=>{
                 if(error){ 
                     callback(error.code);
                     console.log("error",error);
@@ -136,7 +136,7 @@ userModel.getIdAcceso = (data,callback)=>{
     pool.getConnection(function(err,conn){
         if(err){ callback(err);}
         else{     
-            conn.query('select id_acceso from accesos where Usuarios_id_usuario = ?', data,(error,res)=>{
+            conn.query('select id_acceso from accesos where usuarios_id_usuario = ?', data,(error,res)=>{
                 if(error) callback(error.code);
                 console.log("res ",res); 
                 callback(null,res);
@@ -151,7 +151,7 @@ userModel.postObraUsuario = (data,callback)=>{
     pool.getConnection(function(err,conn){
         if(err){ callback(err);}
         else{     
-            conn.query('INSERT INTO Fichas_has_accesos SET ?', data,(error,res)=>{
+            conn.query('INSERT INTO fichas_has_accesos SET ?', data,(error,res)=>{
                 if(error) callback(error.code);
                 console.log("affectedRows",res); 
                 callback(null,res.affectedRows);
@@ -168,7 +168,7 @@ userModel.postComponentes = (data,callback)=>{
             callback(err);
         }
         else{     
-            conn.query('INSERT INTO Componentes (numero,nombre,presupuesto) values ?',[data],(error,res)=>{
+            conn.query('INSERT INTO componentes (numero,nombre,presupuesto) values ?',[data],(error,res)=>{
                 if(error) {
                     callback(error.code);
                     console.log(error);            
@@ -187,7 +187,7 @@ userModel.getComponentesById = (id_ficha,callback)=>{
     
     pool.getConnection(function(err,conn){
         if(err){ callback(err);}       
-        conn.query('select *from Componentes where Fichas_id_ficha = ?',id_ficha, (error,res)=>{
+        conn.query('select *from componentes where Fichas_id_ficha = ?',id_ficha, (error,res)=>{
             if(error) callback(error);            
             callback(null,res);
             conn.destroy()
@@ -200,7 +200,7 @@ userModel.postPartidas = (data,callback)=>{
     pool.getConnection(function(err,conn){
         if(err){ callback(err);}
         else{     
-            conn.query('INSERT INTO Partidas (tipo,item,descripcion,unidad_medida,metrado,costo_unitario,equipo,rendimiento,Componentes_id_componente,presupuestos_id_presupuesto) VALUES ?',[data],(error,res)=>{
+            conn.query('INSERT INTO partidas (tipo,item,descripcion,unidad_medida,metrado,costo_unitario,equipo,rendimiento,Componentes_id_componente,presupuestos_id_presupuesto) VALUES ?',[data],(error,res)=>{
                 if(error){
                     callback(error.code);
                 }else{
@@ -219,7 +219,7 @@ userModel.postActividades = (data,callback)=>{
         // console.log(data)
         if(err){ callback(err);}
         else{       
-            conn.query('INSERT INTO Actividades (nombre,veces,largo,ancho,alto,parcial,Partidas_id_partida) VALUES ?',[data],(error,res)=>{
+            conn.query('INSERT INTO actividades (nombre,veces,largo,ancho,alto,parcial,Partidas_id_partida) VALUES ?',[data],(error,res)=>{
                 if(error){
                     console.log("error",error); 
                     callback(error.code);
@@ -238,7 +238,7 @@ userModel.postRecursos = (data,callback)=>{
         // console.log(data)
         if(err){ callback(err);}
         else{       
-            conn.query('INSERT INTO Recursos (tipo,codigo,descripcion,unidad,cuadrilla,cantidad,precio,parcial,Partidas_id_partida) VALUES ?',[data],(error,res)=>{
+            conn.query('INSERT INTO recursos (tipo,codigo,descripcion,unidad,cuadrilla,cantidad,precio,parcial,Partidas_id_partida) VALUES ?',[data],(error,res)=>{
                 if(error){
                     console.log("error",error);                     
                     callback(error.code);
@@ -275,7 +275,7 @@ userModel.postPresupuesto = (data,callback)=>{
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
         else{
-            conn.query('INSERT INTO Presupuestos SET ?', data,(error,res)=>{
+            conn.query('INSERT INTO presupuestos SET ?', data,(error,res)=>{
                 if(error){
                     callback(error);
                 }else{
@@ -296,7 +296,7 @@ userModel.postPresupuestos = (data,callback)=>{
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
         else{
-            conn.query('INSERT INTO Presupuestos (monto,fecha,Fichas_id_ficha) values ?', [data],(error,res)=>{
+            conn.query('INSERT INTO presupuestos (monto,fecha,Fichas_id_ficha) values ?', [data],(error,res)=>{
                 if(error){
                     console.log(error);                    
                     callback(error.code);
@@ -320,7 +320,7 @@ userModel.postEstado = (data,callback)=>{
         else{
             // console.log("postestados",data);
             
-            conn.query('INSERT INTO Estados SET ?', data,(error,res)=>{
+            conn.query('INSERT INTO estados SET ?', data,(error,res)=>{
                 if(error){
                     callback(error);
                 }else{
@@ -339,7 +339,7 @@ userModel.postHistorialEstados = (data,callback)=>{
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
         else{
-            conn.query('INSERT INTO HistorialEstados SET ?', data,(error,res)=>{
+            conn.query('INSERT INTO historialEstados SET ?', data,(error,res)=>{
                 if(error){
                     callback(error);
                 }else{
@@ -377,7 +377,7 @@ userModel.postHistorialPartidas = (data,callback)=>{
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
         else{
-            conn.query('Insert into Historialpartidas (fecha,estado,partidas_id_partida) values ?',[data], (error,res)=>{
+            conn.query('Insert into historialpartidas (fecha,estado,partidas_id_partida) values ?',[data], (error,res)=>{
                 if(error){
                     console.log(error);                    
                     callback(error.code);
@@ -397,7 +397,7 @@ userModel.postHistorialComponentes = (data,callback)=>{
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
         else{
-            conn.query('Insert into Historialcomponentes (fecha,estado,componentes_id_componente) values ?',[data], (error,res)=>{
+            conn.query('Insert into historialcomponentes (fecha,estado,componentes_id_componente) values ?',[data], (error,res)=>{
                 if(error){
                     console.log(error);                    
                     callback(error.code);

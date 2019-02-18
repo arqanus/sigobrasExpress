@@ -9,16 +9,15 @@ var pool = mysql.createPool({
     connectionLimit : 500,
     connectTimeout:40000,
     
-    // host: 'us-cdbr-iron-east-01.cleardb.net',
-    // user: 'b7b9eee1f53a99',
-    // password: '686c8bb7',
-    // database: 'heroku_0e6ecdf80bb8bdf',
-    // mysql:'b7b9eee1f53a99:686c8bb7@us-cdbr-iron-east-01.cleardb.net/heroku_0e6ecdf80bb8bdf?reconnect=true'
+    // host: '192.168.1.59',
+    // user: 'anton',
+    // password: 'antontupuedes',    
+    // database: 'sigobras'
 
-    host: 'us-cdbr-iron-east-03.cleardb.net',
-    user: 'b5ec525fc59630',
-    password: 'e81c813f',
-    database: 'heroku_06daa7d2a5a7a30'
+    host: 'localhost',
+    user: 'anton',
+    password: 'antontupuedes',    
+    database: 'sigobras'
     
     
 });    
