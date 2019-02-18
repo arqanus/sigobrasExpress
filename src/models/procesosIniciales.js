@@ -358,7 +358,7 @@ userModel.getEstados = (callback)=>{
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
         else{
-            conn.query('SELECT * FROM Estados', (error,res)=>{
+            conn.query('SELECT * FROM estados', (error,res)=>{
                 if(error){
                     callback(error);
                 }else{
