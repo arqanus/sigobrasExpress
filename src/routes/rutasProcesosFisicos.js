@@ -19,7 +19,7 @@ module.exports = function(app){
 		}else{
 			
 			User.getIdHistorial(req.body.id_ficha,(err,data)=>{
-				if(err){ res.json(err);}
+				if(err||data.length==0){ res.json(err);}
 				else{
 					delete req.body.id_ficha
 					req.body.historialEstados_id_historialEstado = data[0].id_historialEstado

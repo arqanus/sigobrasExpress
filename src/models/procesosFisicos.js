@@ -141,6 +141,7 @@ userModel.getPartidas = (id_ficha,callback)=>{
                     }
                     componentes.push(componente)
                     
+                    
                     callback(null,componentes);
                     conn.destroy()
                 }
