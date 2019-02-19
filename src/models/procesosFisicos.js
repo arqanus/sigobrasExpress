@@ -238,6 +238,9 @@ userModel.getHistorial = (id_ficha,callback)=>{
                 if(err){
                     console.log(err);
                     callback(err.code);
+                }else if(res.length==0){
+                    console.log("vacio");
+                    callback("vacio");
                 }else{                    
                     // console.log("res",res); 
                     var lastIdComponente = -1
