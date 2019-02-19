@@ -1,5 +1,5 @@
 const User = require('../models/procesosFisicos');
-var moment = require('moment');
+
 
 module.exports = function(app){
 	
@@ -23,7 +23,7 @@ module.exports = function(app){
 				else{
 					delete req.body.id_ficha
 					req.body.historialEstados_id_historialEstado = data[0].id_historialEstado
-					req.body.fecha ="NOW()"
+					
 					var id_actividad = req.body.Actividades_id_actividad
 					User.postAvanceActividad(req.body,(err,data)=>{
 						if(err){ res.json(err);}

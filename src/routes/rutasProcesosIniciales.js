@@ -1,5 +1,5 @@
 const User = require('../models/procesosIniciales');
-var moment = require('moment');
+
 function soloLetras(req,res,next){
 	var regla = /^[A-Za-z]+$/
 	var usuario =  req.body.usuario
@@ -33,7 +33,7 @@ module.exports = function(app){
 	})
 	//cargos
 	app.post('/nuevoCargo',(req,res)=>{
-		req.body.fecha_inicial = moment().format();
+		
 		User.postCargo(req.body,(err,data)=>{
 			if(err) res.json(err);
 			//deshabilitamos los demas cargos
@@ -83,7 +83,7 @@ module.exports = function(app){
 				
 						
 				var Historial = {
-					"fecha":moment().format(),							
+											
 					"Fichas_id_ficha":id_ficha,
 					"Estados_id_estado":id_estado,
 				}
@@ -106,7 +106,7 @@ module.exports = function(app){
 								for (let i = 0; i < componentes.length; i++) {
 									var presupuesto = []
 									presupuesto.push(componentes[i]["2"]);
-									presupuesto.push(moment().format())
+									
 									presupuesto.push(id_ficha)
 									presupuestos.push(presupuesto);
 									
@@ -129,8 +129,7 @@ module.exports = function(app){
 											)
 
 											historialComponentes.push(
-												[
-													moment().format(),
+												[													
 													"oficial",
 													idComponente
 												]
@@ -310,8 +309,7 @@ module.exports = function(app){
 								var historialpartidas = []
 								for (let i = 0; i < req.body.length; i++) {
 									
-									var historial=[
-										moment().format(),
+									var historial=[										
 										"oficial",
 										element
 									]
@@ -371,7 +369,7 @@ module.exports = function(app){
 		})
 	})
 	app.post('/ActualizarEstado',(req,res)=>{
-		req.body.fecha = moment().format()
+		
 		User.postHistorialEstados(req.body,(err,data)=>{							
 			if(err){ res.json(err);}
 			else{

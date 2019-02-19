@@ -296,7 +296,7 @@ userModel.postPresupuestos = (data,callback)=>{
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
         else{
-            conn.query('INSERT INTO presupuestos (monto,fecha,Fichas_id_ficha) values ?', [data],(error,res)=>{
+            conn.query('INSERT INTO presupuestos (monto,Fichas_id_ficha) values ?', [data],(error,res)=>{
                 if(error){
                     console.log(error);                    
                     callback(error.code);

@@ -2,19 +2,24 @@ deshabilitarlosdemas cargos alingresar nuevo cargo
 *ingreso
 ingreso de partida nueva
 ingreso de cronograma
+
 *vistas
+nombra de la obra
 porcentaje general api solo
-procesos gerenciales
-procesos fisicos formato 2 decimales
-procesos mostrar saldo sin avance
-val general con nuevos metrados
-val general vizualisacon en la pestaniaa con p o c
-val en base a la tabla presupuestos
-val general con comas de 3 en 3
-agregar campo fecha_ejecucion
 mostrar dias ejecutados
 mostrar dias q faltan
+
+procesos gerenciales
+
+val general con nuevos metrados
+val general vizualisacon en la pestaniaa con p o c
+val general en base a la tabla presupuestos
+
+
+agregar campo fecha_ejecucion
+
 vista de cronograma
+
 cambiar contrasea;a
 
 git add .

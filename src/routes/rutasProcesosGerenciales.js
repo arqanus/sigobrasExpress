@@ -1,5 +1,5 @@
 const User = require('../models/procesosGerenciales');
-var moment = require('moment');
+
 
 module.exports = function(app){
 	
