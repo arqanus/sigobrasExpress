@@ -289,6 +289,16 @@ userModel.getHistorial = (id_ficha,callback)=>{
                         
                     }
                     componentes.push(componente);
+                    for (let i = 0; i < componentes.length; i++) {
+                        const historial = componentes[i].historial;
+                        for (let j = 0; j < historial.length; j++) {
+                            const metrado = historial[j];
+                            metrado.valor = formato(metrado.valor)
+                            metrado.costo_unitario = formato(metrado.costo_unitario)
+                            metrado.parcial = formato(metrado.parcial)                            
+                        }
+                        
+                    }
                     callback(null,componentes);
                     conn.destroy()
                 }
