@@ -151,8 +151,7 @@ userModel.getPartidas = (id_ficha,callback)=>{
                             partida.avance_metrado = formato(partida.avance_metrado)
                             partida.avance_costo = formato(partida.avance_costo)
                             partida.metrados_saldo = formato(partida.metrados_saldo)
-                            partida.metrados_costo_saldo = formato(partida.metrados_costo_saldo)
-                            partida.porcentaje = formato(partida.porcentaje)                            
+                            partida.metrados_costo_saldo = formato(partida.metrados_costo_saldo)                                                      
                         }
                         
                                                 
