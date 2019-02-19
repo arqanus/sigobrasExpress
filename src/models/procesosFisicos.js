@@ -632,6 +632,7 @@ userModel.getAvanceById = (id_actividad,callback)=>{
                                     "ancho_actividad":fila.ancho_actividad,
                                     "alto_actividad":fila.alto_actividad,
                                     "metrado_actividad":fila.metrado_actividad,
+                                    "costo_unitario":fila.costo_unitario,
                                     "parcial_actividad":fila.parcial_actividad,
                                     "actividad_avancce_metrado":fila.actividad_avancce_metrado,
                                     "actividad_avance_costo":fila.actividad_avance_costo,
@@ -650,6 +651,7 @@ userModel.getAvanceById = (id_actividad,callback)=>{
                                     "ancho_actividad":fila.ancho_actividad,
                                     "alto_actividad":fila.alto_actividad,
                                     "metrado_actividad":fila.metrado_actividad,
+                                    "costo_unitario":fila.costo_unitario,
                                     "parcial_actividad":fila.parcial_actividad,
                                     "actividad_avancce_metrado":fila.actividad_avancce_metrado,
                                     "actividad_avance_costo":fila.actividad_avance_costo,
@@ -679,7 +681,7 @@ userModel.getAvanceById = (id_actividad,callback)=>{
                         for (let k = 0; k < actividades.length; k++) {
                             const actividad = actividades[k];
                             actividad.metrado_actividad = formato(actividad.metrado_actividad)
-                            // actividad.costo_unitario = formato(actividad.costo_unitario)
+                            actividad.costo_unitario = formato(actividad.costo_unitario)
                             actividad.parcial_actividad = formato(actividad.parcial_actividad)
                             actividad.actividad_avance_metrado = formato(actividad.actividad_avance_metrado)
                             actividad.actividad_avance_costo = formato(actividad.actividad_avance_costo)
