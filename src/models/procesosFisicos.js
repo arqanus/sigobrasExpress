@@ -676,7 +676,7 @@ userModel.getAvanceById = (id_actividad,callback)=>{
                             actividad.actividad_metrados_costo_saldo = formato(actividad.actividad_metrados_costo_saldo)
                             actividad.actividad_porcentaje = formato(actividad.actividad_porcentaje)
                         }                                                   
-                    }
+                    
                         
                                                 
                     
