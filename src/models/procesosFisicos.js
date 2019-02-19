@@ -1,9 +1,14 @@
 const pool = require('./connection');
 let userModel = {};
 function formato(data){
-    data = parseFloat(Math.round(data * 100) / 100).toFixed(2);
+    
     // data = parseFloat(data)
-    return data
+    data = Number(data)
+    
+    return data.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      })
 }
 
 userModel.getPartidas = (id_ficha,callback)=>{
