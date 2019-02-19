@@ -1,11 +1,22 @@
 deshabilitarlosdemas cargos alingresar nuevo cargo
-procesos gerenciales
-ingresar en historial de partidas
-ingresar en historial de componentes
+*ingreso
 ingreso de partida nueva
-
+ingreso de cronograma
+*vistas
+porcentaje general api solo
+procesos gerenciales
+procesos fisicos formato 2 decimales
+procesos mostrar saldo sin avance
 val general con nuevos metrados
+val general vizualisacon en la pestaniaa con p o c
+val en base a la tabla presupuestos
+val general con comas de 3 en 3
+agregar campo fecha_ejecucion
+mostrar dias ejecutados
+mostrar dias q faltan
+vista de cronograma
+cambiar contrasea;a
 
 git add .
-git commit -am "avance de metrado"
-git push heroku master
+git commit -am "fisicos"
+git push -u origin master
