@@ -73,10 +73,17 @@ userModel.getObras = (id_acceso,callback)=>{
 
                     for (let i = 0; i < data.length; i++) {
                         const ficha = data[i];
-                        ficha.g_total_presu = formatoPorcentaje(ficha.lengthg_total_presu)
+                        ficha.g_total_presu = formatoPorcentaje(ficha.g_total_presu)
                         ficha.presu_avance = formatoPorcentaje(ficha.presu_avance)
                         ficha.porcentaje_avance = formatoPorcentaje(ficha.porcentaje_avance)
-                        
+                        for (let j = 0; j < ficha.componentes.length; j++) {
+                            const componente = ficha.componentes[j];
+                            componente.presupuesto = formatoPorcentaje(presupuesto)
+                            componente.comp_avance = formatoPorcentaje(comp_avance)
+                            componente.porcentaje_avance_componentes = formatoPorcentaje(porcentaje_avance_componentes)
+                            
+
+                        }
                     }
                     
                     callback(null,data);
