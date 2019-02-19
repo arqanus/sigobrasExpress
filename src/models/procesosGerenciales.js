@@ -1,10 +1,28 @@
 const pool = require('./connection');
 let userModel = {};
+function formatoPorcentaje(data){
+    
+    // data = parseFloat(data)
+    data = Number(data)
+    if(data < 1){
+        data = data.toLocaleString(undefined, {
+            minimumFractionDigits: 4,
+            maximumFractionDigits: 4
+          })
+    }else{
+        data = data.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          })
+    } 
+
+    return data
+}
 userModel.getObras = (id_acceso,callback)=>{    
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
         else{
-            conn.query("SELECT fichas.g_meta, 0 g_total_presu, 0 presu_avance, 0 porcentaje_avance, fichas.id_ficha, fichas.codigo, estado.nombre estado_nombre, 0 numero, 0 nombre, 0 presupuesto, 0 comp_avance, 0 porcentaje_avance_componentes FROM fichas LEFT JOIN fichas_has_accesos ON fichas_has_accesos.Fichas_id_ficha = fichas.id_ficha LEFT JOIN (SELECT Fichas_id_ficha, nombre, codigo FROM historialestados INNER JOIN (SELECT MAX(id_historialEstado) id_historialEstado FROM historialestados GROUP BY fichas_id_ficha) historial ON historial.id_historialEstado = historialestados.id_historialEstado LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado) estado ON estado.Fichas_id_ficha = fichas.id_ficha WHERE fichas_has_accesos.Accesos_id_acceso = ?",id_acceso,(err,res)=>{
+            conn.query("SELECT t1.g_meta, t1.g_total_presu, t1.presu_avance, t1.porcentaje_avance, t1.id_ficha, t1.codigo, t1.estado_nombre, t2.numero, t2.nombre, t2.presupuesto, t2.comp_avance, t2.porcentaje_avance_componentes FROM (SELECT fichas_has_accesos.Accesos_id_acceso, fichas.g_meta, fichas.g_total_presu, SUM(avanceactividades.valor) presu_avance, SUM(avanceactividades.valor) / fichas.g_total_presu * 100 porcentaje_avance, fichas.id_ficha, fichas.codigo, estado.nombre estado_nombre FROM fichas_has_accesos LEFT JOIN fichas ON fichas.id_ficha = fichas_has_accesos.Fichas_id_ficha LEFT JOIN (SELECT Fichas_id_ficha, nombre, codigo FROM historialestados INNER JOIN (SELECT MAX(id_historialEstado) id_historialEstado FROM historialestados GROUP BY fichas_id_ficha) historial ON historial.id_historialEstado = historialestados.id_historialEstado LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado) estado ON estado.Fichas_id_ficha = fichas.id_ficha LEFT JOIN presupuestos ON presupuestos.Fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.presupuestos_id_Presupuesto = presupuestos.id_Presupuesto LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad GROUP BY fichas.id_ficha) t1 LEFT JOIN (SELECT fichas.id_ficha, componentes.id_componente, componentes.numero, componentes.nombre, componentes.presupuesto, SUM(avanceactividades.valor) comp_avance, SUM(avanceactividades.valor) / componentes.presupuesto * 100 porcentaje_avance_componentes FROM fichas LEFT JOIN presupuestos ON presupuestos.Fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.presupuestos_id_Presupuesto = presupuestos.id_Presupuesto INNER JOIN componentes ON componentes.id_componente = partidas.componentes_id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad GROUP BY componentes.id_componente) t2 ON t1.id_ficha = t2.id_ficha WHERE t1.Accesos_id_acceso = ?",id_acceso,(err,res)=>{
                 if(err){
                     callback(err);
                 }else{
@@ -50,7 +68,16 @@ userModel.getObras = (id_acceso,callback)=>{
                         
                     }
                     data.push(ficha)
+
                     console.log(data);
+
+                    for (let i = 0; i < data.length; i++) {
+                        const ficha = data[i];
+                        ficha.g_total_presu = formatoPorcentaje(ficha.lengthg_total_presu)
+                        ficha.presu_avance = formatoPorcentaje(ficha.presu_avance)
+                        ficha.porcentaje_avance = formatoPorcentaje(ficha.porcentaje_avance)
+                        
+                    }
                     
                     callback(null,data);
                     conn.destroy()

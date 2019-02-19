@@ -15,6 +15,8 @@ val general con nuevos metrados
 val general vizualisacon en la pestaniaa con p o c
 val general en base a la tabla presupuestos
 
+al valorizar nan enn pu
+
 
 agregar campo fecha_ejecucion
 
@@ -23,5 +25,5 @@ vista de cronograma
 cambiar contrasea;a
 
 git add .
-git commit -am "valgeneral"
+git commit -am "condicional de no ceros"
 git push -u origin master
