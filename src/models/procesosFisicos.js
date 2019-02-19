@@ -604,7 +604,8 @@ userModel.getAvanceById = (id_actividad,callback)=>{
                                     "actividad_avance_costo":fila.actividad_avance_costo,
                                     "actividad_metrados_saldo":fila.actividad_metrados_saldo,
                                     "actividad_metrados_costo_saldo":fila.actividad_metrados_costo_saldo,
-                                    "actividad_porcentaje":fila.actividad_porcentaje
+                                    "actividad_porcentaje":fila.actividad_porcentaje,
+                                    "unidad_medida": fila.unidad_medida
                                 }
                             ]
                         }else{
@@ -621,7 +622,8 @@ userModel.getAvanceById = (id_actividad,callback)=>{
                                     "actividad_avance_costo":fila.actividad_avance_costo,
                                     "actividad_metrados_saldo":fila.actividad_metrados_saldo,
                                     "actividad_metrados_costo_saldo":fila.actividad_metrados_costo_saldo,
-                                    "actividad_porcentaje":fila.actividad_porcentaje
+                                    "actividad_porcentaje":fila.actividad_porcentaje,
+                                    "unidad_medida": fila.unidad_medida
                                 }
                             )
 
