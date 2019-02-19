@@ -196,7 +196,7 @@ userModel.getIdHistorial = (id_ficha,callback)=>{
                 if(error){
                     callback(error);
                 }else{
-                    console.log("affectedRows",res); 
+                    console.log("res",res); 
                     callback(null,res);
                     conn.destroy()
                 }
@@ -234,7 +234,7 @@ userModel.getHistorial = (id_ficha,callback)=>{
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
         else{
-            conn.query('SELECT componentes.id_componente, componentes.numero, componentes.nombre nombre_componente, partidas.item, partidas.descripcion descripcion_partida, actividades.nombre nombre_actividad, avanceactividades.descripcion descripcion_actividad, avanceactividades.observacion, avanceactividades.fecha, avanceactividades.valor, partidas.costo_unitario, avanceactividades.valor * partidas.costo_unitario parcial FROM presupuestos LEFT JOIN partidas ON partidas.presupuestos_id_Presupuesto = presupuestos.id_Presupuesto LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida RIGHT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad left join componentes on componentes.id_componente = partidas.componentes_id_componente WHERE presupuestos.Fichas_id_ficha = ?',id_ficha,(err,res)=>{
+            conn.query('SELECT componentes.id_componente, componentes.numero, componentes.nombre nombre_componente, partidas.item, partidas.descripcion descripcion_partida, actividades.nombre nombre_actividad, avanceactividades.descripcion descripcion_actividad, avanceactividades.observacion, avanceactividades.fecha, avanceactividades.valor, partidas.costo_unitario, avanceactividades.valor * partidas.costo_unitario parcial FROM presupuestos LEFT JOIN partidas ON partidas.presupuestos_id_Presupuesto = presupuestos.id_Presupuesto LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida RIGHT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad left join componentes on componentes.id_componente = partidas.componentes_id_componente WHERE presupuestos.Fichas_id_ficha = ? order by componentes.id_componente',id_ficha,(err,res)=>{
                 if(err){
                     console.log(err);
                     callback(err.code);
