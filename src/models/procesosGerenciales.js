@@ -78,9 +78,9 @@ userModel.getObras = (id_acceso,callback)=>{
                         ficha.porcentaje_avance = formatoPorcentaje(ficha.porcentaje_avance)
                         for (let j = 0; j < ficha.componentes.length; j++) {
                             const componente = ficha.componentes[j];
-                            componente.presupuesto = formatoPorcentaje(presupuesto)
-                            componente.comp_avance = formatoPorcentaje(comp_avance)
-                            componente.porcentaje_avance_componentes = formatoPorcentaje(porcentaje_avance_componentes)
+                            componente.presupuesto = formatoPorcentaje(componente.presupuesto)
+                            componente.comp_avance = formatoPorcentaje(componente.comp_avance)
+                            componente.porcentaje_avance_componentes = formatoPorcentaje(componente.porcentaje_avance_componentes)
                             
 
                         }
