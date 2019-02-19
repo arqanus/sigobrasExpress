@@ -593,11 +593,11 @@ userModel.getAvanceById = (id_actividad,callback)=>{
                             partida.porcentaje = fila.porcentaje
                             partida.actividades=[
                                 {
-                                    "id_actividad":fila.id_actividad,                       "actividad_nombre":fila.actividad_nombre,
-                                    "veces":fila.veces,
-                                    "largo":fila.largo,
-                                    "ancho":fila.ancho,
-                                    "alto":fila.alto,
+                                    "id_actividad":fila.id_actividad,                       "nombre_actividad":fila.nombre_actividad,
+                                    "veces_actividad":fila.veces_actividad,
+                                    "largo_actividad":fila.largo_actividad,
+                                    "ancho_actividad":fila.ancho_actividad,
+                                    "alto_actividad":fila.alto_actividad,
                                     "metrado_actividad":fila.metrado_actividad,
                                     "parcial_actividad":fila.parcial_actividad,
                                     "actividad_avancce_metrado":fila.actividad_avancce_metrado,
@@ -610,11 +610,11 @@ userModel.getAvanceById = (id_actividad,callback)=>{
                         }else{
                             partida.actividades.push(
                                 {
-                                    "id_actividad":fila.id_actividad,                       "actividad_nombre":fila.actividad_nombre,
-                                    "veces":fila.veces,
-                                    "largo":fila.largo,
-                                    "ancho":fila.ancho,
-                                    "alto":fila.alto,
+                                    "id_actividad":fila.id_actividad,                       "nombre_actividad":fila.nombre_actividad,
+                                    "veces_actividad":fila.veces_actividad,
+                                    "largo_actividad":fila.largo_actividad,
+                                    "ancho_actividad":fila.ancho_actividad,
+                                    "alto_actividad":fila.alto_actividad,
                                     "metrado_actividad":fila.metrado_actividad,
                                     "parcial_actividad":fila.parcial_actividad,
                                     "actividad_avancce_metrado":fila.actividad_avancce_metrado,
