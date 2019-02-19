@@ -14,7 +14,7 @@ module.exports = function(app){
 	})
 
 	app.post('/avanceActividad',(req,res)=>{
-		if(req.body.valor <0){
+		if(req.body.valor <=0 ||req.body.valor == ""){
 			res.json("valor no permitido");
 		}else{
 			
