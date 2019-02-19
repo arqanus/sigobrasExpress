@@ -23,5 +23,5 @@ vista de cronograma
 cambiar contrasea;a
 
 git add .
-git commit -am "fisicos"
+git commit -am "eliminacion de moment"
 git push -u origin master

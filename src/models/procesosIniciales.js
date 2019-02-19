@@ -377,7 +377,7 @@ userModel.postHistorialPartidas = (data,callback)=>{
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
         else{
-            conn.query('Insert into historialpartidas (fecha,estado,partidas_id_partida) values ?',[data], (error,res)=>{
+            conn.query('Insert into historialpartidas (estado,partidas_id_partida) values ?',[data], (error,res)=>{
                 if(error){
                     console.log(error);                    
                     callback(error.code);
@@ -397,7 +397,7 @@ userModel.postHistorialComponentes = (data,callback)=>{
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
         else{
-            conn.query('Insert into historialcomponentes (fecha,estado,componentes_id_componente) values ?',[data], (error,res)=>{
+            conn.query('Insert into historialcomponentes (estado,componentes_id_componente) values ?',[data], (error,res)=>{
                 if(error){
                     console.log(error);                    
                     callback(error.code);
