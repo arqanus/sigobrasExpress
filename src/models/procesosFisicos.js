@@ -646,7 +646,32 @@ userModel.getAvanceById = (id_actividad,callback)=>{
                         
                     }
                   
+                    for (let j = 0; j < partida.length; j++) {
+                        const partida_t = partida[j];                            
+                        partida_t.metrado = formato(partida_t.metrado)
+                        partida_t.costo_unitario = formato(partida_t.costo_unitario)
+                        partida_t.parcial = formato(partida_t.parcial)
+                        partida_t.avance_metrado = formato(partida_t.avance_metrado)
+                        partida_t.avance_costo = formato(partida_t.avance_costo)
+                        partida_t.metrados_saldo = formato(partida_t.metrados_saldo)
+                        partida_t.metrados_costo_saldo = formato(partida_t.metrados_costo_saldo)
+                        const actividades = partida_t.actividades
+                        for (let k = 0; k < actividades.length; k++) {
+                            const actividad = actividades[k];
+                            actividad.metrado_actividad = formato(actividad.metrado_actividad)
+                            actividad.costo_unitario = formato(actividad.costo_unitario)
+                            actividad.parcial_actividad = formato(actividad.parcial_actividad)
+                            actividad.actividad_avance_metrado = formato(actividad.actividad_avance_metrado)
+                            actividad.actividad_avance_costo = formato(actividad.actividad_avance_costo)
+                            actividad.actividad_metrados_saldo = formato(actividad.actividad_metrados_saldo)
+                            actividad.actividad_metrados_costo_saldo = formato(actividad.actividad_metrados_costo_saldo)
+                            actividad.actividad_porcentaje = formato(actividad.actividad_porcentaje)
+                        }                                                   
+                    }
+                        
+                                                
                     
+
                     callback(null,partida);
                     conn.destroy()
                 }
