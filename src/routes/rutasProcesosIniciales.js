@@ -18,7 +18,7 @@ module.exports = function(app){
 
 	app.post('/nuevoUsuario',(req,res)=>{
 		User.postPersonalTecnico(req.body,(err,data)=>{
-			if(err) res.json(err);
+			if(err) res.status(204).json(err);
 			res.json(data);	
 		})
 
@@ -26,7 +26,7 @@ module.exports = function(app){
 
 	app.get('/listaUsuarios',(req,res)=>{
 		User.getPersonalTecnico((err,data)=>{
-			if(err) res.json(err);
+			if(err) res.status(204).json(err);
 			res.json(data);	
 		})
 
@@ -35,7 +35,7 @@ module.exports = function(app){
 	app.post('/nuevoCargo',(req,res)=>{
 		
 		User.postCargo(req.body,(err,data)=>{
-			if(err) res.json(err);
+			if(err) res.status(204).json(err);
 			//deshabilitamos los demas cargos
 			// --------------------------------
 			res.json(data);	
@@ -45,7 +45,7 @@ module.exports = function(app){
 
 	app.get('/listaCargos',(req,res)=>{
 		User.getCargos((err,data)=>{
-			if(err){ res.json(err);}
+			if(err){ res.status(204).json(err);}
 			else{
 				res.json(data);	
 			}
@@ -54,7 +54,7 @@ module.exports = function(app){
 	//privilegios
 	app.post('/nuevoPrivilegio',(req,res)=>{
 		User.postPrivilegios(req.body,(err,data)=>{
-			if(err){ res.json(err);}
+			if(err){ res.status(204).json(err);}
 			else{
 				res.json(data);
 			}
@@ -63,7 +63,7 @@ module.exports = function(app){
 	})
 	app.get('/listaPrivilegios',(req,res)=>{
 		User.getPrivilegios((err,data)=>{
-			if(err){ res.json(err);}
+			if(err){ res.status(204).json(err);}
 			else{
 				res.json(data);	
 			}
@@ -82,21 +82,21 @@ module.exports = function(app){
 		delete req.body.componentes;
 		delete req.body.fecha_final;		
 		User.postObra(req.body,(err,id_ficha)=>{
-			if(err) {res.json(err);}
+			if(err) {res.status(204).json(err);}
 			else{
 				var plazoEjecucion={
 					"FechaEjecucion":fecha_final,
 					"fichas_id_ficha":id_ficha,
 				}
 				User.postPlazoEjecucion(plazoEjecucion,(err,data)=>{
-					if(err) {res.json(err);}
+					if(err) {res.status(204).json(err);}
 					else{
 						var Historial = {											
 							"Fichas_id_ficha":id_ficha,
 							"Estados_id_estado":id_estado,
 						}
 						User.postHistorialEstados(Historial,(err,data)=>{							
-							if(err){ res.json(err);}
+							if(err){ res.status(204).json(err);}
 							else{
 								var data_procesada = [];								
 								for(var i = 0; i < componentes.length; i++){
@@ -108,7 +108,7 @@ module.exports = function(app){
 								}		
 								// console.log(data_procesada);
 								User.postComponentes(data_procesada,(err,idComponente)=>{
-									if(err) {res.json(err);}
+									if(err) {res.status(204).json(err);}
 									else{
 										var presupuestos = []
 										for (let i = 0; i < componentes.length; i++) {
@@ -120,7 +120,7 @@ module.exports = function(app){
 											
 										}										
 										User.postPresupuestos(presupuestos,(err,idpresupuesto)=>{
-											if(err) {res.json(err);}
+											if(err) {res.status(204).json(err);}
 											else{
 												var idFichas={
 													"id_ficha":id_ficha,											
@@ -189,14 +189,14 @@ module.exports = function(app){
 	})	
 	app.get('/listaObras',(req,res)=>{
 		User.getObras((err,data)=>{
-			if(err) res.json(err);
+			if(err) res.status(204).json(err);
 			res.json(data);	
 		})
 	})
 	//accesos
 	app.post('/nuevoAcceso',(req,res)=>{	
 		User.postAcceso(req.body,(err,data)=>{
-			if(err) res.json(err);
+			if(err) res.status(204).json(err);
 			res.json(data);		
 			
 		})
@@ -209,7 +209,7 @@ module.exports = function(app){
 		// delete req.body["cargo_id_cargo"];
 		
 		User.getIdAcceso(id_usuario,(err,data)=>{
-			if(err) res.json(err);
+			if(err) res.status(204).json(err);
 			console.log("data",data);
 			var obrausuario = {
 				"Fichas_id_ficha":id_ficha,
@@ -228,7 +228,7 @@ module.exports = function(app){
 	//componentes
 	app.post('/listaComponentesPorId',(req,res)=>{
 		User.getComponentesById(req.body.id_ficha,(err,data)=>{
-			if(err) {res.json(err);}
+			if(err) {res.status(204).json(err);}
 			else{
 				res.json(data);	
 			}
@@ -358,7 +358,7 @@ module.exports = function(app){
 		
 		User.postLogin(req.body,(err,data)=>{
 			
-			if(err) res.json(err);
+			if(err) res.status(204).json(err);
 			res.status(200).json(data);
 		})
 	})
@@ -367,21 +367,21 @@ module.exports = function(app){
 		
 		User.postEstado(req.body,(err,data)=>{
 			
-			if(err) res.json(err);
+			if(err) res.status(204).json(err);
 			res.status(200).json(data);
 		})
 	})
 	app.get('/listaEstados',(req,res)=>{
 		
 		User.getEstados((err,data)=>{			
-			if(err) res.json(err);
+			if(err) res.status(204).json(err);
 			res.status(200).json(data);
 		})
 	})
 	app.post('/ActualizarEstado',(req,res)=>{
 		
 		User.postHistorialEstados(req.body,(err,data)=>{							
-			if(err){ res.json(err);}
+			if(err){ res.status(204).json(err);}
 			else{
 				res.json(data);	
 			}
@@ -391,7 +391,7 @@ module.exports = function(app){
 	app.post('/getDatosGenerales',(req,res)=>{
 		
 		User.getDatosGenerales(req.body.id_ficha,(err,data)=>{							
-			if(err){ res.json(err);}
+			if(err){ res.status(204).json(err);}
 			else{
 				res.json(data);	
 			}
