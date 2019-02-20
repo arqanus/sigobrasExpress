@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 9000
 
 //open cors
 var corsOptions = {
-	origin: 'http://localhost:9009.com',
+	origin: 'http://localhost:9009',
 	optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }
 app.use(cors(corsOptions));
