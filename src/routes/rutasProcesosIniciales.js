@@ -372,6 +372,8 @@ module.exports = function(app){
 		})
 	})
 	app.get('/listaEstados',(req,res)=>{
+		console.log(req.headers);
+		
 		
 		User.getEstados((err,data)=>{			
 			if(err) res.status(204).json(err);
