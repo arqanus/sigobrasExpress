@@ -412,6 +412,26 @@ userModel.postHistorialComponentes = (data,callback)=>{
         }                
     })
 }
+userModel.postPlazoEjecucion = (data,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){ callback(err);}
+        else{
+            conn.query('Insert into PlazoEjecucion set ?',data, (error,res)=>{
+                if(error){
+                    console.log(error);                    
+                    callback(error.code);
+                }else{
+                    console.log("res",res); 
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }                
+    })
+}
 
 
 

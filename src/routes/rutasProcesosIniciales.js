@@ -74,97 +74,111 @@ module.exports = function(app){
 		var g_total_presu = req.body.g_total_presu
 		var id_estado = req.body.id_estado
 		var componentes = req.body.componentes
+		var fecha_final = req.body.fecha_final
+		console.log("fecha final",fecha_final);
+		
 		// delete req.body.g_total_presu;
 		delete req.body.id_estado;
-		delete req.body.componentes;		
+		delete req.body.componentes;
+		delete req.body.fecha_final;		
 		User.postObra(req.body,(err,id_ficha)=>{
 			if(err) {res.json(err);}
 			else{
-				
-						
-				var Historial = {
-											
-					"Fichas_id_ficha":id_ficha,
-					"Estados_id_estado":id_estado,
+				var plazoEjecucion={
+					"FechaEjecucion":fecha_final,
+					"fichas_id_ficha":id_ficha,
 				}
-				User.postHistorialEstados(Historial,(err,data)=>{							
-					if(err){ res.json(err);}
+				User.postPlazoEjecucion(plazoEjecucion,(err,data)=>{
+					if(err) {res.json(err);}
 					else{
-						var data_procesada = [];								
-						for(var i = 0; i < componentes.length; i++){
-							var componente = [];
-							componente.push(componentes[i]["0"]);
-							componente.push(componentes[i]["1"]);
-							componente.push(componentes[i]["2"]);									
-							data_procesada.push(componente);
-						}		
-						// console.log(data_procesada);
-						User.postComponentes(data_procesada,(err,idComponente)=>{
-							if(err) {res.json(err);}
+						var Historial = {											
+							"Fichas_id_ficha":id_ficha,
+							"Estados_id_estado":id_estado,
+						}
+						User.postHistorialEstados(Historial,(err,data)=>{							
+							if(err){ res.json(err);}
 							else{
-								var presupuestos = []
-								for (let i = 0; i < componentes.length; i++) {
-									var presupuesto = []
-									presupuesto.push(componentes[i]["2"]);
-									
-									presupuesto.push(id_ficha)
-									presupuestos.push(presupuesto);
-									
-								}										
-								User.postPresupuestos(presupuestos,(err,idpresupuesto)=>{
+								var data_procesada = [];								
+								for(var i = 0; i < componentes.length; i++){
+									var componente = [];
+									componente.push(componentes[i]["0"]);
+									componente.push(componentes[i]["1"]);
+									componente.push(componentes[i]["2"]);									
+									data_procesada.push(componente);
+								}		
+								// console.log(data_procesada);
+								User.postComponentes(data_procesada,(err,idComponente)=>{
 									if(err) {res.json(err);}
 									else{
-										var idFichas={
-											"id_ficha":id_ficha,											
-											"componentes":[]
-										}
-										var historialComponentes = []
+										var presupuestos = []
 										for (let i = 0; i < componentes.length; i++) {
-											idFichas.componentes.push(
-												{
-													"numero":i+1,
-													"idComponente":idComponente,
-													"idPresupuesto":idpresupuesto
-												}
-											)
-
-											historialComponentes.push(
-												[													
-													"oficial",
-													idComponente
-												]
-											)
-
-											idComponente+=10;
-											idpresupuesto+=10;
+											var presupuesto = []
+											presupuesto.push(componentes[i]["2"]);
 											
-										}
-										User.postHistorialComponentes(historialComponentes,(err,data)=>{
-											if (err) {
-												errores.push(
-													{
-														"elemento":"historial de componentes",
-														"error":err
+											presupuesto.push(id_ficha)
+											presupuestos.push(presupuesto);
+											
+										}										
+										User.postPresupuestos(presupuestos,(err,idpresupuesto)=>{
+											if(err) {res.json(err);}
+											else{
+												var idFichas={
+													"id_ficha":id_ficha,											
+													"componentes":[]
+												}
+												var historialComponentes = []
+												for (let i = 0; i < componentes.length; i++) {
+													idFichas.componentes.push(
+														{
+															"numero":i+1,
+															"idComponente":idComponente,
+															"idPresupuesto":idpresupuesto
+														}
+													)
+		
+													historialComponentes.push(
+														[													
+															"oficial",
+															idComponente
+														]
+													)
+		
+													idComponente+=10;
+													idpresupuesto+=10;
+													
+												}
+												User.postHistorialComponentes(historialComponentes,(err,data)=>{
+													if (err) {
+														errores.push(
+															{
+																"elemento":"historial de componentes",
+																"error":err
+															}
+														)
+														res.json(errores);
+													}else{
+		
+														res.json(idFichas)
 													}
-												)
-												res.json(errores);
-											}else{
-												res.json(idFichas)
+												})
 											}
 										})
+										
+										
+										
 									}
-								})
-								
-								
-								
+		
+									
+								})	
 							}
-
-							
-						})	
+		
+						})
 					}
-
-				})
+					
 						
+				})
+
+					
 					
 				
 			}
@@ -172,8 +186,7 @@ module.exports = function(app){
 			
 		})
 
-	})
-	
+	})	
 	app.get('/listaObras',(req,res)=>{
 		User.getObras((err,data)=>{
 			if(err) res.json(err);
@@ -212,9 +225,7 @@ module.exports = function(app){
 		})
 
 	})
-
 	//componentes
-
 	app.post('/listaComponentesPorId',(req,res)=>{
 		User.getComponentesById(req.body.id_ficha,(err,data)=>{
 			if(err) {res.json(err);}
@@ -360,7 +371,6 @@ module.exports = function(app){
 			res.status(200).json(data);
 		})
 	})
-
 	app.get('/listaEstados',(req,res)=>{
 		
 		User.getEstados((err,data)=>{			
