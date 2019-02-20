@@ -4,6 +4,10 @@ function formatoPorcentaje(data){
     
     // data = parseFloat(data)
     data = Number(data)
+    if(isNaN(data)){
+        
+        data=0
+    }
     if(data < 1){
         data = data.toLocaleString(undefined, {
             minimumFractionDigits: 4,
