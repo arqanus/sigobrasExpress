@@ -1,29 +1,38 @@
 deshabilitarlosdemas cargos alingresar nuevo cargo
 *ingreso
 ingreso de partida nueva
+api idcomponetntes numero idpresuspuestos
+api para partidas con estado nuevo
+
 ingreso de cronograma
 
 *vistas
-nombra de la obra
-porcentaje general api solo
-mostrar dias ejecutados
-mostrar dias q faltan
+avance ayer soles
 
+*preguntar
+historial dividido en ayer y lodemas
 procesos gerenciales
+mostrar avance de ayer en soles
+mostrar porcentaje de avance de ayer
 
 val general con nuevos metrados
-val general vizualisacon en la pestaniaa con p o c
 val general en base a la tabla presupuestos
+val general vizualisacon en la pestaniaa con p o c
 
-al valorizar nan enn pu
+fallo en periodos
+nan en valgeneral
 
-
-agregar campo fecha_ejecucion
 
 vista de cronograma
 
 cambiar contrasea;a
 
+
+imagenes
+saldo de metrado
+
+paralizar partida
+
 git add .
-git commit -am "condicional de no ceros"
+git commit -am "procesos iniciales datos generales"
 git push -u origin master
