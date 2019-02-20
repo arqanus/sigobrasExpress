@@ -21,7 +21,7 @@ var corsOptions = {
     }
   }
 }
-
+app.use(cors(corsOptions))
 //settings
 app.set('port',PORT);
 
