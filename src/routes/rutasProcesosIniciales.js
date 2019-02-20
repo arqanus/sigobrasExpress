@@ -388,6 +388,16 @@ module.exports = function(app){
 
 		})
 	})
+	app.post('/getDatosGenerales',(req,res)=>{
+		
+		User.getDatosGenerales(req.body.id_ficha,(err,data)=>{							
+			if(err){ res.json(err);}
+			else{
+				res.json(data);	
+			}
+
+		})
+	})
 	
 	
 	

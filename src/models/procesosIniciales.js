@@ -1,5 +1,23 @@
 const pool = require('./connection');
 let userModel = {};
+function formatoPorcentaje(data){
+    
+    // data = parseFloat(data)
+    data = Number(data)
+    if(data < 1){
+        data = data.toLocaleString(undefined, {
+            minimumFractionDigits: 4,
+            maximumFractionDigits: 4
+          })
+    }else{
+        data = data.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          })
+    } 
+
+    return data
+}
 userModel.postObra = (data,callback)=>{
     
     pool.getConnection(function(err ,conn){
@@ -423,6 +441,34 @@ userModel.postPlazoEjecucion = (data,callback)=>{
                     callback(error.code);
                 }else{
                     console.log("res",res); 
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }                
+    })
+}
+userModel.getDatosGenerales = (id_ficha,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){ callback(err);}
+        else{
+            conn.query('SELECT fichas.g_meta, SUM(avanceactividades.valor) / fichas.g_total_presu * 100 porcentaje_avance, TIMESTAMPDIFF(DAY, fichas.fecha_inicial, CURDATE()) dias_ejecutados, TIMESTAMPDIFF(DAY, CURDATE(), plazoejecucion.fechaEjecucion) dias_saldo, estado.nombre estado, SUM(avanceactividades.valor) avance_acumulado, avance_actual.avance_actual, 0 avance_ayer FROM fichas LEFT JOIN (SELECT Fichas_id_ficha, nombre, codigo FROM historialestados INNER JOIN (SELECT MAX(id_historialEstado) id_historialEstado FROM historialestados GROUP BY fichas_id_ficha) historial ON historial.id_historialEstado = historialestados.id_historialEstado LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado) estado ON estado.Fichas_id_ficha = fichas.id_ficha LEFT JOIN presupuestos ON presupuestos.Fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.presupuestos_id_Presupuesto = presupuestos.id_Presupuesto LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN plazoejecucion ON plazoejecucion.fichas_id_ficha = fichas.id_ficha LEFT JOIN (SELECT fichas.id_ficha, SUM(avanceactividades.valor) avance_actual FROM fichas LEFT JOIN presupuestos ON presupuestos.Fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.presupuestos_id_Presupuesto = presupuestos.id_Presupuesto LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE DATE(avanceactividades.fecha) = CURDATE() GROUP BY fichas.id_ficha) avance_actual ON avance_actual.id_ficha = fichas.id_ficha where fichas.id_ficha = ? GROUP BY fichas.id_ficha',id_ficha, (error,res)=>{
+                if(error){
+                    console.log(error);                    
+                    callback(error.code);
+                }else{
+                    console.log("res",res); 
+                    for (let i = 0; i < res.length; i++) {
+                        const ficha = res[i];
+                        ficha.porcentaje_avance = formatoPorcentaje(ficha.porcentaje_avance)
+                        ficha.avance_acumulado = formatoPorcentaje(ficha.avance_acumulado)
+                        ficha.avance_actual = formatoPorcentaje(ficha.avance_actual)
+                        
+                    }
+                 
                     callback(null,res);
                     conn.destroy()
                 }
