@@ -36,6 +36,7 @@ morganBody(app);
 require('./routes/rutasProcesosIniciales')(app);
 require('./routes/rutasProcesosGerenciales')(app);
 require('./routes/rutasProcesosFisicos')(app);
+require('./routes/rutasProcesosInformes')(app);
 // require('./routes/rutasProcesosFinancieros')(app);
 
 

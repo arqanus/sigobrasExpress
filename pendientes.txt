@@ -15,9 +15,37 @@ vista de cronograma
 
 cambiar contrasea;a
 
+implementar cors
+
 
 imagenes
 paralizar partida
+
+*informe
+codigo obra
+nombre obraptrdupurdyo
+supervisor
+residente
+plazodeejecucion
+fecha icnicio
+fechaculminacin
+la cantidad de dias ampliados y la fecha de termino 
+financiero monto y total y porcentaje avence
+fisiscoavance porcentaje
+ampliacionpresupuestasl
+mes actual 
+estado
+metas programadas
+metas ejecutadas
+comentario
+
+
+agregar profesionesal os usuarios
+
+procesos gerenciales esetado de obra
+
+en todos los models donde haya financiero agregar un if de vacio
+
 
 git add .
 git commit -am "procesos iniciales datos generales"
