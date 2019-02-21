@@ -472,8 +472,7 @@ userModel.getDatosGenerales = (id_ficha,callback)=>{
                 }else{
                     console.log("res",res); 
                     
-                        const ficha = res[0];
-                        ficha.porcentaje_avance = formatoPorcentaje(ficha.porcentaje_avance)
+                        const ficha = res[0];                        
                         ficha.avance_acumulado = formatoPorcentaje(ficha.avance_acumulado)
                         ficha.porcentaje_acumulado = formatoPorcentaje(ficha.porcentaje_acumulado)
                         ficha.avance_actual = formatoPorcentaje(ficha.avance_actual)
