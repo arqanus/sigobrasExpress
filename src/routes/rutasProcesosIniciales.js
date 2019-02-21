@@ -35,9 +35,32 @@ module.exports = function(app){
 	//USUARIOS
 
 	app.post('/nuevoUsuario',(req,res)=>{
-		User.postPersonalTecnico(req.body,(err,data)=>{
-			if(err) res.status(204).json(err);
-			res.json(data);	
+		var fecha =req.body.fecha
+		var cpt = req.body.cpt
+		var id_profesion = req.body.id_profesion
+		delete req.body.fecha		
+		delete  req.body.cpt
+		delete  req.body.id_profesion
+		User.postPersonalTecnico(req.body,(err,id_usuario)=>{
+			if(err) {res.status(204).json(err);}
+			else{
+				var ProfesionUsuario = {
+					"profesiones_id_profesion":id_profesion,
+					"usuarios_id_usuario":id_usuario,
+					"fecha":fecha,
+					"cpt":cpt
+				}
+
+				User.postProfesionUsuario(ProfesionUsuario,(err,data)=>{
+					if (err) {
+						res.status(204).json(err);
+					}else{
+						res.json(data);	
+					}
+				})
+				
+			}
+			
 		})
 
 	})

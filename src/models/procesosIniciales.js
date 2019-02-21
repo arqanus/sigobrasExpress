@@ -531,6 +531,26 @@ userModel.postProfesion = (data,callback)=>{
         }                
     })
 }
+userModel.postProfesionUsuario = (data,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){ callback(err);}
+        else{
+            conn.query('insert into Profesiones_has_usuarios set ?',data,(error,res)=>{
+                if(error){
+                    console.log(error);                    
+                    callback(error.code);
+                }else{
+                    console.log("res",res); 
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }                
+    })
+}
 
 
 
