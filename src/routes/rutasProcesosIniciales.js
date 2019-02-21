@@ -13,6 +13,24 @@ function soloLetras(req,res,next){
 
 
 module.exports = function(app){
+	//profesoines
+	app.post('/postProfesion',(req,res)=>{
+		User.postProfesion(req.body,(err,data)=>{
+			if(err) {res.status(204).json(err);}
+			else{
+				res.json(data);	
+			}
+			
+		})
+
+	})
+	app.get('/getProfesiones',(req,res)=>{
+		User.getProfesiones((err,data)=>{
+			if(err) res.status(204).json(err);
+			res.json(data);	
+		})
+
+	})
 	
 	//USUARIOS
 
@@ -371,8 +389,7 @@ module.exports = function(app){
 			res.status(200).json(data);
 		})
 	})
-	app.get('/listaEstados',(req,res)=>{
-		console.log(req.headers);
+	app.get('/listaEstados',(req,res)=>{	
 		
 		
 		User.getEstados((err,data)=>{			

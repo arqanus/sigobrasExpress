@@ -489,6 +489,46 @@ userModel.getDatosGenerales = (id_ficha,callback)=>{
         }                
     })
 }
+userModel.getProfesiones = (callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){ callback(err);}
+        else{
+            conn.query('select * from profesiones',(error,res)=>{
+                if(error){
+                    console.log(error);                    
+                    callback(error.code);
+                }else{
+                    console.log("res",res); 
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }                
+    })
+}
+userModel.postProfesion = (data,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){ callback(err);}
+        else{
+            conn.query('insert into profesiones set ?',data,(error,res)=>{
+                if(error){
+                    console.log(error);                    
+                    callback(error.code);
+                }else{
+                    console.log("res",res); 
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }                
+    })
+}
 
 
 
