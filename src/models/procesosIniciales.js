@@ -466,10 +466,13 @@ userModel.getDatosGenerales = (id_ficha,callback)=>{
                 if(error){
                     console.log(error);                    
                     callback(error.code);
+                }
+                else if(res.length ==0){
+                    callback("vacio");
                 }else{
                     console.log("res",res); 
-                    for (let i = 0; i < res.length; i++) {
-                        const ficha = res[i];
+                    
+                        const ficha = res[0];
                         ficha.porcentaje_avance = formatoPorcentaje(ficha.porcentaje_avance)
                         ficha.avance_acumulado = formatoPorcentaje(ficha.avance_acumulado)
                         ficha.porcentaje_acumulado = formatoPorcentaje(ficha.porcentaje_acumulado)
@@ -478,9 +481,9 @@ userModel.getDatosGenerales = (id_ficha,callback)=>{
                         ficha.avance_ayer = formatoPorcentaje(ficha.avance_ayer)
                         ficha.porcentaje_ayer = formatoPorcentaje(ficha.porcentaje_ayer)
                         
-                    }
+                    
                  
-                    callback(null,res);
+                    callback(null,res[0]);
                     conn.destroy()
                 }
                 
