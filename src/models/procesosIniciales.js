@@ -177,10 +177,15 @@ userModel.postObraUsuario = (data,callback)=>{
         if(err){ callback(err);}
         else{     
             conn.query('INSERT INTO fichas_has_accesos SET ?', data,(error,res)=>{
-                if(error) callback(error.code);
-                console.log("affectedRows",res); 
-                callback(null,res.affectedRows);
-                conn.destroy()
+                if(error){ 
+                    callback(error.code);
+                }else{
+                    console.log("affectedRows",res); 
+                    callback(null,res.affectedRows);
+                
+                }
+                conn.destroy()           
+                
             })  
         }      
     })
