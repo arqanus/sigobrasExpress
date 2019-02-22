@@ -76,10 +76,14 @@ module.exports = function(app){
 	app.post('/nuevoCargo',(req,res)=>{
 		
 		User.postCargo(req.body,(err,data)=>{
-			if(err) res.status(204).json(err);
+			if(err) {
+				res.status(204).json(err)
+			}else{
+				res.json(data);	
+			}
 			//deshabilitamos los demas cargos
 			// --------------------------------
-			res.json(data);	
+			
 		})
 
 	})
