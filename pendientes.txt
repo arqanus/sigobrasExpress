@@ -39,6 +39,10 @@ metas programadas
 metas ejecutadas
 comentario
 
+*listarobras
+obras y su personal
+
+
 
 agregar profesionesal os usuarios
 
@@ -48,5 +52,5 @@ en todos los models donde haya financiero agregar un if de vacio
 
 
 git add .
-git commit -am "procesos iniciales datos generales"
+git commit -am "fisicos temporal"
 git push -u origin master
