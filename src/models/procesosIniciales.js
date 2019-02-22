@@ -289,12 +289,12 @@ userModel.postLogin = (data,callback)=>{
     pool.getConnection(function(err,conn){
         if(err){ callback(err);}
         else{     
-            conn.query("SELECT accesos.id_acceso, cargos.nombre nombre_cargo, usuarios.nombre nombre_usuario FROM accesos LEFT JOIN cargos ON accesos.Cargos_id_Cargo = cargos.id_Cargo LEFT JOIN usuarios ON accesos.Usuarios_id_usuario = usuarios.id_usuario WHERE usuario ='"+data.usuario+"' AND password = '"+data.password+"'",(error,res)=>{
+            conn.query("SELECT accesos.id_acceso, cargos.nombre nombre_cargo, usuarios.nombre nombre_usuario FROM accesos LEFT JOIN cargos ON accesos.Cargos_id_Cargo = cargos.id_Cargo LEFT JOIN usuarios ON accesos.Usuarios_id_usuario = usuarios.id_usuario WHERE usuario ='"+data.usuario+"' AND password = '"+data.password+"' order by accesos.id_acceso desc limit 1",(error,res)=>{
                 if(error) {
                     callback(error);
                 }else{                    
-                    console.log("affectedRows",res); 
-                    callback(null,res);
+                    console.log("affectedRows",res[0]); 
+                    callback(null,res[0]);
                     conn.destroy()
                 }
                 
