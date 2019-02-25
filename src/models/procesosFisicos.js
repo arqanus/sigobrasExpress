@@ -578,6 +578,10 @@ userModel.getValGeneral = (id_ficha,callback)=>{
                             for (let k = 0; k < partidas.length; k++) {
                                 const partida = partidas[k];
                                  //formato de dos digitos
+                                partida.metrado = formato(partida.metrado)
+                                partida.costo_unitario = formato(partida.costo_unitario)
+                                partida.parcial = formato(partida.parcial)
+
                                  partida.metrado_anterior = formato(partida.metrado_anterior)
                                  partida.valor_anterior = formato(partida.valor_anterior)
                                  partida.porcentaje_anterior = formato(partida.porcentaje_anterior)
