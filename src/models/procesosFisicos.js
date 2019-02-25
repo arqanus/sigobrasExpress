@@ -4,10 +4,11 @@ function formato(data){
     
     // data = parseFloat(data)
     data = Number(data)
-    if(isNaN(data)){
+    if(isNaN(data)||data < 0.01){
         
         data=0
     }
+    
     
     return data.toLocaleString(undefined, {
         minimumFractionDigits: 2,
