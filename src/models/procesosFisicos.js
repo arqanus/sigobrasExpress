@@ -516,7 +516,9 @@ userModel.getValGeneral = (id_ficha,callback)=>{
                             
                             const partidas = componente.partidas
                             for (let k = 0; k < partidas.length; k++) {
-                                const partida = partidas[k];
+                                
+                                var partida = partidas[k];
+                                
                                 // part valor total anterior
                                 if(i > 0){
                                     //metrado anterior
@@ -528,6 +530,8 @@ userModel.getValGeneral = (id_ficha,callback)=>{
                                 }
                                 //partida metrado acumulado
                                 partida.metrado_total = partida.metrado_actual + partida.metrado_anterior
+                                console.log(partida.metrado_actual,"+",partida.metrado_anterior,"=",partida.metrado_total);
+                                
                                 //partida valor acumulado
                                 partida.valor_total = partida.valor_actual + partida.valor_anterior
                                 //partida porcentaje acumuado
@@ -541,19 +545,7 @@ userModel.getValGeneral = (id_ficha,callback)=>{
                                 partida.porcentaje_saldo = 100 - partida.porcentaje_total
                                 
 
-                                //formato de dos digitos
-                                partida.metrado_anterior = formato(partida.metrado_anterior)
-                                partida.valor_anterior = formato(partida.valor_anterior)
-                                partida.porcentaje_anterior = formato(partida.porcentaje_anterior)
-                                partida.metrado_actual = formato(partida.metrado_actual)
-                                partida.valor_actual = formato(partida.valor_actual)
-                                partida.porcentaje_actual = formato(partida.porcentaje_actual)
-                                partida.metrado_total = formato(partida.metrado_total)
-                                partida.valor_total = formato(partida.valor_total)
-                                partida.porcentaje_total = formato(partida.porcentaje_total)
-                                partida.metrado_saldo = formato(partida.metrado_saldo)
-                                partida.valor_saldo = formato(partida.valor_saldo)
-                                partida.porcentaje_saldo = formato(partida.porcentaje_saldo)
+                               
                                
                             }
                             
@@ -581,6 +573,24 @@ userModel.getValGeneral = (id_ficha,callback)=>{
                             componente.valor_total_actual = formato(componente.valor_total_actual)
                             componente.valor_suma_acumulado = formato(componente.valor_suma_acumulado)
                             componente.valor_total_saldo = formato(componente.valor_total_saldo)
+                            const partidas = componente.partidas
+                            for (let k = 0; k < partidas.length; k++) {
+                                const partida = partidas[k];
+                                 //formato de dos digitos
+                                 partida.metrado_anterior = formato(partida.metrado_anterior)
+                                 partida.valor_anterior = formato(partida.valor_anterior)
+                                 partida.porcentaje_anterior = formato(partida.porcentaje_anterior)
+                                 partida.metrado_actual = formato(partida.metrado_actual)
+                                 partida.valor_actual = formato(partida.valor_actual)
+                                 partida.porcentaje_actual = formato(partida.porcentaje_actual)
+                                 partida.metrado_total = formato(partida.metrado_total)
+                                 partida.valor_total = formato(partida.valor_total)
+                                 partida.porcentaje_total = formato(partida.porcentaje_total)
+                                 partida.metrado_saldo = formato(partida.metrado_saldo)
+                                 partida.valor_saldo = formato(partida.valor_saldo)
+                                 partida.porcentaje_saldo = formato(partida.porcentaje_saldo)
+                                
+                            }
 
                             
                         }

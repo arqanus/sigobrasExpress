@@ -50,7 +50,15 @@ procesos gerenciales esetado de obra
 
 en todos los models donde haya financiero agregar un if de vacio
 
+*procesos gerenciales
+avance de hoy
+avance de ayer
+
+ingreso de planilla demetrados
+contart los datos de la primera columna
+
+
 
 git add .
-git commit -am "fisicos temporal"
+git commit -am "condiciones"
 git push -u origin master
