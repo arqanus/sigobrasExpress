@@ -425,7 +425,8 @@ userModel.getValGeneral = (id_ficha,callback)=>{
                                         }
                                     ]
                                 }
-                                periodo.componentes.push(componente)   
+                                periodo.componentes.push(componente) 
+                                valor_total_actual = 0
                             }else{
                                 periodo.componentes[periodo.componentes.length-1].valor_total_actual =valor_total_actual
                                 var partida = {
