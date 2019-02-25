@@ -97,11 +97,14 @@ userModel.postCargo = (data,callback)=>{
 userModel.getCargos = (callback)=>{
     
     pool.getConnection(function(err,conn){
-        if(err){ callback(err);}       
+        if(err){ callback(err);}  
         conn.query('select *from cargos', (error,res)=>{
-            if(error) callback(error);            
-            callback(null,res);
-            conn.destroy()
+            if(error){ callback(error);  }
+            else{
+                callback(null,res);
+                conn.destroy()
+            }
+            
         })        
     })
 }

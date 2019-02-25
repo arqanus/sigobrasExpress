@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 9000
 
 
 //open cors
-var whitelist = ['http://localhost:9009', 'http://localhost:9001']
+var whitelist = ['http://localhost:9009']
 var corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1) {
@@ -41,6 +41,6 @@ require('./routes/rutasProcesosInformes')(app);
 
 
 
-app.listen(app.get('port'),()=>{
+app.listen(app.get('port'),"0.0.0.0",()=>{
 	console.log('running in port', PORT);
 })
