@@ -18,10 +18,10 @@ var pool = mysql.createPool({
     // password: 'kaido',    
     // database: 'SIGOBRAS_DB'
 
-    host: 'localhost',
-    user: 'root',
-    password: 'password',    
-    database: 'SIGOBRAS_DB'
+    // host: 'localhost',
+    // user: 'root',
+    // password: 'password',    
+    // database: 'SIGOBRAS_DB'
     
     
 });    
