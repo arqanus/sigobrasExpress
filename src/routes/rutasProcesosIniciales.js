@@ -307,8 +307,10 @@ module.exports = function(app){
 						"error":err
 					}
 				)
+				res.json(err);
 			}
 			else{
+				// res.json(idPartida);
 							
 				// console.log("partidas insertadas")
 				// res.json(idPartida)
@@ -335,7 +337,7 @@ module.exports = function(app){
 					}				
 				}
 				// console.log("actividades",actividades);
-	
+				
 				User.postActividades(actividades,(err,data)=>{
 					if(err){
 						errores.push(

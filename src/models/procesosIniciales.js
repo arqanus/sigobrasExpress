@@ -239,6 +239,7 @@ userModel.postPartidas = (data,callback)=>{
         else{     
             conn.query('INSERT INTO partidas (tipo,item,descripcion,unidad_medida,metrado,costo_unitario,equipo,rendimiento,Componentes_id_componente,presupuestos_id_presupuesto) VALUES ?',[data],(error,res)=>{
                 if(error){
+                    console.log(error);                    
                     callback(error.code);
                 }else{
                     // console.log("res",res); 
