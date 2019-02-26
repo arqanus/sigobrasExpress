@@ -32,7 +32,9 @@ userModel.postObra = (data,callback)=>{
         else{
             conn.query('INSERT INTO fichas SET ?', data,(error,res)=>{
                 if(error){
-                    callback(error);
+                    console.log(error);
+                    
+                    callback(error.code);
                 }else{
                     // console.log("affectedRows",res); 
                     callback(null,res.insertId);

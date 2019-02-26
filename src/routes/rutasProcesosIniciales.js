@@ -188,19 +188,14 @@ module.exports = function(app){
 														]
 													)
 		
-													idComponente+=10;
-													idpresupuesto+=10;
+													idComponente+=1;
+													idpresupuesto+=1;
 													
 												}
 												User.postHistorialComponentes(historialComponentes,(err,data)=>{
 													if (err) {
-														errores.push(
-															{
-																"elemento":"historial de componentes",
-																"error":err
-															}
-														)
-														res.json(errores);
+														
+														res.json(err);
 													}else{
 		
 														res.json(idFichas)
@@ -319,7 +314,7 @@ module.exports = function(app){
 				var element = idPartida						
 				var actividades = []
 				var recursos = []
-				for (let j = 0; j < req.body.length; j++,element+=10) {
+				for (let j = 0; j < req.body.length; j++,element+=1) {
 					// console.log("actividades")
 					//insertando idpartida
 					if(req.body[j].tipo == "partida"){
@@ -370,7 +365,7 @@ module.exports = function(app){
 										element
 									]
 									historialpartidas.push(historial)	
-									element+=10
+									element+=1
 								}
 								console.log("historial",historialpartidas);
 								

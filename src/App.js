@@ -41,6 +41,6 @@ require('./routes/rutasProcesosInformes')(app);
 
 
 
-app.listen(app.get('port'),"0.0.0.0",()=>{
+app.listen(app.get('port'),()=>{
 	console.log('running in port', PORT);
 })
