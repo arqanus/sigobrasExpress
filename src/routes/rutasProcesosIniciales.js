@@ -420,8 +420,12 @@ module.exports = function(app){
 		
 		
 		User.getEstados((err,data)=>{			
-			if(err) res.status(204).json(err);
-			res.status(200).json(data);
+			if(err){
+				res.status(204).json(err);
+			} else{
+				res.status(200).json(data);
+			}
+			
 		})
 	})
 	app.post('/ActualizarEstado',(req,res)=>{
