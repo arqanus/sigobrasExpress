@@ -120,7 +120,7 @@ module.exports = function(app){
 		var id_estado = req.body.id_estado
 		var componentes = req.body.componentes
 		var fecha_final = req.body.fecha_final
-		console.log("fecha final",fecha_final);
+		// console.log("fecha final",fecha_final);
 		
 		// delete req.body.g_total_presu;
 		delete req.body.id_estado;
@@ -250,12 +250,12 @@ module.exports = function(app){
 		
 		User.getIdAcceso(id_usuario,(err,data)=>{
 			if(err) res.status(204).json(err);
-			console.log("data",data);
+			// console.log("data",data);
 			var obrausuario = {
 				"Fichas_id_ficha":id_ficha,
 				"Accesos_id_acceso":data[0].id_acceso
 			}
-			console.log("data",obrausuario);
+			// console.log("data",obrausuario);
 			User.postObraUsuario(obrausuario,(err2,data2)=>{
 				if(err2) res.json(err2);
 				res.json(data2);
@@ -281,7 +281,8 @@ module.exports = function(app){
 		var listaIdPartida = []
 		var listaPartidas = []
 		// console.log("body",req.body)
-		console.log("ruta")
+		// console.log("ruta")
+
 		for (let i = 0; i < req.body.length; i++) {
 			const element = req.body[i];
 			const obPartida = [
@@ -309,7 +310,7 @@ module.exports = function(app){
 			}
 			else{
 							
-				console.log("partidas insertadas")
+				// console.log("partidas insertadas")
 				// res.json(idPartida)
 				var element = idPartida						
 				var actividades = []
@@ -333,7 +334,7 @@ module.exports = function(app){
 						recursos = recursos.concat(obRecurso)
 					}				
 				}
-				console.log("actividades",actividades);
+				// console.log("actividades",actividades);
 	
 				User.postActividades(actividades,(err,data)=>{
 					if(err){
@@ -367,7 +368,7 @@ module.exports = function(app){
 									historialpartidas.push(historial)	
 									element+=1
 								}
-								console.log("historial",historialpartidas);
+								// console.log("historial",historialpartidas);
 								
 								
 								User.postHistorialPartidas(historialpartidas,(err,data)=>{
