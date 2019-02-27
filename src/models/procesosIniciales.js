@@ -11,12 +11,12 @@ function formatoPorcentaje(data){
         data=0
     }
     if(data < 1){
-        data = data.toLocaleString(undefined, {
+        data = data.toLocaleString('en-IN', {
             minimumFractionDigits: 4,
             maximumFractionDigits: 4
           })
     }else{
-        data = data.toLocaleString(undefined, {
+        data = data.toLocaleString('en-IN', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
           })
