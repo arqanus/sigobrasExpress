@@ -76,9 +76,13 @@ userModel.getPersonalTecnico = (callback)=>{
     pool.getConnection(function(err,conn){
         if(err){ callback(err);}       
         conn.query('select *from usuarios', (error,res)=>{
-            if(error) callback(error);            
-            callback(null,res);
-            conn.destroy()
+            if(error){
+                callback(error);
+            }else{
+                callback(null,res);
+                conn.destroy()
+            }             
+            
         })        
     })
 }
@@ -167,10 +171,14 @@ userModel.getIdAcceso = (data,callback)=>{
         if(err){ callback(err);}
         else{     
             conn.query('select id_acceso from accesos where usuarios_id_usuario = ?', data,(error,res)=>{
-                if(error) callback(error.code);
-                console.log("res ",res); 
-                callback(null,res);
-                conn.destroy()
+                if(error) {
+                    callback(error.code);
+                }else{
+                    console.log("res ",res); 
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
             })  
         }      
     })

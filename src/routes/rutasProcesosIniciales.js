@@ -67,8 +67,8 @@ module.exports = function(app){
 
 	app.get('/listaUsuarios',(req,res)=>{
 		User.getPersonalTecnico((err,data)=>{
-			if(err) res.status(204).json(err);
-			res.json(data);	
+			if(err) {res.status(204).json(err);}
+			else {res.json(data);	}
 		})
 
 	})
