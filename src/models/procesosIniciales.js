@@ -295,11 +295,20 @@ userModel.postLogin = (data,callback)=>{
     pool.getConnection(function(err,conn){
         if(err){ callback(err);}
         else{     
-            conn.query("SELECT accesos.id_acceso,accesos.usuario, cargos.nombre nombre_cargo, usuarios.nombre nombre_usuario FROM accesos LEFT JOIN cargos ON accesos.Cargos_id_Cargo = cargos.id_Cargo LEFT JOIN usuarios ON accesos.Usuarios_id_usuario = usuarios.id_usuario WHERE usuario ='"+data.usuario+"' AND password = '"+data.password+"' order by accesos.id_acceso desc limit 1",(error,res)=>{
+            var query = "SELECT accesos.id_acceso,accesos.usuario, cargos.nombre nombre_cargo, usuarios.nombre nombre_usuario FROM accesos LEFT JOIN cargos ON accesos.Cargos_id_Cargo = cargos.id_Cargo LEFT JOIN usuarios ON accesos.Usuarios_id_usuario = usuarios.id_usuario WHERE usuario ='"+data.usuario+"' AND password = '"+data.password+"' order by accesos.id_acceso desc limit 1"
+            console.log("query=>",query);
+            
+            conn.query(query,(error,res)=>{
                 if(error) {
+                    console.log(error);                    
                     callback(error);
+                }
+                else if(res.length == 0){
+                    console.log("vacio");                    
+                    callback("vacio");
+                
                 }else{                    
-                    console.log("affectedRows",res[0]); 
+                    console.log("res",res); 
                     callback(null,res[0]);
                     conn.destroy()
                 }
