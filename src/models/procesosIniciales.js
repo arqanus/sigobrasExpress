@@ -611,7 +611,7 @@ userModel.getMenu = (data,callback)=>{
             callback(err);
         }
         else{            
-            conn.query("SELECT fichas.id_ficha, id_acceso, data, estado.estado_nombre FROM fichas LEFT JOIN fichas_has_accesos ON fichas_has_accesos.Fichas_id_ficha = fichas.id_ficha LEFT JOIN accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso LEFT JOIN menus ON menus.accesos_id_acceso = accesos.id_acceso LEFT JOIN ( SELECT fichas.id_ficha, estados.nombre estado_nombre FROM fichas LEFT JOIN historialestados ON historialestados.Fichas_id_ficha = fichas.id_ficha LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado order by historialestados.id_historialEstado desc limit 1) estado on estado.id_ficha = fichas.id_ficha WHERE fichas.id_ficha = ? AND id_acceso = ? ",[data.id_ficha,data.id_acceso],(error,res)=>{ 
+            conn.query("SELECT fichas.id_ficha, id_acceso, data, estado.estado_nombre FROM fichas LEFT JOIN fichas_has_accesos ON fichas_has_accesos.Fichas_id_ficha = fichas.id_ficha LEFT JOIN accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso LEFT JOIN menus ON menus.accesos_id_acceso = accesos.id_acceso LEFT JOIN (SELECT fichas.id_ficha, estados.nombre estado_nombre FROM fichas LEFT JOIN historialestados ON historialestados.Fichas_id_ficha = fichas.id_ficha LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado ORDER BY historialestados.id_historialEstado DESC ) estado ON estado.id_ficha = fichas.id_ficha WHERE fichas.id_ficha = ? AND id_acceso = ? LIMIT 1",[data.id_ficha,data.id_acceso],(error,res)=>{ 
                 if(error){
                     console.log(error);                    
                     callback(error.code);
