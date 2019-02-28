@@ -48,7 +48,7 @@ userModel.getObras = (id_acceso,callback)=>{
                                 ficha = {}
                             }                            
                             ficha.g_meta = fila.g_meta
-                            ficha.g_total_presu = fila.g_total_presu
+                            ficha.g_total_presu = fila.presupuesto
                             ficha.presu_avance = fila.presu_avance
                             ficha.porcentaje_avance = fila.porcentaje_avance
                             ficha.id_ficha = fila.id_ficha
@@ -64,6 +64,7 @@ userModel.getObras = (id_acceso,callback)=>{
                                 }
                             ]
                         }else{
+                            ficha.g_total_presu +=fila.presupuesto
                             var componente = {                                
                                 "numero":fila.numero,
                                 "nombre":fila.nombre,
