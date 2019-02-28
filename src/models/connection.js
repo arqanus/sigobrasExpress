@@ -13,17 +13,17 @@ var pool = mysql.createPool({
     // password: 'e81c813f',
     // database: 'heroku_06daa7d2a5a7a30'
 
-    // host: '192.168.0.4',
-    // user: 'kaido',
-    // password: 'kaido',    
-    // database: 'SIGOBRAS_DB',
-    // connectTimeout: 1000
-
-    host: 'localhost',
-    user: 'root',
-    password: 'password',    
+    host: '192.168.0.4',
+    user: 'kaido',
+    password: 'kaido',    
     database: 'SIGOBRAS_DB',
     connectTimeout: 1000
+
+    // host: 'localhost',
+    // user: 'root',
+    // password: 'password',    
+    // database: 'SIGOBRAS_DB',
+    // connectTimeout: 1000
     
     
 });    

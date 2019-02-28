@@ -232,7 +232,7 @@ userModel.getComponentesById = (id_ficha,callback)=>{
     
     pool.getConnection(function(err,conn){
         if(err){ callback(err);}       
-        conn.query('select *from componentes where Fichas_id_ficha = ?',id_ficha, (error,res)=>{
+        conn.query('SELECT presupuestos.Fichas_id_ficha, componente.numero, componente.nombre, componente.id_componente, presupuestos.id_Presupuesto FROM presupuestos INNER JOIN (SELECT componentes.numero, componentes.nombre, componentes.id_componente, partidas.presupuestos_id_Presupuesto id_presupuesto FROM componentes INNER JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente GROUP BY componentes.id_componente) componente ON componente.id_presupuesto = presupuestos.id_Presupuesto where presupuestos.Fichas_id_ficha = ?',id_ficha, (error,res)=>{
             if(error) callback(error);            
             callback(null,res);
             conn.destroy()
@@ -629,28 +629,32 @@ userModel.getMenu = (data,callback)=>{
                                 element.submenus.splice(0,0,
                                     {
                                         "ruta": "/MDdiario",
-                                        "nombreMenu": "Metrados diarios"
+                                        "nombreMenu": "Metrados diarios",
+                                        "nombrecomponente":"MDdiario"
                                     }
                                 )
                             }else if(estado == "Corte"){
                                 element.submenus.splice(0,0,
                                     {
+                                        "nombreMenu": "Corte de obra",
                                         "ruta": "/CorteObra",
-                                        "nombreMenu": "Corte de obra"
+                                        "nombrecomponente":"CorteObra"
                                     }
                                 )
                             }else if(estado == "Actualizacion"){
                                 element.submenus.splice(0,0,
                                     {
-                                        "ruta": "/CorteActualizacionObra",
-                                        "nombreMenu": "Actualización de obra"
+                                        "nombreMenu": "Actualización de obra",
+                                        "ruta": "/ActualizacionObra",
+                                        "nombrecomponente":"ActualizacionObra"
                                     }
                                 )
                             }else if(estado == "Parilizado"){
                                 element.submenus.splice(0,0,
                                     {
-                                        "ruta": "/CorteActualizacionObra",
-                                        "nombreMenu": "Paralizado "
+                                        "nombreMenu": "Paralizado ",
+                                        "ruta": "/ParalizacionObra",
+                                        "nombrecomponente":"ParalizacionObra"
                                     }
                                 )
                             }
