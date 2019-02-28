@@ -10,7 +10,7 @@ function formato(data){
     }
     
     
-    return data.toLocaleString('en-IN', {
+    return data.toLocaleString('es-PE', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
       })
