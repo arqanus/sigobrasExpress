@@ -457,13 +457,13 @@ module.exports = function(app){
 		// console.log("iniciand",req.body);
 		// res.json(req.body)	
 		
-		User.postMenu(req.body,(err,data)=>{							
-			if(err){ res.status(204).json(err);}
-			else{
-				res.json(data);	
-			}
+			User.postMenu(req.body,(err,data)=>{							
+				if(err){ res.status(204).json(err);}
+				else{
+					res.json(data);	
+				}
 
-		})
+			})
 	})
 
 	app.post('/getMenu',(req,res)=>{	
