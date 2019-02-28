@@ -450,6 +450,34 @@ module.exports = function(app){
 
 		})
 	})
+
+	app.post('/postMenu',(req,res)=>{
+		// req.body =JSON.stringify(req.body)
+		
+		// console.log("iniciand",req.body);
+		// res.json(req.body)	
+		
+		User.postMenu(req.body,(err,data)=>{							
+			if(err){ res.status(204).json(err);}
+			else{
+				res.json(data);	
+			}
+
+		})
+	})
+
+	app.post('/getMenu',(req,res)=>{	
+	
+	
+		User.getMenu(req.body,(err,data)=>{							
+			if(err){ res.status(204).json(err);}
+			else{
+				res.json(data);	
+			}
+
+		})
+	})
+	
 	
 	
 	

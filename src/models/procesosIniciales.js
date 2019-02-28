@@ -582,6 +582,93 @@ userModel.postProfesionUsuario = (data,callback)=>{
     })
 }
 
+userModel.postMenu = (data,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){                        
+            callback(err);
+        }
+        else{            
+            conn.query("INSERT INTO menus (data,accesos_id_acceso ) VALUES (?,?) ON DUPLICATE KEY UPDATE data = ?",[data.data,data.accesos_id_acceso,data.data],(error,res)=>{
+                if(error){
+                    console.log(error);                    
+                    callback(error.code);
+                }else{
+                    console.log("res",res); 
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }                
+    })
+}
+userModel.getMenu = (data,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){                        
+            callback(err);
+        }
+        else{            
+            conn.query("SELECT fichas.id_ficha, id_acceso, data, estado.estado_nombre FROM fichas LEFT JOIN fichas_has_accesos ON fichas_has_accesos.Fichas_id_ficha = fichas.id_ficha LEFT JOIN accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso LEFT JOIN menus ON menus.accesos_id_acceso = accesos.id_acceso LEFT JOIN ( SELECT fichas.id_ficha, estados.nombre estado_nombre FROM fichas LEFT JOIN historialestados ON historialestados.Fichas_id_ficha = fichas.id_ficha LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado order by historialestados.id_historialEstado desc limit 1) estado on estado.id_ficha = fichas.id_ficha WHERE fichas.id_ficha = ? AND id_acceso = ? ",[data.id_ficha,data.id_acceso],(error,res)=>{ 
+                if(error){
+                    console.log(error);                    
+                    callback(error.code);
+                }else{
+                    var json = JSON.parse(res[0].data)
+                    var estado = res[0].estado_nombre
+                    console.log("estado",estado);
+                    
+
+                    for (let i = 0; i < json.length; i++) {
+                        const element = json[i];
+                        console.log("nombremenu",element.nombreMenu);
+                        if(element.nombreMenu=="PROCESOS FISICOS"){
+                            if(estado == "Ejecucion"){
+                                element.submenus.splice(0,0,
+                                    {
+                                        "ruta": "/MDdiario",
+                                        "nombreMenu": "Metrados diarios"
+                                    }
+                                )
+                            }else if(estado == "Corte"){
+                                element.submenus.splice(0,0,
+                                    {
+                                        "ruta": "/CorteObra",
+                                        "nombreMenu": "Corte de obra"
+                                    }
+                                )
+                            }else if(estado == "Actualizacion"){
+                                element.submenus.splice(0,0,
+                                    {
+                                        "ruta": "/CorteActualizacionObra",
+                                        "nombreMenu": "Actualización de obra"
+                                    }
+                                )
+                            }else if(estado == "Parilizado"){
+                                element.submenus.splice(0,0,
+                                    {
+                                        "ruta": "/CorteActualizacionObra",
+                                        "nombreMenu": "Paralizado "
+                                    }
+                                )
+                            }
+                            
+
+                        }
+                         
+                    }
+                    console.log("res",json); 
+                    callback(null,json);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }                
+    })
+}
 
 
 module.exports = userModel;
