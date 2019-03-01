@@ -351,13 +351,18 @@ module.exports = function(app){
 	app.post('/nuevasPartidas',(req,res)=>{
 		
 		var errores=[]
-		var listaIdPartida = []
+		
 		var listaPartidas = []
 		// console.log("body",req.body)
 		// console.log("ruta")
+		var data = req.body.data
+		var estado = req.body.estado
+		
+		
 
-		for (let i = 0; i < req.body.length; i++) {
-			const element = req.body[i];
+		
+		for (let i = 0; i < data.length; i++) {
+			const element = data[i];
 			const obPartida = [
 				element.tipo,
 				element.item,
@@ -390,18 +395,18 @@ module.exports = function(app){
 				var element = idPartida						
 				var actividades = []
 				var recursos = []
-				for (let j = 0; j < req.body.length; j++,element+=1) {
+				for (let j = 0; j < data.length; j++,element+=1) {
 					// console.log("actividades")
 					//insertando idpartida
-					if(req.body[j].tipo == "partida"){
-						var obActividad = req.body[j].actividades
+					if(data[j].tipo == "partida"){
+						var obActividad = data[j].actividades
 						for (let k = 0; k < obActividad.length; k++) {
 							obActividad[k].push(element);
 						}
 						actividades = actividades.concat(obActividad)
 
 						// recursos agregando id partida
-						var obRecurso = req.body[j].recursos
+						var obRecurso = data[j].recursos
 						// console.log("recursos")
 						for (let k = 0; k < obRecurso.length; k++) {
 							obRecurso[k].push(element);
@@ -411,7 +416,7 @@ module.exports = function(app){
 				}
 				// console.log("actividades",actividades);
 				
-				User.postActividades(actividades,(err,data)=>{
+				User.postActividades(actividades,(err,idactividades)=>{
 					if(err){
 						errores.push(
 							{
@@ -421,7 +426,7 @@ module.exports = function(app){
 						)						
 					}
 					else{
-						User.postRecursos(recursos,(err,data)=>{
+						User.postRecursos(recursos,(err,idrecursos)=>{
 							if(err){
 								errores.push(
 									{
@@ -434,16 +439,16 @@ module.exports = function(app){
 							else{
 								var element = idPartida
 								var historialpartidas = []
-								for (let i = 0; i < req.body.length; i++) {
+								for (let i = 0; i < data.length; i++) {
 									
 									var historial=[										
-										"oficial",
+										estado,
 										element
 									]
 									historialpartidas.push(historial)	
 									element+=1
 								}
-								// console.log("historial",historialpartidas);
+								console.log("historial",historialpartidas);
 								
 								
 								User.postHistorialPartidas(historialpartidas,(err,data)=>{

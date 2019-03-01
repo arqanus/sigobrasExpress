@@ -22,7 +22,7 @@ var pool = mysql.createPool({
     host: 'localhost',
     user: 'root',
     password: 'password',    
-    database: 'SIGOBRAS_DB',
+    database: 'SIGOBRAS_DB'
     
     
     

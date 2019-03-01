@@ -242,7 +242,10 @@ userModel.getComponentesById = (id_ficha,callback)=>{
 userModel.postPartidas = (data,callback)=>{
     // console.log("postPartidas");
     console.log("partidaData",data);
-    pool.getConnection(function(err,conn){
+    if(data.length == 0){
+        callback("partidadata vacia");
+    }else{
+         pool.getConnection(function(err,conn){
         if(err){ callback(err);}
         else{     
             conn.query('INSERT INTO partidas (tipo,item,descripcion,unidad_medida,metrado,costo_unitario,equipo,rendimiento,Componentes_id_componente,presupuestos_id_presupuesto) VALUES ?',[data],(error,res)=>{
@@ -256,8 +259,10 @@ userModel.postPartidas = (data,callback)=>{
                 } 
                 
             })  
-        }      
-    })
+            }      
+        })
+    }
+   
 }
 userModel.postActividades = (data,callback)=>{
     console.log("postactividadaes");
