@@ -1,7 +1,7 @@
 const User = require('../models/procesosIniciales');
 
 function soloLetras(req,res,next){
-	var regla = /^[A-Za-z]+$/
+	var regla = /^[A-Za-z0-9]+$/
 	var usuario =  req.body.usuario
 	if(usuario.match(regla)&&req.body.password.match(regla)){
 		// console.log("usuario",usuario)

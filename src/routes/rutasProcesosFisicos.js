@@ -24,7 +24,7 @@ module.exports = function(app){
 					delete req.body.id_ficha
 					req.body.historialEstados_id_historialEstado = data[0].id_historialEstado
 					
-					var id_actividad = req.body.Actividades_id_actividad
+					
 					User.postAvanceActividad(req.body,(err,data)=>{
 						if(err){ res.status(204).json(err);}
 						else{
