@@ -413,6 +413,28 @@ userModel.postHistorialEstados = (data,callback)=>{
         }                
     })
 }
+userModel.getestadoIdHistorialEstados =(id_historial,callback)=>{
+    pool.getConnection(function(err,conn){
+        if(err){ callback(err);}
+        else{
+            console.log("get estado");
+            
+            conn.query('select nombre from historialestados left join estados on estados.id_Estado = historialestados.Estados_id_Estado where historialestados.id_historialEstado = ?', id_historial,(error,res)=>{
+                if(error){
+                    console.log(error);
+                    
+                    callback(error.code);
+                }else{
+                    console.log("res",res); 
+                    callback(null,res[0]);
+                    conn.destroy()
+                }
+                
+                
+            })
+        } 
+    })
+}
 userModel.getEstados = (callback)=>{
     
     pool.getConnection(function(err ,conn){

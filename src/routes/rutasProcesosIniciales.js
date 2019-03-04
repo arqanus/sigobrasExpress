@@ -510,10 +510,20 @@ module.exports = function(app){
 	})
 	app.post('/ActualizarEstado',(req,res)=>{
 		
-		User.postHistorialEstados(req.body,(err,data)=>{							
+		User.postHistorialEstados(req.body,(err,id_historial)=>{							
 			if(err){ res.status(204).json(err);}
 			else{
-				res.json(data);	
+				console.log("id",id_historial);
+				
+
+				User.getestadoIdHistorialEstados(id_historial,(err,estado)=>{							
+					if(err){ res.status(204).json(err);}
+					else{
+						
+						res.json(estado);	
+					}
+
+				})
 			}
 
 		})
