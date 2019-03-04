@@ -687,7 +687,7 @@ userModel.getMenu = (data,callback)=>{
                             }else if(estado == "Compatibilidad"){
                                 element.submenus.splice(0,0,
                                     {
-                                        "nombreMenu": "Compatibilidad ",
+                                        "nombreMenu": "Compatibilidad",
                                         "ruta": "/CompatibilidadObra",
                                         "nombrecomponente":"CompatibilidadObra"
                                     }
