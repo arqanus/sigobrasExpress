@@ -676,7 +676,7 @@ userModel.getMenu = (data,callback)=>{
                                         "nombrecomponente":"ActualizacionObra"
                                     }
                                 )
-                            }else if(estado == "Parilizado"){
+                            }else if(estado == "Paralizado"){
                                 element.submenus.splice(0,0,
                                     {
                                         "nombreMenu": "Paralizado ",
