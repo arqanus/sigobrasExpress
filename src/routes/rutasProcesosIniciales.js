@@ -377,6 +377,7 @@ module.exports = function(app){
 			]
 			listaPartidas.push(obPartida)
 		}
+		
 		User.postPartidas(listaPartidas,(err,idPartida)=>{
 			if(err){
 				errores.push(
@@ -402,6 +403,7 @@ module.exports = function(app){
 						var obActividad = data[j].actividades
 						for (let k = 0; k < obActividad.length; k++) {
 							obActividad[k].push(element);
+							// obActividad[k].push(estado);
 						}
 						actividades = actividades.concat(obActividad)
 

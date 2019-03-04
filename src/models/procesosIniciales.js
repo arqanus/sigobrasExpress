@@ -270,7 +270,7 @@ userModel.postActividades = (data,callback)=>{
         // console.log(data)
         if(err){ callback(err);}
         else{       
-            conn.query('INSERT INTO actividades (nombre,veces,largo,ancho,alto,parcial,Partidas_id_partida) VALUES ?',[data],(error,res)=>{
+            conn.query('INSERT INTO actividades (tipo,nombre,veces,largo,ancho,alto,parcial,Partidas_id_partida) VALUES ?',[data],(error,res)=>{
                 if(error){
                     console.log("error",error); 
                     callback(error.code);
