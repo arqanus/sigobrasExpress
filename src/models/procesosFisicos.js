@@ -197,6 +197,187 @@ userModel.getPartidas = (id_ficha,callback)=>{
                 
     })
 }
+userModel.getPartidasNuevas = (id_ficha,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){ callback(err);}
+        else{
+            conn.query("SELECT componentes.id_componente, componentes.numero, componentes.nombre, partida.id_partida, partida.tipo, partida.item, partida.descripcion, partida.unidad_medida, partida.metrado, partida.costo_unitario, partida.parcial, IF(partida.avance_metrado IS NULL, 0, partida.avance_metrado) avance_metrado, IF(partida.avance_costo IS NULL, 0, partida.avance_costo) avance_costo, partida.metrado - partida.avance_metrado metrados_saldo, partida.parcial - (partida.avance_metrado * partida.costo_unitario) metrados_costo_saldo, IF(partida.porcentaje IS NULL, 0, partida.porcentaje) porcentaje, actividad.id_actividad, actividad.tipo actividad_tipo, actividad.nombre actividad_nombre, actividad.veces, actividad.largo, actividad.ancho, actividad.alto, actividad.metrado_actividad, partida.costo_unitario, actividad.metrado_actividad * partida.costo_unitario parcial_actividad, actividad.actividad_avance_metrado, actividad.actividad_avance_metrado * partida.costo_unitario actividad_avance_costo, actividad.metrado_actividad - actividad.actividad_avance_metrado actividad_metrados_saldo, (actividad.metrado_actividad - actividad.actividad_avance_metrado) * partida.costo_unitario actividad_metrados_costo_saldo, (actividad.actividad_avance_metrado / actividad.metrado_actividad) * 100 actividad_porcentaje FROM presupuestos LEFT JOIN (SELECT partidas.Componentes_id_componente, partidas.presupuestos_id_Presupuesto, partidas.id_partida, partidas.tipo, partidas.item, partidas.descripcion, partidas.unidad_medida, partidas.metrado, partidas.costo_unitario, partidas.metrado * partidas.costo_unitario parcial, IF(SUM(avanceactividades.valor) IS NULL, 0, SUM(avanceactividades.valor)) avance_metrado, SUM(avanceactividades.valor) * partidas.costo_unitario avance_costo, (SUM(avanceactividades.valor) / partidas.metrado) * 100 porcentaje FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad GROUP BY partidas.id_partida) partida ON partida.presupuestos_id_Presupuesto = presupuestos.id_presupuesto LEFT JOIN (select historialpartidas.estado,historialpartidas.partidas_id_partida from(select max(id_historialPartida) id_historialPartida from  historialpartidas group by historialpartidas.partidas_id_partida) maximoHistorial left join historialpartidas on historialpartidas.id_historialPartida = maximoHistorial.id_historialPartida) historialPartida on historialPartida.partidas_id_partida = partida.id_partida left join (SELECT Partidas_id_partida, id_actividad, tipo, nombre, veces, largo, ancho, alto, parcial metrado_actividad, IF(SUM(avanceactividades.valor) IS NULL, 0, SUM(avanceactividades.valor)) actividad_avance_metrado FROM actividades LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad GROUP BY actividades.id_actividad) actividad ON actividad.Partidas_id_partida = partida.id_partida LEFT JOIN componentes ON componentes.id_componente = partida.componentes_id_componente WHERE presupuestos.Fichas_id_ficha = ? and historialPartida.estado = 'PartidaNueva' AND componentes.id_componente IS NOT NULL ORDER BY componentes.id_componente , partida.id_partida , actividad.id_actividad",id_ficha,(error,res)=>{
+                if(error){
+                    callback(error);
+                }else if(res.length == 0){
+                    console.log("vacio");                    
+                    callback("vacio");
+                }else{
+                    var componentes=[]
+                    var componente = {}
+                    var lastIdComponente = -1
+                    var lastIdPartida = -1
+                    for (let i = 0; i < res.length; i++) {
+                        const fila = res[i];
+                        if(fila.id_componente != lastIdComponente){
+                            if(i != 0){
+                                componentes.push(componente)
+                                componente = {}
+                            }
+                            
+
+                            componente.id_componente = fila.id_componente
+                            componente.numero = fila.numero
+                            componente.nombre = fila.nombre
+                            componente.partidas = [
+                                {
+                                   "id_partida": fila.id_partida,
+                                    "tipo":fila.tipo,
+                                    "item":fila.item,
+                                    "descripcion": fila.descripcion,
+                                    "unidad_medida": fila.unidad_medida,
+                                    "metrado": fila.metrado,
+                                    "costo_unitario": fila.costo_unitario,
+                                    "parcial": fila.parcial,
+                                    "avance_metrado": fila.avance_metrado,
+                                    "avance_costo": fila.avance_costo,
+                                    "metrados_saldo": fila.metrados_saldo,
+                                    "metrados_costo_saldo": fila.metrados_costo_saldo,
+                                    "porcentaje": fila.porcentaje,
+                                    "actividades":[
+                                        {
+                                            "id_actividad":fila.id_actividad,
+                                            "actividad_tipo":fila.actividad_tipo,
+                                            "nombre_actividad":fila.actividad_nombre,
+                                            "veces_actividad":fila.veces,
+                                            "largo_actividad":fila.largo,
+                                            "ancho_actividad":fila.ancho,
+                                            "alto_actividad":fila.alto,
+                                            "metrado_actividad":fila.metrado_actividad,
+                                            "costo_unitario":fila.costo_unitario,
+                                            "parcial_actividad":fila.parcial_actividad,
+                                            "actividad_avance_metrado": fila.actividad_avance_metrado,
+                                            "actividad_avance_costo": fila.actividad_avance_costo,
+                                            "actividad_metrados_saldo": fila.actividad_metrados_saldo,
+                                            "actividad_metrados_costo_saldo": fila.actividad_metrados_costo_saldo,
+                                            "actividad_porcentaje": fila.actividad_porcentaje,
+                                            "unidad_medida": fila.unidad_medida,
+                                        }
+                                    ]
+                                }                               
+                                
+                            ]                           
+
+                        }else{
+                            if(fila.id_partida != lastIdPartida){
+                                //nueva partida
+                                var partida = {
+                                    "id_partida": fila.id_partida,
+                                    "tipo":fila.tipo,
+                                    "item":fila.item,
+                                    "descripcion": fila.descripcion,
+                                    "unidad_medida": fila.unidad_medida,
+                                    "metrado": fila.metrado,
+                                    "costo_unitario": fila.costo_unitario,
+                                    "parcial": fila.parcial,
+                                    "avance_metrado": fila.avance_metrado,
+                                    "avance_costo": fila.avance_costo,
+                                    "metrados_saldo": fila.metrados_saldo,
+                                    "metrados_costo_saldo": fila.metrados_costo_saldo,
+                                    "porcentaje": fila.porcentaje,
+                                    "actividades":[
+                                        {
+                                            "id_actividad":fila.id_actividad,
+                                            "actividad_tipo":fila.actividad_tipo,
+                                            "nombre_actividad":fila.actividad_nombre,
+                                            "veces_actividad":fila.veces,
+                                            "largo_actividad":fila.largo,
+                                            "ancho_actividad":fila.ancho,
+                                            "alto_actividad":fila.alto,
+                                            "metrado_actividad":fila.metrado_actividad,
+                                            "costo_unitario":fila.costo_unitario,
+                                            "parcial_actividad":fila.parcial_actividad,
+                                            "actividad_avance_metrado": fila.actividad_avance_metrado,
+                                            "actividad_avance_costo": fila.actividad_avance_costo,
+                                            "actividad_metrados_saldo": fila.actividad_metrados_saldo,
+                                            "actividad_metrados_costo_saldo": fila.actividad_metrados_costo_saldo,
+                                            "actividad_porcentaje": fila.actividad_porcentaje,
+                                            "unidad_medida": fila.unidad_medida,
+                                        }
+                                    ]
+                                }
+                                componente.partidas.push(partida)
+                            }else{
+                                //si es la misma partida
+                                var actividad=
+                                {
+                                    "id_actividad":fila.id_actividad,
+                                    "actividad_tipo":fila.actividad_tipo,
+                                    "nombre_actividad":fila.actividad_nombre,
+                                    "veces_actividad":fila.veces,
+                                    "largo_actividad":fila.largo,
+                                    "ancho_actividad":fila.ancho,
+                                    "alto_actividad":fila.alto,
+                                    "metrado_actividad":fila.metrado_actividad,
+                                    "costo_unitario":fila.costo_unitario,
+                                    "parcial_actividad":fila.parcial_actividad,
+                                    "actividad_avance_metrado": fila.actividad_avance_metrado,
+                                    "actividad_avance_costo": fila.actividad_avance_costo,
+                                    "actividad_metrados_saldo": fila.actividad_metrados_saldo,
+                                    "actividad_metrados_costo_saldo": fila.actividad_metrados_costo_saldo,
+                                    "actividad_porcentaje": fila.actividad_porcentaje,
+                                    "unidad_medida": fila.unidad_medida,
+                                }
+                                componente.partidas[componente.partidas.length-1].actividades.push(actividad)
+
+                                
+
+                            }
+
+                        }
+                        lastIdComponente = fila.id_componente
+                        lastIdPartida = fila.id_partida
+
+                        
+                    }
+                    componentes.push(componente)
+                    //
+                    for (let i = 0; i < componentes.length; i++) {
+                        const partidas = componentes[i].partidas;
+                        for (let j = 0; j < partidas.length; j++) {
+                            const partida = partidas[j];                            
+                            partida.metrado = formato(partida.metrado)
+                            partida.costo_unitario = formato(partida.costo_unitario)
+                            partida.parcial = formato(partida.parcial)
+                            partida.avance_metrado = formato(partida.avance_metrado)
+                            partida.avance_costo = formato(partida.avance_costo)
+                            partida.metrados_saldo = formato(partida.metrados_saldo)
+                            partida.metrados_costo_saldo = formato(partida.metrados_costo_saldo)
+                            const actividades = partida.actividades
+                            for (let k = 0; k < actividades.length; k++) {
+                                const actividad = actividades[k];
+                                actividad.metrado_actividad = formato(actividad.metrado_actividad)
+                                actividad.costo_unitario = formato(actividad.costo_unitario)
+                                actividad.parcial_actividad = formato(actividad.parcial_actividad)
+                                actividad.actividad_avance_metrado = formato(actividad.actividad_avance_metrado)
+                                actividad.actividad_avance_costo = formato(actividad.actividad_avance_costo)
+                                actividad.actividad_metrados_saldo = formato(actividad.actividad_metrados_saldo)
+                                actividad.actividad_metrados_costo_saldo = formato(actividad.actividad_metrados_costo_saldo)
+                                actividad.actividad_porcentaje = formato(actividad.actividad_porcentaje)
+                            }                                                   
+                        }
+                        
+                                                
+                    }
+
+                    
+                    callback(null,componentes);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }
+        
+                
+    })
+}
 
 userModel.getIdHistorial = (id_ficha,callback)=>{
     
@@ -731,5 +912,8 @@ userModel.getAvanceById = (id_actividad,callback)=>{
                 
     })
 }
+
+ 
+
 
 module.exports = userModel;
