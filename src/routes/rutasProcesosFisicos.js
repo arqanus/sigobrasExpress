@@ -101,5 +101,14 @@ module.exports = function(app){
 				res.json(data);	
 			}
 		})
-	})	
+	})
+	app.post('/getValGeneralPartidasNuevas',(req,res)=>{
+			
+		User.getValGeneralPartidasNuevas(req.body.id_ficha,(err,data)=>{
+			if(err){ res.status(204).json(err);}
+			else{
+				res.json(data);	
+			}
+		})
+	})
 }
