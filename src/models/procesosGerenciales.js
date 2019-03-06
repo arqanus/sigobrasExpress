@@ -114,7 +114,7 @@ userModel.getCargosById = (id_ficha,callback)=>{
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}        
         else{
-            conn.query("SELECT accesos.id_acceso,cargos.nombre cargo_nombre, CONCAT(usuarios.apellido_paterno, ' ', usuarios.apellido_materno, ' ', usuarios.nombre) nombre_usuario, usuarios.celular, usuarios.direccion, usuarios.dni, usuarios.email FROM fichas_has_accesos LEFT JOIN accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo LEFT JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario where fichas_has_accesos.Fichas_id_ficha = ? ",id_ficha,(err,res)=>{
+            conn.query("SELECT accesos.id_acceso,cargos.nombre cargo_nombre, CONCAT(usuarios.apellido_paterno, ' ', usuarios.apellido_materno, ' ', usuarios.nombre) nombre_usuario, usuarios.celular, usuarios.direccion, usuarios.dni, usuarios.email FROM fichas_has_accesos LEFT JOIN accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo LEFT JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario where fichas_has_accesos.Fichas_id_ficha = ? order by cargos.id_Cargo",id_ficha,(err,res)=>{
                 if(err){
                     callback(err);                
                 }
@@ -122,7 +122,7 @@ userModel.getCargosById = (id_ficha,callback)=>{
                     callback("vacio");        
                 }else{
                     console.log(res);
-                    var lastid_acceso = -1 
+                    var lastcargo_nombre = -1 
                     var cargos = {}
                     var data = []
                     
@@ -130,20 +130,36 @@ userModel.getCargosById = (id_ficha,callback)=>{
                         const fila = res[i];
                         
 
-                        if (fila.id_acceso !== lastid_acceso) {
+                        if (fila.cargo_nombre !== lastcargo_nombre) {
                             if(i != 0){
                                 data.push(cargos)
                                 cargos = {}
                             }
                             
                             cargos.cargo_nombre = fila.cargo_nombre
-                            cargos.nombre_usuario = fila.nombre_usuario
-                            cargos.celular = fila.celular
-                            cargos.direccion = fila.direccion
-                            cargos.dni = fila.dni                        
-                            cargos.email = fila.email
+                            cargos.data=[
+                                {
+                                    "nombre_usuario": fila.nombre_usuario,
+                                    "celular": fila.celular,
+                                    "direccion": fila.direccion,
+                                    "dni": fila.dni,                      
+                                    "email": fila.email
+                                }
+                            ]                   
+                            
+                        }else{
+                            cargos.data.push(
+                                {
+                                    "nombre_usuario": fila.nombre_usuario,
+                                    "celular": fila.celular,
+                                    "direccion": fila.direccion,
+                                    "dni": fila.dni,                      
+                                    "email": fila.email
+                                }
+                            ) 
+
                         }
-                        lastid_acceso = fila.id_acceso
+                        lastcargo_nombre = fila.cargo_nombre
                             
                         
                     }
