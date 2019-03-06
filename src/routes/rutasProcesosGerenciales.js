@@ -14,6 +14,17 @@ module.exports = function(app){
 		})	
 		
 	});	
+	app.post('/getCargosById',(req,res)=>{
+		
+		User.getCargosById(req.body.id_ficha,(err,data)=>{
+			if(err) {res.status(204).json(err);}
+			else{
+				res.status(200).json(data);
+			}
+			
+		})	
+		
+	});	
 	
 	
 }

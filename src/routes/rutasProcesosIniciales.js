@@ -577,7 +577,60 @@ module.exports = function(app){
 	
 		
 	})
+	app.post('/postTipoObras',(req,res)=>{
+		
+		User.postTipoObra(req.body.data,(err,data)=>{							
+			if(err){ res.status(204).json(err);}
+			else{
+				res.json(data);	
+			}
+
+		})
+		
 	
+	
+		
+	})
+	app.get('/getTipoObras',(req,res)=>{
+		
+		User.getTipoObras((err,data)=>{							
+			if(err){ res.status(204).json(err);}
+			else{
+				res.json(data);	
+			}
+
+		})
+	
+	
+		
+	})
+	app.post('/postUnidadEjecutora',(req,res)=>{
+		
+		User.postUnidadEjecutora(req.body.data,(err,data)=>{							
+			if(err){ res.status(204).json(err);}
+			else{
+				res.json(data);	
+			}
+
+		})
+		
+	
+	
+		
+	})
+	app.get('/getUnidadEjecutora',(req,res)=>{
+		
+		User.getUnidadEjecutora((err,data)=>{							
+			if(err){ res.status(204).json(err);}
+			else{
+				res.json(data);	
+			}
+
+		})
+	
+	
+		
+	})
 	
 	
 	

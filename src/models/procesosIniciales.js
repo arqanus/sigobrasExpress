@@ -48,6 +48,30 @@ userModel.postObra = (data,callback)=>{
                 
     })
 }
+userModel.getCodigo = (id_TipoObra,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){ callback(err);}
+        else{
+            conn.query('INSERT INTO fichas SET ?', data,(error,res)=>{
+                if(error){
+                    console.log(error);
+                    
+                    callback(error.code);
+                }else{
+                    // console.log("affectedRows",res); 
+                    callback(null,res.insertId);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }
+        
+                
+    })
+}
+
 userModel.getObras = (callback)=>{
     
     pool.getConnection(function(err,conn){
@@ -700,6 +724,96 @@ userModel.getMenu = (data,callback)=>{
                     }
                     console.log("res",json); 
                     callback(null,json);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }                
+    })
+}
+userModel.postTipoObra = (data,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){                        
+            callback(err);
+        }
+        else{            
+            conn.query("INSERT INTO tipoObras (nombre, codigo) VALUES ?",[data],(error,res)=>{
+                if(error){
+                    console.log(error);                    
+                    callback(error.code);
+                }else{
+                    console.log("res",res); 
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }                
+    })
+}
+userModel.getTipoObras = (callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){                        
+            callback(err);
+        }
+        else{            
+            
+            
+            conn.query("select * from tipoobras",(error,res)=>{
+                if(error){
+                    console.log(error);                    
+                    callback(error.code);
+                }else{
+                    console.log("res",res); 
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }                
+    })
+}
+userModel.postUnidadEjecutora = (data,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){                        
+            callback(err);
+        }
+        else{            
+            conn.query("INSERT INTO UnidadEjecutoras (nombre) VALUES ?",[data],(error,res)=>{
+                if(error){
+                    console.log(error);                    
+                    callback(error.code);
+                }else{
+                    console.log("res",res); 
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }                
+    })
+}
+userModel.getUnidadEjecutora = (callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){                        
+            callback(err);
+        }
+        else{                       
+            conn.query("select * from UnidadEjecutoras",(error,res)=>{
+                if(error){
+                    console.log(error);                    
+                    callback(error.code);
+                }else{
+                    console.log("res",res); 
+                    callback(null,res);
                     conn.destroy()
                 }
                 

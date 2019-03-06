@@ -110,6 +110,54 @@ userModel.getObras = (id_acceso,callback)=>{
                 
     })
 }
+userModel.getCargosById = (id_ficha,callback)=>{    
+    pool.getConnection(function(err ,conn){
+        if(err){ callback(err);}        
+        else{
+            conn.query("SELECT accesos.id_acceso,cargos.nombre cargo_nombre, CONCAT(usuarios.apellido_paterno, ' ', usuarios.apellido_materno, ' ', usuarios.nombre) nombre_usuario, usuarios.celular, usuarios.direccion, usuarios.dni, usuarios.email FROM fichas_has_accesos LEFT JOIN accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo LEFT JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario where fichas_has_accesos.Fichas_id_ficha = ? ",id_ficha,(err,res)=>{
+                if(err){
+                    callback(err);                
+                }
+                else if(res.length == 0){
+                    callback("vacio");        
+                }else{
+                    console.log(res);
+                    var lastid_acceso = -1 
+                    var cargos = {}
+                    var data = []
+                    
+                    for (let i = 0; i < res.length; i++) {
+                        const fila = res[i];
+                        
+
+                        if (fila.id_acceso !== lastid_acceso) {
+                            if(i != 0){
+                                data.push(cargos)
+                                cargos = {}
+                            }
+                            
+                            cargos.cargo_nombre = fila.cargo_nombre
+                            cargos.nombre_usuario = fila.nombre_usuario
+                            cargos.celular = fila.celular
+                            cargos.direccion = fila.direccion
+                            cargos.dni = fila.dni                        
+                            cargos.email = fila.email
+                        }
+                        lastid_acceso = fila.id_acceso
+                            
+                        
+                    }
+                    data.push(cargos)
+                    callback(null,data);
+                    conn.destroy()
+                
+                }   
+            })
+        }
+        
+                
+    })
+}
 
 
 
