@@ -1210,6 +1210,95 @@ userModel.getAvanceById = (id_actividad,callback)=>{
                 
     })
 }
+userModel.getActividadesDuracion = (id_ficha,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){ callback(err);}
+        else{
+            conn.query('SELECT actividades.id_actividad, item, descripcion, metrado, costo_unitario, (metrado * costo_unitario) costo_parcial, nombre nombre_actividad, veces, largo, ancho, alto, parcial metrado, costo_unitario, (parcial * costo_unitario) parcial_actividad, rendimiento, (parcial / rendimiento)*480 duracion FROM fichas LEFT JOIN presupuestos ON presupuestos.Fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.presupuestos_id_Presupuesto = presupuestos.id_Presupuesto LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE fichas.id_ficha = ? AND (parcial / rendimiento) IS NOT NULL AND (parcial / rendimiento) > 0 ORDER BY (parcial / rendimiento) ASC ',id_ficha,(err,res)=>{ if(err){
+                    console.log(err);
+                    callback(err.code);
+                }else{  
+                                                                      
+                    for (let i = 0; i < res.length; i++) {
+                        const fila = res[i];
+                        fila.duracion_real = fila.duracion
+                        if(fila.duracion < 60){
+                            fila.duracion = formato(fila.duracion) + "m"
+                        }else if(fila.duracion < 480){
+                            var horas = Math.trunc(fila.duracion/60)+"h"
+                            var minutos = formato(fila.duracion%60)+"m"
+                            fila.duracion = fila.duracion+" = "+horas + " "+minutos
+                        }else {
+                            var dias = Math.trunc(fila.duracion/480)+"d"
+                            var residuo_dias = Math.trunc(fila.duracion%480)
+                            var horas =  Math.trunc(residuo_dias/60)+"h"
+                            var minutos = formato(residuo_dias%60)+"m"
+                            fila.duracion = dias+" "+horas + " "+minutos
+                        }
+                        
+                        
+                    }
+                        
+                                                
+                    
+
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }
+        
+                
+    })
+}
+userModel.postActividadMayorMetrado = (id_ficha,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){ callback(err);}
+        else{
+            conn.query('SELECT actividades.id_actividad, item, descripcion, metrado, costo_unitario, (metrado * costo_unitario) costo_parcial, nombre nombre_actividad, veces, largo, ancho, alto, parcial metrado, costo_unitario, (parcial * costo_unitario) parcial_actividad, rendimiento, (parcial / rendimiento)*480 duracion FROM fichas LEFT JOIN presupuestos ON presupuestos.Fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.presupuestos_id_Presupuesto = presupuestos.id_Presupuesto LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE fichas.id_ficha = ? AND (parcial / rendimiento) IS NOT NULL AND (parcial / rendimiento) > 0 ORDER BY (parcial / rendimiento) ASC ',id_ficha,(err,res)=>{ if(err){
+                    console.log(err);
+                    callback(err.code);
+                }else{  
+                                                                      
+                    for (let i = 0; i < res.length; i++) {
+                        const fila = res[i];
+                        fila.duracion_real = fila.duracion
+                        if(fila.duracion < 60){
+                            fila.duracion = formato(fila.duracion) + "m"
+                        }else if(fila.duracion < 480){
+                            var horas = Math.trunc(fila.duracion/60)+"h"
+                            var minutos = formato(fila.duracion%60)+"m"
+                            fila.duracion = fila.duracion+" = "+horas + " "+minutos
+                        }else {
+                            var dias = Math.trunc(fila.duracion/480)+"d"
+                            var residuo_dias = Math.trunc(fila.duracion%480)
+                            var horas =  Math.trunc(residuo_dias/60)+"h"
+                            var minutos = formato(residuo_dias%60)+"m"
+                            fila.duracion = dias+" "+horas + " "+minutos
+                        }
+                        
+                        
+                    }
+                        
+                                                
+                    
+
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }
+        
+                
+    })
+}
+
 
  
 
