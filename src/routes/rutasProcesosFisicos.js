@@ -19,7 +19,7 @@ module.exports = function(app){
 	})
 
 	app.post('/listaPartidasNuevas',(req,res)=>{
-		if (req.body.id_ficha == null) {
+		if (req.body.id_ficha == null ||req.body.id_ficha == "null"||req.body.id_ficha == "") {
 			res.json("null");
 		} else {
 			User.getPartidasNuevas(req.body.id_ficha,(err,data)=>{
