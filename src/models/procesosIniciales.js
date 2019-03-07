@@ -666,6 +666,9 @@ userModel.getMenu = (data,callback)=>{
                 if(error){
                     console.log(error);                    
                     callback(error.code);
+                }else if(res.length ==0){
+                    console.log("vacio");                    
+                    callback("vacio");
                 }else{
                     var json = JSON.parse(res[0].data)
                     var estado = res[0].estado_nombre

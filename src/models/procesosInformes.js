@@ -91,6 +91,59 @@ userModel.getinformeControlEjecucionObras = (id_ficha,callback)=>{
                 
     })
 }
+userModel.getInformeDataGeneral  = (id_ficha,callback)=>{    
+    pool.getConnection(function(err ,conn){
+        if(err){ 
+            callback(err);
+        }        
+        else{
+            conn.query("SELECT fichas.id_ficha, fichas.g_meta, fichas.g_total_presu presupuesto_general, MONTHNAME(NOW()) mes, fichas.tiempo_ejec plazo_de_ejecucion, tb_avance_actual.avance_actual, tb_avance_actual.avance_actual_valor, avance_acumulado.avance_acumulado, avance_acumulado.avance_acumulado_valor, fichas.g_local_reg region, fichas.g_local_prov provincia, fichas.g_local_dist distrito, tb_cargos.nombre_cargo, tb_cargos.nombre_personal FROM fichas LEFT JOIN (SELECT id_ficha, SUM(valor) avance_acumulado, SUM(valor * costo_unitario) avance_acumulado_valor FROM fichas LEFT JOIN presupuestos ON presupuestos.Fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.presupuestos_id_Presupuesto = presupuestos.id_Presupuesto LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE fichas.id_ficha = id_ficha GROUP BY fichas.id_ficha) avance_acumulado ON avance_acumulado.id_ficha = fichas.id_ficha LEFT JOIN (SELECT id_ficha, SUM(valor) avance_actual, SUM(valor * costo_unitario) avance_actual_valor FROM fichas LEFT JOIN presupuestos ON presupuestos.Fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.presupuestos_id_Presupuesto = presupuestos.id_Presupuesto LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE MONTH(NOW()) = MONTH(avanceactividades.fecha) GROUP BY fichas.id_ficha) tb_avance_actual ON tb_avance_actual.id_ficha = fichas.id_ficha LEFT JOIN (SELECT id_ficha, cargos.nombre nombre_cargo, CONCAT(usuarios.nombre, ' ', usuarios.apellido_paterno, ' ', usuarios.apellido_materno) nombre_personal FROM fichas LEFT JOIN fichas_has_accesos ON fichas_has_accesos.Fichas_id_ficha = fichas.id_ficha LEFT JOIN accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo INNER JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario) tb_cargos ON tb_cargos.id_ficha = fichas.id_ficha where fichas.id_ficha = ?",id_ficha,(err,res)=>{
+                if(err){
+                    console.log(err);                    
+                    callback(err.code);                
+                }
+                else if(res.length == 0){
+                    callback("vacio");        
+                }else{     
+                    var obra = {}
+                    console.log(res);
+                    obra.g_meta = res[0].g_meta
+                    obra.presupuesto_general = res[0].presupuesto_general
+                    obra.mes = res[0].mes
+                    obra.plazo_de_ejecucion = res[0].plazo_de_ejecucion
+                    obra.avance_actual = res[0].avance_actual
+                    obra.avance_actual_valor = res[0].avance_actual_valor
+                    obra.avance_acumulado = res[0].avance_acumulado
+                    obra.avance_acumulado_valor = res[0].avance_acumulado_valor
+                    obra.region = res[0].region
+                    obra.provincia = res[0].provincia
+                    obra.distrito = res[0].distrito
+                    obra.personal = []
+                    for (let i = 0; i < res.length; i++) {
+                        
+                        obra.personal.push(
+                            {
+                                "nombre_cargo":res[i].nombre_cargo,
+                                "nombre_personal":res[i].nombre_personal
+                            }
+                        )
+
+                    }
+                   
+
+
+                    
+                    callback(null,obra);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }
+        
+                
+    })
+}
 
 
 
