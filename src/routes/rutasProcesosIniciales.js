@@ -562,7 +562,7 @@ module.exports = function(app){
 	})
 
 	app.post('/getMenu',(req,res)=>{
-		if(req.body.id_ficha == null){
+		if(req.body.id_ficha == null||req.body.id_acceso == null){
 			res.json("null");	
 		}else{
 			User.getMenu(req.body,(err,data)=>{							
