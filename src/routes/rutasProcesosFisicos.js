@@ -149,4 +149,74 @@ module.exports = function(app){
 		}			
 		
 	})
+
+	app.post('/postActividadMayorMetrado',(req,res)=>{
+		var actividad = req.body.actividad
+		if (actividad.partidas_id_partida == null) {
+			res.json("null")
+		}else{
+			User.postActividadMayorMetrado(actividad,(err,id_actividad)=>{
+				if(err){ res.status(204).json(err);}
+				else{
+					var historialActividad = {						
+						"estado":"Mayor Metrado",
+						"actividades_id_actividad":id_actividad
+					}
+					User.posthistorialActividades(historialActividad,(err,data)=>{
+						if(err){ res.status(204).json(err);}
+						else{
+							var avanceActividad = req.body.avanceActividad
+							avanceActividad.Actividades_id_actividad = id_actividad
+							var id_ficha = avanceActividad.id_ficha
+							
+							User.getIdHistorial(id_ficha,(err,data)=>{
+								console.log("idhistorial");
+								if(err||data.length==0){ res.status(204).json(err);}
+								else{
+									delete avanceActividad.id_ficha
+									avanceActividad.historialEstados_id_historialEstado = data[0].id_historialEstado
+									
+									
+									User.postAvanceActividad(avanceActividad,(err,data)=>{
+										console.log("avance");
+										
+										if(err){ res.status(204).json(err);}
+										else{
+											User.getAvanceById(id_actividad,(err,data)=>{
+												if(err){ res.status(204).json(err);}
+												else{
+													res.json(data);	
+												}
+											})
+											
+										}
+									})
+								}
+							})
+						}
+					})
+				}
+			})
+		}			
+		
+	})
+
+	app.post('/postNuevaActividadMayourMetrado',(req,res)=>{
+		if (req.body.partidas_id_partida == null) {
+			res.json("null")
+		} else {
+			User.postActividadMayorMetrado(req.body,(err,id_actividad)=>{
+				if(err){ res.status(204).json(err);}
+				else{
+					User.getAvanceById(id_actividad,(err,data)=>{
+						if(err){ res.status(204).json(err);}
+						else{
+							res.json(data);	
+						}
+					})
+				}
+			})
+		}			
+		
+	})
 }

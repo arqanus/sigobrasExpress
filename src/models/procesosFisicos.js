@@ -1266,11 +1266,11 @@ userModel.getActividadesDuracion = (id_ficha,callback)=>{
                 
     })
 }
-userModel.postActividadMayorMetrado = (id_ficha,callback)=>{
-    
+userModel.getIdActividad = (data,callback)=>{
     pool.getConnection(function(err ,conn){
-        if(err){ callback(err);}
-        else{
+        if(err){ 
+            callback(err);
+        }else{
             conn.query('SELECT actividades.id_actividad, item, descripcion, metrado, costo_unitario, (metrado * costo_unitario) costo_parcial, nombre nombre_actividad, veces, largo, ancho, alto, parcial metrado, costo_unitario, (parcial * costo_unitario) parcial_actividad, rendimiento, (parcial / rendimiento)*480 duracion FROM fichas LEFT JOIN presupuestos ON presupuestos.Fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.presupuestos_id_Presupuesto = presupuestos.id_Presupuesto LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE fichas.id_ficha = ? AND (parcial / rendimiento) IS NOT NULL AND (parcial / rendimiento) > 0 ORDER BY (parcial / rendimiento) ASC ',id_ficha,(err,res)=>{ 
                 if(err){
                     console.log(err);
@@ -1278,7 +1278,7 @@ userModel.postActividadMayorMetrado = (id_ficha,callback)=>{
                 }else if(res.length == 0){
                     console.log("vacio");                    
                     callback("vacio");
-                }else{ 
+                }else{  
                                                                       
                     for (let i = 0; i < res.length; i++) {
                         const fila = res[i];
@@ -1314,9 +1314,50 @@ userModel.postActividadMayorMetrado = (id_ficha,callback)=>{
                 
     })
 }
+userModel.postActividadMayorMetrado = (data,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){ callback(err);}
+        else{
+            conn.query('insert into actividades set ?',data,(err,res)=>{ 
+                if(err){
+                    console.log(err);
+                    callback(err.code);
+                }else{      
+                    callback(null,res.insertId);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }
+        
+                
+    })
+}
 
+userModel.posthistorialActividades = (data,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){ callback(err);}
+        else{
+            conn.query('insert into historialActividades set ?',data,(err,res)=>{ 
+                if(err){
+                    console.log(err);
+                    callback(err.code);
+                }else{      
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }
+        
+                
+    })
+}
 
- 
 
 
 module.exports = userModel;
