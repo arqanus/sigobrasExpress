@@ -201,7 +201,7 @@ module.exports = function(app){
 		
 	})
 
-	app.post('/postNuevaActividadMayourMetrado',(req,res)=>{
+	app.post('/postNuevaActividadMayorMetrado',(req,res)=>{
 		if (req.body.partidas_id_partida == null) {
 			res.json("null")
 		} else {

@@ -825,6 +825,181 @@ userModel.getUnidadEjecutora = (callback)=>{
         }                
     })
 }
+//mish
+// cambio de nombre mish
+userModel.postmetas = (data,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){                        
+            callback(err);
+        }
+        else{     
+            //insertar datos query
+            conn.query("insert into metas set ?",[data],(error,res)=>{ 
+                if(error){
+                    console.log(error);                    
+                    callback(error.code);
+                }else{
+                   
+                    console.log("res",res); 
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }                
+    })
+}
+
+userModel.PostCostosyGanancias = (data,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){                        
+            callback(err);
+        }
+        else{     
+            //insertar datos query
+            conn.query("insert into CostosyGanancias set ?",[data],(error,res)=>{ 
+                if(error){
+                    console.log(error);                    
+                    callback(error.code);
+                }else{
+                   
+                    console.log("res",res); 
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }                
+    })
+}
+
+userModel.getGananciasyCostos = (data,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){                        
+            callback(err);
+        }
+        else{     
+            //insertar datos query
+            conn.query("select * from costosyganancias",(error,res)=>{ 
+                if(error){
+                    console.log(error);                    
+                    callback(error.code);
+                }else{
+                   
+                    console.log("res",res); 
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }                
+    })
+}
+
+userModel.PostHistorialCyG = (data,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){                        
+            callback(err);
+        }
+        else{     
+            //insertar datos query
+            conn.query("insert into HistorialCyG set ?",[data],(error,res)=>{ 
+                if(error){
+                    console.log(error);                    
+                    callback(error.code);
+                }else{
+                   
+                    console.log("res",res); 
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }                
+    })
+}
+userModel.postcronogramamensual = (data,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){                        
+            callback(err);
+        }
+        else{     
+            //insertar datos query
+            conn.query("insert into cronogramamensual (fichas_id_ficha,mes,programado,financieroEjecutado)values ?",[data],(error,res)=>{ 
+                if(error){
+                    console.log(error);                    
+                    callback(error.code);
+                }else{
+                   
+                    console.log("res",res); 
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }                
+    })
+}
+
+
+userModel.getcronogramamensual = (data,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){                        
+            callback(err);
+        }
+        else{     
+            //insertar datos query
+            conn.query("select fichas_id_ficha,programado,financieroEjecutado,mes from cronogramamensual where fichas_id_ficha = ?",[data],(error,res)=>{ 
+                if(error){
+                    console.log(error);                    
+                    callback(error.code);
+                }else{
+                    var listaMes = []
+                    var programado = []
+                    var financieroEjecutado = []
+                    ///ac tres arrays de la consulta
+                    for (let i = 0; i < res.length; i++) {
+                        const element = res[i];
+                        console.log(element.mes);
+                        listaMes.push(element.mes)
+                        programado.push(element.programado)
+                        financieroEjecutado.push(element.financieroEjecutado)
+                    }
+
+                    var cronogramamensual = {
+                        "mes":listaMes,
+                        "programado":programado,
+                        "financieroEjecutado":financieroEjecutado
+                    }
+
+
+
+
+
+                    console.log()
+                    //hasta aqui
+                   
+                    // console.log("res",listaMes); 
+                    callback(null,cronogramamensual);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }                
+    })
+}
 
 
 module.exports = userModel;
