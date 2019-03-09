@@ -732,6 +732,8 @@ userModel.getValGeneral = (id_ficha,callback)=>{
                     }
                     periodos.push(periodo)
                     //operaciones de anterior total y saldo
+                    console.log("length",periodos.length);
+                    
                     for (let i = 0; i < periodos.length; i++) {
                         //variables de resumen
                         periodos[i].resumen = {
@@ -754,7 +756,7 @@ userModel.getValGeneral = (id_ficha,callback)=>{
                                                 
                             //comp valor total anterior
                             if(i > 0){
-                                componente.valor_total_anterior = periodos[i-1].componentes[j].valor_total_actual                               
+                                componente.valor_total_anterior = periodos[i-1].componentes[j].valor_suma_acumulado                               
                             }
                             //comp valor total acumulado
                             componente.valor_suma_acumulado = componente.valor_total_anterior + componente.valor_total_actual
@@ -811,10 +813,10 @@ userModel.getValGeneral = (id_ficha,callback)=>{
 
                                 //partida metrado saldo
                                 partida.metrado_saldo = partida.metrado - partida.metrado_total
-                                console.log(partida.metrado,"-",partida.metrado_total,"=",partida.metrado_saldo);
+                                
                                 //partida valor saldo
                                 partida.valor_saldo = partida.parcial - partida.valor_total
-                                console.log(partida.parcial,"-",partida.valor_total,"=",partida.valor_saldo);
+                                
                                 //partida porcenjata saldo
                                 partida.porcentaje_saldo = 100 - partida.porcentaje_total
                                 
