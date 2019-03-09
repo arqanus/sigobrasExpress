@@ -417,7 +417,7 @@ module.exports = function(app){
 				}
 				// console.log("actividades",actividades);
 				
-				User.postActividades(actividades,(err,idactividades)=>{
+				User.postActividades(actividades,(err,id_actividad)=>{
 					if(err){
 						errores.push(
 							{
@@ -452,7 +452,7 @@ module.exports = function(app){
 										historialpartidas.push(historial)	
 										element+=1
 									}
-									console.log("historial",historialpartidas);
+									
 									
 									
 									User.postHistorialPartidas(historialpartidas,(err,data)=>{
@@ -465,7 +465,17 @@ module.exports = function(app){
 											)
 											res.json(errores);
 										}else{
-											res.json(data)
+											
+											var historialActividad = {						
+												"estado":"Partida Nueva",
+												"actividades_id_actividad":id_actividad
+											}
+											User.posthistorialActividades(historialActividad,(err,data)=>{
+												if(err){ res.status(204).json(err);}
+												else{
+													res.json(data)
+												}
+											})
 										}
 									})
 
@@ -727,6 +737,91 @@ module.exports = function(app){
 			}
 
 		})
+	})
+
+	app.post('/postActividadMayorMetrado',(req,res)=>{
+		var actividad = req.body.actividad
+		if (actividad.partidas_id_partida == null) {
+			res.json("null")
+		}else{
+			User.postActividadMayorMetrado(actividad,(err,id_actividad)=>{
+				if(err){ res.status(204).json(err);}
+				else{
+					var historialActividad = {						
+						"estado":"Mayor Metrado",
+						"actividades_id_actividad":id_actividad
+					}
+					User.posthistorialActividades(historialActividad,(err,data)=>{
+						if(err){ res.status(204).json(err);}
+						else{
+							var avanceActividad = req.body.avanceActividad
+							avanceActividad.Actividades_id_actividad = id_actividad
+							var id_ficha = avanceActividad.id_ficha
+							
+							User.getIdHistorial(id_ficha,(err,data)=>{
+								console.log("idhistorial");
+								if(err||data.length==0){ res.status(204).json(err);}
+								else{
+									delete avanceActividad.id_ficha
+									avanceActividad.historialEstados_id_historialEstado = data[0].id_historialEstado
+									
+									
+									User.postAvanceActividad(avanceActividad,(err,data)=>{
+										console.log("avance");
+										
+										if(err){ res.status(204).json(err);}
+										else{
+											User.getAvanceById(id_actividad,(err,data)=>{
+												if(err){ res.status(204).json(err);}
+												else{
+													res.json(data);	
+												}
+											})
+											
+										}
+									})
+								}
+							})
+						}
+					})
+				}
+			})
+		}			
+		
+	})
+
+	app.post('/postNuevaActividadMayorMetrado',(req,res)=>{
+		if (req.body.partidas_id_partida == null) {
+			res.json("null")
+		} else {
+			User.postActividadMayorMetrado(req.body,(err,id_actividad)=>{
+				if(err){ res.status(204).json(err);}
+				else{
+					var historialActividad = {						
+						"estado":"Mayor Metrado",
+						"actividades_id_actividad":id_actividad
+					}
+					User.posthistorialActividades(historialActividad,(err,data)=>{
+						if(err){ res.status(204).json(err);}
+						else{
+							User.getAvanceById(id_actividad,(err,data)=>{
+								if(err){ res.status(204).json(err);}
+								else{
+									res.json(data);	
+								}
+							})
+						}
+					})
+
+
+
+
+
+					
+				}
+			})
+		}			
+		
 	})
 
 

@@ -1000,6 +1000,26 @@ userModel.getcronogramamensual = (data,callback)=>{
         }                
     })
 }
-
+userModel.posthistorialActividades = (data,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){ callback(err);}
+        else{
+            conn.query('insert into historialActividades set ?',data,(err,res)=>{ 
+                if(err){
+                    console.log(err);
+                    callback(err.code);
+                }else{      
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }
+        
+                
+    })
+}
 
 module.exports = userModel;
