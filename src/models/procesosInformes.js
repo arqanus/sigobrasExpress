@@ -158,17 +158,127 @@ userModel.resumenValorizacionPrincipal  = (id_ficha,callback)=>{
                 else if(res.length == 0){
                     callback("vacio");        
                 }else{ 
-                    var costoDirecto = 0
+                    var presupuesto = 0
+                    var actual_valorizado = 0
                     for (let i = 0; i < res.length; i++) {
                         const fila = res[i];
-                        costoDirecto +=fila.presupuesto
+                        presupuesto +=fila.presupuesto
+                        actual_valorizado +=fila.actual_valorizado
                         
                     }
                     res.push(
                         {
-                            "componente":costoDirecto
+                            "numero": "",
+                            "nombre": "",
+                            "presupuesto": "",
+                            "porcentaje": "",
+                            "anterior_valorizado": "",
+                            "anterior_porcentaj": "",
+                            "actual_valorizado": "",
+                            "actual_porcentaje": "",
+                            "acumulado_valorizado": "",
+                            "acumulado_porcentaje": ""
                         }
                     )
+                    res.push(
+                        {
+                            "numero": "",
+                            "nombre": "COSTO DIRECTO",
+                            "presupuesto": presupuesto,
+                            "porcentaje": 100.00,
+                            "anterior_valorizado": 0,
+                            "anterior_porcentaj": 0,
+                            "actual_valorizado": actual_valorizado,
+                            "actual_porcentaje": "",
+                            "acumulado_valorizado": 0,
+                            "acumulado_porcentaje": 0
+                        }
+                    )
+                    res.push(
+                        {
+                            "numero": "",
+                            "nombre": "COSTO INDIRECTO",
+                            "presupuesto": 196309,
+                            "porcentaje": "",
+                            "anterior_valorizado": 0,
+                            "anterior_porcentaj": 0,
+                            "actual_valorizado": 0,
+                            "actual_porcentaje": 0,
+                            "acumulado_valorizado": 0,
+                            "acumulado_porcentaje": 0
+                        }
+                    )
+                    res.push(
+                        {
+                            "numero": "",
+                            "nombre": "GASTOS GENERALES",
+                            "presupuesto": 155209,
+                            "porcentaje": 79.06,
+                            "anterior_valorizado": 0,
+                            "anterior_porcentaj": 0,
+                            "actual_valorizado": 0,
+                            "actual_porcentaje": 0,
+                            "acumulado_valorizado": 0,
+                            "acumulado_porcentaje": 0
+                        }
+                    )
+                    res.push(
+                        {
+                            "numero": "",
+                            "nombre": "GASTOS DE GESTION DE PROYECTO",
+                            "presupuesto": 3620,
+                            "porcentaje": 1.84,
+                            "anterior_valorizado": 0,
+                            "anterior_porcentaj": 0,
+                            "actual_valorizado": 0,
+                            "actual_porcentaje": 0,
+                            "acumulado_valorizado": 0,
+                            "acumulado_porcentaje": 0
+                        }
+                    )
+                    res.push(
+                        {
+                            "numero": "",
+                            "nombre": "GASTOS DE GESTION DE PROYECTO",
+                            "presupuesto": 37480,
+                            "porcentaje": 19.09,
+                            "anterior_valorizado": 0,
+                            "anterior_porcentaj": 0,
+                            "actual_valorizado": 0,
+                            "actual_porcentaje": 0,
+                            "acumulado_valorizado": 0,
+                            "acumulado_porcentaje": 0
+                        }
+                    )
+                    res.push(
+                        {
+                            "numero": "",
+                            "nombre": "EJECUTADO DEL PRESUPUESTO TOTAL SEGUN EXP",
+                            "presupuesto": presupuesto+196309,
+                            "porcentaje": "100",
+                            "anterior_valorizado": 0,
+                            "anterior_porcentaj": 0,
+                            "actual_valorizado": 0,
+                            "actual_porcentaje": 0,
+                            "acumulado_valorizado": 0,
+                            "acumulado_porcentaje": 0
+                        }
+                    )
+                    res.push(
+                        {
+                            "numero": "",
+                            "nombre": "GASTOS DE GESTION DE PROYECTO",
+                            "presupuesto": presupuesto,
+                            "porcentaje": "",
+                            "anterior_valorizado": 0,
+                            "anterior_porcentaj": 0,
+                            "actual_valorizado": 0,
+                            "actual_porcentaje": 0,
+                            "acumulado_valorizado": 0,
+                            "acumulado_porcentaje": 0
+                        }
+                    )
+             
 
                                       
 
