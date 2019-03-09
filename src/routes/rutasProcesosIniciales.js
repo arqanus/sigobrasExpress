@@ -349,7 +349,6 @@ module.exports = function(app){
 	})	
 	//partidas
 	app.post('/nuevasPartidas',(req,res)=>{
-		
 		var errores=[]
 		
 		var listaPartidas = []

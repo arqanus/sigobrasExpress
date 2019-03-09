@@ -4,7 +4,7 @@ const User = require('../models/procesosFisicos');
 module.exports = function(app){
 	
 	app.post('/listaPartidas',(req,res)=>{
-		if (req.body.id_ficha == null) {
+		if (req.body.id_ficha == null ||req.body.id_ficha == "null"||req.body.id_ficha == "") {
 			res.json("null");
 		} else {
 			User.getPartidas(req.body.id_ficha,(err,data)=>{
@@ -14,8 +14,6 @@ module.exports = function(app){
 				}
 			})
 		}
-		
-
 	})
 
 	app.post('/listaPartidasNuevas',(req,res)=>{
@@ -208,12 +206,27 @@ module.exports = function(app){
 			User.postActividadMayorMetrado(req.body,(err,id_actividad)=>{
 				if(err){ res.status(204).json(err);}
 				else{
-					User.getAvanceById(id_actividad,(err,data)=>{
+					var historialActividad = {						
+						"estado":"Mayor Metrado",
+						"actividades_id_actividad":id_actividad
+					}
+					User.posthistorialActividades(historialActividad,(err,data)=>{
 						if(err){ res.status(204).json(err);}
 						else{
-							res.json(data);	
+							User.getAvanceById(id_actividad,(err,data)=>{
+								if(err){ res.status(204).json(err);}
+								else{
+									res.json(data);	
+								}
+							})
 						}
 					})
+
+
+
+
+
+					
 				}
 			})
 		}			
