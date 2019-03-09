@@ -35,7 +35,7 @@ userModel.getPartidas = (id_ficha,callback)=>{
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
         else{
-            conn.query("SELECT componentes.id_componente, componentes.numero, componentes.nombre, partida.id_partida, partida.tipo, partida.item, partida.descripcion, partida.unidad_medida, partida.metrado, partida.costo_unitario, partida.parcial, IF(partida.avance_metrado IS NULL, 0, partida.avance_metrado) avance_metrado, IF(partida.avance_costo IS NULL, 0, partida.avance_costo) avance_costo, partida.metrado - partida.avance_metrado metrados_saldo, partida.parcial - (partida.avance_metrado * partida.costo_unitario) metrados_costo_saldo, IF(partida.porcentaje IS NULL, 0, partida.porcentaje) porcentaje, actividad.id_actividad, actividad.tipo actividad_tipo, actividad.nombre actividad_nombre, actividad.veces, actividad.largo, actividad.ancho, actividad.alto, actividad.metrado_actividad, partida.costo_unitario, actividad.metrado_actividad * partida.costo_unitario parcial_actividad, actividad.actividad_avance_metrado, actividad.actividad_avance_metrado * partida.costo_unitario actividad_avance_costo, actividad.metrado_actividad - actividad.actividad_avance_metrado actividad_metrados_saldo, (actividad.metrado_actividad - actividad.actividad_avance_metrado) * partida.costo_unitario actividad_metrados_costo_saldo, (actividad.actividad_avance_metrado / actividad.metrado_actividad) * 100 actividad_porcentaje FROM presupuestos LEFT JOIN (SELECT partidas.Componentes_id_componente, partidas.presupuestos_id_Presupuesto, partidas.id_partida, partidas.tipo, partidas.item, partidas.descripcion, partidas.unidad_medida, partidas.metrado, partidas.costo_unitario, partidas.metrado * partidas.costo_unitario parcial, IF(SUM(avanceactividades.valor) IS NULL, 0, SUM(avanceactividades.valor)) avance_metrado, SUM(avanceactividades.valor) * partidas.costo_unitario avance_costo, (SUM(avanceactividades.valor) / partidas.metrado) * 100 porcentaje FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad GROUP BY partidas.id_partida) partida ON partida.presupuestos_id_Presupuesto = presupuestos.id_presupuesto LEFT JOIN (select historialpartidas.estado,historialpartidas.partidas_id_partida from(select max(id_historialPartida) id_historialPartida from  historialpartidas group by historialpartidas.partidas_id_partida) maximoHistorial left join historialpartidas on historialpartidas.id_historialPartida = maximoHistorial.id_historialPartida) historialPartida on historialPartida.partidas_id_partida = partida.id_partida left join (SELECT Partidas_id_partida, id_actividad, tipo, nombre, veces, largo, ancho, alto, parcial metrado_actividad, IF(SUM(avanceactividades.valor) IS NULL, 0, SUM(avanceactividades.valor)) actividad_avance_metrado FROM actividades LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad GROUP BY actividades.id_actividad) actividad ON actividad.Partidas_id_partida = partida.id_partida LEFT JOIN componentes ON componentes.id_componente = partida.componentes_id_componente WHERE presupuestos.Fichas_id_ficha = ? and historialPartida.estado is null AND componentes.id_componente IS NOT NULL ORDER BY componentes.id_componente , partida.id_partida , actividad.id_actividad",id_ficha,(error,res)=>{
+            conn.query("SELECT componentes.id_componente, componentes.numero, componentes.nombre, partida.id_partida, partida.tipo, partida.item, partida.descripcion, partida.unidad_medida, partida.metrado, partida.costo_unitario, partida.parcial, IF(partida.avance_metrado IS NULL, 0, partida.avance_metrado) avance_metrado, IF(partida.avance_costo IS NULL, 0, partida.avance_costo) avance_costo, partida.metrado - partida.avance_metrado metrados_saldo, partida.parcial - (partida.avance_metrado * partida.costo_unitario) metrados_costo_saldo, IF(partida.porcentaje IS NULL, 0, partida.porcentaje) porcentaje, actividad.id_actividad, actividad.tipo actividad_tipo, actividad.estado actividad_estado, actividad.nombre actividad_nombre, actividad.veces, actividad.largo, actividad.ancho, actividad.alto, actividad.metrado_actividad, partida.costo_unitario, actividad.metrado_actividad * partida.costo_unitario parcial_actividad, actividad.actividad_avance_metrado, actividad.actividad_avance_metrado * partida.costo_unitario actividad_avance_costo, actividad.metrado_actividad - actividad.actividad_avance_metrado actividad_metrados_saldo, (actividad.metrado_actividad - actividad.actividad_avance_metrado) * partida.costo_unitario actividad_metrados_costo_saldo, (actividad.actividad_avance_metrado / actividad.metrado_actividad) * 100 actividad_porcentaje FROM presupuestos LEFT JOIN (SELECT partidas.Componentes_id_componente, partidas.presupuestos_id_Presupuesto, partidas.id_partida, partidas.tipo, partidas.item, partidas.descripcion, partidas.unidad_medida, partidas.metrado, partidas.costo_unitario, partidas.metrado * partidas.costo_unitario parcial, IF(SUM(avanceactividades.valor) IS NULL, 0, SUM(avanceactividades.valor)) avance_metrado, SUM(avanceactividades.valor) * partidas.costo_unitario avance_costo, (SUM(avanceactividades.valor) / partidas.metrado) * 100 porcentaje FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad GROUP BY partidas.id_partida) partida ON partida.presupuestos_id_Presupuesto = presupuestos.id_presupuesto LEFT JOIN (SELECT historialpartidas.estado, historialpartidas.partidas_id_partida FROM (SELECT MAX(id_historialPartida) id_historialPartida FROM historialpartidas GROUP BY historialpartidas.partidas_id_partida) maximoHistorial LEFT JOIN historialpartidas ON historialpartidas.id_historialPartida = maximoHistorial.id_historialPartida) historialPartida ON historialPartida.partidas_id_partida = partida.id_partida LEFT JOIN (SELECT Partidas_id_partida, id_actividad, tipo, historialactividades.estado, nombre, veces, largo, ancho, alto, parcial metrado_actividad, IF(SUM(avanceactividades.valor) IS NULL, 0, SUM(avanceactividades.valor)) actividad_avance_metrado FROM actividades LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad left join historialactividades on historialactividades.actividades_id_actividad = actividades.id_actividad GROUP BY actividades.id_actividad) actividad ON actividad.Partidas_id_partida = partida.id_partida LEFT JOIN componentes ON componentes.id_componente = partida.componentes_id_componente WHERE presupuestos.Fichas_id_ficha = ? AND historialPartida.estado IS NULL AND componentes.id_componente IS NOT NULL ORDER BY componentes.id_componente , partida.id_partida , actividad.id_actividad",id_ficha,(error,res)=>{
                 if(error){
                     callback(error);
                 }else if(res.length == 0){
@@ -62,6 +62,7 @@ userModel.getPartidas = (id_ficha,callback)=>{
                                 {
                                    "id_partida": fila.id_partida,
                                     "tipo":fila.tipo,
+                                    "estado":null,
                                     "item":fila.item,
                                     "descripcion": fila.descripcion,
                                     "unidad_medida": fila.unidad_medida,
@@ -77,6 +78,7 @@ userModel.getPartidas = (id_ficha,callback)=>{
                                         {
                                             "id_actividad":fila.id_actividad,
                                             "actividad_tipo":fila.actividad_tipo,
+                                            "actividad_estado":fila.actividad_estado,
                                             "nombre_actividad":fila.actividad_nombre,
                                             "veces_actividad":fila.veces,
                                             "largo_actividad":fila.largo,
@@ -103,6 +105,7 @@ userModel.getPartidas = (id_ficha,callback)=>{
                                 var partida = {
                                     "id_partida": fila.id_partida,
                                     "tipo":fila.tipo,
+                                    "estado":null,
                                     "item":fila.item,
                                     "descripcion": fila.descripcion,
                                     "unidad_medida": fila.unidad_medida,
@@ -118,6 +121,7 @@ userModel.getPartidas = (id_ficha,callback)=>{
                                         {
                                             "id_actividad":fila.id_actividad,
                                             "actividad_tipo":fila.actividad_tipo,
+                                            "actividad_estado":fila.actividad_estado,
                                             "nombre_actividad":fila.actividad_nombre,
                                             "veces_actividad":fila.veces,
                                             "largo_actividad":fila.largo,
@@ -142,6 +146,7 @@ userModel.getPartidas = (id_ficha,callback)=>{
                                 {
                                     "id_actividad":fila.id_actividad,
                                     "actividad_tipo":fila.actividad_tipo,
+                                    "actividad_estado":fila.actividad_estado,
                                     "nombre_actividad":fila.actividad_nombre,
                                     "veces_actividad":fila.veces,
                                     "largo_actividad":fila.largo,
@@ -193,6 +198,11 @@ userModel.getPartidas = (id_ficha,callback)=>{
                                 actividad.actividad_metrados_saldo = formato(actividad.actividad_metrados_saldo)
                                 actividad.actividad_metrados_costo_saldo = formato(actividad.actividad_metrados_costo_saldo)
                                 actividad.actividad_porcentaje = formato(actividad.actividad_porcentaje)
+
+                                //asignando estado de mayor metrado a partidda
+                                if(actividad.actividad_estado =="Mayor Metrado"){
+                                    partida.estado = "Mayor Metrado"
+                                }
                             }                                                   
                         }
                         
@@ -216,7 +226,7 @@ userModel.getPartidasNuevas = (id_ficha,callback)=>{
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
         else{
-            conn.query("SELECT componentes.id_componente, componentes.numero, componentes.nombre, partida.id_partida, partida.tipo, partida.item, partida.descripcion, partida.unidad_medida, partida.metrado, partida.costo_unitario, partida.parcial, IF(partida.avance_metrado IS NULL, 0, partida.avance_metrado) avance_metrado, IF(partida.avance_costo IS NULL, 0, partida.avance_costo) avance_costo, partida.metrado - partida.avance_metrado metrados_saldo, partida.parcial - (partida.avance_metrado * partida.costo_unitario) metrados_costo_saldo, IF(partida.porcentaje IS NULL, 0, partida.porcentaje) porcentaje, actividad.id_actividad, actividad.tipo actividad_tipo, actividad.nombre actividad_nombre, actividad.veces, actividad.largo, actividad.ancho, actividad.alto, actividad.metrado_actividad, partida.costo_unitario, actividad.metrado_actividad * partida.costo_unitario parcial_actividad, actividad.actividad_avance_metrado, actividad.actividad_avance_metrado * partida.costo_unitario actividad_avance_costo, actividad.metrado_actividad - actividad.actividad_avance_metrado actividad_metrados_saldo, (actividad.metrado_actividad - actividad.actividad_avance_metrado) * partida.costo_unitario actividad_metrados_costo_saldo, (actividad.actividad_avance_metrado / actividad.metrado_actividad) * 100 actividad_porcentaje FROM presupuestos LEFT JOIN (SELECT partidas.Componentes_id_componente, partidas.presupuestos_id_Presupuesto, partidas.id_partida, partidas.tipo, partidas.item, partidas.descripcion, partidas.unidad_medida, partidas.metrado, partidas.costo_unitario, partidas.metrado * partidas.costo_unitario parcial, IF(SUM(avanceactividades.valor) IS NULL, 0, SUM(avanceactividades.valor)) avance_metrado, SUM(avanceactividades.valor) * partidas.costo_unitario avance_costo, (SUM(avanceactividades.valor) / partidas.metrado) * 100 porcentaje FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad GROUP BY partidas.id_partida) partida ON partida.presupuestos_id_Presupuesto = presupuestos.id_presupuesto LEFT JOIN (select historialpartidas.estado,historialpartidas.partidas_id_partida from(select max(id_historialPartida) id_historialPartida from  historialpartidas group by historialpartidas.partidas_id_partida) maximoHistorial left join historialpartidas on historialpartidas.id_historialPartida = maximoHistorial.id_historialPartida) historialPartida on historialPartida.partidas_id_partida = partida.id_partida left join (SELECT Partidas_id_partida, id_actividad, tipo, nombre, veces, largo, ancho, alto, parcial metrado_actividad, IF(SUM(avanceactividades.valor) IS NULL, 0, SUM(avanceactividades.valor)) actividad_avance_metrado FROM actividades LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad GROUP BY actividades.id_actividad) actividad ON actividad.Partidas_id_partida = partida.id_partida LEFT JOIN componentes ON componentes.id_componente = partida.componentes_id_componente WHERE presupuestos.Fichas_id_ficha = ? and historialPartida.estado = 'PartidaNueva' AND componentes.id_componente IS NOT NULL ORDER BY componentes.id_componente , partida.id_partida , actividad.id_actividad",id_ficha,(error,res)=>{
+            conn.query("SELECT componentes.id_componente, componentes.numero, componentes.nombre, partida.id_partida, partida.tipo, partida.item, partida.descripcion, partida.unidad_medida, partida.metrado, partida.costo_unitario, partida.parcial, IF(partida.avance_metrado IS NULL, 0, partida.avance_metrado) avance_metrado, IF(partida.avance_costo IS NULL, 0, partida.avance_costo) avance_costo, partida.metrado - partida.avance_metrado metrados_saldo, partida.parcial - (partida.avance_metrado * partida.costo_unitario) metrados_costo_saldo, IF(partida.porcentaje IS NULL, 0, partida.porcentaje) porcentaje, actividad.id_actividad, actividad.tipo actividad_tipo, actividad.estado actividad_estado, actividad.nombre actividad_nombre, actividad.veces, actividad.largo, actividad.ancho, actividad.alto, actividad.metrado_actividad, partida.costo_unitario, actividad.metrado_actividad * partida.costo_unitario parcial_actividad, actividad.actividad_avance_metrado, actividad.actividad_avance_metrado * partida.costo_unitario actividad_avance_costo, actividad.metrado_actividad - actividad.actividad_avance_metrado actividad_metrados_saldo, (actividad.metrado_actividad - actividad.actividad_avance_metrado) * partida.costo_unitario actividad_metrados_costo_saldo, (actividad.actividad_avance_metrado / actividad.metrado_actividad) * 100 actividad_porcentaje FROM presupuestos LEFT JOIN (SELECT partidas.Componentes_id_componente, partidas.presupuestos_id_Presupuesto, partidas.id_partida, partidas.tipo, partidas.item, partidas.descripcion, partidas.unidad_medida, partidas.metrado, partidas.costo_unitario, partidas.metrado * partidas.costo_unitario parcial, IF(SUM(avanceactividades.valor) IS NULL, 0, SUM(avanceactividades.valor)) avance_metrado, SUM(avanceactividades.valor) * partidas.costo_unitario avance_costo, (SUM(avanceactividades.valor) / partidas.metrado) * 100 porcentaje FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad GROUP BY partidas.id_partida) partida ON partida.presupuestos_id_Presupuesto = presupuestos.id_presupuesto LEFT JOIN (SELECT historialpartidas.estado, historialpartidas.partidas_id_partida FROM (SELECT MAX(id_historialPartida) id_historialPartida FROM historialpartidas GROUP BY historialpartidas.partidas_id_partida) maximoHistorial LEFT JOIN historialpartidas ON historialpartidas.id_historialPartida = maximoHistorial.id_historialPartida) historialPartida ON historialPartida.partidas_id_partida = partida.id_partida LEFT JOIN (SELECT Partidas_id_partida, id_actividad, tipo, historialactividades.estado, nombre, veces, largo, ancho, alto, parcial metrado_actividad, IF(SUM(avanceactividades.valor) IS NULL, 0, SUM(avanceactividades.valor)) actividad_avance_metrado FROM actividades LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad left join historialactividades on historialactividades.actividades_id_actividad = actividades.id_actividad GROUP BY actividades.id_actividad) actividad ON actividad.Partidas_id_partida = partida.id_partida LEFT JOIN componentes ON componentes.id_componente = partida.componentes_id_componente WHERE presupuestos.Fichas_id_ficha = ? AND historialPartida.estado ='PartidaNueva' AND componentes.id_componente IS NOT NULL ORDER BY componentes.id_componente , partida.id_partida , actividad.id_actividad",id_ficha,(error,res)=>{
                 if(error){
                     callback(error);
                 }else if(res.length == 0){
@@ -243,6 +253,7 @@ userModel.getPartidasNuevas = (id_ficha,callback)=>{
                                 {
                                    "id_partida": fila.id_partida,
                                     "tipo":fila.tipo,
+                                    "estado":null,
                                     "item":fila.item,
                                     "descripcion": fila.descripcion,
                                     "unidad_medida": fila.unidad_medida,
@@ -258,6 +269,7 @@ userModel.getPartidasNuevas = (id_ficha,callback)=>{
                                         {
                                             "id_actividad":fila.id_actividad,
                                             "actividad_tipo":fila.actividad_tipo,
+                                            "actividad_estado":fila.actividad_estado,
                                             "nombre_actividad":fila.actividad_nombre,
                                             "veces_actividad":fila.veces,
                                             "largo_actividad":fila.largo,
@@ -284,6 +296,7 @@ userModel.getPartidasNuevas = (id_ficha,callback)=>{
                                 var partida = {
                                     "id_partida": fila.id_partida,
                                     "tipo":fila.tipo,
+                                    "estado":null,
                                     "item":fila.item,
                                     "descripcion": fila.descripcion,
                                     "unidad_medida": fila.unidad_medida,
@@ -299,6 +312,7 @@ userModel.getPartidasNuevas = (id_ficha,callback)=>{
                                         {
                                             "id_actividad":fila.id_actividad,
                                             "actividad_tipo":fila.actividad_tipo,
+                                            "actividad_estado":fila.actividad_estado,
                                             "nombre_actividad":fila.actividad_nombre,
                                             "veces_actividad":fila.veces,
                                             "largo_actividad":fila.largo,
@@ -323,6 +337,7 @@ userModel.getPartidasNuevas = (id_ficha,callback)=>{
                                 {
                                     "id_actividad":fila.id_actividad,
                                     "actividad_tipo":fila.actividad_tipo,
+                                    "actividad_estado":fila.actividad_estado,
                                     "nombre_actividad":fila.actividad_nombre,
                                     "veces_actividad":fila.veces,
                                     "largo_actividad":fila.largo,
@@ -374,6 +389,11 @@ userModel.getPartidasNuevas = (id_ficha,callback)=>{
                                 actividad.actividad_metrados_saldo = formato(actividad.actividad_metrados_saldo)
                                 actividad.actividad_metrados_costo_saldo = formato(actividad.actividad_metrados_costo_saldo)
                                 actividad.actividad_porcentaje = formato(actividad.actividad_porcentaje)
+
+                                //asignando estado de mayor metrado a partidda
+                                if(actividad.actividad_estado =="Mayor Metrado"){
+                                    partida.estado = "Mayor Metrado"
+                                }
                             }                                                   
                         }
                         
