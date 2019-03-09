@@ -166,20 +166,7 @@ userModel.resumenValorizacionPrincipal  = (id_ficha,callback)=>{
                         actual_valorizado +=fila.actual_valorizado
                         
                     }
-                    res.push(
-                        {
-                            "numero": "",
-                            "nombre": "",
-                            "presupuesto": "",
-                            "porcentaje": "",
-                            "anterior_valorizado": "",
-                            "anterior_porcentaj": "",
-                            "actual_valorizado": "",
-                            "actual_porcentaje": "",
-                            "acumulado_valorizado": "",
-                            "acumulado_porcentaje": ""
-                        }
-                    )
+                    
                     res.push(
                         {
                             "numero": "",
