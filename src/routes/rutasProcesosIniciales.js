@@ -439,33 +439,39 @@ module.exports = function(app){
 								res.json(errores);
 							}
 							else{
-								var element = idPartida
-								var historialpartidas = []
-								for (let i = 0; i < data.length; i++) {
-									
-									var historial=[										
-										estado,
-										element
-									]
-									historialpartidas.push(historial)	
-									element+=1
-								}
-								console.log("historial",historialpartidas);
-								
-								
-								User.postHistorialPartidas(historialpartidas,(err,data)=>{
-									if (err) {
-										errores.push(
-											{
-												"elemento":"historial de partidas",
-												"error":err
-											}
-										)
-										res.json(errores);
-									}else{
-										res.json(data)
+								if(estado == "oficial"){
+									res.json("exito")
+								}else{
+									var element = idPartida
+									var historialpartidas = []
+									for (let i = 0; i < data.length; i++) {
+										
+										var historial=[										
+											estado,
+											element
+										]
+										historialpartidas.push(historial)	
+										element+=1
 									}
-								})
+									console.log("historial",historialpartidas);
+									
+									
+									User.postHistorialPartidas(historialpartidas,(err,data)=>{
+										if (err) {
+											errores.push(
+												{
+													"elemento":"historial de partidas",
+													"error":err
+												}
+											)
+											res.json(errores);
+										}else{
+											res.json(data)
+										}
+									})
+
+								}
+								
 								
 							}
 						})
