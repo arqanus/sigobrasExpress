@@ -300,7 +300,7 @@ userModel.postActividades = (data,callback)=>{
                     callback(error.code);
                 }else{
                     // console.log("res",res); 
-                    callback(null,res.affectedRows);
+                    callback(null,res.insertId);
                     conn.destroy()
                 }
             })
