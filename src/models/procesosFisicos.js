@@ -1399,27 +1399,7 @@ userModel.getIdActividad = (data,callback)=>{
                 
     })
 }
-userModel.postActividadMayorMetrado = (data,callback)=>{
-    
-    pool.getConnection(function(err ,conn){
-        if(err){ callback(err);}
-        else{
-            conn.query('insert into actividades set ?',data,(err,res)=>{ 
-                if(err){
-                    console.log(err);
-                    callback(err.code);
-                }else{      
-                    callback(null,res.insertId);
-                    conn.destroy()
-                }
-                
-                
-            })
-        }
-        
-                
-    })
-}
+
 
 
 
