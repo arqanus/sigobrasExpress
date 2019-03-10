@@ -1166,24 +1166,24 @@ userModel.getAvanceById = (id_actividad,callback)=>{
                     }
                   
                                       
-                        partida.metrado = formato(partida.metrado)
-                        partida.costo_unitario = formato(partida.costo_unitario)
-                        partida.parcial = formato(partida.parcial)
-                        partida.avance_metrado = formato(partida.avance_metrado)
-                        partida.avance_costo = formato(partida.avance_costo)
-                        partida.metrados_saldo = formato(partida.metrados_saldo)
-                        partida.metrados_costo_saldo = formato(partida.metrados_costo_saldo)
+                        partida.metrado = formatoPorcentaje(partida.metrado)
+                        partida.costo_unitario = formatoPorcentaje(partida.costo_unitario)
+                        partida.parcial = formatoPorcentaje(partida.parcial)
+                        partida.avance_metrado = formatoPorcentaje(partida.avance_metrado)
+                        partida.avance_costo = formatoPorcentaje(partida.avance_costo)
+                        partida.metrados_saldo = formatoPorcentaje(partida.metrados_saldo)
+                        partida.metrados_costo_saldo = formatoPorcentaje(partida.metrados_costo_saldo)
                         const actividades = partida.actividades
                         for (let k = 0; k < actividades.length; k++) {
                             const actividad = actividades[k];
-                            actividad.metrado_actividad = formato(actividad.metrado_actividad)
-                            actividad.costo_unitario = formato(actividad.costo_unitario)
-                            actividad.parcial_actividad = formato(actividad.parcial_actividad)
-                            actividad.actividad_avance_metrado = formato(actividad.actividad_avance_metrado)
-                            actividad.actividad_avance_costo = formato(actividad.actividad_avance_costo)
-                            actividad.actividad_metrados_saldo = formato(actividad.actividad_metrados_saldo)
-                            actividad.actividad_metrados_costo_saldo = formato(actividad.actividad_metrados_costo_saldo)
-                            actividad.actividad_porcentaje = formato(actividad.actividad_porcentaje)
+                            actividad.metrado_actividad = formatoPorcentaje(actividad.metrado_actividad)
+                            actividad.costo_unitario = formatoPorcentaje(actividad.costo_unitario)
+                            actividad.parcial_actividad = formatoPorcentaje(actividad.parcial_actividad)
+                            actividad.actividad_avance_metrado = formatoPorcentaje(actividad.actividad_avance_metrado)
+                            actividad.actividad_avance_costo = formatoPorcentaje(actividad.actividad_avance_costo)
+                            actividad.actividad_metrados_saldo = formatoPorcentaje(actividad.actividad_metrados_saldo)
+                            actividad.actividad_metrados_costo_saldo = formatoPorcentaje(actividad.actividad_metrados_costo_saldo)
+                            actividad.actividad_porcentaje = formatoPorcentaje(actividad.actividad_porcentaje)
                         }                                                   
                     
                         
