@@ -575,6 +575,14 @@ module.exports = function(app){
 
 			})
 	})
+	app.post('/convertirJson',(req,res)=>{
+		req.body =JSON.stringify(req.body)
+		
+		console.log("iniciand",req.body);
+		res.json(req.body)	
+		
+			
+	})
 
 	app.post('/getMenu',(req,res)=>{
 		if(req.body.id_ficha == null||req.body.id_acceso == null){
