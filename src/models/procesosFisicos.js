@@ -1413,9 +1413,20 @@ userModel.getMaterialesPorObra = (id_ficha,callback)=>{
                 }else if(res.length == 0){
                     console.log("vacio");                    
                     callback("vacio");
-                }else{  
+                }else{ 
+                    for (let i = 0; i < res.length; i++) {
+                        const fila = res[i];
+                        fila.metrado = formato(fila.metrado)
+                        fila.costo_unitario = formato(fila.costo_unitario)
+                        fila.costo_parcial = formato(fila.costo_parcial)
+                        fila.cuadrilla_total = formato(fila.cuadrilla_total)
+                        fila.cantidad_total = formato(fila.cantidad_total)
+                        fila.precio_total = formato(fila.precio_total)
+                        fila.parcial_total = formato(fila.parcial_total)
+                        
+                    } 
                                                                       
-                                          
+
                     
 
                     callback(null,res);
