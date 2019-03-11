@@ -1319,7 +1319,7 @@ userModel.getActividadesDuracion = (id_ficha,callback)=>{
                                                                       
                     for (let i = 0; i < res.length; i++) {
                         const fila = res[i];
-                        fila.duracion_real = fila.duracion
+                        // fila.duracion_real = fila.duracion
                         if(fila.duracion < 60){
                             fila.duracion = formato(fila.duracion) + "m"
                         }else if(fila.duracion < 480){
@@ -1332,14 +1332,13 @@ userModel.getActividadesDuracion = (id_ficha,callback)=>{
                             var horas =  Math.trunc(residuo_dias/60)+"h"
                             var minutos = formato(residuo_dias%60)+"m"
                             fila.duracion = dias+" "+horas + " "+minutos
-                        }
-                        res.costo_parcial = formato(res.costo_parcial)
-                        res.parcial_actividad =formato(res.parcial_actividad)
+                        }   
+                        res[i].costo_parcial = formato(res[i].costo_parcial)
+                        res[i].parcial_actividad =formato(res[i].parcial_actividad)
+                        res[i].duracion_dia =formato(res[i].duracion_dia)
+                        res[i].metrado =formato(res[i].metrado)                       
                         
-                        
-                    }
-
-                        
+                    }                   
                                                 
                     
 
