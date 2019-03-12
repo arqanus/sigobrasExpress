@@ -465,7 +465,7 @@ userModel.getHistorial = (id_ficha,callback)=>{
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
         else{
-            conn.query('SELECT componentes.id_componente, componentes.numero, componentes.nombre nombre_componente, partidas.item, partidas.descripcion descripcion_partida, actividades.nombre nombre_actividad, avanceactividades.descripcion descripcion_actividad, avanceactividades.observacion, DATE(avanceactividades.fecha) fecha, avanceactividades.valor, partidas.costo_unitario, avanceactividades.valor * partidas.costo_unitario parcial FROM presupuestos LEFT JOIN partidas ON partidas.presupuestos_id_Presupuesto = presupuestos.id_Presupuesto LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida RIGHT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad left join componentes on componentes.id_componente = partidas.componentes_id_componente WHERE presupuestos.Fichas_id_ficha = ? ORDER BY componentes.id_componente,avanceactividades.fecha',id_ficha,(err,res)=>{
+            conn.query('SELECT componentes.id_componente, componentes.numero, componentes.nombre nombre_componente, partidas.item, partidas.descripcion descripcion_partida, actividades.nombre nombre_actividad, avanceactividades.descripcion descripcion_actividad, avanceactividades.observacion, DATE(avanceactividades.fecha) fecha, avanceactividades.valor, partidas.costo_unitario, avanceactividades.valor * partidas.costo_unitario parcial FROM presupuestos LEFT JOIN partidas ON partidas.presupuestos_id_Presupuesto = presupuestos.id_Presupuesto LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida RIGHT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad left join componentes on componentes.id_componente = partidas.componentes_id_componente WHERE presupuestos.Fichas_id_ficha = ? ORDER BY componentes.id_componente ,avanceactividades.fecha desc,partidas.id_partida',id_ficha,(err,res)=>{
                 if(err){
                     console.log(err);
                     callback(err.code);
@@ -480,7 +480,7 @@ userModel.getHistorial = (id_ficha,callback)=>{
                     for (let i = 0; i < res.length; i++) {
                         const fila = res[i];
                         console.log("fila",fila.id_componente)
-                        fila.fecha = fila.fecha.getDay()+" de "+month[fila.fecha.getMonth()]+" del "+fila.fecha.getFullYear()
+                        fila.fecha = fila.fecha.getDate()+" de "+month[fila.fecha.getMonth()]+" del "+fila.fecha.getFullYear()
                         if(fila.id_componente != lastIdComponente){
                             if(i != 0 ){
                                 componentes.push(componente);
