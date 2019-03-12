@@ -325,7 +325,7 @@ userModel.resumenAvanceFisicoPartidasObraMes = (meses,id_ficha,callback)=>{
             ]
             
 
-            var query= "SELECT  partidas.item, partidas.descripcion, partidas.unidad_medida, partidas.metrado,"
+            var query= "SELECT componentes.id_componente, componentes.numero, componentes.nombre, componentes.presupuesto, partidas.item, partidas.descripcion, partidas.unidad_medida, partidas.metrado,"
             for (let i = 0; i < meses.length; i++) {
                 const mes = meses[i];
                 console.log(mes);
@@ -338,7 +338,7 @@ userModel.resumenAvanceFisicoPartidasObraMes = (meses,id_ficha,callback)=>{
             }
             console.log("cabeceras",cabeceras);
             
-            query = query.concat("SUM(avanceactividades.valor) avance_acumulado, SUM(metrado - valor) saldo FROM fichas LEFT JOIN presupuestos ON presupuestos.Fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.presupuestos_id_Presupuesto = presupuestos.id_Presupuesto LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad ")
+            query = query.concat("SUM(avanceactividades.valor) avance_acumulado, SUM(metrado - valor) saldo FROM fichas LEFT JOIN presupuestos ON presupuestos.Fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.presupuestos_id_Presupuesto = presupuestos.id_Presupuesto LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad left join componentes on componentes.id_componente = partidas.componentes_id_componente ")
 
             for (let i = 0; i < meses.length; i++) {
                 const mes = meses[i];
@@ -346,8 +346,8 @@ userModel.resumenAvanceFisicoPartidasObraMes = (meses,id_ficha,callback)=>{
                 query = query.concat("LEFT JOIN (SELECT partidas.id_partida, SUM(avanceactividades.valor) avance_acumulado FROM fichas LEFT JOIN presupuestos ON presupuestos.Fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.presupuestos_id_Presupuesto = presupuestos.id_Presupuesto LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE CONCAT(TIMESTAMPDIFF(MONTH, fichas.fecha_inicial_real, avanceactividades.fecha) + 1, '.', avanceactividades.historialEstados_id_historialEstado) = "+mes.id_periodo+" GROUP BY partidas.id_partida) r"+i+" ON r"+i+".id_partida = partidas.id_partida ")
                 
             }
-            query = query.concat("WHERE fichas.id_ficha = ? GROUP BY partidas.id_partida")
-
+            query = query.concat("WHERE fichas.id_ficha = ? GROUP BY partidas.id_partida order by componentes.id_componente")
+            
                        
             conn.query(query,id_ficha,(err,res)=>{
                 if(err){
@@ -357,24 +357,62 @@ userModel.resumenAvanceFisicoPartidasObraMes = (meses,id_ficha,callback)=>{
                 else if(res.length == 0){
                     callback("vacio");   
                 }else{  
-                    var dataTotal = [
-                        cabeceras
-                    ]      
+                    // var dataTotal = [
+                    //     cabeceras
+                    // ]    
+                    var componentes = []  
+                    var componente = {}
+                    var lastIdComponente = -1
                     for (let i = 0; i < res.length; i++) {
                         const fila = res[i];
-                        var temp = [
-                            fila.item,
-                            fila.descripcion,
-                            fila.unidad_medida,
-                            fila.metrado,
-                            fila.r0,
-                            fila.r1,
-                            fila.avance_acumulado,            
-                            fila.saldo
-                        ]        
-                        dataTotal.push(temp)
+                        if(lastIdComponente != fila.id_componente){
+                            if(i >0){
+                                componentes.push(componente)
+                                componente = {}
+                                console.log("idcomponente",componente.numero);
+                                console.log("numero",componentes[0].numero);
+                                // callback(null,componentes);s
+                                
+                            }
+                            componente.numero =  fila.numero
+                            componente.nombre =  fila.nombre
+                            componente.presupuesto =  fila.presupuesto
+                            componente.partidas = [
+                                cabeceras,
+                                [
+                                    fila.item,
+                                    fila.descripcion,
+                                    fila.unidad_medida,
+                                    fila.metrado,
+                                    fila.r0,
+                                    fila.r1,
+                                    fila.avance_acumulado,            
+                                    fila.saldo
+                                ]                                
+                            ]
+                         
+                        }else{
+                            componente.partidas.push(
+                                [
+                                    fila.item,
+                                    fila.descripcion,
+                                    fila.unidad_medida,
+                                    fila.metrado,
+                                    fila.r0,
+                                    fila.r1,
+                                    fila.avance_acumulado,            
+                                    fila.saldo
+                                ]                                
+                            )
+                        }
+                        lastIdComponente = fila.id_componente
+                        
+                        
+                          
+                        
                     }
-                    callback(null,dataTotal);
+                    componentes.push(componente)
+                    callback(null,componentes);
                     conn.destroy()
                 }
                 
