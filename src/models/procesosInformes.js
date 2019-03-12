@@ -283,6 +283,108 @@ userModel.resumenValorizacionPrincipal  = (id_ficha,callback)=>{
     })
 }
 
+userModel.getMonthsByFicha = (id_ficha,callback)=>{    
+    pool.getConnection(function(err ,conn){
+        if(err){ 
+            callback(err);
+        }        
+        else{
+            conn.query("SELECT IF(estados.codigo != 'C', CONCAT('METRADO ',UPPER(MONTHNAME(historialestados.fecha))), 'METRADO CORTE') mes, CONCAT(TIMESTAMPDIFF(MONTH, fichas.fecha_inicial_real, historialestados.fecha) + 1, '.', historialestados.id_historialestado) id_periodo FROM fichas LEFT JOIN historialestados ON historialestados.Fichas_id_ficha = fichas.id_ficha LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado WHERE historialestados.Fichas_id_ficha = 77 AND estados.codigo != 'P' AND estados.codigo != 'A' ORDER BY historialestados.id_historialEstado",id_ficha,(err,res)=>{ if(err){
+                    console.log(err);                    
+                    callback(err.code);                
+                }
+                else if(res.length == 0){
+                    callback("vacio");        
+                }else{        
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }
+        
+                
+    })
+}
+userModel.resumenAvanceFisicoPartidasObraMes = (meses,id_ficha,callback)=>{    
+    pool.getConnection(function(err ,conn){
+        if(err){ 
+            callback(err);
+        }        
+        else{
+            //creaciion de query
+
+            var cabeceras = [
+                "ITEM",
+                "PARTIDAS",
+                "UND",
+                "METRADO BASE",
+                "METRADO ACUMULADO",
+                "METRADO SALDO",    
+            ]
+            
+
+            var query= "SELECT  partidas.item, partidas.descripcion, partidas.unidad_medida, partidas.metrado,"
+            for (let i = 0; i < meses.length; i++) {
+                const mes = meses[i];
+                console.log(mes);
+                query = query.concat("r"+i+".avance_acumulado r"+i+",")
+
+                //cabeceras                
+                cabeceras.splice(i+4,0,mes.mes)
+
+                
+            }
+            console.log("cabeceras",cabeceras);
+            
+            query = query.concat("SUM(avanceactividades.valor) avance_acumulado, SUM(metrado - valor) saldo FROM fichas LEFT JOIN presupuestos ON presupuestos.Fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.presupuestos_id_Presupuesto = presupuestos.id_Presupuesto LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad ")
+
+            for (let i = 0; i < meses.length; i++) {
+                const mes = meses[i];
+                console.log(mes);
+                query = query.concat("LEFT JOIN (SELECT partidas.id_partida, SUM(avanceactividades.valor) avance_acumulado FROM fichas LEFT JOIN presupuestos ON presupuestos.Fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.presupuestos_id_Presupuesto = presupuestos.id_Presupuesto LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE CONCAT(TIMESTAMPDIFF(MONTH, fichas.fecha_inicial_real, avanceactividades.fecha) + 1, '.', avanceactividades.historialEstados_id_historialEstado) = "+mes.id_periodo+" GROUP BY partidas.id_partida) r"+i+" ON r"+i+".id_partida = partidas.id_partida ")
+                
+            }
+            query = query.concat("WHERE fichas.id_ficha = ? GROUP BY partidas.id_partida")
+
+                       
+            conn.query(query,id_ficha,(err,res)=>{
+                if(err){
+                    console.log(err);                    
+                    callback(err.code);                
+                }
+                else if(res.length == 0){
+                    callback("vacio");   
+                }else{  
+                    var dataTotal = [
+                        cabeceras
+                    ]      
+                    for (let i = 0; i < res.length; i++) {
+                        const fila = res[i];
+                        var temp = [
+                            fila.item,
+                            fila.descripcion,
+                            fila.unidad_medida,
+                            fila.metrado,
+                            fila.r0,
+                            fila.r1,
+                            fila.avance_acumulado,            
+                            fila.saldo
+                        ]        
+                        dataTotal.push(temp)
+                    }
+                    callback(null,dataTotal);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }
+        
+                
+    })
+}
 
 
 

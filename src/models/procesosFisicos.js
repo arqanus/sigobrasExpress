@@ -486,15 +486,7 @@ userModel.getHistorial = (id_ficha,callback)=>{
                                 componentes.push(componente);
                                 componente = {}
                             }
-                            // console.log("fecha")
-                            // console.log("fecha",fila.fecha.getDay())
-                            // console.log("fecha",Date(fila.fecha))
-                            // console.log("fecha",fila.fecha.getDate())
-                            // console.log("fecha",fila.fecha.getFullYear())
-                            // console.log("fecha",fila.fecha.getMonth())
-                            
-                            // console.log("fecha",month[fila.fecha.getMonth()])
-                            
+                                           
                             
                             componente.id_componente = fila.id_componente
                             componente.numero = fila.numero
@@ -502,6 +494,7 @@ userModel.getHistorial = (id_ficha,callback)=>{
                             componente.fechas = [
                                 {
                                     "fecha": fila.fecha,
+                                    "fecha_total":123,
                                     "historial":[
                                         {
                                             "item" : fila.item,
@@ -524,6 +517,7 @@ userModel.getHistorial = (id_ficha,callback)=>{
                                 componente.fechas.push(
                                     {
                                         "fecha": fila.fecha,
+                                        "fecha_total":123,
                                         "historial":[
                                             {
                                                 "item" : fila.item,
@@ -563,16 +557,7 @@ userModel.getHistorial = (id_ficha,callback)=>{
                         
                     }
                     componentes.push(componente);
-                    // for (let i = 0; i < componentes.length; i++) {
-                    //     const historial = componentes[i].historial;
-                    //     for (let j = 0; j < historial.length; j++) {
-                    //         const metrado = historial[j];
-                    //         metrado.valor = formato(metrado.valor)
-                    //         metrado.costo_unitario = formato(metrado.costo_unitario)
-                    //         metrado.parcial = formato(metrado.parcial)                            
-                    //     }
-                        
-                    // }
+                    
                     callback(null,componentes);
                     conn.destroy()
                 }
