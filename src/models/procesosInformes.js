@@ -166,112 +166,243 @@ userModel.resumenValorizacionPrincipal  = (id_ficha,callback)=>{
                         actual_valorizado +=fila.actual_valorizado
                         
                     }
+                    var datatemp = 
+                    {
+                        componetes:[
+                            {
+                                "numero": "01",
+                                "nombre": "CONSTRUCCION DE S.U.M. y MODULO ADMINISTRATIVO",
+                                "presupuesto": 259638.61,
+                                "porcentaje": 0,
+                                "anterior_valorizado": 0,
+                                "anterior_porcentaj": 0,
+                                "actual_valorizado": 213602.11,
+                                "actual_porcentaje": 0,
+                                "acumulado_valorizado": 0,
+                                "acumulado_porcentaje": 0
+                            },
+                            {
+                                "numero": "02",
+                                "nombre": "CONSTRUCCION DE 02 AULAS, SS.HH. y DEP. MAT. EDUC.",
+                                "presupuesto": 259740.28,
+                                "porcentaje": 0,
+                                "anterior_valorizado": 0,
+                                "anterior_porcentaj": 0,
+                                "actual_valorizado": 25712.12,
+                                "actual_porcentaje": 0,
+                                "acumulado_valorizado": 0,
+                                "acumulado_porcentaje": 0
+                            },
+                            {
+                                "numero": "03",
+                                "nombre": "CONSTRUCCION DE VIVIENDA PARA DOCENTES, SS.HH., COCINA",
+                                "presupuesto": 79539.11,
+                                "porcentaje": 0,
+                                "anterior_valorizado": 0,
+                                "anterior_porcentaj": 0,
+                                "actual_valorizado": 2913.24,
+                                "actual_porcentaje": 0,
+                                "acumulado_valorizado": 0,
+                                "acumulado_porcentaje": 0
+                            },
+                            {
+                                "numero": "04",
+                                "nombre": "CONSTRUCCION DE CERCO PERIMETRICO Y PUERTA DE INGRESO",
+                                "presupuesto": 150909.06,
+                                "porcentaje": 0,
+                                "anterior_valorizado": 0,
+                                "anterior_porcentaj": 0,
+                                "actual_valorizado": 10071.21,
+                                "actual_porcentaje": 0,
+                                "acumulado_valorizado": 0,
+                                "acumulado_porcentaje": 0
+                            },
+                            {
+                                "numero": "05",
+                                "nombre": "CONSTRUCCION DE PATIO DURO y BLANDO",
+                                "presupuesto": 54494.95,
+                                "porcentaje": 0,
+                                "anterior_valorizado": 0,
+                                "anterior_porcentaj": 0,
+                                "actual_valorizado": 20641.93,
+                                "actual_porcentaje": 0,
+                                "acumulado_valorizado": 0,
+                                "acumulado_porcentaje": 0
+                            },
+                            {
+                                "numero": "06",
+                                "nombre": "CONSTRUCCION DE POZO SEPTICO Y POZO PERCOLADOR",
+                                "presupuesto": 28399.15,
+                                "porcentaje": 0,
+                                "anterior_valorizado": 0,
+                                "anterior_porcentaj": 0,
+                                "actual_valorizado": 6260.6,
+                                "actual_porcentaje": 0,
+                                "acumulado_valorizado": 0,
+                                "acumulado_porcentaje": 0
+                            },
+                            {
+                                "numero": "07",
+                                "nombre": "ADQUISICION DE MOBILIARIO, EQUIPAMIENTO y CAPACITACION",
+                                "presupuesto": 63050,
+                                "porcentaje": 0,
+                                "anterior_valorizado": 0,
+                                "anterior_porcentaj": 0,
+                                "actual_valorizado": 11100,
+                                "actual_porcentaje": 0,
+                                "acumulado_valorizado": 0,
+                                "acumulado_porcentaje": 0
+                            }
+                        ],
+                        costosDirecto:[
+                            {
+                                "numero": "",
+                                "nombre": "COSTO DIRECTO",
+                                "presupuesto": 895771.16,
+                                "porcentaje": 100,
+                                "anterior_valorizado": 0,
+                                "anterior_porcentaj": 0,
+                                "actual_valorizado": 290301.20999999996,
+                                "actual_porcentaje": "",
+                                "acumulado_valorizado": 0,
+                                "acumulado_porcentaje": 0
+                            }
+                            
+
+                        ],
+
+                        costosindirectos:[
                     
-                    res.push(
-                        {
-                            "numero": "",
-                            "nombre": "COSTO DIRECTO",
-                            "presupuesto": presupuesto,
-                            "porcentaje": 100.00,
-                            "anterior_valorizado": 0,
-                            "anterior_porcentaj": 0,
-                            "actual_valorizado": actual_valorizado,
-                            "actual_porcentaje": "",
-                            "acumulado_valorizado": 0,
-                            "acumulado_porcentaje": 0
-                        }
-                    )
-                    res.push(
-                        {
-                            "numero": "",
-                            "nombre": "COSTO INDIRECTO",
-                            "presupuesto": 196309,
-                            "porcentaje": "",
-                            "anterior_valorizado": 0,
-                            "anterior_porcentaj": 0,
-                            "actual_valorizado": 0,
-                            "actual_porcentaje": 0,
-                            "acumulado_valorizado": 0,
-                            "acumulado_porcentaje": 0
-                        }
-                    )
-                    res.push(
-                        {
-                            "numero": "",
-                            "nombre": "GASTOS GENERALES",
-                            "presupuesto": 155209,
-                            "porcentaje": 79.06,
-                            "anterior_valorizado": 0,
-                            "anterior_porcentaj": 0,
-                            "actual_valorizado": 0,
-                            "actual_porcentaje": 0,
-                            "acumulado_valorizado": 0,
-                            "acumulado_porcentaje": 0
-                        }
-                    )
-                    res.push(
-                        {
-                            "numero": "",
-                            "nombre": "GASTOS DE GESTION DE PROYECTO",
-                            "presupuesto": 3620,
-                            "porcentaje": 1.84,
-                            "anterior_valorizado": 0,
-                            "anterior_porcentaj": 0,
-                            "actual_valorizado": 0,
-                            "actual_porcentaje": 0,
-                            "acumulado_valorizado": 0,
-                            "acumulado_porcentaje": 0
-                        }
-                    )
-                    res.push(
-                        {
-                            "numero": "",
-                            "nombre": "GASTOS DE GESTION DE PROYECTO",
-                            "presupuesto": 37480,
-                            "porcentaje": 19.09,
-                            "anterior_valorizado": 0,
-                            "anterior_porcentaj": 0,
-                            "actual_valorizado": 0,
-                            "actual_porcentaje": 0,
-                            "acumulado_valorizado": 0,
-                            "acumulado_porcentaje": 0
-                        }
-                    )
-                    res.push(
-                        {
-                            "numero": "",
-                            "nombre": "EJECUTADO DEL PRESUPUESTO TOTAL SEGUN EXP",
-                            "presupuesto": presupuesto+196309,
-                            "porcentaje": "100",
-                            "anterior_valorizado": 0,
-                            "anterior_porcentaj": 0,
-                            "actual_valorizado": 0,
-                            "actual_porcentaje": 0,
-                            "acumulado_valorizado": 0,
-                            "acumulado_porcentaje": 0
-                        }
-                    )
-                    res.push(
-                        {
-                            "numero": "",
-                            "nombre": "GASTOS DE GESTION DE PROYECTO",
-                            "presupuesto": presupuesto,
-                            "porcentaje": "",
-                            "anterior_valorizado": 0,
-                            "anterior_porcentaj": 0,
-                            "actual_valorizado": 0,
-                            "actual_porcentaje": 0,
-                            "acumulado_valorizado": 0,
-                            "acumulado_porcentaje": 0
-                        }
-                    )
+                            {
+                                "numero": "",
+                                "nombre": "COSTO INDIRECTO",
+                                "presupuesto": 196309,
+                                "porcentaje": "",
+                                "anterior_valorizado": 0,
+                                "anterior_porcentaj": 0,
+                                "actual_valorizado": 0,
+                                "actual_porcentaje": 0,
+                                "acumulado_valorizado": 0,
+                                "acumulado_porcentaje": 0
+                            },
+                            {
+                                "numero": "",
+                                "nombre": "GASTOS GENERALES",
+                                "presupuesto": 155209,
+                                "porcentaje": 79.06,
+                                "anterior_valorizado": 0,
+                                "anterior_porcentaj": 0,
+                                "actual_valorizado": 0,
+                                "actual_porcentaje": 0,
+                                "acumulado_valorizado": 0,
+                                "acumulado_porcentaje": 0
+                            },
+                            {
+                                "numero": "",
+                                "nombre": "GASTOS DE GESTION DE PROYECTO",
+                                "presupuesto": 3620,
+                                "porcentaje": 1.84,
+                                "anterior_valorizado": 0,
+                                "anterior_porcentaj": 0,
+                                "actual_valorizado": 0,
+                                "actual_porcentaje": 0,
+                                "acumulado_valorizado": 0,
+                                "acumulado_porcentaje": 0
+                            },
+                            {
+                                "numero": "",
+                                "nombre": "GASTOS DE GESTION DE PROYECTO",
+                                "presupuesto": 37480,
+                                "porcentaje": 19.09,
+                                "anterior_valorizado": 0,
+                                "anterior_porcentaj": 0,
+                                "actual_valorizado": 0,
+                                "actual_porcentaje": 0,
+                                "acumulado_valorizado": 0,
+                                "acumulado_porcentaje": 0
+                            },
+                            {
+                                "numero": "",
+                                "nombre": "EJECUTADO DEL PRESUPUESTO TOTAL SEGUN EXP",
+                                "presupuesto": 1092080.1600000001,
+                                "porcentaje": "100",
+                                "anterior_valorizado": 0,
+                                "anterior_porcentaj": 0,
+                                "actual_valorizado": 0,
+                                "actual_porcentaje": 0,
+                                "acumulado_valorizado": 0,
+                                "acumulado_porcentaje": 0
+                            },
+                            {
+                                "numero": "",
+                                "nombre": "GASTOS DE GESTION DE PROYECTO",
+                                "presupuesto": 895771.16,
+                                "porcentaje": "",
+                                "anterior_valorizado": 0,
+                                "anterior_porcentaj": 0,
+                                "actual_valorizado": 0,
+                                "actual_porcentaje": 0,
+                                "acumulado_valorizado": 0,
+                                "acumulado_porcentaje": 0
+                            }
+
+                        ]
+                        ,
+                        costoIndirectoTotal:[
+                            {
+                                "numero": "",
+                                "nombre": "COSTO INDIRECTO TOTAL",
+                                "presupuesto": 895771.16,
+                                "porcentaje": 100,
+                                "anterior_valorizado": 0,
+                                "anterior_porcentaj": 0,
+                                "actual_valorizado": 290301.20999999996,
+                                "actual_porcentaje": "",
+                                "acumulado_valorizado": 0,
+                                "acumulado_porcentaje": 0
+                            }                            
+
+                        ],
+                        ejecutadoTotalExpediente:[
+                            {
+                                "numero": "",
+                                "nombre": "totalExpediente",
+                                "presupuesto": 895771.16,
+                                "porcentaje": 100,
+                                "anterior_valorizado": 0,
+                                "anterior_porcentaj": 0,
+                                "actual_valorizado": 290301.20999999996,
+                                "actual_porcentaje": "",
+                                "acumulado_valorizado": 0,
+                                "acumulado_porcentaje": 0
+                            }                            
+
+                        ],
+                        ejecutadoCostoDirecto:[
+                            {
+                                "numero": "",
+                                "nombre": "ejecutadoCostoDirecto",
+                                "presupuesto": 895771.16,
+                                "porcentaje": 100,
+                                "anterior_valorizado": 0,
+                                "anterior_porcentaj": 0,
+                                "actual_valorizado": 290301.20999999996,
+                                "actual_porcentaje": "",
+                                "acumulado_valorizado": 0,
+                                "acumulado_porcentaje": 0
+                            }                            
+
+                        ]
+                       
+                        
+                    }
              
 
                                       
 
 
                     
-                    callback(null,res);
+                    callback(null,datatemp);
                     conn.destroy()
                 }
                 
