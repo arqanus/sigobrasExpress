@@ -46,7 +46,7 @@ module.exports = function(app){
                     
           fs.rename(files.foto.path, obraFolder+"/"+fields.id_acceso+"_"+fields.id_actividad+"_"+fecha()+".jpg", function(err) {
               if (err) next(err);
-              res.end();
+              res.end("exito");
           });
       });
     });
