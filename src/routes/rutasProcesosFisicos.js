@@ -50,7 +50,7 @@ module.exports = function(app){
 			
 			
 			
-			res.status(204).send("fecha invalida")
+			res.status(200).send("fecha invalida")
 					
 			
 		}else{			
