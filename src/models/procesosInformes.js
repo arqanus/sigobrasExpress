@@ -204,6 +204,16 @@ userModel.resumenValorizacionPrincipal  = (id_ficha,costosIndirectos,callback)=>
                         porcentaje_acumuado+=fila.porcentaje_acumuado
                         saldo+=fila.saldo
                         porcentaje_saldo+=fila.porcentaje_saldo
+
+                        fila.presupuesto = formatoPorcentaje(fila.presupuesto)
+                        fila.anterior = formatoPorcentaje(fila.anterior)
+                        fila.porcentaje_anterior = formatoPorcentaje(fila.porcentaje_anterior)
+                        fila.actual = formatoPorcentaje(fila.actual)
+                        fila.porcentaje_actual = formatoPorcentaje(fila.porcentaje_actual)
+                        fila.acumulado = formatoPorcentaje(fila.acumulado)
+                        fila.porcentaje_acumuado = formatoPorcentaje(fila.porcentaje_acumuado)
+                        fila.saldo = formatoPorcentaje(fila.saldo)
+                        fila.porcentaje_saldo = formatoPorcentaje(fila.porcentaje_saldo)
                     }
                     //calculo de costo Indirecto
                     var presupuesto2 = 0
@@ -215,8 +225,8 @@ userModel.resumenValorizacionPrincipal  = (id_ficha,costosIndirectos,callback)=>
                     var porcentaje_acumuado2 = 0
                     var saldo2 = 0
                     var porcentaje_saldo2 = 0
-                    for (let i = 0; i < res.length; i++) {
-                        const fila = res[i];
+                    for (let i = 0; i < costosIndirectos.length; i++) {
+                        const fila = costosIndirectos[i];
                         presupuesto2+=fila.presupuesto
                         anterior2+=fila.anterior
                         porcentaje_anterior2+=fila.porcentaje_anterior
@@ -226,23 +236,33 @@ userModel.resumenValorizacionPrincipal  = (id_ficha,costosIndirectos,callback)=>
                         porcentaje_acumuado2+=fila.porcentaje_acumuado
                         saldo2+=fila.saldo
                         porcentaje_saldo2+=fila.porcentaje_saldo
+
+                        fila.presupuesto = formatoPorcentaje(fila.presupuesto)
+                        fila.anterior = formatoPorcentaje(fila.anterior)
+                        fila.porcentaje_anterior = formatoPorcentaje(fila.porcentaje_anterior)
+                        fila.actual = formatoPorcentaje(fila.actual)
+                        fila.porcentaje_actual = formatoPorcentaje(fila.porcentaje_actual)
+                        fila.acumulado = formatoPorcentaje(fila.acumulado)
+                        fila.porcentaje_acumuado = formatoPorcentaje(fila.porcentaje_acumuado)
+                        fila.saldo = formatoPorcentaje(fila.saldo)
+                        fila.porcentaje_saldo = formatoPorcentaje(fila.porcentaje_saldo)
                     }
                     var datatemp = 
                     {
-                        componetes:res,
+                        componentes:res,
                         costosDirecto:[
                             {
                                 "numero":"",
                                 "nombre":"COSTO DIRECTO",
-                                "presupuesto":presupuesto,
-                                "anterior":anterior,
-                                "porcentaje_anterior":porcentaje_anterior,
-                                "actual":actual,
-                                "porcentaje_actual":porcentaje_actual,
-                                "acumulado":acumulado,
-                                "porcentaje_acumuado":porcentaje_acumuado,
-                                "saldo":saldo,
-                                "porcentaje_saldo":porcentaje_saldo
+                                "presupuesto":formatoPorcentaje( presupuesto),
+                                "anterior":formatoPorcentaje( anterior),
+                                "porcentaje_anterior":formatoPorcentaje( porcentaje_anterior),
+                                "actual":formatoPorcentaje( actual),
+                                "porcentaje_actual":formatoPorcentaje( porcentaje_actual),
+                                "acumulado":formatoPorcentaje( acumulado),
+                                "porcentaje_acumuado":formatoPorcentaje( porcentaje_acumuado),
+                                "saldo":formatoPorcentaje( saldo),
+                                "porcentaje_saldo":formatoPorcentaje( porcentaje_saldo)
                             }
                             
 
@@ -253,15 +273,15 @@ userModel.resumenValorizacionPrincipal  = (id_ficha,costosIndirectos,callback)=>
                             {
                                 "numero": "",
                                 "nombre": "COSTO INDIRECTO TOTAL",
-                                "presupuesto":presupuesto2,
-                                "anterior":anterior2,
-                                "porcentaje_anterior":porcentaje_anterior2,
-                                "actual":actual2,
-                                "porcentaje_actual":porcentaje_actual2,
-                                "acumulado":acumulado2,
-                                "porcentaje_acumuado":porcentaje_acumuado2,
-                                "saldo":saldo2,
-                                "porcentaje_saldo":porcentaje_saldo2
+                                "presupuesto":formatoPorcentaje( presupuesto2),
+                                "anterior":formatoPorcentaje( anterior2),
+                                "porcentaje_anterior":formatoPorcentaje( porcentaje_anterior2),
+                                "actual":formatoPorcentaje( actual2),
+                                "porcentaje_actual":formatoPorcentaje( porcentaje_actual2),
+                                "acumulado":formatoPorcentaje( acumulado2),
+                                "porcentaje_acumuado":formatoPorcentaje( porcentaje_acumuado2),
+                                "saldo":formatoPorcentaje( saldo2),
+                                "porcentaje_saldo":formatoPorcentaje( porcentaje_saldo2)
                             }                            
 
                         ],
@@ -269,15 +289,15 @@ userModel.resumenValorizacionPrincipal  = (id_ficha,costosIndirectos,callback)=>
                             {
                                 "numero": "",
                                 "nombre": "COSTO INDIRECTO TOTAL",
-                                "presupuesto":presupuesto+presupuesto2,
-                                "anterior":anterior+anterior2,
-                                "porcentaje_anterior":porcentaje_anterior+porcentaje_anterior2,
-                                "actual":actual+actual2,
-                                "porcentaje_actual":porcentaje_actual+porcentaje_actual2,
-                                "acumulado":acumulado+acumulado2,
-                                "porcentaje_acumuado":porcentaje_acumuado+porcentaje_acumuado2,
-                                "saldo":saldo+saldo2,
-                                "porcentaje_saldo":porcentaje_saldo+porcentaje_saldo2
+                                "presupuesto":formatoPorcentaje(presupuesto+presupuesto2),
+                                "anterior":formatoPorcentaje(anterior+anterior2),
+                                "porcentaje_anterior":formatoPorcentaje(porcentaje_anterior+porcentaje_anterior2),
+                                "actual":formatoPorcentaje(actual+actual2),
+                                "porcentaje_actual":formatoPorcentaje(porcentaje_actual+porcentaje_actual2),
+                                "acumulado":formatoPorcentaje(acumulado+acumulado2),
+                                "porcentaje_acumuado":formatoPorcentaje(porcentaje_acumuado+porcentaje_acumuado2),
+                                "saldo":formatoPorcentaje(saldo+saldo2),
+                                "porcentaje_saldo":formatoPorcentaje(porcentaje_saldo+porcentaje_saldo2)
                             }                            
 
                         ]
