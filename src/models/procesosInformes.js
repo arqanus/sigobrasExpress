@@ -144,13 +144,38 @@ userModel.getInformeDataGeneral  = (id_ficha,callback)=>{
                 
     })
 }
-userModel.resumenValorizacionPrincipal  = (id_ficha,callback)=>{    
+userModel.getCostosIndirectos  = (id_ficha,callback)=>{    
     pool.getConnection(function(err ,conn){
         if(err){ 
             callback(err);
         }        
         else{
-            conn.query("SELECT componentes.numero, componentes.nombre, componentes.presupuesto,0 porcentaje, 0 anterior_valorizado, 0 anterior_porcentaj, ROUND(if (sum(avanceactividades.valor*partidas.costo_unitario) is null,0,sum(avanceactividades.valor*partidas.costo_unitario)),2) actual_valorizado, 0 actual_porcentaje, 0 acumulado_valorizado, 0 acumulado_porcentaje FROM presupuestos LEFT JOIN partidas ON partidas.presupuestos_id_Presupuesto = presupuestos.id_Presupuesto LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad INNER JOIN componentes ON componentes.id_componente = partidas.componentes_id_componente where presupuestos.Fichas_id_ficha = ? GROUP BY componentes.id_componente",id_ficha,(err,res)=>{
+            conn.query("SELECT  t1.nombre, t1.presupuesto, COALESCE(t2.anterior, 0) anterior, COALESCE(t2.anterior / t1.presupuesto * 100, 0) porcentaje_anterior, COALESCE(t1.actual, 0) actual, COALESCE(t1.actual / t1.presupuesto * 100, 0) porcentaje_actual, COALESCE(t2.anterior, 0) + COALESCE(t1.actual, 0) acumulado, (COALESCE(t2.anterior, 0) + COALESCE(t1.actual, 0)) / COALESCE(t1.presupuesto, 0) * 100 porcentaje_acumuado, COALESCE(t1.presupuesto, 0) - (COALESCE(t2.anterior, 0) + COALESCE(t1.actual, 0)) saldo, (COALESCE(t1.presupuesto, 0) - (COALESCE(t2.anterior, 0) + COALESCE(t1.actual, 0))) / COALESCE(t1.presupuesto, 0) * 100 porcentaje_saldo FROM (SELECT costosyganancias.fichas_id_ficha, costosyganancias.id_costosyganancias, costosyganancias.nombre, costosyganancias.presupuesto, historialcyg.monto actual FROM costosyganancias LEFT JOIN historialcyg ON historialcyg.costosyganancias_id_costosyganancias = costosyganancias.id_costosyganancias WHERE MONTH(NOW()) = MONTH(historialcyg.fecha) GROUP BY costosyganancias.id_costosyganancias) t1 LEFT JOIN (SELECT costosyganancias.id_costosyganancias, historialcyg.monto anterior FROM costosyganancias LEFT JOIN historialcyg ON historialcyg.costosyganancias_id_costosyganancias = costosyganancias.id_costosyganancias WHERE MONTH(NOW()) > MONTH(historialcyg.fecha) GROUP BY costosyganancias.id_costosyganancias) t2 ON t1.id_costosyganancias = t2.id_costosyganancias where  t1.fichas_id_ficha =?",id_ficha,(err,res)=>{
+                if(err){
+                    console.log(err);                    
+                    callback(err.code);                
+                }
+                else if(res.length == 0){
+                    callback("vacio");        
+                }else{    
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }
+        
+                
+    })
+}
+userModel.resumenValorizacionPrincipal  = (id_ficha,costosIndirectos,callback)=>{    
+    pool.getConnection(function(err ,conn){
+        if(err){ 
+            callback(err);
+        }        
+        else{
+            conn.query("SELECT  t1.numero, t1.nombre, t1.presupuesto, COALESCE(t2.anterior, 0) anterior, COALESCE(t2.anterior / t1.presupuesto * 100, 0) porcentaje_anterior, COALESCE(t1.actual, 0) actual, COALESCE(t1.actual / t1.presupuesto * 100, 0) porcentaje_actual, COALESCE(t2.anterior, 0) + COALESCE(t1.actual, 0) acumulado, (COALESCE(t2.anterior, 0) + COALESCE(t1.actual, 0)) / COALESCE(t1.presupuesto, 0) * 100 porcentaje_acumuado, COALESCE(t1.presupuesto, 0) - (COALESCE(t2.anterior, 0) + COALESCE(t1.actual, 0)) saldo, (COALESCE(t1.presupuesto, 0) - (COALESCE(t2.anterior, 0) + COALESCE(t1.actual, 0))) / COALESCE(t1.presupuesto, 0) * 100 porcentaje_saldo FROM (SELECT presupuestos.Fichas_id_ficha, componentes.id_componente, componentes.numero, componentes.nombre, componentes.presupuesto, COALESCE(SUM(avanceactividades.valor * partidas.costo_unitario), 0) actual FROM presupuestos LEFT JOIN partidas ON partidas.presupuestos_id_Presupuesto = presupuestos.id_Presupuesto LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad INNER JOIN componentes ON componentes.id_componente = partidas.componentes_id_componente WHERE MONTH(NOW()) = MONTH(avanceactividades.fecha) GROUP BY componentes.id_componente) t1 LEFT JOIN (SELECT componentes.id_componente, COALESCE(SUM(avanceactividades.valor * partidas.costo_unitario), 0) anterior FROM presupuestos LEFT JOIN partidas ON partidas.presupuestos_id_Presupuesto = presupuestos.id_Presupuesto LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad INNER JOIN componentes ON componentes.id_componente = partidas.componentes_id_componente WHERE MONTH(NOW()) > MONTH(avanceactividades.fecha) GROUP BY componentes.id_componente) t2 ON t2.id_componente = t1.id_componente where  t1.fichas_id_ficha =?",id_ficha,(err,res)=>{
                 if(err){
                     console.log(err);                    
                     callback(err.code);                
@@ -159,237 +184,100 @@ userModel.resumenValorizacionPrincipal  = (id_ficha,callback)=>{
                     callback("vacio");        
                 }else{ 
                     var presupuesto = 0
-                    var actual_valorizado = 0
+                    var anterior = 0
+                    var porcentaje_anterior = 0
+                    var actual = 0
+                    var porcentaje_actual = 0
+                    var acumulado = 0
+                    var porcentaje_acumuado = 0
+                    var saldo = 0
+                    var porcentaje_saldo = 0
+                    //calculo de costo directo
                     for (let i = 0; i < res.length; i++) {
                         const fila = res[i];
-                        presupuesto +=fila.presupuesto
-                        actual_valorizado +=fila.actual_valorizado
-                        
+                        presupuesto+=fila.presupuesto
+                        anterior+=fila.anterior
+                        porcentaje_anterior+=fila.porcentaje_anterior
+                        actual+=fila.actual
+                        porcentaje_actual+=fila.porcentaje_actual
+                        acumulado+=fila.acumulado
+                        porcentaje_acumuado+=fila.porcentaje_acumuado
+                        saldo+=fila.saldo
+                        porcentaje_saldo+=fila.porcentaje_saldo
+                    }
+                    //calculo de costo Indirecto
+                    var presupuesto2 = 0
+                    var anterior2 = 0
+                    var porcentaje_anterior2 = 0
+                    var actual2 = 0
+                    var porcentaje_actual2 = 0
+                    var acumulado2 = 0
+                    var porcentaje_acumuado2 = 0
+                    var saldo2 = 0
+                    var porcentaje_saldo2 = 0
+                    for (let i = 0; i < res.length; i++) {
+                        const fila = res[i];
+                        presupuesto2+=fila.presupuesto
+                        anterior2+=fila.anterior
+                        porcentaje_anterior2+=fila.porcentaje_anterior
+                        actual2+=fila.actual
+                        porcentaje_actual2+=fila.porcentaje_actual
+                        acumulado2+=fila.acumulado
+                        porcentaje_acumuado2+=fila.porcentaje_acumuado
+                        saldo2+=fila.saldo
+                        porcentaje_saldo2+=fila.porcentaje_saldo
                     }
                     var datatemp = 
                     {
-                        componetes:[
-                            {
-                                "numero": "01",
-                                "nombre": "CONSTRUCCION DE S.U.M. y MODULO ADMINISTRATIVO",
-                                "presupuesto": 259638.61,
-                                "porcentaje": 0,
-                                "anterior_valorizado": 0,
-                                "anterior_porcentaj": 0,
-                                "actual_valorizado": 213602.11,
-                                "actual_porcentaje": 0,
-                                "acumulado_valorizado": 0,
-                                "acumulado_porcentaje": 0
-                            },
-                            {
-                                "numero": "02",
-                                "nombre": "CONSTRUCCION DE 02 AULAS, SS.HH. y DEP. MAT. EDUC.",
-                                "presupuesto": 259740.28,
-                                "porcentaje": 0,
-                                "anterior_valorizado": 0,
-                                "anterior_porcentaj": 0,
-                                "actual_valorizado": 25712.12,
-                                "actual_porcentaje": 0,
-                                "acumulado_valorizado": 0,
-                                "acumulado_porcentaje": 0
-                            },
-                            {
-                                "numero": "03",
-                                "nombre": "CONSTRUCCION DE VIVIENDA PARA DOCENTES, SS.HH., COCINA",
-                                "presupuesto": 79539.11,
-                                "porcentaje": 0,
-                                "anterior_valorizado": 0,
-                                "anterior_porcentaj": 0,
-                                "actual_valorizado": 2913.24,
-                                "actual_porcentaje": 0,
-                                "acumulado_valorizado": 0,
-                                "acumulado_porcentaje": 0
-                            },
-                            {
-                                "numero": "04",
-                                "nombre": "CONSTRUCCION DE CERCO PERIMETRICO Y PUERTA DE INGRESO",
-                                "presupuesto": 150909.06,
-                                "porcentaje": 0,
-                                "anterior_valorizado": 0,
-                                "anterior_porcentaj": 0,
-                                "actual_valorizado": 10071.21,
-                                "actual_porcentaje": 0,
-                                "acumulado_valorizado": 0,
-                                "acumulado_porcentaje": 0
-                            },
-                            {
-                                "numero": "05",
-                                "nombre": "CONSTRUCCION DE PATIO DURO y BLANDO",
-                                "presupuesto": 54494.95,
-                                "porcentaje": 0,
-                                "anterior_valorizado": 0,
-                                "anterior_porcentaj": 0,
-                                "actual_valorizado": 20641.93,
-                                "actual_porcentaje": 0,
-                                "acumulado_valorizado": 0,
-                                "acumulado_porcentaje": 0
-                            },
-                            {
-                                "numero": "06",
-                                "nombre": "CONSTRUCCION DE POZO SEPTICO Y POZO PERCOLADOR",
-                                "presupuesto": 28399.15,
-                                "porcentaje": 0,
-                                "anterior_valorizado": 0,
-                                "anterior_porcentaj": 0,
-                                "actual_valorizado": 6260.6,
-                                "actual_porcentaje": 0,
-                                "acumulado_valorizado": 0,
-                                "acumulado_porcentaje": 0
-                            },
-                            {
-                                "numero": "07",
-                                "nombre": "ADQUISICION DE MOBILIARIO, EQUIPAMIENTO y CAPACITACION",
-                                "presupuesto": 63050,
-                                "porcentaje": 0,
-                                "anterior_valorizado": 0,
-                                "anterior_porcentaj": 0,
-                                "actual_valorizado": 11100,
-                                "actual_porcentaje": 0,
-                                "acumulado_valorizado": 0,
-                                "acumulado_porcentaje": 0
-                            }
-                        ],
+                        componetes:res,
                         costosDirecto:[
                             {
-                                "numero": "",
-                                "nombre": "COSTO DIRECTO",
-                                "presupuesto": 895771.16,
-                                "porcentaje": 100,
-                                "anterior_valorizado": 0,
-                                "anterior_porcentaj": 0,
-                                "actual_valorizado": 290301.20999999996,
-                                "actual_porcentaje": "",
-                                "acumulado_valorizado": 0,
-                                "acumulado_porcentaje": 0
+                                "numero":"",
+                                "nombre":"COSTO DIRECTO",
+                                "presupuesto":presupuesto,
+                                "anterior":anterior,
+                                "porcentaje_anterior":porcentaje_anterior,
+                                "actual":actual,
+                                "porcentaje_actual":porcentaje_actual,
+                                "acumulado":acumulado,
+                                "porcentaje_acumuado":porcentaje_acumuado,
+                                "saldo":saldo,
+                                "porcentaje_saldo":porcentaje_saldo
                             }
                             
 
                         ],
 
-                        costosindirectos:[
-                    
-                            {
-                                "numero": "",
-                                "nombre": "COSTO INDIRECTO",
-                                "presupuesto": 196309,
-                                "porcentaje": "",
-                                "anterior_valorizado": 0,
-                                "anterior_porcentaj": 0,
-                                "actual_valorizado": 0,
-                                "actual_porcentaje": 0,
-                                "acumulado_valorizado": 0,
-                                "acumulado_porcentaje": 0
-                            },
-                            {
-                                "numero": "",
-                                "nombre": "GASTOS GENERALES",
-                                "presupuesto": 155209,
-                                "porcentaje": 79.06,
-                                "anterior_valorizado": 0,
-                                "anterior_porcentaj": 0,
-                                "actual_valorizado": 0,
-                                "actual_porcentaje": 0,
-                                "acumulado_valorizado": 0,
-                                "acumulado_porcentaje": 0
-                            },
-                            {
-                                "numero": "",
-                                "nombre": "GASTOS DE GESTION DE PROYECTO",
-                                "presupuesto": 3620,
-                                "porcentaje": 1.84,
-                                "anterior_valorizado": 0,
-                                "anterior_porcentaj": 0,
-                                "actual_valorizado": 0,
-                                "actual_porcentaje": 0,
-                                "acumulado_valorizado": 0,
-                                "acumulado_porcentaje": 0
-                            },
-                            {
-                                "numero": "",
-                                "nombre": "GASTOS DE GESTION DE PROYECTO",
-                                "presupuesto": 37480,
-                                "porcentaje": 19.09,
-                                "anterior_valorizado": 0,
-                                "anterior_porcentaj": 0,
-                                "actual_valorizado": 0,
-                                "actual_porcentaje": 0,
-                                "acumulado_valorizado": 0,
-                                "acumulado_porcentaje": 0
-                            },
-                            {
-                                "numero": "",
-                                "nombre": "EJECUTADO DEL PRESUPUESTO TOTAL SEGUN EXP",
-                                "presupuesto": 1092080.1600000001,
-                                "porcentaje": "100",
-                                "anterior_valorizado": 0,
-                                "anterior_porcentaj": 0,
-                                "actual_valorizado": 0,
-                                "actual_porcentaje": 0,
-                                "acumulado_valorizado": 0,
-                                "acumulado_porcentaje": 0
-                            },
-                            {
-                                "numero": "",
-                                "nombre": "GASTOS DE GESTION DE PROYECTO",
-                                "presupuesto": 895771.16,
-                                "porcentaje": "",
-                                "anterior_valorizado": 0,
-                                "anterior_porcentaj": 0,
-                                "actual_valorizado": 0,
-                                "actual_porcentaje": 0,
-                                "acumulado_valorizado": 0,
-                                "acumulado_porcentaje": 0
-                            }
-
-                        ]
-                        ,
+                        costosindirectos:costosIndirectos,
                         costoIndirectoTotal:[
                             {
                                 "numero": "",
                                 "nombre": "COSTO INDIRECTO TOTAL",
-                                "presupuesto": 895771.16,
-                                "porcentaje": 100,
-                                "anterior_valorizado": 0,
-                                "anterior_porcentaj": 0,
-                                "actual_valorizado": 290301.20999999996,
-                                "actual_porcentaje": "",
-                                "acumulado_valorizado": 0,
-                                "acumulado_porcentaje": 0
+                                "presupuesto":presupuesto2,
+                                "anterior":anterior2,
+                                "porcentaje_anterior":porcentaje_anterior2,
+                                "actual":actual2,
+                                "porcentaje_actual":porcentaje_actual2,
+                                "acumulado":acumulado2,
+                                "porcentaje_acumuado":porcentaje_acumuado2,
+                                "saldo":saldo2,
+                                "porcentaje_saldo":porcentaje_saldo2
                             }                            
 
                         ],
                         ejecutadoTotalExpediente:[
                             {
                                 "numero": "",
-                                "nombre": "totalExpediente",
-                                "presupuesto": 895771.16,
-                                "porcentaje": 100,
-                                "anterior_valorizado": 0,
-                                "anterior_porcentaj": 0,
-                                "actual_valorizado": 290301.20999999996,
-                                "actual_porcentaje": "",
-                                "acumulado_valorizado": 0,
-                                "acumulado_porcentaje": 0
-                            }                            
-
-                        ],
-                        ejecutadoCostoDirecto:[
-                            {
-                                "numero": "",
-                                "nombre": "ejecutadoCostoDirecto",
-                                "presupuesto": 895771.16,
-                                "porcentaje": 100,
-                                "anterior_valorizado": 0,
-                                "anterior_porcentaj": 0,
-                                "actual_valorizado": 290301.20999999996,
-                                "actual_porcentaje": "",
-                                "acumulado_valorizado": 0,
-                                "acumulado_porcentaje": 0
+                                "nombre": "COSTO INDIRECTO TOTAL",
+                                "presupuesto":presupuesto+presupuesto2,
+                                "anterior":anterior+anterior2,
+                                "porcentaje_anterior":porcentaje_anterior+porcentaje_anterior2,
+                                "actual":actual+actual2,
+                                "porcentaje_actual":porcentaje_actual+porcentaje_actual2,
+                                "acumulado":acumulado+acumulado2,
+                                "porcentaje_acumuado":porcentaje_acumuado+porcentaje_acumuado2,
+                                "saldo":saldo+saldo2,
+                                "porcentaje_saldo":porcentaje_saldo+porcentaje_saldo2
                             }                            
 
                         ]

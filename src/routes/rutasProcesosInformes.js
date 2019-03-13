@@ -39,13 +39,20 @@ module.exports = function(app){
 		if(req.body.id_ficha == null){
 			res.json("null");		
 		}else{
-			User.resumenValorizacionPrincipal(req.body.id_ficha,(err,data)=>{							
-				if(err){ res.status(204).json(err);}
-				else{
-					res.json(data);	
-				}
-	
-			})
+			User.getCostosIndirectos(req.body.id_ficha,(err,costosIndirectos)=>{							
+					if(err){ res.status(204).json(err);}
+					else{
+						User.resumenValorizacionPrincipal(req.body.id_ficha,costosIndirectos,(err,data)=>{							
+							if(err){ res.status(204).json(err);}
+							else{
+								res.json(data);	
+							}
+				
+						})	
+					}
+		
+				})
+			
 		}
 		
 	})
