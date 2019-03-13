@@ -25,8 +25,10 @@ module.exports = function(app){
 
     
     app.post('/imagenesActividad', function(req, res, next) {
+      console.log(__dirname+'/../../');
       
-      var dir = '/imagenesActividades/'
+      
+      var dir = __dirname+'/../../../imagenesActividades/'
       if (!fs.existsSync(dir)){
         fs.mkdirSync(dir);
       }
