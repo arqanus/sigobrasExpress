@@ -32,26 +32,22 @@ module.exports = function(app){
 	})
 
 	app.post('/avanceActividad',(req,res)=>{
-		var d = new Date();
-		var mes_actual = d.getMonth();
-		var dia_actual = d.getDate();
-		var anyo_actual = d.getFullYear();
-		
 
-		var a = new Date(req.body.fecha);
-		var mes_ingreso = a.getMonth();
-		var dia_ingreso = a.getDate();
-		var anyo_ingreso = a.getFullYear();
-		console.log("dia",dia_actual,dia_ingreso);
+
+		var a = req.body.fecha.split("-")	
+		var anyo_ingreso = a[0]		
+		var mes_ingreso = a[1]
+		var dia_ingreso = a[2]
+		var d = new Date();
+		var mes_actual = d.getMonth()+1;
+		var dia_actual = d.getDate();
+		var anyo_actual = d.getFullYear();		
 
 		if(req.body.valor <=0 ||req.body.valor == ""){
 			res.status(204).json("valor no permitido");
-		}else if(req.body.fecha&&(anyo_actual!=anyo_ingreso||mes_actual!=mes_ingreso||dia_ingreso > dia_actual)){
+		}else if(req.body.fecha&&(anyo_actual!=anyo_ingreso||mes_actual!=mes_ingreso||dia_ingreso > dia_actual)){		
 			
-			
-			
-			res.status(200).send("fecha invalida")
-					
+			res.status(200).send("fecha invalida")					
 			
 		}else{			
 			User.getIdHistorial(req.body.id_ficha,(err,data)=>{
