@@ -40,7 +40,7 @@ module.exports = function(app){
 
 		var a = new Date(req.body.fecha);
 		var mes_ingreso = a.getMonth();
-		var dia_ingreso = a.getDate()+1;
+		var dia_ingreso = a.getDate();
 		var anyo_ingreso = a.getFullYear();
 		console.log("dia",dia_actual,dia_ingreso);
 
