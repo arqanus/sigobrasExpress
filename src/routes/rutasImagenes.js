@@ -25,7 +25,7 @@ module.exports = function(app){
 
     
     app.post('/imagenesActividad', function(req, res, next) {
-      console.log(__dirname+'/../../');
+      
       
       
       var dir = __dirname+'/../../../imagenesActividades/'
@@ -50,4 +50,11 @@ module.exports = function(app){
           });
       });
     });
+
+    app.get('/getImagen', function(req, res){
+      var ruta = __dirname+'/../../../imagenesActividades/'+"E001/"+"11_12_03-11-2019.jpg"
+      res.sendFile(ruta);       
+ 
+    });
+    
 }

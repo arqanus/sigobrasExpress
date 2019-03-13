@@ -32,16 +32,25 @@ module.exports = function(app){
 	})
 
 	app.post('/avanceActividad',(req,res)=>{
-
-
-		var a = req.body.fecha.split("-")	
-		var anyo_ingreso = a[0]		
-		var mes_ingreso = a[1]
-		var dia_ingreso = a[2]
-		var d = new Date();
-		var mes_actual = d.getMonth()+1;
-		var dia_actual = d.getDate();
-		var anyo_actual = d.getFullYear();		
+		var a =""
+		var anyo_ingreso =""
+		var mes_ingreso =""
+		var dia_ingreso =""
+		var d =""
+		var mes_actual =""
+		var dia_actual =""
+		var anyo_actual =""
+		if (req.body.fecha){
+			a = req.body.fecha.split("-")	
+			anyo_ingreso = a[0]		
+			mes_ingreso = a[1]
+			dia_ingreso = a[2]
+			d = new Date();
+			mes_actual = d.getMonth()+1;
+			dia_actual = d.getDate();
+			anyo_actual = d.getFullYear();
+		}
+				
 
 		if(req.body.valor <=0 ||req.body.valor == ""){
 			res.status(204).json("valor no permitido");
