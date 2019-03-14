@@ -179,30 +179,60 @@ userModel.getPartidas = (id_ficha,callback)=>{
                     for (let i = 0; i < componentes.length; i++) {
                         const partidas = componentes[i].partidas;
                         for (let j = 0; j < partidas.length; j++) {
-                            const partida = partidas[j];                            
-                            partida.metrado = formato(partida.metrado)
-                            partida.costo_unitario = formato(partida.costo_unitario)
-                            partida.parcial = formato(partida.parcial)
-                            partida.avance_metrado = formato(partida.avance_metrado)
-                            partida.avance_costo = formato(partida.avance_costo)
-                            partida.metrados_saldo = formato(partida.metrados_saldo)
-                            partida.metrados_costo_saldo = formato(partida.metrados_costo_saldo)
+                            const partida = partidas[j];
+                            if(partida.tipo == "subtitulo"){
+                                partida.metrado = formato(partida.metrado)
+                                partida.costo_unitario = formato(partida.costo_unitario)
+                                partida.parcial = formato(partida.parcial)
+                                partida.avance_metrado = formato(partida.avance_metrado)
+                                partida.avance_costo = formato(partida.avance_costo)
+                                partida.metrados_saldo = formato(partida.metrados_saldo)
+                                partida.metrados_costo_saldo = formato(partida.metrados_costo_saldo)
+                                
+
+                            }else{
+                                partida.metrado = null
+                                partida.costo_unitario = null
+                                partida.parcial = null
+                                partida.avance_metrado = null
+                                partida.avance_costo = null
+                                partida.metrados_saldo = null
+                                partida.metrados_costo_saldo = null
+                                partida.porcentaje = null
+
+                            }
+                        
                             const actividades = partida.actividades
                             for (let k = 0; k < actividades.length; k++) {
                                 const actividad = actividades[k];
-                                actividad.metrado_actividad = formato(actividad.metrado_actividad)
-                                actividad.costo_unitario = formato(actividad.costo_unitario)
-                                actividad.parcial_actividad = formato(actividad.parcial_actividad)
-                                actividad.actividad_avance_metrado = formato(actividad.actividad_avance_metrado)
-                                actividad.actividad_avance_costo = formato(actividad.actividad_avance_costo)
-                                actividad.actividad_metrados_saldo = formato(actividad.actividad_metrados_saldo)
-                                actividad.actividad_metrados_costo_saldo = formato(actividad.actividad_metrados_costo_saldo)
-                                actividad.actividad_porcentaje = formato(actividad.actividad_porcentaje)
+                                if(actividad.tipo == "subtitulo"){
+                                    actividad.metrado_actividad = formato(actividad.metrado_actividad)
+                                    actividad.costo_unitario = formato(actividad.costo_unitario)
+                                    actividad.parcial_actividad = formato(actividad.parcial_actividad)
+                                    actividad.actividad_avance_metrado = formato(actividad.actividad_avance_metrado)
+                                    actividad.actividad_avance_costo = formato(actividad.actividad_avance_costo)
+                                    actividad.actividad_metrados_saldo = formato(actividad.actividad_metrados_saldo)
+                                    actividad.actividad_metrados_costo_saldo = formato(actividad.actividad_metrados_costo_saldo)
+                                    actividad.actividad_porcentaje = formato(actividad.actividad_porcentaje)
+    
+                                    //asignando estado de mayor metrado a partidda
+                                    if(actividad.actividad_estado =="Mayor Metrado"){
+                                        partida.estado = "Mayor Metrado"
+                                    }
 
-                                //asignando estado de mayor metrado a partidda
-                                if(actividad.actividad_estado =="Mayor Metrado"){
-                                    partida.estado = "Mayor Metrado"
+                                }else{
+                                    actividad.metrado_actividad = null
+                                    actividad.costo_unitario = null
+                                    actividad.parcial_actividad = null
+                                    actividad.actividad_avance_metrado = null
+                                    actividad.actividad_avance_costo = null
+                                    actividad.actividad_metrados_saldo = null
+                                    actividad.actividad_metrados_costo_saldo = null
+                                    actividad.actividad_porcentaje = null
+                                    actividad.unidad_medida = null
+    
                                 }
+                               
                             }                                                   
                         }
                         
