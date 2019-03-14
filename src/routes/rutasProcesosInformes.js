@@ -3,6 +3,7 @@ const User = require('../models/procesosInformes');
 
 
 
+
 module.exports = function(app){
     app.post('/informeControlEjecucionObras',(req,res)=>{
 		// console.log(req.body);
@@ -11,7 +12,7 @@ module.exports = function(app){
 		}else{
 			User.getinformeControlEjecucionObras(req.body.id_ficha,(err,data)=>{							
 				if(err){ res.status(204).json(err);}
-				else{
+				else{					
 					res.json(data);	
 				}
 	

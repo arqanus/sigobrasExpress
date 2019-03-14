@@ -22,6 +22,16 @@ function formatoPorcentaje(data){
 
     return data
 }
+function formatoFecha(fecha){
+	var currentDate = new Date(fecha);
+
+	var date = currentDate.getDate();
+	var month = currentDate.getMonth(); //Be careful! January is 0 not 1
+	var year = currentDate.getFullYear();
+    // return "2"
+	return date + "-" +(month + 1) + "-" + year;
+
+}
 userModel.getinformeControlEjecucionObras = (id_ficha,callback)=>{    
     pool.getConnection(function(err ,conn){
         if(err){ 
@@ -45,17 +55,17 @@ userModel.getinformeControlEjecucionObras = (id_ficha,callback)=>{
                     obra.entidad_financiera =fila.entidad_financiera
                     obra.modalidad_ejecucion =fila.modalidad_ejecucion
                     obra.fuente_informacion =fila.fuente_informacion
-                    obra.fecha_actual =fila.fecha_actual
-                    obra.presupuesto =fila.presupuesto
+                    obra.fecha_actual =formatoFecha(fila.fecha_actual)
+                    obra.presupuesto =formatoPorcentaje(fila.presupuesto)
                     obra.ampliacion_presupuestal =fila.ampliacion_presupuestal
                     obra.plazo_ejecucion_inicial =fila.plazo_ejecucion_inicial
                     obra.ampliacion_plazo_n =fila.ampliacion_plazo_n
                     obra.codigo =fila.codigo
                     obra.g_meta =fila.g_meta
-                    obra.g_total_presu =fila.g_total_presu                    
+                    obra.g_total_presu =formatoPorcentaje(fila.g_total_presu)
                     obra.plazo_ejecucion =fila.plazo_ejecucion
-                    obra.fecha_inicial =fila.fecha_inicial
-                    obra.fechaEjecucion =fila.fechaEjecucion
+                    obra.fecha_inicial =formatoFecha(fila.fecha_inicial)
+                    obra.fechaEjecucion =formatoFecha(fila.fechaEjecucion)
                     obra.dias_ampliados =fila.dias_ampliados
                     obra.fecha_termino =fila.fecha_termino
                     obra.financiero_acumulado = formatoPorcentaje(fila.financiero_acumulado)
