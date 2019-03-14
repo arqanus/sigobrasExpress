@@ -180,7 +180,7 @@ userModel.getPartidas = (id_ficha,callback)=>{
                         const partidas = componentes[i].partidas;
                         for (let j = 0; j < partidas.length; j++) {
                             const partida = partidas[j];
-                            if(partida.tipo == "subtitulo"){
+                            if(partida.tipo == "partida"){
                                 partida.metrado = formato(partida.metrado)
                                 partida.costo_unitario = formato(partida.costo_unitario)
                                 partida.parcial = formato(partida.parcial)
@@ -191,22 +191,22 @@ userModel.getPartidas = (id_ficha,callback)=>{
                                 
 
                             }
-                            // else{
-                            //     partida.metrado = null
-                            //     partida.costo_unitario = null
-                            //     partida.parcial = null
-                            //     partida.avance_metrado = null
-                            //     partida.avance_costo = null
-                            //     partida.metrados_saldo = null
-                            //     partida.metrados_costo_saldo = null
-                            //     partida.porcentaje = null
+                            else{
+                                partida.metrado = null
+                                partida.costo_unitario = null
+                                partida.parcial = null
+                                partida.avance_metrado = null
+                                partida.avance_costo = null
+                                partida.metrados_saldo = null
+                                partida.metrados_costo_saldo = null
+                                partida.porcentaje = null
 
-                            // }
+                            }
                         
                             const actividades = partida.actividades
                             for (let k = 0; k < actividades.length; k++) {
                                 const actividad = actividades[k];
-                                if(actividad.tipo == "subtitulo"){
+                                if(actividad.actividad_tipo == "subtitulo"){
                                     actividad.metrado_actividad = formato(actividad.metrado_actividad)
                                     actividad.costo_unitario = formato(actividad.costo_unitario)
                                     actividad.parcial_actividad = formato(actividad.parcial_actividad)
