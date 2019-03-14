@@ -483,6 +483,18 @@ userModel.getHistorial = (id_ficha,callback)=>{
                         fila.fecha = fila.fecha.getDate()+" de "+month[fila.fecha.getMonth()]+" del "+fila.fecha.getFullYear()
                         if(fila.id_componente != lastIdComponente){
                             if(i != 0 ){
+                                componente.fechas[componente.fechas.length-1].historial.push(
+                                    {
+                                        "item" :"",
+                                        "descripcion_partida" : "",
+                                        "nombre_actividad" : "",
+                                        "descripcion_actividad" : "",
+                                        "observacion":"",                 
+                                        "valor":"",
+                                        "costo_unitario":"",
+                                        "parcial":""
+                                    }
+                                )
                                 componentes.push(componente);
                                 componente = {}
                             }
