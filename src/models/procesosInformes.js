@@ -109,6 +109,8 @@ userModel.getInformeDataGeneral  = (id_ficha,callback)=>{
                     res[0].avance_acumulado = formatoPorcentaje(res[0].avance_acumulado)
                     res[0].avance_actual = formatoPorcentaje(res[0].avance_actual)
                     res[0].avance_acumulado_valor = formatoPorcentaje(res[0].avance_acumulado_valor)
+                    res[0].porcentaje_avance_fisico = formatoPorcentaje(res[0].avance_actual_valor/g_total_presu*100)
+                    res[0].porcentaje_avance_acumuladoo = formatoPorcentaje(res[0].avance_acumulado_valor/g_total_presu*100)
 
                    
 
