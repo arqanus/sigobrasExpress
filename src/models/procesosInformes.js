@@ -472,7 +472,10 @@ userModel.getcronograma = (id_ficha,callback)=>{
                         listaMes.push(element.Anyo_Mes)
                         porcentaje_programado.push(element.porcentaje_programado)
                         porcentaje_financiero.push(element.porcentaje_financiero)
-                        porcentaje_fisico.push(Number(formatoPorcentaje(element.porcentaje_fisico)))
+                        if(element.porcentaje_fisico != null){
+                            porcentaje_fisico.push(Number(formatoPorcentaje(element.porcentaje_fisico)))
+                        }
+                        
                     }
 
                     var cronogramamensual = {
