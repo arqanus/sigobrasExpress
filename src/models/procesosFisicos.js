@@ -222,18 +222,18 @@ userModel.getPartidas = (id_ficha,callback)=>{
                                     }
 
                                 }
-                                // else{
-                                //     actividad.metrado_actividad = null
-                                //     actividad.costo_unitario = null
-                                //     actividad.parcial_actividad = null
-                                //     actividad.actividad_avance_metrado = null
-                                //     actividad.actividad_avance_costo = null
-                                //     actividad.actividad_metrados_saldo = null
-                                //     actividad.actividad_metrados_costo_saldo = null
-                                //     actividad.actividad_porcentaje = null
-                                //     actividad.unidad_medida = null
+                                else{
+                                    actividad.metrado_actividad = null
+                                    actividad.costo_unitario = null
+                                    actividad.parcial_actividad = null
+                                    actividad.actividad_avance_metrado = null
+                                    actividad.actividad_avance_costo = null
+                                    actividad.actividad_metrados_saldo = null
+                                    actividad.actividad_metrados_costo_saldo = null
+                                    actividad.actividad_porcentaje = null
+                                    actividad.unidad_medida = null
     
-                                // }
+                                }
                                
                             }                                                   
                         }
