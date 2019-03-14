@@ -78,4 +78,18 @@ module.exports = function(app){
 		}
 		
 	})
+	app.post('/getcronograma',(req,res)=>{
+		if(req.body.id_ficha == null){
+			res.json("null");		
+		}else{
+			User.getcronograma(req.body.id_ficha,(err,data)=>{							
+				if(err){ res.status(204).json(err);}
+				else{
+					res.json(data)
+				}
+	
+			})
+		}
+		
+	})
 }

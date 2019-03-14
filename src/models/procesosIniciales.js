@@ -1201,4 +1201,52 @@ userModel.getAvanceById = (id_actividad,callback)=>{
                 
     })
 }
+userModel.getcronograma = (id_ficha,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){                        
+            callback(err);
+        }
+        else{     
+            //insertar datos query
+            conn.query("SELECT fichas_id_ficha,porcentaje_programado,porcentaje_financiero,t1.fecha,t1.Anyo_Mes,porcentaje_fisico FROM (SELECT fichas_id_ficha, programado porcentaje_programado, financieroEjecutado porcentaje_financiero, DATE_ADD(fichas.fecha_inicial_real, INTERVAL (mes - 1) MONTH) Fecha, DATE_FORMAT(DATE_ADD(fichas.fecha_inicial_real, INTERVAL mes - 1 MONTH), '%M %Y ') Anyo_Mes FROM cronogramamensual LEFT JOIN fichas ON fichas.id_ficha = cronogramamensual.fichas_id_ficha WHERE fichas_id_ficha = ?) t1 LEFT JOIN (SELECT id_ficha, SUM(valor * costo_unitario) / fichas.g_total_presu * 100 porcentaje_fisico, avanceactividades.fecha, DATE_FORMAT(avanceactividades.fecha, '%M %Y ') Anyo_Mes FROM fichas LEFT JOIN presupuestos ON presupuestos.Fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.presupuestos_id_Presupuesto = presupuestos.id_Presupuesto LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE fichas.id_ficha = ? GROUP BY MONTH(avanceactividades.fecha)) t2 ON t1.Anyo_Mes = t2.Anyo_Mes ",[id_ficha,id_ficha],(error,res)=>{ 
+                if(error){
+                    console.log(error);                    
+                    callback(error.code);
+                }else{
+                    var listaMes = []
+                    var porcentaje_programado = []
+                    var porcentaje_financiero = []
+                    var porcentaje_fisico = []
+                    ///ac tres arrays de la consulta
+                    for (let i = 0; i < res.length; i++) {
+                        const element = res[i];
+                        
+                        listaMes.push(element.Anyo_Mes)
+                        porcentaje_programado.push(element.porcentaje_programado)
+                        porcentaje_financiero.push(element.porcentaje_financiero)
+                        porcentaje_fisico.push(formatoPorcentaje(element.porcentaje_fisico))
+                    }
+
+                    var cronogramamensual = {
+                        "mes":listaMes,
+                        "porcentaje_programado":porcentaje_programado,
+                        "porcentaje_financiero":porcentaje_financiero,
+                        "porcentaje_fisico":porcentaje_fisico
+                    }
+
+                   /* console.log()*/
+                    //hasta aqui
+                   
+                    // console.log("res",listaMes); 
+                    callback(null,cronogramamensual);
+                    conn.destroy()
+                }
+                
+                
+                
+            })
+        }                
+    })
+} 
 module.exports = userModel;
