@@ -190,17 +190,18 @@ userModel.getPartidas = (id_ficha,callback)=>{
                                 partida.metrados_costo_saldo = formato(partida.metrados_costo_saldo)
                                 
 
-                            }else{
-                                partida.metrado = null
-                                partida.costo_unitario = null
-                                partida.parcial = null
-                                partida.avance_metrado = null
-                                partida.avance_costo = null
-                                partida.metrados_saldo = null
-                                partida.metrados_costo_saldo = null
-                                partida.porcentaje = null
-
                             }
+                            // else{
+                            //     partida.metrado = null
+                            //     partida.costo_unitario = null
+                            //     partida.parcial = null
+                            //     partida.avance_metrado = null
+                            //     partida.avance_costo = null
+                            //     partida.metrados_saldo = null
+                            //     partida.metrados_costo_saldo = null
+                            //     partida.porcentaje = null
+
+                            // }
                         
                             const actividades = partida.actividades
                             for (let k = 0; k < actividades.length; k++) {
@@ -220,18 +221,19 @@ userModel.getPartidas = (id_ficha,callback)=>{
                                         partida.estado = "Mayor Metrado"
                                     }
 
-                                }else{
-                                    actividad.metrado_actividad = null
-                                    actividad.costo_unitario = null
-                                    actividad.parcial_actividad = null
-                                    actividad.actividad_avance_metrado = null
-                                    actividad.actividad_avance_costo = null
-                                    actividad.actividad_metrados_saldo = null
-                                    actividad.actividad_metrados_costo_saldo = null
-                                    actividad.actividad_porcentaje = null
-                                    actividad.unidad_medida = null
-    
                                 }
+                                // else{
+                                //     actividad.metrado_actividad = null
+                                //     actividad.costo_unitario = null
+                                //     actividad.parcial_actividad = null
+                                //     actividad.actividad_avance_metrado = null
+                                //     actividad.actividad_avance_costo = null
+                                //     actividad.actividad_metrados_saldo = null
+                                //     actividad.actividad_metrados_costo_saldo = null
+                                //     actividad.actividad_porcentaje = null
+                                //     actividad.unidad_medida = null
+    
+                                // }
                                
                             }                                                   
                         }

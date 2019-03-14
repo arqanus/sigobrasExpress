@@ -114,7 +114,7 @@ userModel.getInformeDataGeneral  = (id_ficha,callback)=>{
 
 
                     
-                    callback(null,res);
+                    callback(null,res[0]);
                     conn.destroy()
                 }
                 
