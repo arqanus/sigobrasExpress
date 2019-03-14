@@ -571,7 +571,7 @@ userModel.getHistorial = (id_ficha,callback)=>{
                                                 "observacion":fila.observacion,                 
                                                 "valor":fila.valor,
                                                 "costo_unitario":fila.costo_unitario,
-                                                "parcial":fila.parcial
+                                                "parcial":formato( fila.parcial)
                                             }
                                         ]
                                     }
@@ -587,7 +587,7 @@ userModel.getHistorial = (id_ficha,callback)=>{
                                         "observacion":fila.observacion,                 
                                         "valor":fila.valor,
                                         "costo_unitario":fila.costo_unitario,
-                                        "parcial":fila.parcial
+                                        "parcial":formato( fila.parcial)
                                     }
                                 )
                             }
