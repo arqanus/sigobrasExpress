@@ -47,6 +47,31 @@ userModel.getObras = (id_acceso,callback)=>{
                 
     })
 }
+userModel.getComponentes = (id_ficha,callback)=>{    
+    pool.getConnection(function(err ,conn){
+        if(err){ callback(err);}
+        
+        else{
+            conn.query("SELECT fichas.id_ficha, componentes.numero, componentes.nombre, componentes.presupuesto, SUM(avanceactividades.valor * partidas.costo_unitario) comp_avance, SUM(avanceactividades.valor * partidas.costo_unitario) / componentes.presupuesto * 100 porcentaje_avance_componentes FROM fichas LEFT JOIN presupuestos ON presupuestos.Fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.presupuestos_id_Presupuesto = presupuestos.id_Presupuesto inner JOIN componentes ON componentes.id_componente = partidas.componentes_id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE fichas.id_ficha = ? GROUP BY componentes.id_componente",id_ficha,(err,res)=>{
+                if(err){
+                    callback(err);                
+                }
+                else if(res.length == 0){
+                    callback("vacio");
+        
+                }else{      
+                    
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }
+        
+                
+    })
+}
 userModel.getCargosById = (id_ficha,callback)=>{    
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}        
