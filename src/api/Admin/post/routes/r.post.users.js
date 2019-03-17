@@ -2,7 +2,13 @@ const User = require('../models/m.post.users');
 
 module.exports = function(app){
 	app.post('/nuevoUsuario',(req,res)=>{
-
+		User.postUsuario(req.body,(err,data)=>{
+			if(err) {
+				res.status(204).json(err)
+			}else{
+				res.json(data);	
+			}		
+		})
 
 	})
 	app.post('/nuevoCargo',(req,res)=>{
@@ -21,8 +27,12 @@ module.exports = function(app){
 	})
 	app.post('/nuevoAcceso',(req,res)=>{	
 		User.postAcceso(req.body,(err,data)=>{
-			if(err) res.status(204).json(err);
-			res.json(data);		
+			if(err) {
+				res.status(204).json(err);
+			}else{
+				res.json(data);	
+			}
+				
 			
 		})
 
@@ -63,7 +73,6 @@ module.exports = function(app){
 			
 		})
 
-	})
-	
+	})	
 	
 }

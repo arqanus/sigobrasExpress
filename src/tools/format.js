@@ -1,5 +1,3 @@
-const pool = require('./connection');
-let userModel = {};
 function formatoPorcentaje(data){
     
     console.log("antes",data);
@@ -25,31 +23,3 @@ function formatoPorcentaje(data){
 
     return data
 }
-
-//ingresar
-
-
-//usuarios
-
-//obras
-
-
-//sacar
-//obras
-
-//usuarios
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-module.exports = userModel;

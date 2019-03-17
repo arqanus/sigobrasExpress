@@ -301,28 +301,6 @@ userModel.posthistorialActividad = (data,callback)=>{
                 
     })
 }
-//procesos fisicos
-// userModel.postAvanceActividad = (data,callback)=>{
-    
-//     pool.getConnection(function(err ,conn){
-//         if(err){ callback(err);}
-//         else{
-//             conn.query('INSERT INTO AvanceActividades set ?',data,(error,res)=>{
-//                 if(error){
-//                     callback(error);
-//                 }else{
-//                     console.log("affectedRows",res); 
-//                     callback(null,res);
-//                     conn.destroy()
-//                 }
-                
-                
-//             })
-//         }
-        
-                
-//     })
-// }
 
 // //reportes
 // userModel.postcronogramamensual = (data,callback)=>{

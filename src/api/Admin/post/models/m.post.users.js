@@ -1,7 +1,7 @@
 const pool = require('../../../../db/connection');
 let userModel = {};
 
-userModel.postPersonalTecnico = (data,callback)=>{
+userModel.postUsuario = (data,callback)=>{
     console.log(data);
     pool.getConnection(function(err,conn){
         if(err){ callback(err);}       
@@ -92,6 +92,25 @@ userModel.postMenu = (data,callback)=>{
                 
             })
         }                
+    })
+}
+//idacceso utilizado para asignar obra
+userModel.getIdAcceso = (data,callback)=>{
+    
+    pool.getConnection(function(err,conn){
+        if(err){ callback(err);}
+        else{     
+            conn.query('select id_acceso from accesos where usuarios_id_usuario = ?', data,(error,res)=>{
+                if(error) {
+                    callback(error.code);
+                }else{
+                    console.log("res ",res); 
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+            })  
+        }      
     })
 }
 

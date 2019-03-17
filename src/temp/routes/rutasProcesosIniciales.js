@@ -14,29 +14,6 @@ function soloLetras(req,res,next){
 
 module.exports = function(app){
 
-	//USUARIOS
-
-
-
-	app.get('/listaUsuarios',(req,res)=>{
-		User.getPersonalTecnico((err,data)=>{
-			if(err) {res.status(204).json(err);}
-			else {res.json(data);	}
-		})
-
-	})
-	//cargos
-
-
-	
-	//obras
-
-	
-	//accesos
-	
-	//componentes
-
-
 	//login
 	app.post('/login',soloLetras,(req,res)=>{
 		
@@ -88,8 +65,6 @@ module.exports = function(app){
 		
 		
 	})
-
-	
 	app.post('/convertirJson',(req,res)=>{
 		req.body =JSON.stringify(req.body)
 		
@@ -115,8 +90,6 @@ module.exports = function(app){
 	
 		
 	})
-	
-	
 
 	
 	//mish
@@ -136,9 +109,7 @@ module.exports = function(app){
 		}
 	
 		
-	})
-	
-	
+	})	
 	app.post('/postCostosyGanancias',(req,res)=>{
 		if(req.body.nombre == null){
 			res.json("null");	
@@ -154,8 +125,7 @@ module.exports = function(app){
 		}
 	
 		
-	})
-	
+	})	
 	app.post('/postHistorialCyG',(req,res)=>{
 		if(req.body.monto == null){
 			res.json("null");	
@@ -171,8 +141,7 @@ module.exports = function(app){
 		}
 	
 		
-	}) 
-	
+	}) 	
 	app.get('/getGananciasyCostos',(req,res)=>{
 		
 			//res.json("GananciasyCostos") //vist del resultado
@@ -187,7 +156,6 @@ module.exports = function(app){
 	
 		
 	})
-
 	app.post('/postcronogramamensual',(req,res)=>{
 		
 		//res.json("postcronogramamensual") //vista del resultado
@@ -199,7 +167,6 @@ module.exports = function(app){
 
 		})
 	})
-
 	app.post('/getcronogramamensual',(req,res)=>{
 		
 		//res.json("postcronogramamensual") //vista del resultado
@@ -211,92 +178,7 @@ module.exports = function(app){
 
 		})
 	})
-
-	app.post('/postActividadMayorMetrado',(req,res)=>{
-		var actividad = req.body.actividad
-		if (actividad.partidas_id_partida == null) {
-			res.json("null")
-		}else{
-			User.postActividadMayorMetrado(actividad,(err,id_actividad)=>{
-				if(err){ res.status(204).json(err);}
-				else{
-					var historialActividad = {						
-						"estado":"Mayor Metrado",
-						"actividades_id_actividad":id_actividad
-					}
-					User.posthistorialActividades(historialActividad,(err,data)=>{
-						if(err){ res.status(204).json(err);}
-						else{
-							var avanceActividad = req.body.avanceActividad
-							avanceActividad.Actividades_id_actividad = id_actividad
-							var id_ficha = avanceActividad.id_ficha
-							
-							User.getIdHistorial(id_ficha,(err,data)=>{
-								console.log("idhistorial");
-								if(err||data.length==0){ res.status(204).json(err);}
-								else{
-									delete avanceActividad.id_ficha
-									avanceActividad.historialEstados_id_historialEstado = data[0].id_historialEstado
-									
-									
-									User.postAvanceActividad(avanceActividad,(err,data)=>{
-										console.log("avance");
-										
-										if(err){ res.status(204).json(err);}
-										else{
-											User.getAvanceById(id_actividad,(err,data)=>{
-												if(err){ res.status(204).json(err);}
-												else{
-													res.json(data);	
-												}
-											})
-											
-										}
-									})
-								}
-							})
-						}
-					})
-				}
-			})
-		}			
-		
-	})
-
-	app.post('/postNuevaActividadMayorMetrado',(req,res)=>{
-		if (req.body.partidas_id_partida == null) {
-			res.json("null")
-		} else {
-			User.postActividadMayorMetrado(req.body,(err,id_actividad)=>{
-				if(err){ res.status(204).json(err);}
-				else{
-					var historialActividad = {						
-						"estado":"Mayor Metrado",
-						"actividades_id_actividad":id_actividad
-					}
-					User.posthistorialActividades(historialActividad,(err,data)=>{
-						if(err){ res.status(204).json(err);}
-						else{
-							User.getAvanceById(id_actividad,(err,data)=>{
-								if(err){ res.status(204).json(err);}
-								else{
-									res.json(data);	
-								}
-							})
-						}
-					})
-
-
-
-
-
-					
-				}
-			})
-		}			
-		
-	})
-
+	
 
 	
 	

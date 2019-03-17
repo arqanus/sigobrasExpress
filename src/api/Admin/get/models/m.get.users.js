@@ -16,21 +16,7 @@ userModel.getUsuarios = (callback)=>{
         })        
     })
 }
-userModel.getPersonalTecnico = (callback)=>{
-    
-    pool.getConnection(function(err,conn){
-        if(err){ callback(err);}       
-        conn.query('select *from usuarios', (error,res)=>{
-            if(error){
-                callback(error);
-            }else{
-                callback(null,res);
-                conn.destroy()
-            }             
-            
-        })        
-    })
-}
+
 userModel.getCargos = (callback)=>{
     
     pool.getConnection(function(err,conn){
@@ -45,26 +31,21 @@ userModel.getCargos = (callback)=>{
         })        
     })
 }
-
-userModel.getIdAcceso = (data,callback)=>{
+userModel.getUsuariosAcceso = (callback)=>{
     
     pool.getConnection(function(err,conn){
-        if(err){ callback(err);}
-        else{     
-            conn.query('select id_acceso from accesos where usuarios_id_usuario = ?', data,(error,res)=>{
-                if(error) {
-                    callback(error.code);
-                }else{
-                    console.log("res ",res); 
-                    callback(null,res);
-                    conn.destroy()
-                }
-                
-            })  
-        }      
+        if(err){ callback(err);}  
+        conn.query("SELECT usuarios.id_usuario, usuarios.nombre, usuarios.apellido_paterno, usuarios.apellido_materno, usuarios.dni, usuarios.direccion, usuarios.email, usuarios.celular, usuarios.cpt FROM usuarios INNER JOIN accesos ON accesos.Usuarios_id_usuario = usuarios.id_usuario", (error,res)=>{
+            if(error){ callback(error);  }
+            else{
+                callback(null,res);
+                conn.destroy()
+            }
+            
+        })        
     })
 }
-
+//idacceso en login
 userModel.getId_acceso = (data,callback)=>{
     console.log("postLogin");
     console.log("data",data);
@@ -93,7 +74,7 @@ userModel.getId_acceso = (data,callback)=>{
         }      
     })
 }
-
+//revisar
 userModel.getMenu = (data,callback)=>{
     
     pool.getConnection(function(err ,conn){

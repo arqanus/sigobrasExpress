@@ -210,7 +210,7 @@ module.exports = function(app){
                                         "error":err
                                     }
                                 )
-                                res.json(errores);
+                                res.status(204).json(errores);
                             }
                             else{
                                 if(estado == "oficial"){
