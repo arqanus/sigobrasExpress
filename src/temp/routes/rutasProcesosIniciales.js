@@ -13,57 +13,10 @@ function soloLetras(req,res,next){
 
 
 module.exports = function(app){
-	//profesoines
-	app.post('/postProfesion',(req,res)=>{
-		User.postProfesion(req.body,(err,data)=>{
-			if(err) {res.status(204).json(err);}
-			else{
-				res.json(data);	
-			}
-			
-		})
 
-	})
-	app.get('/getProfesiones',(req,res)=>{
-		User.getProfesiones((err,data)=>{
-			if(err) res.status(204).json(err);
-			res.json(data);	
-		})
-
-	})
-	
 	//USUARIOS
 
-	app.post('/nuevoUsuario',(req,res)=>{
-		var fecha =req.body.fecha
-		var cpt = req.body.cpt
-		var id_profesion = req.body.id_profesion
-		delete req.body.fecha		
-		delete  req.body.cpt
-		delete  req.body.id_profesion
-		User.postPersonalTecnico(req.body,(err,id_usuario)=>{
-			if(err) {res.status(204).json(err);}
-			else{
-				var ProfesionUsuario = {
-					"profesiones_id_profesion":id_profesion,
-					"usuarios_id_usuario":id_usuario,
-					"fecha":fecha,
-					"cpt":cpt
-				}
 
-				User.postProfesionUsuario(ProfesionUsuario,(err,data)=>{
-					if (err) {
-						res.status(204).json(err);
-					}else{
-						res.json(data);	
-					}
-				})
-				
-			}
-			
-		})
-
-	})
 
 	app.get('/listaUsuarios',(req,res)=>{
 		User.getPersonalTecnico((err,data)=>{
@@ -73,96 +26,16 @@ module.exports = function(app){
 
 	})
 	//cargos
-	app.post('/nuevoCargo',(req,res)=>{
-		
-		User.postCargo(req.body,(err,data)=>{
-			if(err) {
-				res.status(204).json(err)
-			}else{
-				res.json(data);	
-			}
-			//deshabilitamos los demas cargos
-			// --------------------------------
-			
-		})
 
-	})
 
-	app.get('/listaCargos',(req,res)=>{
-		User.getCargos((err,data)=>{
-			if(err){ res.status(204).json(err);}
-			else{
-				res.json(data);	
-			}
-		})
-	})
-	//privilegios
-	app.post('/nuevoPrivilegio',(req,res)=>{
-		User.postPrivilegios(req.body,(err,data)=>{
-			if(err){ res.status(204).json(err);}
-			else{
-				res.json(data);
-			}
-			
-		})
-	})
-	app.get('/listaPrivilegios',(req,res)=>{
-		User.getPrivilegios((err,data)=>{
-			if(err){ res.status(204).json(err);}
-			else{
-				res.json(data);	
-			}
-		})
-	})
+	
 	//obras
 
-	app.get('/listaObras',(req,res)=>{
-		User.getObras((err,data)=>{
-			if(err) res.status(204).json(err);
-			res.json(data);	
-		})
-	})
+	
 	//accesos
-	app.post('/nuevoAcceso',(req,res)=>{	
-		User.postAcceso(req.body,(err,data)=>{
-			if(err) res.status(204).json(err);
-			res.json(data);		
-			
-		})
-
-	})
-	//asignar obra
-	app.post('/asignarObra',(req,res)=>{
-		var id_usuario = req.body.id_usuario;
-		var id_ficha = req.body.id_ficha;
-		// delete req.body["cargo_id_cargo"];
-		
-		User.getIdAcceso(id_usuario,(err,data)=>{
-			if(err) res.status(204).json(err);
-			// console.log("data",data);
-			var obrausuario = {
-				"Fichas_id_ficha":id_ficha,
-				"Accesos_id_acceso":data[0].id_acceso
-			}
-			// console.log("data",obrausuario);
-			User.postObraUsuario(obrausuario,(err2,data2)=>{
-				if(err2) res.json(err2);
-				res.json(data2);
-			})
-			
-			
-		})
-
-	})
+	
 	//componentes
-	app.post('/listaComponentesPorId',(req,res)=>{
-		User.getComponentesById(req.body.id_ficha,(err,data)=>{
-			if(err) {res.status(204).json(err);}
-			else{
-				res.json(data);	
-			}
-		})
-	})
+
 
 	//login
 	app.post('/login',soloLetras,(req,res)=>{
@@ -178,26 +51,8 @@ module.exports = function(app){
 		})
 	})
 	//estados
-	app.post('/postEstado',(req,res)=>{
-		
-		User.postEstado(req.body,(err,data)=>{
-			
-			if(err) res.status(204).json(err);
-			res.status(200).json(data);
-		})
-	})
-	app.get('/listaEstados',(req,res)=>{	
-		
-		
-		User.getEstados((err,data)=>{			
-			if(err){
-				res.status(204).json(err);
-			} else{
-				res.status(200).json(data);
-			}
-			
-		})
-	})
+	
+	
 	app.post('/ActualizarEstado',(req,res)=>{
 		
 		User.postHistorialEstados(req.body,(err,id_historial)=>{							
@@ -234,20 +89,7 @@ module.exports = function(app){
 		
 	})
 
-	app.post('/postMenu',(req,res)=>{
-		// req.body =JSON.stringify(req.body)
-		
-		// console.log("iniciand",req.body);
-		// res.json(req.body)	
-		
-			User.postMenu(req.body,(err,data)=>{							
-				if(err){ res.status(204).json(err);}
-				else{
-					res.json(data);	
-				}
-
-			})
-	})
+	
 	app.post('/convertirJson',(req,res)=>{
 		req.body =JSON.stringify(req.body)
 		
@@ -273,62 +115,12 @@ module.exports = function(app){
 	
 		
 	})
-	app.post('/postTipoObras',(req,res)=>{
-		
-		User.postTipoObra(req.body.data,(err,data)=>{							
-			if(err){ res.status(204).json(err);}
-			else{
-				res.json(data);	
-			}
+	
+	
 
-		})
-		
 	
-	
-		
-	})
-	app.get('/getTipoObras',(req,res)=>{
-		
-		User.getTipoObras((err,data)=>{							
-			if(err){ res.status(204).json(err);}
-			else{
-				res.json(data);	
-			}
-
-		})
-	
-	
-		
-	})
-	app.post('/postUnidadEjecutora',(req,res)=>{
-		
-		User.postUnidadEjecutora(req.body.data,(err,data)=>{							
-			if(err){ res.status(204).json(err);}
-			else{
-				res.json(data);	
-			}
-
-		})
-		
-	
-	
-		
-	})
-	app.get('/getUnidadEjecutora',(req,res)=>{
-		
-		User.getUnidadEjecutora((err,data)=>{							
-			if(err){ res.status(204).json(err);}
-			else{
-				res.json(data);	
-			}
-
-		})
-	
-	
-		
-	})
 	//mish
-		app.post('/postmetas',(req,res)=>{
+	app.post('/postmetas',(req,res)=>{
 		if(req.body.fichas_id_ficha == null){
 			res.json("null");	
 		}else{

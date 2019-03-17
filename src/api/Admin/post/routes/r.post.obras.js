@@ -1,7 +1,45 @@
-const User = require('../models/model');
+const User = require('../models/m.post.obras');
 
 module.exports = function(app){
+    app.post('/postTipoObras',(req,res)=>{
+		
+		User.postTipoObra(req.body.data,(err,data)=>{							
+			if(err){ res.status(204).json(err);}
+			else{
+				res.json(data);	
+			}
+
+		})
+		
+	
+	
+		
+	})
+	app.post('/postUnidadEjecutora',(req,res)=>{
+		
+		User.postUnidadEjecutora(req.body.data,(err,data)=>{							
+			if(err){ res.status(204).json(err);}
+			else{
+				res.json(data);	
+			}
+
+		})
+		
+	
+	
+		
+    })
+    app.post('/postEstado',(req,res)=>{
+		
+		User.postEstado(req.body,(err,data)=>{
+			
+			if(err) res.status(204).json(err);
+			res.status(200).json(data);
+		})
+	})
     app.post('/nuevaObra',(req,res)=>{
+        console.log("newobra");
+        
 		var g_total_presu = req.body.g_total_presu
 		var id_estado = req.body.id_estado
 		var componentes = req.body.componentes
@@ -12,7 +50,7 @@ module.exports = function(app){
 		delete req.body.id_estado;
 		delete req.body.componentes;
 		delete req.body.fecha_final;		
-		User.postObra(req.body,(err,id_ficha)=>{
+		User.postFicha(req.body,(err,id_ficha)=>{
 			if(err) {res.status(204).json(err);}
 			else{
 				var plazoEjecucion={
@@ -26,7 +64,7 @@ module.exports = function(app){
 							"Fichas_id_ficha":id_ficha,
 							"Estados_id_estado":id_estado,
 						}
-						User.postHistorialEstados(Historial,(err,data)=>{							
+						User.postHistorialEstado(Historial,(err,data)=>{							
 							if(err){ res.status(204).json(err);}
 							else{
 								var data_procesada = [];								
@@ -41,11 +79,23 @@ module.exports = function(app){
 								// console.log(data_procesada);
 								User.postComponentes(data_procesada,(err,idComponente)=>{
 									if(err) {res.status(204).json(err);}
-									else{						
-											
-										res.json("Exit")							
-										/**eliminado postpresupuesto */
-										
+									else{	
+                                        var dataComponentes={
+                                            "componentes":[]
+                                        }
+                                        var idcomptemp = idComponente
+
+                                        				
+                                        for (let i = 0; i < componentes.length; i++) {
+                                            dataComponentes.componentes.push(
+                                                {
+                                                "numero": i+1,
+                                                "idComponente": idcomptemp,
+                                                }
+                                            )
+                                            idcomptemp++                                            
+                                        }
+										res.json(dataComponentes)									
 										
 										
 									}
@@ -68,80 +118,14 @@ module.exports = function(app){
 			
         })	
     })
-    app.post('/postComponentes',(req,res)=>{
-        var componentes = req.body.componentes
-        var id_ficha = req.body.id_ficha
-        var data_procesada = [];								
-        for(var i = 0; i < componentes.length; i++){
-            var componente = [];
-            componente.push(componentes[i]["0"]);
-            componente.push(componentes[i]["1"]);
-            componente.push(componentes[i]["2"]);									
-            data_procesada.push(componente);
-        }		
-        // res.json(data_procesada)
-        User.postComponentes(data_procesada,(err,idComponente)=>{
+    app.post('/postComponentes',(req,res)=>{       
+        User.postComponentes(req.body,(err,idComponente)=>{
             if(err) {res.status(204).json(err);}
             else{
-                var presupuestos = []
-                for (let i = 0; i < componentes.length; i++) {
-                    var presupuesto = []
-                    presupuesto.push(componentes[i]["2"]);
-                    
-                    presupuesto.push(id_ficha)
-                    presupuestos.push(presupuesto);
-                    
-                }	
-                // res.json(presupuestos)
-                User.postPresupuestos(presupuestos,(err,idpresupuesto)=>{
-                    if(err) {res.status(204).json(err);}
-                    else{
-                        var idFichas={
-                            "id_ficha":id_ficha,											
-                            "componentes":[]
-                        }
-                        var historialComponentes = []
-                        for (let i = 0; i < componentes.length; i++) {
-                            idFichas.componentes.push(
-                                {
-                                    "numero":i+1,
-                                    "idComponente":idComponente,
-                                    "idPresupuesto":idpresupuesto
-                                }
-                            )
-    
-                            historialComponentes.push(
-                                [													
-                                    "oficial",
-                                    idComponente
-                                ]
-                            )
-    
-                            idComponente+=1;
-                            idpresupuesto+=1;
-                            
-                        }
-                        User.postHistorialComponentes(historialComponentes,(err,data)=>{
-                            if (err) {
-                                
-                                res.json(err);
-                            }else{
-    
-                                res.json(idFichas)
-                            }
-                        })
-                    }
-                })
-                
-                
-                
-            }
-    
-            
-        })
-    
-    })	
-    //partidas
+                res.json("exito")                   
+            }              
+        })    
+    })	    
     app.post('/nuevasPartidas',(req,res)=>{
         var errores=[]
         
@@ -149,10 +133,7 @@ module.exports = function(app){
         // console.log("body",req.body)
         // console.log("ruta")
         var data = req.body.data
-        var estado = req.body.estado
-        
-        
-    
+        var estado = req.body.estado   
         
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
@@ -165,8 +146,8 @@ module.exports = function(app){
                 element.costo_unitario,
                 element.equipo,
                 element.rendimiento,
-                element.componentes_id_componente,
-                element.presupuestos_id_presupuesto
+                element.componentes_id_componente
+                
             ]
             listaPartidas.push(obPartida)
         }
@@ -186,16 +167,16 @@ module.exports = function(app){
                             
                 // console.log("partidas insertadas")
                 // res.json(idPartida)
-                var element = idPartida						
+                var tempIdpartida = idPartida						
                 var actividades = []
                 var recursos = []
-                for (let j = 0; j < data.length; j++,element+=1) {
+                for (let j = 0; j < data.length; j++,tempIdpartida+=1) {
                     // console.log("actividades")
                     //insertando idpartida
                     if(data[j].tipo == "partida"){
                         var obActividad = data[j].actividades
                         for (let k = 0; k < obActividad.length; k++) {
-                            obActividad[k].push(element);
+                            obActividad[k].push(tempIdpartida);
                             // obActividad[k].push(estado);
                         }
                         actividades = actividades.concat(obActividad)
@@ -204,7 +185,7 @@ module.exports = function(app){
                         var obRecurso = data[j].recursos
                         // console.log("recursos")
                         for (let k = 0; k < obRecurso.length; k++) {
-                            obRecurso[k].push(element);
+                            obRecurso[k].push(tempIdpartida);
                         }
                         recursos = recursos.concat(obRecurso)
                     }				
@@ -264,7 +245,7 @@ module.exports = function(app){
                                                 "estado":"Partida Nueva",
                                                 "actividades_id_actividad":id_actividad
                                             }
-                                            User.posthistorialActividades(historialActividad,(err,data)=>{
+                                            User.posthistorialActividad(historialActividad,(err,data)=>{
                                                 if(err){ res.status(204).json(err);}
                                                 else{
                                                     res.json(data)
@@ -285,4 +266,6 @@ module.exports = function(app){
             }
         })	
     })
+   
+	
 }

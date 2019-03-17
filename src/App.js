@@ -33,14 +33,16 @@ app.use(bodyParser.json({limit: '200kb'}));
 morganBody(app);
  
 //routes 
-//ingresoObra
-require('./ingresoDatos/ingresoObra/routes/route')(app);
+require('./api/Admin/get/routes/r.get.obras')(app);
+require('./api/Admin/get/routes/r.get.users')(app);
+require('./api/Admin/post/routes/r.post.obras')(app);
+require('./api/Admin/post/routes/r.post.users')(app);
 
-require('./routes/rutasProcesosIniciales')(app);
-require('./routes/rutasProcesosGerenciales')(app);
-require('./routes/rutasProcesosFisicos')(app);
-require('./routes/rutasProcesosInformes')(app);
-require('./routes/rutasImagenes')(app);
+// require('./routes/rutasProcesosIniciales')(app);
+// require('./routes/rutasProcesosGerenciales')(app);
+// require('./routes/rutasProcesosFisicos')(app);
+// require('./routes/rutasProcesosInformes')(app);
+// require('./routes/rutasImagenes')(app);
 // require('./routes/rutasProcesosFinancieros')(app);
 
 

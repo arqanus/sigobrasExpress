@@ -15,17 +15,18 @@ var pool = mysql.createPool({
     // connectTimeout: 1000
 
     /**********config laptop run* */
-    host: 'localhost',
-    user: 'root',
-    password: ' ',    
-    database: 'db_sigobras',
-    connectTimeout: 1000
-
     // host: 'localhost',
     // user: 'root',
-    // password: 'password',    
-    // database: 'SIGOBRAS_DB',
-    // connectTimeout: 10000
+    // password: ' ',    
+    // database: 'db_sigobras',
+    // connectTimeout: 1000
+
+    host: 'localhost',
+    user: 'root',
+    password: 'password',    
+    database: 'SIGOBRAS_DB',
+    connectTimeout: 10000
+    
     
     
     
