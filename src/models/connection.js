@@ -7,24 +7,25 @@ var connection = mysql.createConnection(
 
 var pool = mysql.createPool({
    
-    
+    //**** config en red trabajo */
     // host: '192.168.0.4',
-    // user: 'kaido',
-    // password: 'kaido',    
+    // user: 'mish',
+    // password: 'mish',    
     // database: 'SIGOBRAS_DB',
     // connectTimeout: 1000
 
-    // host: '192.168.0.4',
-    // user: 'kaido',
-    // password: 'kaido',    
-    // database: 'SIGOBRAS_DB_TEST',
-    // connectTimeout: 1000
-
+    /**********config laptop run* */
     host: 'localhost',
     user: 'root',
-    password: 'password',    
-    database: 'SIGOBRAS_DB',
-    connectTimeout: 10000
+    password: ' ',    
+    database: 'db_sigobras',
+    connectTimeout: 1000
+
+    // host: 'localhost',
+    // user: 'root',
+    // password: 'password',    
+    // database: 'SIGOBRAS_DB',
+    // connectTimeout: 10000
     
     
     

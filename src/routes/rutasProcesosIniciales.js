@@ -148,61 +148,17 @@ module.exports = function(app){
 									var componente = [];
 									componente.push(componentes[i]["0"]);
 									componente.push(componentes[i]["1"]);
-									componente.push(componentes[i]["2"]);									
+									componente.push(componentes[i]["2"]);	
+									componente.push(id_ficha);								
 									data_procesada.push(componente);
 								}		
 								// console.log(data_procesada);
 								User.postComponentes(data_procesada,(err,idComponente)=>{
 									if(err) {res.status(204).json(err);}
-									else{
-										var presupuestos = []
-										for (let i = 0; i < componentes.length; i++) {
-											var presupuesto = []
-											presupuesto.push(componentes[i]["2"]);
+									else{						
 											
-											presupuesto.push(id_ficha)
-											presupuestos.push(presupuesto);
-											
-										}										
-										User.postPresupuestos(presupuestos,(err,idpresupuesto)=>{
-											if(err) {res.status(204).json(err);}
-											else{
-												var idFichas={
-													"id_ficha":id_ficha,											
-													"componentes":[]
-												}
-												var historialComponentes = []
-												for (let i = 0; i < componentes.length; i++) {
-													idFichas.componentes.push(
-														{
-															"numero":i+1,
-															"idComponente":idComponente,
-															"idPresupuesto":idpresupuesto
-														}
-													)
-		
-													historialComponentes.push(
-														[													
-															"oficial",
-															idComponente
-														]
-													)
-		
-													idComponente+=1;
-													idpresupuesto+=1;
-													
-												}
-												User.postHistorialComponentes(historialComponentes,(err,data)=>{
-													if (err) {
-														
-														res.json(err);
-													}else{
-		
-														res.json(idFichas)
-													}
-												})
-											}
-										})
+										res.json("Exit")							
+										/**eliminado postpresupuesto */
 										
 										
 										
