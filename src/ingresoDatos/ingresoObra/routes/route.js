@@ -2,109 +2,72 @@ const User = require('../models/model');
 
 module.exports = function(app){
     app.post('/nuevaObra',(req,res)=>{
-        var g_total_presu = req.body.g_total_presu
-        var id_estado = req.body.id_estado
-        var componentes = req.body.componentes
-        var fecha_final = req.body.fecha_final
-        // console.log("fecha final",fecha_final);
-        
-        // delete req.body.g_total_presu;
-        delete req.body.id_estado;
-        delete req.body.componentes;
-        delete req.body.fecha_final;		
-        User.postObra(req.body,(err,id_ficha)=>{
-            if(err) {res.status(204).json(err);}
-            else{
-                var plazoEjecucion={
-                    "FechaEjecucion":fecha_final,
-                    "fichas_id_ficha":id_ficha,
-                }
-                User.postPlazoEjecucion(plazoEjecucion,(err,data)=>{
-                    if(err) {res.status(204).json(err);}
-                    else{
-                        var Historial = {											
-                            "Fichas_id_ficha":id_ficha,
-                            "Estados_id_estado":id_estado,
-                        }
-                        User.postHistorialEstados(Historial,(err,data)=>{							
-                            if(err){ res.status(204).json(err);}
-                            else{
-                                var data_procesada = [];								
-                                for(var i = 0; i < componentes.length; i++){
-                                    var componente = [];
-                                    componente.push(componentes[i]["0"]);
-                                    componente.push(componentes[i]["1"]);
-                                    componente.push(componentes[i]["2"]);									
-                                    data_procesada.push(componente);
-                                }		
-                                // console.log(data_procesada);
-                                User.postComponentes(data_procesada,(err,idComponente)=>{
-                                    if(err) {res.status(204).json(err);}
-                                    else{
-                                                                            
-                                        // User.postPresupuestos(presupuestos,(err,idpresupuesto)=>{
-                                        // 	if(err) {res.status(204).json(err);}
-                                        // 	else{
-                                        // 		var idFichas={
-                                        // 			"id_ficha":id_ficha,											
-                                        // 			"componentes":[]
-                                        // 		}
-                                        // 		var historialComponentes = []
-                                        // 		for (let i = 0; i < componentes.length; i++) {
-                                        // 			idFichas.componentes.push(
-                                        // 				{
-                                        // 					"numero":i+1,
-                                        // 					"idComponente":idComponente,
-                                        // 					"idPresupuesto":idpresupuesto
-                                        // 				}
-                                        // 			)
-        
-                                        // 			historialComponentes.push(
-                                        // 				[													
-                                        // 					"oficial",
-                                        // 					idComponente
-                                        // 				]
-                                        // 			)
-        
-                                        // 			idComponente+=1;
-                                        // 			idpresupuesto+=1;
-                                                    
-                                        // 		}
-                                        // 		User.postHistorialComponentes(historialComponentes,(err,data)=>{
-                                        // 			if (err) {
-                                                        
-                                        // 				res.json(err);
-                                        // 			}else{
-        
-                                        // 				res.json(idFichas)
-                                        // 			}
-                                        // 		})
-                                        // 	}
-                                        // })
-                                        
-                                        
-                                        
-                                    }
-        
-                                    
-                                })	
-                            }
-        
-                        })
-                    }
-                    
-                        
-                })
-    
-                    
-                    
-                
-            }
-            
-            
-        })
-    
-    })	
+		var g_total_presu = req.body.g_total_presu
+		var id_estado = req.body.id_estado
+		var componentes = req.body.componentes
+		var fecha_final = req.body.fecha_final
+		// console.log("fecha final",fecha_final);
+		
+		// delete req.body.g_total_presu;
+		delete req.body.id_estado;
+		delete req.body.componentes;
+		delete req.body.fecha_final;		
+		User.postObra(req.body,(err,id_ficha)=>{
+			if(err) {res.status(204).json(err);}
+			else{
+				var plazoEjecucion={
+					"FechaEjecucion":fecha_final,
+					"fichas_id_ficha":id_ficha,
+				}
+				User.postPlazoEjecucion(plazoEjecucion,(err,data)=>{
+					if(err) {res.status(204).json(err);}
+					else{
+						var Historial = {											
+							"Fichas_id_ficha":id_ficha,
+							"Estados_id_estado":id_estado,
+						}
+						User.postHistorialEstados(Historial,(err,data)=>{							
+							if(err){ res.status(204).json(err);}
+							else{
+								var data_procesada = [];								
+								for(var i = 0; i < componentes.length; i++){
+									var componente = [];
+									componente.push(componentes[i]["0"]);
+									componente.push(componentes[i]["1"]);
+									componente.push(componentes[i]["2"]);	
+									componente.push(id_ficha);								
+									data_procesada.push(componente);
+								}		
+								// console.log(data_procesada);
+								User.postComponentes(data_procesada,(err,idComponente)=>{
+									if(err) {res.status(204).json(err);}
+									else{						
+											
+										res.json("Exit")							
+										/**eliminado postpresupuesto */
+										
+										
+										
+									}
+		
+									
+								})	
+							}
+		
+						})
+					}
+					
+						
+				})
+
+					
+					
+				
+			}
+			
+			
+        })	
+    })
     app.post('/postComponentes',(req,res)=>{
         var componentes = req.body.componentes
         var id_ficha = req.body.id_ficha

@@ -32,7 +32,7 @@ userModel.postComponentes = (data,callback)=>{
             callback(err);
         }
         else{     
-            conn.query('INSERT INTO componentes (numero,nombre,presupuesto) values ?',[data],(error,res)=>{
+            conn.query('INSERT INTO componentes (numero,nombre,presupuesto,fichas_id_ficha) values ?',[data],(error,res)=>{
                 if(error) {
                     callback(error.code);
                     console.log(error);            
