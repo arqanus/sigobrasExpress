@@ -33,6 +33,9 @@ app.use(bodyParser.json({limit: '200kb'}));
 morganBody(app);
  
 //routes 
+//ingresoObra
+require('./ingresoDatos/ingresoObra/routes/route')(app);
+
 require('./routes/rutasProcesosIniciales')(app);
 require('./routes/rutasProcesosGerenciales')(app);
 require('./routes/rutasProcesosFisicos')(app);
