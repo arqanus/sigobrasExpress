@@ -1,11 +1,11 @@
 const User = require('../models/m.get.pFisicos');
 
 module.exports = function(app){
-    app.post('/listaPartidas',(req,res)=>{
-		if (req.body.id_ficha == null ||req.body.id_ficha == "null"||req.body.id_ficha == "") {
+    app.post('/getPartidas',(req,res)=>{
+		if (req.body.id_componente == null ||req.body.id_ficha == "null"||req.body.id_ficha == "") {
 			res.json("null");
 		} else {
-			User.getPartidas(req.body.id_ficha,(err,data)=>{
+			User.getPartidas(req.body.id_componente,(err,data)=>{
 				if(err){ res.status(204).json(err);}
 				else{
 					res.json(data);	
