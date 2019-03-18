@@ -39,6 +39,9 @@ require('./api/Admin/post/routes/r.post.obras')(app);
 require('./api/Admin/post/routes/r.post.users')(app);
 require('./api/ProcesosFisicos/get/routes/r.get.pFisicos')(app);
 require('./api/ProcesosFisicos/post/routes/r.post.pFisicos')(app);
+require('./api/Interfaz/post/routes/r.post.interfaz')(app);
+require('./api/Interfaz/get/routes/r.get.interfaz')(app);
+require('./api/ProcesosGerenciales/get/routes/r.get.Pgerenciales')(app);
 
 // require('./routes/rutasProcesosIniciales')(app);
 // require('./routes/rutasProcesosGerenciales')(app);

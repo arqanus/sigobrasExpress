@@ -317,7 +317,6 @@ userModel.resumenValorizacionPrincipal  = (id_ficha,costosIndirectos,callback)=>
                 
     })
 }
-
 userModel.getMonthsByFicha = (id_ficha,callback)=>{    
     pool.getConnection(function(err ,conn){
         if(err){ 

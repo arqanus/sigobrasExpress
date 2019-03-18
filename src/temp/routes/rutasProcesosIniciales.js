@@ -14,42 +14,6 @@ function soloLetras(req,res,next){
 
 module.exports = function(app){
 
-	//login
-	app.post('/login',soloLetras,(req,res)=>{
-		
-		User.postLogin(req.body,(err,data)=>{
-			
-			if(err){
-				res.status(204).json(err);
-			}else{
-				res.status(200).json(data);
-			}
-			
-		})
-	})
-	//estados
-	
-	
-	app.post('/ActualizarEstado',(req,res)=>{
-		
-		User.postHistorialEstados(req.body,(err,id_historial)=>{							
-			if(err){ res.status(204).json(err);}
-			else{
-				console.log("id",id_historial);
-				
-
-				User.getestadoIdHistorialEstados(id_historial,(err,estado)=>{							
-					if(err){ res.status(204).json(err);}
-					else{
-						
-						res.json(estado);	
-					}
-
-				})
-			}
-
-		})
-	})
 	app.post('/getDatosGenerales',(req,res)=>{
 		if(req.body.id_ficha == null){
 			res.json("null");
@@ -73,25 +37,6 @@ module.exports = function(app){
 		
 			
 	})
-
-	app.post('/getMenu',(req,res)=>{
-		if(req.body.id_ficha == null||req.body.id_acceso == null){
-			res.json("null");	
-		}else{
-			User.getMenu(req.body,(err,data)=>{							
-				if(err){ res.status(204).json(err);}
-				else{
-					res.json(data);	
-				}
-	
-			})
-		}
-	
-	
-		
-	})
-
-	
 	//mish
 	app.post('/postmetas',(req,res)=>{
 		if(req.body.fichas_id_ficha == null){

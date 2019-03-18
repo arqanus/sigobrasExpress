@@ -1,9 +1,8 @@
-const User = require('../models/procesosGerenciales');
+const User = require('../models/m.get.Pgerenciales');
 
 
 module.exports = function(app){
-	
-	app.post('/PGlistaObras',(req,res)=>{
+  app.post('/PGlistaObras',(req,res)=>{
 		
 		User.getObras(req.body.id_acceso,(err,data)=>{
 			if(err) {res.status(204).json(err);}
@@ -40,6 +39,5 @@ module.exports = function(app){
 			})	
 		}	
 	});
-	
-	
+
 }
