@@ -42,6 +42,10 @@ require('./api/ProcesosFisicos/post/routes/r.post.pFisicos')(app);
 require('./api/Interfaz/post/routes/r.post.interfaz')(app);
 require('./api/Interfaz/get/routes/r.get.interfaz')(app);
 require('./api/ProcesosGerenciales/get/routes/r.get.Pgerenciales')(app);
+require('./api/Reportes/get/routes/r.get.reportes')(app);
+require('./api/Reportes/post/routes/r.post.reportes')(app);
+require('./api/ProcesosFinancieros/post/routes/r.post.Pfinancieros')(app);
+require('./api/ProcesosFinancieros/get/routes/r.get.Pfinancieros')(app);
 
 // require('./routes/rutasProcesosIniciales')(app);
 // require('./routes/rutasProcesosGerenciales')(app);

@@ -11,7 +11,7 @@ function soloLetras(req,res,next){
 }
 
 module.exports = function(app){
-    app.post('/login',soloLetras,(req,res)=>{		
+  app.post('/login',soloLetras,(req,res)=>{		
 		User.getId_acceso(req.body,(err,data)=>{
 			
 			if(err){
@@ -21,12 +21,28 @@ module.exports = function(app){
 			}
 			
 		})
-    })
-    app.post('/getMenu',(req,res)=>{
+  })
+  app.post('/getMenu',(req,res)=>{
 		if(req.body.id_ficha == null||req.body.id_acceso == null){
 			res.json("null");	
 		}else{
 			User.getMenu(req.body,(err,data)=>{							
+				if(err){ res.status(204).json(err);}
+				else{
+					res.json(data);	
+				}
+	
+			})
+		}
+	
+	
+		
+	})
+	app.post('/getDatosGenerales',(req,res)=>{
+		if(req.body.id_ficha == null){
+			res.json("null");	
+		}else{
+			User.getDatosGenerales(req.body.id_ficha,(err,data)=>{							
 				if(err){ res.status(204).json(err);}
 				else{
 					res.json(data);	

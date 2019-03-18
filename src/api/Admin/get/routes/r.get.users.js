@@ -24,5 +24,13 @@ module.exports = function(app){
 			}
 		})
 	})
+	app.post('/convertirJson',(req,res)=>{
+		req.body =JSON.stringify(req.body)
+		
+		console.log("iniciand",req.body);
+		res.json(req.body)	
+		
+			
+	})
 
 }
