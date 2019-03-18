@@ -91,33 +91,5 @@ userModel.getUnidadEjecutora = (callback)=>{
         }                
     })
 }
-// userModel.getGananciasyCostos = (data,callback)=>{
-    
-//     pool.getConnection(function(err ,conn){
-//         if(err){                        
-//             callback(err);
-//         }
-//         else{     
-//             //insertar datos query
-//             conn.query("select * from costosyganancias",(error,res)=>{ 
-//                 if(error){
-//                     console.log(error);                    
-//                     callback(error.code);
-//                 }else{
-                   
-//                     console.log("res",res); 
-//                     callback(null,res);
-//                     conn.destroy()
-//                 }
-                
-                
-//             })
-//         }                
-//     })
-// }
-
-
-
-
 
 module.exports = userModel;
