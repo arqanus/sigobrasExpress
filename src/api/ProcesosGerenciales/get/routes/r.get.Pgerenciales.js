@@ -26,7 +26,7 @@ module.exports = function(app){
 			})	
 		}	
 	});	
-	app.post('/getComponentes',(req,res)=>{
+	app.post('/getComponentesPG',(req,res)=>{
 		if(req.body.id_ficha == null){
 			res.json("null");	
 		}else{
