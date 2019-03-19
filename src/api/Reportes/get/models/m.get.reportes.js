@@ -14,7 +14,7 @@ month[8] = "Setiembre";
 month[9] = "Octubre";
 month[10] = "Noviembre";
 month[11] = "Diciembre";
-function formatoPorcentaje(data){
+function formato(data){
     
     // data = parseFloat(data)
     data = Number(data)
@@ -32,6 +32,37 @@ function formatoPorcentaje(data){
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
           })
+    } 
+
+    return data
+}
+function formatoPorcentaje(data){
+    
+    // data = parseFloat(data)
+    data = Number(data)
+    if(isNaN(data)){
+        
+        data=0
+    }
+    
+    
+    if(data ==100){
+        return data
+    }
+    else if(data < 1){
+        data = data.toLocaleString('es-PE', {
+            minimumFractionDigits: 4,
+            maximumFractionDigits: 4
+          })
+    }else{
+        data = data.toLocaleString('es-PE', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          })
+        if(data="100.00"){
+            data = 100
+
+        }
     } 
 
     return data
@@ -62,15 +93,15 @@ userModel.getInformeDataGeneral  = (id_ficha,callback)=>{
                     callback("vacio");    
                     conn.destroy()    
                 }else{     
-                    res[0].porcentaje_avance_fisico = formatoPorcentaje(res[0].porcentaje_avance_fisico)
-                    res[0].porcentaje_avance_acumulado = formatoPorcentaje(res[0].porcentaje_avance_acumulado)
+                    res[0].porcentaje_avance_fisico = formato(res[0].porcentaje_avance_fisico)
+                    res[0].porcentaje_avance_acumulado = formato(res[0].porcentaje_avance_acumulado)
 
-                    res[0].avance_actual = formatoPorcentaje(res[0].avance_actual)
-                    res[0].avance_actual_valor = formatoPorcentaje(res[0].avance_actual_valor)
-                    res[0].avance_acumulado = formatoPorcentaje(res[0].avance_acumulado)
-                    res[0].avance_actual = formatoPorcentaje(res[0].avance_actual)
-                    res[0].avance_acumulado_valor = formatoPorcentaje(res[0].avance_acumulado_valor)
-                    res[0].presupuesto_general = formatoPorcentaje(res[0].presupuesto_general)                 
+                    res[0].avance_actual = formato(res[0].avance_actual)
+                    res[0].avance_actual_valor = formato(res[0].avance_actual_valor)
+                    res[0].avance_acumulado = formato(res[0].avance_acumulado)
+                    res[0].avance_actual = formato(res[0].avance_actual)
+                    res[0].avance_acumulado_valor = formato(res[0].avance_acumulado_valor)
+                    res[0].presupuesto_general = formato(res[0].presupuesto_general)                 
                     
                    
 
@@ -118,8 +149,8 @@ userModel.CuadroMetradosEjecutados = (id_ficha,callback)=>{
 
                         if(fila.id_componente != lastIdComponente){
                             if(i != 0 ){
-                                componente.componente_avance_valor = formatoPorcentaje(componente_avance_valor)
-                                componente.fechas[componente.fechas.length-1].fecha_avance_valor = formatoPorcentaje(fecha_avance_valor)
+                                componente.componente_avance_valor = formato(componente_avance_valor)
+                                componente.fechas[componente.fechas.length-1].fecha_avance_valor = formato(fecha_avance_valor)
                                 componentes.push(componente);
                                 componente = {}
                                 componente_avance_valor = 0
@@ -145,7 +176,7 @@ userModel.CuadroMetradosEjecutados = (id_ficha,callback)=>{
                                             "observacion":fila.observacion,                 
                                             "valor":fila.valor,
                                             "costo_unitario":fila.costo_unitario,
-                                            "parcial":formatoPorcentaje( fila.parcial)
+                                            "parcial":formato( fila.parcial)
                                         }
                                     ]
                                 }
@@ -170,7 +201,7 @@ userModel.CuadroMetradosEjecutados = (id_ficha,callback)=>{
                                                 "observacion":fila.observacion,                 
                                                 "valor":fila.valor,
                                                 "costo_unitario":fila.costo_unitario,
-                                                "parcial":formatoPorcentaje( fila.parcial)
+                                                "parcial":formato( fila.parcial)
                                             }
                                         ]
                                     }
@@ -186,7 +217,7 @@ userModel.CuadroMetradosEjecutados = (id_ficha,callback)=>{
                                         "observacion":fila.observacion,                 
                                         "valor":fila.valor,
                                         "costo_unitario":fila.costo_unitario,
-                                        "parcial":formatoPorcentaje( fila.parcial)
+                                        "parcial":formato( fila.parcial)
                                     }
                                 )
                             }
@@ -200,8 +231,8 @@ userModel.CuadroMetradosEjecutados = (id_ficha,callback)=>{
                         
                     }
 
-                    componente.componente_avance_valor = formatoPorcentaje(componente_avance_valor)
-                    componente.fechas[componente.fechas.length-1].fecha_avance_valor = formatoPorcentaje(fecha_avance_valor)
+                    componente.componente_avance_valor = formato(componente_avance_valor)
+                    componente.fechas[componente.fechas.length-1].fecha_avance_valor = formato(fecha_avance_valor)
                     componentes.push(componente);
                     
                     callback(null,componentes);
@@ -409,15 +440,15 @@ userModel.valorizacionPrincipal = (id_ficha,callback)=>{
                                 {
                                     "componente_numero": componente.componente_numero,
                                     "nombre": componente.nombre,
-                                    "presupuesto": formatoPorcentaje(componente.presupuesto),
-                                    "valor_total_anterior":formatoPorcentaje( componente.valor_total_anterior),
-                                    "valor_total_anterior_porcentaje":formatoPorcentaje(componente.valor_total_anterior/componente.presupuesto * 100),
-                                    "valor_total_actual":formatoPorcentaje( componente.valor_total_actual),
-                                    "valor_total_actual_porcentaje":formatoPorcentaje(componente.valor_total_actual/componente.presupuesto * 100),
-                                    "valor_suma_acumulado":formatoPorcentaje( componente.valor_suma_acumulado),
-                                    "valor_suma_acumulado_porcentaje":formatoPorcentaje(componente.valor_suma_acumulado/componente.presupuesto * 100),
-                                    "valor_total_saldo":formatoPorcentaje( componente.valor_total_saldo),
-                                    "valor_total_saldo_porcentaje":formatoPorcentaje(componente.valor_total_saldo/componente.presupuesto * 100)
+                                    "presupuesto": formato(componente.presupuesto),
+                                    "valor_total_anterior":formato( componente.valor_total_anterior),
+                                    "valor_total_anterior_porcentaje":formato(componente.valor_total_anterior/componente.presupuesto * 100),
+                                    "valor_total_actual":formato( componente.valor_total_actual),
+                                    "valor_total_actual_porcentaje":formato(componente.valor_total_actual/componente.presupuesto * 100),
+                                    "valor_suma_acumulado":formato( componente.valor_suma_acumulado),
+                                    "valor_suma_acumulado_porcentaje":formato(componente.valor_suma_acumulado/componente.presupuesto * 100),
+                                    "valor_total_saldo":formato( componente.valor_total_saldo),
+                                    "valor_total_saldo_porcentaje":formato(componente.valor_total_saldo/componente.presupuesto * 100)
                                 }
                             )
 
@@ -465,28 +496,28 @@ userModel.valorizacionPrincipal = (id_ficha,callback)=>{
 
                         
                     }
-                    //aplicando formatoPorcentaje en 2 decimales
+                    //aplicando formato en 2 decimales
                     for (let i = 0; i < periodos.length; i++) {
                         const componentes = periodos[i].componentes;
 
 
-                        periodos[i].resumen.presupuesto_total=formatoPorcentaje(periodos[i].resumen.presupuesto_total)
-                        periodos[i].resumen.avance_anterior =formatoPorcentaje(periodos[i].resumen.avance_anterior )
-                        periodos[i].resumen.avance_actual =formatoPorcentaje(periodos[i].resumen.avance_actual )
-                        periodos[i].resumen.avance_acumulado =formatoPorcentaje(periodos[i].resumen.avance_acumulado )
-                        periodos[i].resumen.saldo =formatoPorcentaje(periodos[i].resumen.saldo )
+                        periodos[i].resumen.presupuesto_total=formato(periodos[i].resumen.presupuesto_total)
+                        periodos[i].resumen.avance_anterior =formato(periodos[i].resumen.avance_anterior )
+                        periodos[i].resumen.avance_actual =formato(periodos[i].resumen.avance_actual )
+                        periodos[i].resumen.avance_acumulado =formato(periodos[i].resumen.avance_acumulado )
+                        periodos[i].resumen.saldo =formato(periodos[i].resumen.saldo )
                         for (let j = 0; j < componentes.length; j++) {
                             const componente = componentes[j];
-                            //formatoPorcentaje 2 digitos
-                            componente.presupuesto = formatoPorcentaje(componente.presupuesto)
-                            componente.valor_total_anterior = formatoPorcentaje(componente.valor_total_anterior)
-                            componente.valor_total_actual = formatoPorcentaje(componente.valor_total_actual)
-                            componente.valor_suma_acumulado = formatoPorcentaje(componente.valor_suma_acumulado)
-                            componente.valor_total_saldo = formatoPorcentaje(componente.valor_total_saldo)
+                            //formato 2 digitos
+                            componente.presupuesto = formato(componente.presupuesto)
+                            componente.valor_total_anterior = formato(componente.valor_total_anterior)
+                            componente.valor_total_actual = formato(componente.valor_total_actual)
+                            componente.valor_suma_acumulado = formato(componente.valor_suma_acumulado)
+                            componente.valor_total_saldo = formato(componente.valor_total_saldo)
                             const partidas = componente.partidas
                             for (let k = 0; k < partidas.length; k++) {
                                 const partida = partidas[k];
-                                 //formatoPorcentaje de dos digitos
+                                 //formato de dos digitos
                                 if(partida.tipo =="titulo"){
                                     partida.unidad_medida = ""
                                     partida.metrado = ""
@@ -506,22 +537,22 @@ userModel.valorizacionPrincipal = (id_ficha,callback)=>{
                                     partida.valor_saldo = ""
                                     partida.porcentaje_saldo = ""
                                 }else{
-                                    partida.metrado = formatoPorcentaje(partida.metrado)
-                                    partida.costo_unitario = formatoPorcentaje(partida.costo_unitario)
-                                    partida.parcial = formatoPorcentaje(partida.parcial)
+                                    partida.metrado = formato(partida.metrado)
+                                    partida.costo_unitario = formato(partida.costo_unitario)
+                                    partida.parcial = formato(partida.parcial)
     
-                                    partida.metrado_anterior = formatoPorcentaje(partida.metrado_anterior)
-                                    partida.valor_anterior = formatoPorcentaje(partida.valor_anterior)
-                                    partida.porcentaje_anterior = formatoPorcentaje(partida.porcentaje_anterior)
-                                    partida.metrado_actual = formatoPorcentaje(partida.metrado_actual)
-                                    partida.valor_actual = formatoPorcentaje(partida.valor_actual)
-                                    partida.porcentaje_actual = formatoPorcentaje(partida.porcentaje_actual)
-                                    partida.metrado_total = formatoPorcentaje(partida.metrado_total)
-                                    partida.valor_total = formatoPorcentaje(partida.valor_total)
-                                    partida.porcentaje_total = formatoPorcentaje(partida.porcentaje_total)
-                                    partida.metrado_saldo = formatoPorcentaje(partida.metrado_saldo)
-                                    partida.valor_saldo = formatoPorcentaje(partida.valor_saldo)
-                                    partida.porcentaje_saldo = formatoPorcentaje(partida.porcentaje_saldo)
+                                    partida.metrado_anterior = formato(partida.metrado_anterior)
+                                    partida.valor_anterior = formato(partida.valor_anterior)
+                                    partida.porcentaje_anterior = formato(partida.porcentaje_anterior)
+                                    partida.metrado_actual = formato(partida.metrado_actual)
+                                    partida.valor_actual = formato(partida.valor_actual)
+                                    partida.porcentaje_actual = formato(partida.porcentaje_actual)
+                                    partida.metrado_total = formato(partida.metrado_total)
+                                    partida.valor_total = formato(partida.valor_total)
+                                    partida.porcentaje_total = formato(partida.porcentaje_total)
+                                    partida.metrado_saldo = formato(partida.metrado_saldo)
+                                    partida.valor_saldo = formato(partida.valor_saldo)
+                                    partida.porcentaje_saldo = formato(partida.porcentaje_saldo)
                                 }
                                
                                 
@@ -573,7 +604,7 @@ userModel.resumenValorizacionPrincipal  = (id_ficha,costosIndirectos,callback)=>
             callback(err);
         }        
         else{
-            conn.query("SELECT t1.numero, t1.nombre, t1.presupuesto, COALESCE(t2.anterior, 0) anterior, COALESCE(t2.anterior / t1.presupuesto * 100, 0) porcentaje_anterior, COALESCE(t1.actual, 0) actual, COALESCE(t1.actual / t1.presupuesto * 100, 0) porcentaje_actual, COALESCE(t2.anterior, 0) + COALESCE(t1.actual, 0) acumulado, (COALESCE(t2.anterior, 0) + COALESCE(t1.actual, 0)) / COALESCE(t1.presupuesto, 0) * 100 porcentaje_acumuado, COALESCE(t1.presupuesto, 0) - (COALESCE(t2.anterior, 0) + COALESCE(t1.actual, 0)) saldo, (COALESCE(t1.presupuesto, 0) - (COALESCE(t2.anterior, 0) + COALESCE(t1.actual, 0))) / COALESCE(t1.presupuesto, 0) * 100 porcentaje_saldo FROM (SELECT componentes.Fichas_id_ficha, componentes.id_componente, componentes.numero, componentes.nombre, componentes.presupuesto, COALESCE(SUM(avanceactividades.valor * partidas.costo_unitario), 0) actual FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE MONTH(NOW()) = MONTH(avanceactividades.fecha) GROUP BY componentes.id_componente) t1 LEFT JOIN (SELECT componentes.id_componente, COALESCE(SUM(avanceactividades.valor * partidas.costo_unitario), 0) anterior FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE MONTH(NOW()) > MONTH(avanceactividades.fecha) GROUP BY componentes.id_componente) t2 ON t2.id_componente = t1.id_componente WHERE t1.fichas_id_ficha = ?",id_ficha,(err,res)=>{
+            conn.query("SELECT t1.numero, t1.nombre, t1.presupuesto, COALESCE(t2.anterior, 0) anterior, COALESCE(t2.anterior / t1.presupuesto * 100, 0) porcentaje_anterior, COALESCE(t1.actual, 0) actual, COALESCE(t1.actual / t1.presupuesto * 100, 0) porcentaje_actual, COALESCE(t2.anterior, 0) + COALESCE(t1.actual, 0) acumulado, (COALESCE(t2.anterior, 0) + COALESCE(t1.actual, 0)) / COALESCE(t1.presupuesto, 0) * 100 porcentaje_acumuado, COALESCE(t1.presupuesto, 0) - (COALESCE(t2.anterior, 0) + COALESCE(t1.actual, 0)) saldo, (COALESCE(t1.presupuesto, 0) - (COALESCE(t2.anterior, 0) + COALESCE(t1.actual, 0))) / COALESCE(t1.presupuesto, 0) * 100 porcentaje_saldo FROM componentes left join (SELECT componentes.Fichas_id_ficha, componentes.id_componente, componentes.numero, componentes.nombre, componentes.presupuesto, COALESCE(SUM(avanceactividades.valor * partidas.costo_unitario), 0) actual FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE MONTH(NOW()) = MONTH(avanceactividades.fecha) GROUP BY componentes.id_componente) t1 on t1.id_componente = componentes.id_componente LEFT JOIN (SELECT componentes.id_componente, COALESCE(SUM(avanceactividades.valor * partidas.costo_unitario), 0) anterior FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE MONTH(NOW()) > MONTH(avanceactividades.fecha) GROUP BY componentes.id_componente) t2 ON t2.id_componente = t1.id_componente WHERE t1.fichas_id_ficha = ?",id_ficha,(err,res)=>{
                 if(err){
                     console.log(err);                    
                     callback(err.code);                
@@ -604,14 +635,14 @@ userModel.resumenValorizacionPrincipal  = (id_ficha,costosIndirectos,callback)=>
                         saldo+=fila.saldo
                         porcentaje_saldo+=fila.porcentaje_saldo
 
-                        fila.presupuesto = formatoPorcentaje(fila.presupuesto)
-                        fila.anterior = formatoPorcentaje(fila.anterior)
+                        fila.presupuesto = formato(fila.presupuesto)
+                        fila.anterior = formato(fila.anterior)
                         fila.porcentaje_anterior = formatoPorcentaje(fila.porcentaje_anterior)
-                        fila.actual = formatoPorcentaje(fila.actual)
+                        fila.actual = formato(fila.actual)
                         fila.porcentaje_actual = formatoPorcentaje(fila.porcentaje_actual)
-                        fila.acumulado = formatoPorcentaje(fila.acumulado)
+                        fila.acumulado = formato(fila.acumulado)
                         fila.porcentaje_acumuado = formatoPorcentaje(fila.porcentaje_acumuado)
-                        fila.saldo = formatoPorcentaje(fila.saldo)
+                        fila.saldo = formato(fila.saldo)
                         fila.porcentaje_saldo = formatoPorcentaje(fila.porcentaje_saldo)
                     }
                     //calculo de costo Indirecto
@@ -636,14 +667,14 @@ userModel.resumenValorizacionPrincipal  = (id_ficha,costosIndirectos,callback)=>
                         saldo2+=fila.saldo
                         porcentaje_saldo2+=fila.porcentaje_saldo
 
-                        fila.presupuesto = formatoPorcentaje(fila.presupuesto)
-                        fila.anterior = formatoPorcentaje(fila.anterior)
+                        fila.presupuesto = formato(fila.presupuesto)
+                        fila.anterior = formato(fila.anterior)
                         fila.porcentaje_anterior = formatoPorcentaje(fila.porcentaje_anterior)
-                        fila.actual = formatoPorcentaje(fila.actual)
+                        fila.actual = formato(fila.actual)
                         fila.porcentaje_actual = formatoPorcentaje(fila.porcentaje_actual)
-                        fila.acumulado = formatoPorcentaje(fila.acumulado)
+                        fila.acumulado = formato(fila.acumulado)
                         fila.porcentaje_acumuado = formatoPorcentaje(fila.porcentaje_acumuado)
-                        fila.saldo = formatoPorcentaje(fila.saldo)
+                        fila.saldo = formato(fila.saldo)
                         fila.porcentaje_saldo = formatoPorcentaje(fila.porcentaje_saldo)
                     }
                     
@@ -656,14 +687,14 @@ userModel.resumenValorizacionPrincipal  = (id_ficha,costosIndirectos,callback)=>
                             {
                                 "numero":"",
                                 "nombre":"COSTO DIRECTO",
-                                "presupuesto":formatoPorcentaje( presupuesto),
-                                "anterior":formatoPorcentaje( anterior),
+                                "presupuesto":formato( presupuesto),
+                                "anterior":formato( anterior),
                                 "porcentaje_anterior":formatoPorcentaje( porcentaje_anterior),
-                                "actual":formatoPorcentaje( actual),
+                                "actual":formato( actual),
                                 "porcentaje_actual":formatoPorcentaje( porcentaje_actual),
-                                "acumulado":formatoPorcentaje( acumulado),
+                                "acumulado":formato( acumulado),
                                 "porcentaje_acumuado":formatoPorcentaje( porcentaje_acumuado),
-                                "saldo":formatoPorcentaje( saldo),
+                                "saldo":formato( saldo),
                                 "porcentaje_saldo":formatoPorcentaje( porcentaje_saldo)
                             }
                             
@@ -675,14 +706,14 @@ userModel.resumenValorizacionPrincipal  = (id_ficha,costosIndirectos,callback)=>
                             {
                                 "numero": "",
                                 "nombre": "COSTO INDIRECTO TOTAL",
-                                "presupuesto":formatoPorcentaje( presupuesto2),
-                                "anterior":formatoPorcentaje( anterior2),
+                                "presupuesto":formato( presupuesto2),
+                                "anterior":formato( anterior2),
                                 "porcentaje_anterior":formatoPorcentaje( porcentaje_anterior2),
-                                "actual":formatoPorcentaje( actual2),
+                                "actual":formato( actual2),
                                 "porcentaje_actual":formatoPorcentaje( porcentaje_actual2),
-                                "acumulado":formatoPorcentaje( acumulado2),
+                                "acumulado":formato( acumulado2),
                                 "porcentaje_acumuado":formatoPorcentaje( porcentaje_acumuado2),
-                                "saldo":formatoPorcentaje( saldo2),
+                                "saldo":formato( saldo2),
                                 "porcentaje_saldo":formatoPorcentaje( porcentaje_saldo2)
                             }                            
 
@@ -691,14 +722,14 @@ userModel.resumenValorizacionPrincipal  = (id_ficha,costosIndirectos,callback)=>
                             {
                                 "numero": "",
                                 "nombre": "COSTO INDIRECTO TOTAL",
-                                "presupuesto":formatoPorcentaje(presupuesto+presupuesto2),
-                                "anterior":formatoPorcentaje(anterior+anterior2),
+                                "presupuesto":formato(presupuesto+presupuesto2),
+                                "anterior":formato(anterior+anterior2),
                                 "porcentaje_anterior":formatoPorcentaje(porcentaje_anterior+porcentaje_anterior2),
-                                "actual":formatoPorcentaje(actual+actual2),
+                                "actual":formato(actual+actual2),
                                 "porcentaje_actual":formatoPorcentaje(porcentaje_actual+porcentaje_actual2),
-                                "acumulado":formatoPorcentaje(acumulado+acumulado2),
+                                "acumulado":formato(acumulado+acumulado2),
                                 "porcentaje_acumuado":formatoPorcentaje(porcentaje_acumuado+porcentaje_acumuado2),
-                                "saldo":formatoPorcentaje(saldo+saldo2),
+                                "saldo":formato(saldo+saldo2),
                                 "porcentaje_saldo":formatoPorcentaje(porcentaje_saldo+porcentaje_saldo2)
                             }                            
 
@@ -914,15 +945,15 @@ userModel.getValGeneralExtras = (id_ficha,tipo,callback)=>{
                                 {
                                     "componente_numero": componente.componente_numero,
                                     "nombre": componente.nombre,
-                                    "presupuesto": formatoPorcentaje(componente.presupuesto),
-                                    "valor_total_anterior":formatoPorcentaje( componente.valor_total_anterior),
-                                    "valor_total_anterior_porcentaje":formatoPorcentaje(componente.valor_total_anterior/componente.presupuesto * 100),
-                                    "valor_total_actual":formatoPorcentaje( componente.valor_total_actual),
-                                    "valor_total_actual_porcentaje":formatoPorcentaje(componente.valor_total_actual/componente.presupuesto * 100),
-                                    "valor_suma_acumulado":formatoPorcentaje( componente.valor_suma_acumulado),
-                                    "valor_suma_acumulado_porcentaje":formatoPorcentaje(componente.valor_suma_acumulado/componente.presupuesto * 100),
-                                    "valor_total_saldo":formatoPorcentaje( componente.valor_total_saldo),
-                                    "valor_total_saldo_porcentaje":formatoPorcentaje(componente.valor_total_saldo/componente.presupuesto * 100)
+                                    "presupuesto": formato(componente.presupuesto),
+                                    "valor_total_anterior":formato( componente.valor_total_anterior),
+                                    "valor_total_anterior_porcentaje":formato(componente.valor_total_anterior/componente.presupuesto * 100),
+                                    "valor_total_actual":formato( componente.valor_total_actual),
+                                    "valor_total_actual_porcentaje":formato(componente.valor_total_actual/componente.presupuesto * 100),
+                                    "valor_suma_acumulado":formato( componente.valor_suma_acumulado),
+                                    "valor_suma_acumulado_porcentaje":formato(componente.valor_suma_acumulado/componente.presupuesto * 100),
+                                    "valor_total_saldo":formato( componente.valor_total_saldo),
+                                    "valor_total_saldo_porcentaje":formato(componente.valor_total_saldo/componente.presupuesto * 100)
                                 }
                             )
 
@@ -970,44 +1001,44 @@ userModel.getValGeneralExtras = (id_ficha,tipo,callback)=>{
 
                         
                     }
-                    //aplicando formatoPorcentaje en 2 decimales
+                    //aplicando formato en 2 decimales
                     for (let i = 0; i < periodos.length; i++) {
                         const componentes = periodos[i].componentes;
 
 
-                        periodos[i].resumen.presupuesto_total=formatoPorcentaje(periodos[i].resumen.presupuesto_total)
-                        periodos[i].resumen.avance_anterior =formatoPorcentaje(periodos[i].resumen.avance_anterior )
-                        periodos[i].resumen.avance_actual =formatoPorcentaje(periodos[i].resumen.avance_actual )
-                        periodos[i].resumen.avance_acumulado =formatoPorcentaje(periodos[i].resumen.avance_acumulado )
-                        periodos[i].resumen.saldo =formatoPorcentaje(periodos[i].resumen.saldo )
+                        periodos[i].resumen.presupuesto_total=formato(periodos[i].resumen.presupuesto_total)
+                        periodos[i].resumen.avance_anterior =formato(periodos[i].resumen.avance_anterior )
+                        periodos[i].resumen.avance_actual =formato(periodos[i].resumen.avance_actual )
+                        periodos[i].resumen.avance_acumulado =formato(periodos[i].resumen.avance_acumulado )
+                        periodos[i].resumen.saldo =formato(periodos[i].resumen.saldo )
                         for (let j = 0; j < componentes.length; j++) {
                             const componente = componentes[j];
-                            //formatoPorcentaje 2 digitos
-                            componente.presupuesto = formatoPorcentaje(componente.presupuesto)
-                            componente.valor_total_anterior = formatoPorcentaje(componente.valor_total_anterior)
-                            componente.valor_total_actual = formatoPorcentaje(componente.valor_total_actual)
-                            componente.valor_suma_acumulado = formatoPorcentaje(componente.valor_suma_acumulado)
-                            componente.valor_total_saldo = formatoPorcentaje(componente.valor_total_saldo)
+                            //formato 2 digitos
+                            componente.presupuesto = formato(componente.presupuesto)
+                            componente.valor_total_anterior = formato(componente.valor_total_anterior)
+                            componente.valor_total_actual = formato(componente.valor_total_actual)
+                            componente.valor_suma_acumulado = formato(componente.valor_suma_acumulado)
+                            componente.valor_total_saldo = formato(componente.valor_total_saldo)
                             const partidas = componente.partidas
                             for (let k = 0; k < partidas.length; k++) {
                                 const partida = partidas[k];
-                                 //formatoPorcentaje de dos digitos
-                                partida.metrado = formatoPorcentaje(partida.metrado)
-                                partida.costo_unitario = formatoPorcentaje(partida.costo_unitario)
-                                partida.parcial = formatoPorcentaje(partida.parcial)
+                                 //formato de dos digitos
+                                partida.metrado = formato(partida.metrado)
+                                partida.costo_unitario = formato(partida.costo_unitario)
+                                partida.parcial = formato(partida.parcial)
 
-                                 partida.metrado_anterior = formatoPorcentaje(partida.metrado_anterior)
-                                 partida.valor_anterior = formatoPorcentaje(partida.valor_anterior)
-                                 partida.porcentaje_anterior = formatoPorcentaje(partida.porcentaje_anterior)
-                                 partida.metrado_actual = formatoPorcentaje(partida.metrado_actual)
-                                 partida.valor_actual = formatoPorcentaje(partida.valor_actual)
-                                 partida.porcentaje_actual = formatoPorcentaje(partida.porcentaje_actual)
-                                 partida.metrado_total = formatoPorcentaje(partida.metrado_total)
-                                 partida.valor_total = formatoPorcentaje(partida.valor_total)
-                                 partida.porcentaje_total = formatoPorcentaje(partida.porcentaje_total)
-                                 partida.metrado_saldo = formatoPorcentaje(partida.metrado_saldo)
-                                 partida.valor_saldo = formatoPorcentaje(partida.valor_saldo)
-                                 partida.porcentaje_saldo = formatoPorcentaje(partida.porcentaje_saldo)
+                                 partida.metrado_anterior = formato(partida.metrado_anterior)
+                                 partida.valor_anterior = formato(partida.valor_anterior)
+                                 partida.porcentaje_anterior = formato(partida.porcentaje_anterior)
+                                 partida.metrado_actual = formato(partida.metrado_actual)
+                                 partida.valor_actual = formato(partida.valor_actual)
+                                 partida.porcentaje_actual = formato(partida.porcentaje_actual)
+                                 partida.metrado_total = formato(partida.metrado_total)
+                                 partida.valor_total = formato(partida.valor_total)
+                                 partida.porcentaje_total = formato(partida.porcentaje_total)
+                                 partida.metrado_saldo = formato(partida.metrado_saldo)
+                                 partida.valor_saldo = formato(partida.valor_saldo)
+                                 partida.porcentaje_saldo = formato(partida.porcentaje_saldo)
                                 
                             }
 
@@ -1246,7 +1277,7 @@ userModel.getcronograma = (id_ficha,callback)=>{
                         porcentaje_programado.push(element.porcentaje_programado)
                         porcentaje_financiero.push(element.porcentaje_financiero)
                         if(element.porcentaje_fisico != null){
-                            porcentaje_fisico.push(Number(formatoPorcentaje(element.porcentaje_fisico)))
+                            porcentaje_fisico.push(Number(formato(element.porcentaje_fisico)))
                         }
                         
                     }
@@ -1296,24 +1327,24 @@ userModel.getinformeControlEjecucionObras = (id_ficha,callback)=>{
                     obra.modalidad_ejecucion =fila.modalidad_ejecucion
                     obra.fuente_informacion =fila.fuente_informacion
                     obra.fecha_actual =formatoFecha(fila.fecha_actual)
-                    obra.presupuesto =formatoPorcentaje(fila.presupuesto)
+                    obra.presupuesto =formato(fila.presupuesto)
                     obra.ampliacion_presupuestal =fila.ampliacion_presupuestal
                     obra.plazo_ejecucion_inicial =fila.plazo_ejecucion_inicial
                     obra.ampliacion_plazo_n =fila.ampliacion_plazo_n
                     obra.codigo =fila.codigo
                     obra.g_meta =fila.g_meta
-                    obra.g_total_presu =formatoPorcentaje(fila.g_total_presu)
+                    obra.g_total_presu =formato(fila.g_total_presu)
                     obra.plazo_ejecucion =fila.plazo_ejecucion
                     obra.fecha_inicial =formatoFecha(fila.fecha_inicial)
                     obra.fechaEjecucion =formatoFecha(fila.fechaEjecucion)
                     obra.dias_ampliados =fila.dias_ampliados
                     obra.fecha_termino =fila.fecha_termino
-                    obra.financiero_acumulado = formatoPorcentaje(fila.financiero_acumulado)
-                    obra.financiero_porcentaje_acumulado = formatoPorcentaje(fila.financiero_porcentaje_acumulado)
-                    obra.fisico_acumulado = formatoPorcentaje(fila.fisico_acumulado)
-                    obra.fisico_porcentaje_acumulado = formatoPorcentaje(fila.fisico_porcentaje_acumulado)
-                    obra.ampliacion_acumulado = formatoPorcentaje(fila.ampliacion_acumulado)
-                    obra.ampliacion_porcentaje_acumulado = formatoPorcentaje(fila.ampliacion_porcentaje_acumulado)
+                    obra.financiero_acumulado = formato(fila.financiero_acumulado)
+                    obra.financiero_porcentaje_acumulado = formato(fila.financiero_porcentaje_acumulado)
+                    obra.fisico_acumulado = formato(fila.fisico_acumulado)
+                    obra.fisico_porcentaje_acumulado = formato(fila.fisico_porcentaje_acumulado)
+                    obra.ampliacion_acumulado = formato(fila.ampliacion_acumulado)
+                    obra.ampliacion_porcentaje_acumulado = formato(fila.ampliacion_porcentaje_acumulado)
                     obra.mes_reportado =fila.mes_reportado
                     obra.estado_obra =fila.estado_obra
                     obra.metas_programadas =fila.metas_programadas
