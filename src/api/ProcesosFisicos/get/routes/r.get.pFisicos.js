@@ -1,6 +1,18 @@
 const User = require('../models/m.get.pFisicos');
 
 module.exports = function(app){
+    app.post('/getPartidasCompletas',(req,res)=>{
+		if (req.body.id_ficha == null ||req.body.id_ficha == "null"||req.body.id_ficha == "") {
+			res.json("null");
+		} else {
+			User.getPartidasCompletas(req.body.id_ficha,(err,data)=>{
+				if(err){ res.status(204).json(err);}
+				else{
+                    res.json(data)
+				}
+			})
+		}
+    })
     app.post('/getComponentes',(req,res)=>{
 		if (req.body.id_ficha == null ||req.body.id_ficha == "null"||req.body.id_ficha == "") {
 			res.json("null");
@@ -9,7 +21,7 @@ module.exports = function(app){
 				if(err){ res.status(204).json(err);}
 				else{
                     // res.json(componentes[0].id_componente)
-                    User.getPartidas(componentes[0].id_componente,(err,partidas)=>{
+                    User.getPartidasActividades(componentes[0].id_componente,(err,partidas)=>{
                         if(err){ res.status(204).json(err);}
                         else{
                             res.json(
@@ -85,7 +97,20 @@ module.exports = function(app){
 			})
 		}
 	})
+    app.post('/getHistorial',(req,res)=>{
+        if (req.body.id_ficha == null) {
+            res.json("null")
+        } else {			
+            User.getHistorial(req.body.id_ficha,(err,data)=>{
+                if(err){ res.status(204).json(err);}
+                else{
+                    res.json(data);	
+                }
+            })
+        }
     
+    
+    })
     app.post('/getHistorialComponentes',(req,res)=>{
         if (req.body.id_ficha == null) {
             res.json("null")
