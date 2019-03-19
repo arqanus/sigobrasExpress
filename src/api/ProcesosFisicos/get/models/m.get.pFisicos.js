@@ -177,117 +177,78 @@ userModel.getActividadesPNuevas = (id_partida,callback)=>{
     })
 }
 
-userModel.getHistorial = (id_ficha,callback)=>{
+userModel.getHistorialComponentes = (id_ficha,callback)=>{
     
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
         else{
-            conn.query('SELECT componentes.id_componente, componentes.numero, componentes.nombre nombre_componente, partidas.item, partidas.descripcion descripcion_partida, actividades.nombre nombre_actividad, avanceactividades.descripcion descripcion_actividad, avanceactividades.observacion, DATE(avanceactividades.fecha) fecha, avanceactividades.valor, partidas.costo_unitario, avanceactividades.valor * partidas.costo_unitario parcial FROM presupuestos LEFT JOIN partidas ON partidas.presupuestos_id_Presupuesto = presupuestos.id_Presupuesto LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida RIGHT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad left join componentes on componentes.id_componente = partidas.componentes_id_componente WHERE presupuestos.Fichas_id_ficha = ? ORDER BY componentes.id_componente ,avanceactividades.fecha desc,partidas.id_partida',id_ficha,(err,res)=>{
-                if(err){
+            conn.query('/*************** por componentes********************/ SELECT componentes.id_componente,componentes.numero, componentes.presupuesto, componentes.nombre nombre_componente, SUM(avanceactividades.valor * partidas.costo_unitario) comp_avance, SUM(avanceactividades.valor * partidas.costo_unitario) / componentes.presupuesto * 100  porcentaje_avance_componentesa FROM fichas left JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE fichas.id_ficha = ? GROUP BY componentes.id_componente ',id_ficha,(err,res)=>{
+                 if(err){
                     console.log(err);
                     callback(err.code);
                 }else if(res.length==0){
                     console.log("vacio");
                     callback("vacio");
                 }else{                    
-                    // console.log("res",res); 
-                    var lastIdComponente = -1
-                    var componentes = []
-                    var componente = {}
-                    for (let i = 0; i < res.length; i++) {
-                        const fila = res[i];
-                        console.log("fila",fila.id_componente)
-                        fila.fecha = fila.fecha.getDate()+" de "+month[fila.fecha.getMonth()]+" del "+fila.fecha.getFullYear()
-                        if(fila.id_componente != lastIdComponente){
-                            if(i != 0 ){
-                                componente.fechas[componente.fechas.length-1].historial.push(
-                                    {
-                                        "item" :"",
-                                        "descripcion_partida" : "",
-                                        "nombre_actividad" : "",
-                                        "descripcion_actividad" : "",
-                                        "observacion":"",                 
-                                        "valor":"",
-                                        "costo_unitario":"",
-                                        "parcial":""
-                                    }
-                                )
-                                componentes.push(componente);
-                                componente = {}
-                            }
-                                           
-                            
-                            componente.id_componente = fila.id_componente
-                            componente.numero = fila.numero
-                            componente.nombre_componente = fila.nombre_componente
-                            componente.fechas = [
-                                {
-                                    "fecha": fila.fecha,
-                                    "fecha_total":123,
-                                    "historial":[
-                                        {
-                                            "item" : fila.item,
-                                            "descripcion_partida" : fila.descripcion_partida,
-                                            "nombre_actividad" : fila.nombre_actividad,
-                                            "descripcion_actividad" : fila.descripcion_actividad,
-                                            "observacion":fila.observacion,                 
-                                            "valor":fila.valor,
-                                            "costo_unitario":fila.costo_unitario,
-                                            "parcial":fila.parcial
-                                        }
-                                    ]
-                                }
-                                
-                            ]                         
-                            
-                        }
-                        else{
-                            if(fila.fecha != lastFecha){
-                                componente.fechas.push(
-                                    {
-                                        "fecha": fila.fecha,
-                                        "fecha_total":123,
-                                        "historial":[
-                                            {
-                                                "item" : fila.item,
-                                                "descripcion_partida" : fila.descripcion_partida,
-                                                "nombre_actividad" : fila.nombre_actividad,
-                                                "descripcion_actividad" : fila.descripcion_actividad,
-                                                "observacion":fila.observacion,                 
-                                                "valor":fila.valor,
-                                                "costo_unitario":fila.costo_unitario,
-                                                "parcial":formato( fila.parcial)
-                                            }
-                                        ]
-                                    }
-                                    
-                                )   
-                            }else{
-                                componente.fechas[componente.fechas.length-1].historial.push(
-                                    {
-                                        "item" : fila.item,
-                                        "descripcion_partida" : fila.descripcion_partida,
-                                        "nombre_actividad" : fila.nombre_actividad,
-                                        "descripcion_actividad" : fila.descripcion_actividad,
-                                        "observacion":fila.observacion,                 
-                                        "valor":fila.valor,
-                                        "costo_unitario":fila.costo_unitario,
-                                        "parcial":formato( fila.parcial)
-                                    }
-                                )
-                            }
-
-                            
-
-                        }
-                        lastIdComponente = fila.id_componente
-                        lastFecha = fila.fecha
-
-                        
-                    }
-                    componentes.push(componente);
                     
-                    callback(null,componentes);
+                    
+                    
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }
+        
+                
+    })
+}
+userModel.getHistorialFechas = (id_componente,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){ callback(err);}
+        else{
+            conn.query("select partidas.componentes_id_componente id_componente, DATE_FORMAT(fecha, '%d-%m-%Y') AS fecha ,sum(valor*costo_unitario) fecha_avance from partidas left join actividades on actividades.Partidas_id_partida = partidas.id_partida inner join avanceactividades on avanceactividades.Actividades_id_actividad=actividades.id_actividad GROUP BY date(avanceactividades.fecha)",id_componente,(err,res)=>{
+                 if(err){
+                    console.log(err);
+                    callback(err.code);
+                }else if(res.length==0){
+                    
+                    callback("vacio");
+                    conn.destroy()
+                }else{                    
+                    
+                    
+                    
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }
+        
+                
+    })
+}
+userModel.getHistorialFechasHistorial = (id_ficha,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){ callback(err);}
+        else{
+            conn.query('/*************** por componentes********************/ SELECT componentes.numero, componentes.presupuesto, componentes.nombre nombre_componente, SUM(avanceactividades.valor * partidas.costo_unitario) comp_avance, SUM(avanceactividades.valor * partidas.costo_unitario) / componentes.presupuesto * 100  porcentaje_avance_componentesa FROM fichas left JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE fichas.id_ficha = ? GROUP BY componentes.id_componente ',id_ficha,(err,res)=>{
+                 if(err){
+                    console.log(err);
+                    callback(err.code);
+                }else if(res.length==0){
+                    console.log("vacio");
+                    callback("vacio");
+                }else{                    
+                    
+                    
+                    
+                    callback(null,res);
                     conn.destroy()
                 }
                 
