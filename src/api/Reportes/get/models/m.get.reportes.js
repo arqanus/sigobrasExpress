@@ -643,8 +643,11 @@ userModel.resumenValorizacionPrincipal  = (id_ficha,costosIndirectos,callback)=>
                         fila.saldo = formatoPorcentaje(fila.saldo)
                         fila.porcentaje_saldo = formatoPorcentaje(fila.porcentaje_saldo)
                     }
+                    
+                    
                     var datatemp = 
                     {
+                        mes:month[new Date().getMonth()],
                         componentes:res,
                         costosDirecto:[
                             {
