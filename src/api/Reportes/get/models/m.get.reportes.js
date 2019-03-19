@@ -721,7 +721,7 @@ userModel.resumenValorizacionPrincipal  = (id_ficha,costosIndirectos,callback)=>
                         ejecutadoTotalExpediente:[
                             {
                                 "numero": "",
-                                "nombre": "COSTO INDIRECTO TOTAL",
+                                "nombre": "EJECUTADO DEL PRESUPUESTO SEGUN EXP.",
                                 "presupuesto":formato(presupuesto+presupuesto2),
                                 "anterior":formato(anterior+anterior2),
                                 "porcentaje_anterior":formatoPorcentaje(porcentaje_anterior+porcentaje_anterior2),
