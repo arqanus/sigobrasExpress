@@ -1,4 +1,29 @@
 const pool = require('../../../../db/connection');
+function formato(data){
+    
+        console.log("antes",data);
+        
+        data = Number(data)
+        console.log("number",data);
+        if(isNaN(data)){
+            
+            data=0
+        }
+        if(data < 1){
+            data = data.toLocaleString('es-PE', {
+                minimumFractionDigits: 4,
+                maximumFractionDigits: 4
+              })
+        }else{
+            data = data.toLocaleString('es-PE', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+              })
+        } 
+        console.log("despues",data);
+    
+        return data
+}
 let userModel = {};
 userModel.getObras = (id_acceso,callback)=>{    
     pool.getConnection(function(err ,conn){
@@ -11,6 +36,7 @@ userModel.getObras = (id_acceso,callback)=>{
                 }
                 else if(res.length == 0){
                     callback("vacio");
+                    conn.destroy()
         
                 }else{      
                     
@@ -25,7 +51,7 @@ userModel.getObras = (id_acceso,callback)=>{
                 
     })
 }
-userModel.getComponentes = (id_ficha,callback)=>{    
+userModel.getComponentesPgerenciales = (id_ficha,callback)=>{    
         pool.getConnection(function(err ,conn){
                 if(err){ callback(err);}
                 
@@ -36,8 +62,14 @@ userModel.getComponentes = (id_ficha,callback)=>{
                                 }
                                 else if(res.length == 0){
                                         callback("vacio");
+                                        conn.destroy()                                       
                 
                                 }else{      
+                                        
+                                        for (let i = 0; i < res.length; i++) {
+                                                const fila = res[i];
+                                                fila.presupuesto = formato(fila.presupuesto)         
+                                        }
                                         
                                         callback(null,res);
                                         conn.destroy()
@@ -59,7 +91,8 @@ userModel.getCargosById = (id_ficha,callback)=>{
                                         callback(err);                
                                 }
                                 else if(res.length == 0){
-                                        callback("vacio");        
+                                        callback("vacio"); 
+                                        conn.destroy()       
                                 }else{
                                         console.log(res);
                                         var lastcargo_nombre = -1 
