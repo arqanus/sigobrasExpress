@@ -1,7 +1,7 @@
 const User = require('../models/m.get.pFisicos');
 
 module.exports = function(app){
-    app.post('/getComponentes',(req,res)=>{
+    app.post('/getComponentesPf',(req,res)=>{
 		if (req.body.id_ficha == null ||req.body.id_ficha == "null"||req.body.id_ficha == "") {
 			res.json("null");
 		} else {
