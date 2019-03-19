@@ -5,10 +5,21 @@ module.exports = function(app){
 		if (req.body.id_ficha == null ||req.body.id_ficha == "null"||req.body.id_ficha == "") {
 			res.json("null");
 		} else {
-			User.getComponentes(req.body.id_ficha,(err,data)=>{
+			User.getComponentes(req.body.id_ficha,(err,componentes)=>{
 				if(err){ res.status(204).json(err);}
 				else{
-					res.json(data);	
+                    // res.json(componentes[0].id_componente)
+                    User.getPartidas(componentes[0].id_componente,(err,partidas)=>{
+                        if(err){ res.status(204).json(err);}
+                        else{
+                            res.json(
+                                {
+                                    "componentes":componentes,
+                                    "partidas":partidas
+                                }
+                            );	
+                        }
+                    })
 				}
 			})
 		}
@@ -75,7 +86,35 @@ module.exports = function(app){
 		}
 	})
     
-    app.post('/getHistorial',(req,res)=>{
+    app.post('/getHistorialComponentes',(req,res)=>{
+        if (req.body.id_ficha == null) {
+            res.json("null")
+        } else {			
+            User.getHistorialComponentes(req.body.id_ficha,(err,data)=>{
+                if(err){ res.status(204).json(err);}
+                else{
+                    res.json(data);	
+                }
+            })
+        }
+    
+    
+    })
+    app.post('/getHistorialFechas',(req,res)=>{
+        if (req.body.id_componente == null) {
+            res.json("null")
+        } else {			
+            User.getHistorialFechas(req.body.id_componente,(err,data)=>{
+                if(err){ res.status(204).json(err);}
+                else{
+                    res.json(data);	
+                }
+            })
+        }
+    
+    
+    })
+    app.post('/getHistorialFechasHistorial',(req,res)=>{
         if (req.body.id_ficha == null) {
             res.json("null")
         } else {			
@@ -88,7 +127,7 @@ module.exports = function(app){
         }
     
     
-    })    
+    })  
 
     app.post('/getValGeneral',(req,res)=>{
         if (req.body.id_ficha == null) {
