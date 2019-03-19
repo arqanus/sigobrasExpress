@@ -53,15 +53,17 @@ userModel.getInformeDataGeneral  = (id_ficha,callback)=>{
             callback(err);
         }        
         else{
-            conn.query("SELECT fichas.id_ficha, fichas.f_entidad_finan entidad_financiera, fichas.modalidad_ejec modalidad_ejecucion, 'SIGOBRAS - subgerencia de obras' fuente_informacion, CURDATE() fecha_actual, fichas.g_total_presu presupuesto, 0 ampliacion_presupuestal, TIMESTAMPDIFF(DAY, fichas.fecha_inicial, plazoejecucion.fechaEjecucion) plazo_ejecucion_inicial, 0 ampliacion_plazo_n, fichas.codigo, fichas.g_meta, fichas.g_total_presu, residente.usuario residente, supervisor.usuario supervisor, TIMESTAMPDIFF(DAY, fichas.fecha_inicial, plazoejecucion.fechaEjecucion) plazo_ejecucion, fichas.fecha_inicial, plazoejecucion.fechaEjecucion, 0 dias_ampliados, 0 fecha_termino, 0 financiero_acumulado, 0 financiero_porcentaje_acumulado, Fisico.avance fisico_acumulado, Fisico.avance / fichas.g_total_presu * 100 fisico_porcentaje_acumulado, 0 ampliacion_acumulado, 0 ampliacion_porcentaje_acumulado, CONCAT(MONTHNAME(CURDATE()), ' ', YEAR(CURDATE())) mes_reportado, estados.nombre estado_obra, 0 metas_programadas, 0 mets_ejecutadas, 0 comentario FROM fichas LEFT JOIN plazoejecucion ON plazoejecucion.fichas_id_ficha = fichas.id_ficha LEFT JOIN historialestados ON historialestados.Fichas_id_ficha = fichas.id_ficha AND historialestados.id_historialEstado = (SELECT MAX(id_historialEstado) FROM historialestados) LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado LEFT JOIN (SELECT fichas_has_accesos.Fichas_id_ficha id_ficha, cargos.nombre nobre_cargo, CONCAT(usuarios.nombre, ' ', usuarios.apellido_paterno, ' ', usuarios.apellido_materno) nombre_personal FROM fichas_has_accesos LEFT JOIN accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso LEFT JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo) personal ON personal.id_ficha = fichas.id_ficha LEFT JOIN (SELECT componentes.Fichas_id_ficha id_ficha, SUM(avanceactividades.valor) avance FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad GROUP BY componentes.Fichas_id_ficha) Fisico ON Fisico.id_ficha = fichas.id_ficha left join (SELECT fichas_has_accesos.Fichas_id_ficha, CONCAT(usuarios.nombre, ' ', usuarios.apellido_paterno, ' ', usuarios.apellido_materno) usuario FROM fichas_has_accesos LEFT JOIN accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso LEFT JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo WHERE cargos.nombre = 'residente' GROUP BY fichas_has_accesos.Fichas_id_ficha) residente ON residente.Fichas_id_ficha = fichas.id_ficha LEFT JOIN (SELECT fichas_has_accesos.Fichas_id_ficha, CONCAT(usuarios.nombre, ' ', usuarios.apellido_paterno, ' ', usuarios.apellido_materno) usuario FROM fichas_has_accesos LEFT JOIN accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso LEFT JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo WHERE cargos.nombre = 'supervisor' GROUP BY fichas_has_accesos.Fichas_id_ficha) supervisor ON supervisor.Fichas_id_ficha = fichas.id_ficha WHERE fichas.id_ficha = ?",id_ficha,(err,res)=>{ if(err){
+            conn.query("SELECT fichas.id_ficha, fichas.g_meta, fichas.g_total_presu presupuesto_general, MONTHNAME(NOW()) mes, fichas.tiempo_ejec plazo_de_ejecucion, tb_avance_actual.avance_actual, tb_avance_actual.avance_actual_valor, avance_acumulado.avance_acumulado, avance_acumulado.avance_acumulado_valor, fichas.g_local_reg region, fichas.g_local_prov provincia, fichas.g_local_dist distrito, fichas.lugar, residente.usuario residente, supervisor.usuario supervisor, tb_avance_actual.avance_actual_valor/fichas.g_total_presu*100 porcentaje_avance_fisico, avance_acumulado.avance_acumulado_valor/fichas.g_total_presu*100 porcentaje_avance_acumulado FROM fichas LEFT JOIN (SELECT id_ficha, SUM(valor) avance_acumulado, SUM(valor * costo_unitario) avance_acumulado_valor FROM fichas LEFT JOIN componentes ON componentes.Fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE fichas.id_ficha = id_ficha GROUP BY fichas.id_ficha) avance_acumulado ON avance_acumulado.id_ficha = fichas.id_ficha LEFT JOIN (SELECT id_ficha, SUM(valor) avance_actual, SUM(valor * costo_unitario) avance_actual_valor FROM fichas LEFT JOIN componentes ON componentes.Fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE MONTH(NOW()) = MONTH(avanceactividades.fecha) GROUP BY fichas.id_ficha) tb_avance_actual ON tb_avance_actual.id_ficha = fichas.id_ficha LEFT JOIN (SELECT fichas_has_accesos.Fichas_id_ficha, CONCAT(usuarios.nombre, ' ', usuarios.apellido_paterno, ' ', usuarios.apellido_materno) usuario FROM fichas_has_accesos LEFT JOIN accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso LEFT JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo WHERE cargos.nombre = 'residente' GROUP BY fichas_has_accesos.Fichas_id_ficha) residente ON residente.Fichas_id_ficha = fichas.id_ficha LEFT JOIN (SELECT fichas_has_accesos.Fichas_id_ficha, CONCAT(usuarios.nombre, ' ', usuarios.apellido_paterno, ' ', usuarios.apellido_materno) usuario FROM fichas_has_accesos LEFT JOIN accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso LEFT JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo WHERE cargos.nombre = 'supervisor' GROUP BY fichas_has_accesos.Fichas_id_ficha) supervisor ON supervisor.Fichas_id_ficha = fichas.id_ficha WHERE fichas.id_ficha = ?",id_ficha,(err,res)=>{ 
+                if(err){
                     console.log(err);                    
-                    callback(err.code);                
+                    callback(err.code);                 
                 }
                 else if(res.length == 0){
-                    callback("vacio");        
+                    callback("vacio");    
+                    conn.destroy()    
                 }else{     
-                    res[0].porcentaje_avance_fisico = formatoPorcentaje(res[0].avance_actual_valor/res[0].presupuesto_general*100)
-                    res[0].porcentaje_avance_acumuladoo = formatoPorcentaje(res[0].avance_acumulado_valor/res[0].presupuesto_general*100)
+                    res[0].porcentaje_avance_fisico = formatoPorcentaje(res[0].porcentaje_avance_fisico)
+                    res[0].porcentaje_avance_acumulado = formatoPorcentaje(res[0].porcentaje_avance_acumulado)
 
                     res[0].avance_actual = formatoPorcentaje(res[0].avance_actual)
                     res[0].avance_actual_valor = formatoPorcentaje(res[0].avance_actual_valor)
@@ -103,36 +105,36 @@ userModel.CuadroMetradosEjecutados = (id_ficha,callback)=>{
                     var lastIdComponente = -1
                     var componentes = []
                     var componente = {}
+                    var componente_avance_valor = 0
+                    var fecha_avance_valor = 0
                     for (let i = 0; i < res.length; i++) {
                         const fila = res[i];
                         console.log("fila",fila.id_componente)
                         fila.fecha = fila.fecha.getDate()+" de "+month[fila.fecha.getMonth()]+" del "+fila.fecha.getFullYear()
+                        //calculo delavance por componente y fecha
+                        componente_avance_valor +=fila.parcial
+                        fecha_avance_valor +=fila.parcial
+
                         if(fila.id_componente != lastIdComponente){
                             if(i != 0 ){
-                                componente.fechas[componente.fechas.length-1].historial.push(
-                                    {
-                                        "item" :"",
-                                        "descripcion_partida" : "",
-                                        "nombre_actividad" : "",
-                                        "descripcion_actividad" : "",
-                                        "observacion":"",                 
-                                        "valor":"",
-                                        "costo_unitario":"",
-                                        "parcial":""
-                                    }
-                                )
+                                componente.componente_avance_valor = formatoPorcentaje(componente_avance_valor)
+                                componente.fechas[componente.fechas.length-1].fecha_avance_valor = formatoPorcentaje(fecha_avance_valor)
                                 componentes.push(componente);
                                 componente = {}
-                            }
-                                           
+                                componente_avance_valor = 0
+                                fecha_avance_valor = 0
+                            }   
+
                             
                             componente.id_componente = fila.id_componente
                             componente.numero = fila.numero
                             componente.nombre_componente = fila.nombre_componente
+                            componente.componente_avance_valor = 0
                             componente.fechas = [
                                 {
                                     "fecha": fila.fecha,
-                                    "fecha_total":123,
+                                    
+                                    "fecha_avance_valor":0,
                                     "historial":[
                                         {
                                             "item" : fila.item,
@@ -142,7 +144,7 @@ userModel.CuadroMetradosEjecutados = (id_ficha,callback)=>{
                                             "observacion":fila.observacion,                 
                                             "valor":fila.valor,
                                             "costo_unitario":fila.costo_unitario,
-                                            "parcial":fila.parcial
+                                            "parcial":formatoPorcentaje( fila.parcial)
                                         }
                                     ]
                                 }
@@ -152,10 +154,12 @@ userModel.CuadroMetradosEjecutados = (id_ficha,callback)=>{
                         }
                         else{
                             if(fila.fecha != lastFecha){
+                                componente.fechas[componente.fechas.length-1].fecha_avance_valor = fecha_avance_valor
                                 componente.fechas.push(
                                     {
                                         "fecha": fila.fecha,
-                                        "fecha_total":123,
+                                        
+                                        "fecha_avance_valor":0,
                                         "historial":[
                                             {
                                                 "item" : fila.item,
@@ -194,6 +198,9 @@ userModel.CuadroMetradosEjecutados = (id_ficha,callback)=>{
 
                         
                     }
+
+                    componente.componente_avance_valor = formatoPorcentaje(componente_avance_valor)
+                    componente.fechas[componente.fechas.length-1].fecha_avance_valor = formatoPorcentaje(fecha_avance_valor)
                     componentes.push(componente);
                     
                     callback(null,componentes);
@@ -478,22 +485,43 @@ userModel.valorizacionPrincipal = (id_ficha,callback)=>{
                             for (let k = 0; k < partidas.length; k++) {
                                 const partida = partidas[k];
                                  //formatoPorcentaje de dos digitos
-                                partida.metrado = formatoPorcentaje(partida.metrado)
-                                partida.costo_unitario = formatoPorcentaje(partida.costo_unitario)
-                                partida.parcial = formatoPorcentaje(partida.parcial)
-
-                                 partida.metrado_anterior = formatoPorcentaje(partida.metrado_anterior)
-                                 partida.valor_anterior = formatoPorcentaje(partida.valor_anterior)
-                                 partida.porcentaje_anterior = formatoPorcentaje(partida.porcentaje_anterior)
-                                 partida.metrado_actual = formatoPorcentaje(partida.metrado_actual)
-                                 partida.valor_actual = formatoPorcentaje(partida.valor_actual)
-                                 partida.porcentaje_actual = formatoPorcentaje(partida.porcentaje_actual)
-                                 partida.metrado_total = formatoPorcentaje(partida.metrado_total)
-                                 partida.valor_total = formatoPorcentaje(partida.valor_total)
-                                 partida.porcentaje_total = formatoPorcentaje(partida.porcentaje_total)
-                                 partida.metrado_saldo = formatoPorcentaje(partida.metrado_saldo)
-                                 partida.valor_saldo = formatoPorcentaje(partida.valor_saldo)
-                                 partida.porcentaje_saldo = formatoPorcentaje(partida.porcentaje_saldo)
+                                if(partida.tipo =="titulo"){
+                                    partida.unidad_medida = ""
+                                    partida.metrado = ""
+                                    partida.costo_unitario = ""
+                                    partida.parcial = ""
+    
+                                    partida.metrado_anterior = ""
+                                    partida.valor_anterior = ""
+                                    partida.porcentaje_anterior = ""
+                                    partida.metrado_actual = ""
+                                    partida.valor_actual = ""
+                                    partida.porcentaje_actual = ""
+                                    partida.metrado_total = ""
+                                    partida.valor_total = ""
+                                    partida.porcentaje_total = ""
+                                    partida.metrado_saldo = ""
+                                    partida.valor_saldo = ""
+                                    partida.porcentaje_saldo = ""
+                                }else{
+                                    partida.metrado = formatoPorcentaje(partida.metrado)
+                                    partida.costo_unitario = formatoPorcentaje(partida.costo_unitario)
+                                    partida.parcial = formatoPorcentaje(partida.parcial)
+    
+                                    partida.metrado_anterior = formatoPorcentaje(partida.metrado_anterior)
+                                    partida.valor_anterior = formatoPorcentaje(partida.valor_anterior)
+                                    partida.porcentaje_anterior = formatoPorcentaje(partida.porcentaje_anterior)
+                                    partida.metrado_actual = formatoPorcentaje(partida.metrado_actual)
+                                    partida.valor_actual = formatoPorcentaje(partida.valor_actual)
+                                    partida.porcentaje_actual = formatoPorcentaje(partida.porcentaje_actual)
+                                    partida.metrado_total = formatoPorcentaje(partida.metrado_total)
+                                    partida.valor_total = formatoPorcentaje(partida.valor_total)
+                                    partida.porcentaje_total = formatoPorcentaje(partida.porcentaje_total)
+                                    partida.metrado_saldo = formatoPorcentaje(partida.metrado_saldo)
+                                    partida.valor_saldo = formatoPorcentaje(partida.valor_saldo)
+                                    partida.porcentaje_saldo = formatoPorcentaje(partida.porcentaje_saldo)
+                                }
+                               
                                 
                             }
 
