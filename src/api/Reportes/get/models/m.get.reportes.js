@@ -100,6 +100,7 @@ userModel.CuadroMetradosEjecutados = (id_ficha,callback)=>{
                 }else if(res.length==0){
                     console.log("vacio");
                     callback("vacio");
+                    conn.destroy()
                 }else{                    
                     // console.log("res",res); 
                     var lastIdComponente = -1
@@ -228,6 +229,7 @@ userModel.valorizacionPrincipal = (id_ficha,callback)=>{
                     console.log("vacio");
                     
                     callback("vacio");
+                    conn.destroy()
                 
                 }else{
                     var periodos = []
@@ -578,6 +580,7 @@ userModel.resumenValorizacionPrincipal  = (id_ficha,costosIndirectos,callback)=>
                 }
                 else if(res.length == 0){
                     callback("vacio");        
+                    conn.destroy()
                 }else{ 
                     var presupuesto = 0
                     var anterior = 0
@@ -733,6 +736,7 @@ userModel.getValGeneralExtras = (id_ficha,tipo,callback)=>{
                     console.log("vacio");
                     
                     callback("vacio");
+                    conn.destroy()
                 
                 }else{
                     var periodos = []
@@ -1169,6 +1173,50 @@ userModel.resumenAvanceFisicoPartidasObraMes = (meses,id_ficha,callback)=>{
     })
 }
 //6.8 avance mensual comparativos de acuerdo al presupuesto delaobra y mesavance comparativos
+userModel.avanceMensualComparativoPresupuesto = (id_ficha,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){ callback(err);}
+        else{conn.query("/*************** D+ = MB-MA D- = MB-MA   MA>M P+ = D+/MB P- = D-/MB Consulta Consolidado de valorizacion *************/ SELECT item, tipo, descripcion, unidad_medida, metrado, costo_unitario, COALESCE(tb_avance_anterior.Metrado_Ejecutado_Anterior, 0) Metrado_Ejecutado_Anterior, COALESCE(tb_avance_anterior.Valorizado_Anterior, 0)Valorizado_Anterior, COALESCE(tb_avance_actual.Metrado_Ejecutado_Actual, 0)Metrado_Ejecutado_Actual, COALESCE(tb_avance_actual.Valorizado_actual, 0)Valorizado_actual, COALESCE(tb_avance_anterior.Metrado_Ejecutado_Anterior, 0) + COALESCE(tb_avance_actual.Metrado_Ejecutado_Actual, 0) Metrado_Ejecutado_Acumulado, COALESCE(tb_avance_anterior.Valorizado_Anterior, 0) + COALESCE(tb_avance_actual.Valorizado_actual, 0) Valorizado_Acumulado, COALESCE(metrado, 0) - (COALESCE(tb_avance_anterior.Metrado_Ejecutado_Anterior, 0) + COALESCE(tb_avance_actual.Metrado_Ejecutado_Actual, 0)) Diferencia_Mas, IF((COALESCE(tb_avance_anterior.Metrado_Ejecutado_Anterior, 0) + COALESCE(tb_avance_actual.Metrado_Ejecutado_Actual, 0)) > metrado, COALESCE(metrado, 0) - (COALESCE(tb_avance_anterior.Metrado_Ejecutado_Anterior, 0) + COALESCE(tb_avance_actual.Metrado_Ejecutado_Actual, 0)), 0) Diferencia_Menos, (COALESCE(metrado, 0) - (COALESCE(tb_avance_anterior.Metrado_Ejecutado_Anterior, 0) + COALESCE(tb_avance_actual.Metrado_Ejecutado_Actual, 0))) / metrado * 100 Porcentaje_Mas, IF((COALESCE(tb_avance_anterior.Metrado_Ejecutado_Anterior, 0) + COALESCE(tb_avance_actual.Metrado_Ejecutado_Actual, 0)) > metrado, COALESCE(metrado, 0) - (COALESCE(tb_avance_anterior.Metrado_Ejecutado_Anterior, 0) + COALESCE(tb_avance_actual.Metrado_Ejecutado_Actual, 0)), 0) / metrado * 100 Porcentaje_Menos FROM componentes INNER JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN (SELECT id_partida, SUM(valor) Metrado_Ejecutado_Actual, SUM(valor * costo_unitario) Valorizado_actual FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE MONTH(avanceactividades.fecha) = MONTH(NOW()) GROUP BY partidas.id_partida) tb_avance_actual ON tb_avance_actual.id_partida = partidas.id_partida LEFT JOIN (SELECT id_partida, SUM(valor) Metrado_Ejecutado_Anterior, SUM(valor * costo_unitario) Valorizado_Anterior FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE MONTH(avanceactividades.fecha) < MONTH(NOW()) OR YEAR(avanceactividades.fecha) < YEAR(NOW()) GROUP BY partidas.id_partida) tb_avance_anterior ON tb_avance_anterior.id_partida = partidas.id_partida WHERE componentes.fichas_id_ficha = ?",[id_ficha],(error,res)=>{ 
+                if(error){
+                    callback(error);
+                }else if(res.length == 0){
+                    console.log("vacio");
+                    
+                    callback("vacio");
+                    conn.destroy()
+                
+                }else{
+                    for (let i = 0; i < res.length; i++) {
+                        const fila = res[i];
+                        if(fila.tipo =="titulo"){
+                            fila.unidad_medida = ""
+                            fila.metrado = ""
+                            fila.costo_unitario = ""
+                            fila.Metrado_Ejecutado_Anterior = ""
+                            fila.Valorizado_Anterior = ""
+                            fila.Metrado_Ejecutado_Actual = ""
+                            fila.Valorizado_actual = ""
+                            fila.Metrado_Ejecutado_Acumulado = ""
+                            fila.Valorizado_Acumulado = ""
+                            fila.Diferencia_Mas = ""
+                            fila.Diferencia_Menos = ""
+                            fila.Porcentaje_Mas = ""
+                            fila.Porcentaje_Menos = ""
+                        }                     
+                        
+                    }
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }
+        
+                
+    })
+}
 //6.9 avance comparativ diagraa degantt
 //6.10 histograma del avance de obras curva s
 //6.11 proyeccion de trabajos prosxioms mes cronograma

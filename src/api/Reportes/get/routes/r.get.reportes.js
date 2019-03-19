@@ -127,6 +127,21 @@ module.exports = function(app){
 		
 	})
 	//6.8 avance mensual comparativos de acuerdo al presupuesto delaobra y mesavance comparativos
+	app.post('/avanceMensualComparativoPresupuesto',(req,res)=>{
+		if(req.body.id_ficha == null){
+			res.json("null");		
+		}else{
+			User.avanceMensualComparativoPresupuesto(req.body.id_ficha,(err,data)=>{							
+				if(err){ res.status(204).json(err);}
+				else{
+
+					res.json(data)
+				}
+
+			})
+		}
+		
+	})
 	//6.9 avance comparativ diagraa degantt
 	//6.10 histograma del avance de obras curva s
 	//6.11 proyeccion de trabajos prosxioms mes cronograma
