@@ -39,7 +39,13 @@ userModel.getObras = (id_acceso,callback)=>{
                     conn.destroy()
         
                 }else{      
-                    
+                        for (let i = 0; i < res.length; i++) {
+                                const fila = res[i];
+                                fila.g_total_presu = formato(fila.g_total_presu)
+                                fila.presu_avance = formato(fila.presu_avance)
+                                fila.porcentaje_avance = formato(fila.porcentaje_avance)
+                                
+                        }  
                     callback(null,res);
                     conn.destroy()
                 }
@@ -58,24 +64,23 @@ userModel.getComponentesPgerenciales = (id_ficha,callback)=>{
                 else{
                         conn.query("SELECT fichas.id_ficha, componentes.numero, componentes.nombre, componentes.presupuesto, SUM(avanceactividades.valor * partidas.costo_unitario) comp_avance, SUM(avanceactividades.valor * partidas.costo_unitario) / componentes.presupuesto * 100 porcentaje_avance_componentes FROM fichas LEFT JOIN componentes ON componentes.Fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE fichas.id_ficha = ? GROUP BY componentes.id_componente",id_ficha,(err,res)=>{
                                 if(err){
-                                        callback(err);                
+                                        callback(err);     
+                                        conn.destroy()   
                                 }
                                 else if(res.length == 0){
-                                        callback("vacio");
-                                        conn.destroy()                                       
-                
+                                        callback("vacio"); 
+                                        conn.destroy() 
                                 }else{      
                                         
                                         for (let i = 0; i < res.length; i++) {
                                                 const fila = res[i];
                                                 fila.presupuesto = formato(fila.presupuesto)         
+                                                fila.comp_avance = formato(fila.comp_avance)   
+                                                fila.porcentaje_avance_componentes = formato(fila.porcentaje_avance_componentes)   
                                         }
-                                        
                                         callback(null,res);
                                         conn.destroy()
                                 }
-                                
-                                
                         })
                 }
                 
