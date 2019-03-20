@@ -56,13 +56,10 @@ function formatoPorcentaje(data){
           })
     }else{
         data = data.toLocaleString('es-PE', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
+            minimumFractionDigits: 4,
+            maximumFractionDigits: 4
           })
-        if(data="100.00"){
-            data = 100
-
-        }
+        
     } 
 
     return data
