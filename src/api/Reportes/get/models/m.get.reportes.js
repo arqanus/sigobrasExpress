@@ -101,12 +101,8 @@ userModel.getInformeDataGeneral  = (id_ficha,callback)=>{
                     res[0].avance_acumulado = formato(res[0].avance_acumulado)
                     res[0].avance_actual = formato(res[0].avance_actual)
                     res[0].avance_acumulado_valor = formato(res[0].avance_acumulado_valor)
-                    res[0].presupuesto_general = formato(res[0].presupuesto_general)                 
-                    
-                   
-
-
-                    
+                    res[0].presupuesto_general = formato(res[0].presupuesto_general) 
+                       
                     callback(null,res[0]);
                     conn.destroy()
                 }
@@ -1062,7 +1058,7 @@ userModel.getValGeneralExtras = (id_ficha,tipo,callback)=>{
 //getvalgeneralExtras
 //6.6 consolidado general de las valorizacines
 
-//6.7 resumen de avan ce fisico de las partidas de obra por mes 
+//6.7 resumen de avance fisico de las partidas de obra por mes 
 userModel.getMonthsByFicha = (id_ficha,callback)=>{    
     pool.getConnection(function(err ,conn){
         if(err){ 
