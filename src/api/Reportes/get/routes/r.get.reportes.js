@@ -4,6 +4,20 @@ module.exports = function(app){
 	
 	
 	//cabecera
+	app.post('/getAnyoReportes',(req,res)=>{
+		if(req.body.id_ficha == null){
+			res.json("null");		
+		}else{
+			User.getAnyoReportes(req.body.id_ficha,(err,data)=>{							
+				if(err){ res.status(204).json(err);}
+				else{
+					res.json(data);	
+				}
+
+			})
+		}
+		
+	})
 	app.post('/getInformeDataGeneral',(req,res)=>{
 		if(req.body.id_ficha == null){
 			res.json("null");		

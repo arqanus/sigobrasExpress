@@ -48,18 +48,22 @@ function formatoPorcentaje(data){
     
     if(data ==100){
         return data
+    }else if(Math.floor(data)==99){
+        data = data.toLocaleString('es-PE', {
+            minimumFractionDigits: 4,
+            maximumFractionDigits: 4
+        })
     }
     else if(data < 1){
         data = data.toLocaleString('es-PE', {
             minimumFractionDigits: 4,
             maximumFractionDigits: 4
-          })
+        })
     }else{
         data = data.toLocaleString('es-PE', {
-            minimumFractionDigits: 4,
-            maximumFractionDigits: 4
-          })
-        
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        })        
     } 
 
     return data
@@ -75,6 +79,34 @@ function formatoFecha(fecha){
 
 }
 //data cabecera
+userModel.getAnyoReportes  = (id_ficha,callback)=>{    
+    pool.getConnection(function(err ,conn){
+        if(err){ 
+            callback(err);
+        }        
+        else{
+            conn.query("SELECT componentes.fichas_id_ficha, YEAR(avanceactividades.fecha) anyo FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE componentes.fichas_id_ficha = ? GROUP BY YEAR(avanceactividades.fecha) ORDER BY avanceactividades.fecha",id_ficha,(err,res)=>{ 
+                if(err){
+                    console.log(err);                    
+                    callback(err.code);                 
+                }
+                else if(res.length == 0){
+                    callback("vacio");    
+                    conn.destroy()    
+                }else{     
+                   
+                       
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }
+        
+                
+    })
+}
 userModel.getInformeDataGeneral  = (id_ficha,callback)=>{    
     pool.getConnection(function(err ,conn){
         if(err){ 
