@@ -23,8 +23,8 @@ module.exports = function(app){
                     User.getPartidas(componentes[0].id_componente,(err,partidas)=>{
                         if(err){ res.status(204).json(err);}
                         else{
-                            componentes.partidas = partidas
-                            res.json(partidas);	
+                            componentes[0].partidas = partidas
+                            res.json(componentes);	
                         }
                     })
                    
