@@ -134,8 +134,9 @@ userModel.getPeriodsByAnyo  = (id_ficha,anyo,callback)=>{
                     var mes_final = 12
                     var anyo_final = res[res.length-1].anyo;
                     var meses = []
-                    
-                  console.log(res);
+                    var data = JSON.parse(JSON.stringify(res))                    
+                    // console.log(data);
+                                
                   
                     
                    for (let anyo = anyo_inicial; anyo <= anyo_final; anyo++) {
@@ -149,25 +150,23 @@ userModel.getPeriodsByAnyo  = (id_ficha,anyo,callback)=>{
                                    "anyo":anyo,
                                    "mes":mes
                                }
-                           )                                                     
-                        
+                           )          
                            
                        }
                        mes_inicial = 0
                        
                    }
-                //    for (let i = 0; i < meses.length; i++) {
-                //        const fila = res[i];
-                //        const fila2 = meses[i];
-                //        console.log(fila.mes,fila2.mes,fila.mes!= fila2.mes);
+                   var index = 0
+                   for (let i = 0; i < meses.length; i++) {
+                       console.log(meses[i].mes,data[index].mes,meses[i].mes!=data[index].mes);
                        
-                //        if(fila.mes!= fila2.mes){
-                //            res.splice(i,0,fila2.mes)
-                //            i--
-                //        }
-
+                       if(meses[i].mes!=data[index].mes){
+                            console.log("mes1",meses[i].mes)
+                       }else{
+                            console.log("mes2",data[index].mes)                          
+                       }
                        
-                //    }
+                   }
                    
                     // for (let i = 0; i < res.length; i++) {
                     //     const fila = res[i];
@@ -184,7 +183,7 @@ userModel.getPeriodsByAnyo  = (id_ficha,anyo,callback)=>{
                         
                     // }
                        
-                    callback(null,res);
+                    callback(null,data);
                     conn.destroy()
                 }
                 
