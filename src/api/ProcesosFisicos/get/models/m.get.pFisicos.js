@@ -312,6 +312,17 @@ userModel.getActividades = (id_partida,callback)=>{
                     callback("vacio");
                     conn.destroy()
                 }else{      
+                    for (let i = 0; i < res.length; i++) {
+                        const fila = res[i];
+                        fila.costo_unitario = formato(fila.costo_unitario )
+                        fila.parcial_actividad = formato(fila.parcial_actividad )
+                        fila.actividad_avance_metrado = formato(fila.actividad_avance_metrado )
+                        fila.actividad_avance_costo = formato(fila.actividad_avance_costo )
+                        fila.actividad_metrados_saldo = formato(fila.actividad_metrados_saldo )
+                        fila.actividad_metrados_costo_saldo = formato(fila.actividad_metrados_costo_saldo )
+                        fila.actividad_porcentaje = formato(fila.actividad_porcentaje )
+                        
+                    }
                     
                     callback(null,res);
                     conn.destroy()
