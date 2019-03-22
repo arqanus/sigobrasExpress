@@ -287,6 +287,30 @@ userModel.getPartidas = (id_componente,callback)=>{
                     callback("vacio");
                     conn.destroy()
                 }else{      
+                    for (let i = 0; i < res.length; i++) {
+                        const fila = res[i];
+                        if(fila.tipo=="titulo"){
+                            fila.unidad_medida = ""
+                            fila.metrado = ""
+                            fila.costo_unitario = ""
+                            fila.parcial = ""
+                            fila.avance_metrado = ""
+                            fila.avance_costo = ""
+                            fila.metrados_saldo = ""
+                            fila.metrados_costo_saldo = ""
+                            fila.porcentaje = ""
+                        }else{
+                            fila.costo_unitario = formato(fila.costo_unitario)
+                            fila.parcial = formato(fila.parcial)
+                            fila.avance_metrado = formato(fila.avance_metrado)
+                            fila.avance_costo = formato(fila.avance_costo)
+                            fila.metrados_saldo = formato(fila.metrados_saldo)
+                            fila.metrados_costo_saldo = formato(fila.metrados_costo_saldo)
+                            fila.porcentaje = formato(fila.porcentaje)
+                        }
+                        
+                        
+                    }
 
                     
                     callback(null,res);
@@ -313,21 +337,37 @@ userModel.getActividades = (id_partida,callback)=>{
                     conn.destroy()
                 }else{      
                     for (let i = 0; i < res.length; i++) {
+
                         const fila = res[i];
-                        fila.costo_unitario = formato(fila.costo_unitario )
-                        fila.parcial_actividad = formato(fila.parcial_actividad )
-                        fila.actividad_avance_metrado = formato(fila.actividad_avance_metrado )
-                        fila.actividad_avance_costo = formato(fila.actividad_avance_costo )
-                        fila.actividad_metrados_saldo = formato(fila.actividad_metrados_saldo )
-                        fila.actividad_metrados_costo_saldo = formato(fila.actividad_metrados_costo_saldo )
-                        fila.actividad_porcentaje = formato(fila.actividad_porcentaje )
-                        
-                    }
-                    
+                        if(fila.actividad_tipo =="titulo"){
+                            fila.veces_actividad = ""
+                            fila.largo_actividad = ""
+                            fila.ancho_actividad = ""
+                            fila.alto_actividad = ""
+                            fila.metrado_actividad = ""
+                            fila.costo_unitario = ""
+                            fila.parcial_actividad = ""
+                            fila.actividad_avance_metrado = ""
+                            fila.actividad_avance_costo = ""
+                            fila.actividad_metrados_saldo = ""
+                            fila.actividad_metrados_costo_saldo = ""
+                            fila.actividad_porcentaje = ""
+                            fila.unidad_medida = ""
+                        }else{
+                            fila.metrado_actividad = formato(fila.metrado_actividad )
+                            fila.costo_unitario = formato(fila.costo_unitario )                            
+                            fila.parcial_actividad = formato(fila.parcial_actividad )
+                            fila.actividad_avance_metrado = formato(fila.actividad_avance_metrado )
+                            fila.actividad_avance_costo = formato(fila.actividad_avance_costo )
+                            fila.actividad_metrados_saldo = formato(fila.actividad_metrados_saldo )
+                            fila.actividad_metrados_costo_saldo = formato(fila.actividad_metrados_costo_saldo )
+                            fila.actividad_porcentaje = formato(fila.actividad_porcentaje )
+                        }
+                                                
+                    }                    
                     callback(null,res);
                     conn.destroy()
-                }
-                
+                }                
                 
             })
         }
