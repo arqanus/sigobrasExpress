@@ -85,6 +85,30 @@ userModel.getPartidasbyIdActividad = (id_actividad,callback)=>{
                     callback("vacio");
                     conn.destroy()
                 }else{          
+                    for (let i = 0; i < res.length; i++) {
+                        const fila = res[i];
+                        if(fila.tipo=="titulo"){
+                            fila.unidad_medida = ""
+                            fila.metrado = ""
+                            fila.costo_unitario = ""
+                            fila.parcial = ""
+                            fila.avance_metrado = ""
+                            fila.avance_costo = ""
+                            fila.metrados_saldo = ""
+                            fila.metrados_costo_saldo = ""
+                            fila.porcentaje = ""
+                        }else{
+                            fila.costo_unitario = formato(fila.costo_unitario)
+                            fila.parcial = formato(fila.parcial)
+                            fila.avance_metrado = formato(fila.avance_metrado)
+                            fila.avance_costo = formato(fila.avance_costo)
+                            fila.metrados_saldo = formato(fila.metrados_saldo)
+                            fila.metrados_costo_saldo = formato(fila.metrados_costo_saldo)
+                            fila.porcentaje = formato(fila.porcentaje)
+                        }
+                        
+                        
+                    }
                     callback(null,res[0]);
                     conn.destroy()
                 }
