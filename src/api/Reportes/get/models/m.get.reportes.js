@@ -119,7 +119,7 @@ userModel.getPeriodsByAnyo  = (id_ficha,anyo,callback)=>{
             callback(err);
         }        
         else{
-            conn.query("SELECT avanceactividades.historialestados_id_historialestado,DATE_FORMAT(avanceactividades.fecha, '%Y-%m-31') fecha, DATE_FORMAT(avanceactividades.fecha, '%b' ) mes, DATE_FORMAT(avanceactividades.fecha, ' %Y') anyo ,estados.codigo FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.id_historialEstado = avanceactividades.historialestados_id_historialEstado LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado WHERE fichas.id_ficha = ? AND YEAR(avanceactividades.fecha) = ? GROUP BY TIMESTAMPDIFF(MONTH, fichas.fecha_inicial, avanceactividades.fecha) , avanceactividades.historialestados_id_historialestado ORDER BY TIMESTAMPDIFF(MONTH, fichas.fecha_inicial, avanceactividades.fecha)",[id_ficha,anyo],(err,res)=>{ 
+            conn.query("SELECT avanceactividades.historialestados_id_historialestado, month(avanceactividades.fecha) mes, DATE_FORMAT(avanceactividades.fecha, ' %Y') anyo, estados.codigo FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.id_historialEstado = avanceactividades.historialestados_id_historialEstado LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado WHERE fichas.id_ficha = ? AND (YEAR(avanceactividades.fecha) = '2018' or YEAR(avanceactividades.fecha) = ?) GROUP BY TIMESTAMPDIFF(MONTH, fichas.fecha_inicial, avanceactividades.fecha) , avanceactividades.historialestados_id_historialestado ORDER BY TIMESTAMPDIFF(MONTH, fichas.fecha_inicial, avanceactividades.fecha)",[id_ficha,anyo],(err,res)=>{ 
                 if(err){
                     console.log(err);                    
                     callback(err.code);                 
@@ -128,22 +128,61 @@ userModel.getPeriodsByAnyo  = (id_ficha,anyo,callback)=>{
                     callback("vacio");    
                     conn.destroy()    
                 }else{     
-                    var cont = 1
+                    
+                    var mes_inicial = res[0].mes; 
+                    var anyo_inicial = res[0].anyo; 
+                    var mes_final = 12
+                    var anyo_final = res[res.length-1].anyo;
+                    var meses = []
+                    
+                  console.log(res);
+                  
+                    
+                   for (let anyo = anyo_inicial; anyo <= anyo_final; anyo++) {
+                    
+                        if(anyo == anyo_final){
+                            mes_final =res[res.length-1].mes; 
+                        }
+                       for (let mes = mes_inicial+1; mes <= mes_final; mes++) {
+                           meses.push(
+                               {
+                                   "anyo":anyo,
+                                   "mes":mes
+                               }
+                           )                                                     
+                        
+                           
+                       }
+                       mes_inicial = 0
+                       
+                   }
+                //    for (let i = 0; i < meses.length; i++) {
+                //        const fila = res[i];
+                //        const fila2 = meses[i];
+                //        console.log(fila.mes,fila2.mes,fila.mes!= fila2.mes);
+                       
+                //        if(fila.mes!= fila2.mes){
+                //            res.splice(i,0,fila2.mes)
+                //            i--
+                //        }
+
+                       
+                //    }
                    
-                    for (let i = 0; i < res.length; i++) {
-                        const fila = res[i];
-                        if(fila.codigo == "E"){
-                            res[i].codigo= fila.mes+" "+rome(cont)+fila.anyo
-                            cont++ 
+                    // for (let i = 0; i < res.length; i++) {
+                    //     const fila = res[i];
+                    //     if(fila.codigo == "E"){
+                    //         res[i].codigo= fila.mes+" "+rome(cont)+fila.anyo
+                    //         cont++ 
                             
 
-                        }else{
-                            cont = 1
-                        }
-                        delete res[i].mes
-                        delete res[i].anyo
+                    //     }else{
+                    //         cont = 1
+                    //     }
+                    //     delete res[i].mes
+                    //     delete res[i].anyo
                         
-                    }
+                    // }
                        
                     callback(null,res);
                     conn.destroy()
