@@ -51,7 +51,18 @@ module.exports = function(app){
 			User.getActividades(req.body.id_partida,(err,data)=>{
 				if(err){ res.status(204).json(err);}
 				else{
-					res.json(data);	
+					res.json(
+                        {
+                            "mayor_metrado":{
+                                "mm_avance_metrado": "1",
+                                "mm_avance_costo": "1",
+                                "mm_metrados_saldo": "1",
+                                "mm_metrados_costo_saldo": "1",
+                                "mm_porcentaje": "10",  
+                            },
+                            "actividades":data
+                        }
+                    );	
 				}
 			})
 		}
