@@ -7,7 +7,10 @@ function formato(data){
         
         data=0
     }
-    if(data < 1){
+    if(data == 0){
+        return 0
+    }
+    else if(data < 1){
         data = data.toLocaleString('es-PE', {
             minimumFractionDigits: 4,
             maximumFractionDigits: 4
