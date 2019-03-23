@@ -119,7 +119,7 @@ userModel.getPeriodsByAnyo  = (id_ficha,anyo,callback)=>{
             callback(err);
         }        
         else{
-            conn.query("SELECT avanceactividades.historialestados_id_historialestado, month(avanceactividades.fecha) mes, DATE_FORMAT(avanceactividades.fecha, ' %Y') anyo, estados.codigo FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.id_historialEstado = avanceactividades.historialestados_id_historialEstado LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado WHERE fichas.id_ficha = ? AND (YEAR(avanceactividades.fecha) = '2018' or YEAR(avanceactividades.fecha) = ?) GROUP BY TIMESTAMPDIFF(MONTH, fichas.fecha_inicial, avanceactividades.fecha) , avanceactividades.historialestados_id_historialestado ORDER BY TIMESTAMPDIFF(MONTH, fichas.fecha_inicial, avanceactividades.fecha)",[id_ficha,anyo],(err,res)=>{ 
+            conn.query("SELECT * FROM (SELECT fichas.id_ficha, avanceactividades.historialestados_id_historialestado, estados.codigo, DATE_FORMAT(MAX(avanceactividades.fecha), ' %Y-%m-%d') fecha, DATE_FORMAT(MAX(avanceactividades.fecha), ' %Y') anyo, DATE_FORMAT(MAX(avanceactividades.fecha), ' %b') mes FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.id_historialEstado = avanceactividades.historialestados_id_historialEstado LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado WHERE fichas.id_ficha = 92 AND YEAR(avanceactividades.fecha) = '2019' AND estados.nombre = 'Ejecucion' GROUP BY TIMESTAMPDIFF(MONTH, fichas.fecha_inicial, avanceactividades.fecha) , avanceactividades.historialestados_id_historialestado ORDER BY TIMESTAMPDIFF(MONTH, fichas.fecha_inicial, avanceactividades.fecha)) tb_ejecucion union ( SELECT fichas.id_ficha, avanceactividades.historialestados_id_historialestado, estados.codigo, DATE_FORMAT(max(avanceactividades.fecha), ' %Y-%m-%d') fecha, DATE_FORMAT(MAX(avanceactividades.fecha), ' %Y') anyo, DATE_FORMAT(MAX(avanceactividades.fecha), ' %b') mes FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.id_historialEstado = avanceactividades.historialestados_id_historialEstado LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado WHERE estados.nombre = 'Corte' GROUP BY avanceactividades.historialEstados_id_historialEstado ) order by fecha ",[id_ficha,anyo],(err,res)=>{ 
                 if(err){
                     console.log(err);                    
                     callback(err.code);                 
@@ -127,63 +127,26 @@ userModel.getPeriodsByAnyo  = (id_ficha,anyo,callback)=>{
                 else if(res.length == 0){
                     callback("vacio");    
                     conn.destroy()    
-                }else{     
-                    
-                    var mes_inicial = res[0].mes; 
-                    var anyo_inicial = res[0].anyo; 
-                    var mes_final = 12
-                    var anyo_final = res[res.length-1].anyo;
-                    var meses = []
-                    var data = JSON.parse(JSON.stringify(res))                    
-                    // console.log(data);
-                                
-                  
-                    
-                   for (let anyo = anyo_inicial; anyo <= anyo_final; anyo++) {
-                    
-                        if(anyo == anyo_final){
-                            mes_final =res[res.length-1].mes; 
-                        }
-                       for (let mes = mes_inicial+1; mes <= mes_final; mes++) {
-                           meses.push(
-                               {
-                                   "anyo":anyo,
-                                   "mes":mes
-                               }
-                           )          
-                           
-                       }
-                       mes_inicial = 0
-                       
-                   }
-                   var index = 0
-                   for (let i = 0; i < meses.length; i++) {
-                       console.log(meses[i].mes,data[index].mes,meses[i].mes!=data[index].mes);
-                       
-                       if(meses[i].mes!=data[index].mes){
-                            console.log("mes1",meses[i].mes)
-                       }else{
-                            console.log("mes2",data[index].mes)                          
-                       }
-                       
-                   }
-                   
-                    // for (let i = 0; i < res.length; i++) {
-                    //     const fila = res[i];
-                    //     if(fila.codigo == "E"){
-                    //         res[i].codigo= fila.mes+" "+rome(cont)+fila.anyo
-                    //         cont++ 
+                }else{  
+                    cont = 1
+                    for (let i = 0; i < res.length; i++) {
+                        const fila = res[i];
+                        if(fila.codigo=="E"){
+                            fila.codigo = fila.mes+" "+rome(cont)+fila.anyo
+                            cont++
                             
-
-                    //     }else{
-                    //         cont = 1
-                    //     }
-                    //     delete res[i].mes
-                    //     delete res[i].anyo
+                        }else{
+                            cont= 1
+                        }
+                        delete fila.mes
+                        delete fila.anyo
+                        delete fila.id_ficha
                         
-                    // }
+                    }              
+            
+                  
                        
-                    callback(null,data);
+                    callback(null,res);
                     conn.destroy()
                 }
                 
