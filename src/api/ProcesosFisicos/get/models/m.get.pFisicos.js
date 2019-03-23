@@ -18,16 +18,26 @@ function formato(data){
     
     // data = parseFloat(data)
     data = Number(data)
-    if(isNaN(data)||data < 0.01){
+    if(isNaN(data)){
         
         data=0
     }
-    
-    
-    return data.toLocaleString('es-PE', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      })
+    if(data == 0){
+        return 0
+    }
+    else if(data < 1){
+        data = data.toLocaleString('es-PE', {
+            minimumFractionDigits: 4,
+            maximumFractionDigits: 4
+          })
+    }else{
+        data = data.toLocaleString('es-PE', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          })
+    } 
+
+    return data
 }
 userModel.getPartidasCompletas = (id_ficha,callback)=>{
     
