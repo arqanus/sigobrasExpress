@@ -66,7 +66,7 @@ module.exports = function(app){
 		if(req.body.id_ficha == null){
 			res.json("null");		
 		}else{
-			User.valorizacionPrincipal(req.body.id_ficha,(err,data)=>{							
+			User.valorizacionPrincipal(req.body.id_ficha,req.body.historialestados_id_historialestado,req.body.fecha_inicial,req.body.fecha,(err,data)=>{							
 				if(err){ res.status(204).json(err);}
 				else{
 					res.json(data);	
