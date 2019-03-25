@@ -483,18 +483,7 @@ userModel.getHistorial = (id_ficha,callback)=>{
                         fila.fecha = fila.fecha.getDate()+" de "+month[fila.fecha.getMonth()]+" del "+fila.fecha.getFullYear()
                         if(fila.id_componente != lastIdComponente){
                             if(i != 0 ){
-                                componente.fechas[componente.fechas.length-1].historial.push(
-                                    {
-                                        "item" :"",
-                                        "descripcion_partida" : "",
-                                        "nombre_actividad" : "",
-                                        "descripcion_actividad" : "",
-                                        "observacion":"",                 
-                                        "valor":"",
-                                        "costo_unitario":"",
-                                        "parcial":""
-                                    }
-                                )
+                          
                                 componentes.push(componente);
                                 componente = {}
                             }
@@ -503,10 +492,13 @@ userModel.getHistorial = (id_ficha,callback)=>{
                             componente.id_componente = fila.id_componente
                             componente.numero = fila.numero
                             componente.nombre_componente = fila.nombre_componente
+                            componente.componente_total_soles = "123",
+                            componente.componente_total_porcentaje = "123"
                             componente.fechas = [
                                 {
                                     "fecha": fila.fecha,
-                                    "fecha_total":123,
+                                    "fecha_total_soles":123,
+                                    "fecha_total_porcentaje":123,
                                     "historial":[
                                         {
                                             "item" : fila.item,
