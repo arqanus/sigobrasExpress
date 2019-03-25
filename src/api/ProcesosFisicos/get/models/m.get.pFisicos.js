@@ -521,8 +521,8 @@ userModel.getHistorial = (id_ficha,callback)=>{
                                 componente.fechas.push(
                                     {
                                         "fecha": fila.fecha,
-                                        "fecha_total":123,
-                                        "historial":[
+                                        "fecha_total_soles":123,
+                                        "fecha_total_porcentaje":123,                                        "historial":[
                                             {
                                                 "item" : fila.item,
                                                 "descripcion_partida" : fila.descripcion_partida,
