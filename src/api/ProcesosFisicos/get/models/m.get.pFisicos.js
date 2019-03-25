@@ -49,7 +49,7 @@ userModel.getPartidasCompletas = (id_ficha,callback)=>{
                     callback(error);
                 }else if(res.length == 0){
                     console.log("vacio");                    
-                    callback("vacio");
+                    callback(null,"vacio");
                 }else{
                     var componentes=[]
                     var componente = {}
@@ -271,7 +271,7 @@ userModel.getComponentes = (id_ficha,callback)=>{
                     callback(error);
                 }else if(res.length == 0){
                     console.log("vacio");                    
-                    callback("vacio");
+                    callback(null,"vacio");
                     conn.destroy()
                 }else{                          
                     callback(null,res);
@@ -295,7 +295,7 @@ userModel.getPartidas = (id_componente,callback)=>{
                     callback(error);
                 }else if(res.length == 0){
                     console.log("vacio");                    
-                    callback("vacio");
+                    callback(null,"vacio");
                     conn.destroy()
                 }else{      
                     for (let i = 0; i < res.length; i++) {
@@ -344,7 +344,7 @@ userModel.getActividades = (id_partida,callback)=>{
                     callback(error);
                 }else if(res.length == 0){
                     console.log("vacio");                    
-                    callback("vacio");
+                    callback(null,"vacio");
                     conn.destroy()
                 }else{      
                     for (let i = 0; i < res.length; i++) {
@@ -396,7 +396,7 @@ userModel.getComponentesPNuevas = (id_ficha,callback)=>{
                     callback(error);
                 }else if(res.length == 0){
                     console.log("vacio");                    
-                    callback("vacio");
+                    callback(null,"vacio");
                     conn.destroy()
                 }else{                          
                     callback(null,res);
@@ -419,7 +419,7 @@ userModel.getPartidasPNuevas = (id_componente,callback)=>{
                     callback(error);
                 }else if(res.length == 0){
                     console.log("vacio");                    
-                    callback("vacio");
+                    callback(null,"vacio");
                     conn.destroy()
                 }else{      
 
@@ -445,7 +445,7 @@ userModel.getActividadesPNuevas = (id_partida,callback)=>{
                     callback(error);
                 }else if(res.length == 0){
                     console.log("vacio");                    
-                    callback("vacio");
+                    callback(null,"vacio");
                     conn.destroy()
                 }else{      
                     
@@ -471,33 +471,45 @@ userModel.getHistorial = (id_ficha,callback)=>{
                     callback(err.code);
                 }else if(res.length==0){
                     console.log("vacio");
-                    callback("vacio");
+                    callback(null,"vacio");
                 }else{                    
                     // console.log("res",res); 
                     var lastIdComponente = -1
                     var componentes = []
                     var componente = {}
+                    var componente_total_soles = 0
+                    var componente_total_porcentaje = 0
+                    var fecha_total_soles = 0
+                    var fecha_total_porcentaje = 0
                     for (let i = 0; i < res.length; i++) {
                         const fila = res[i];
-                        console.log("fila",fila.id_componente)
+                        componente_total_soles += fila.parcial
+                        fecha_total_soles += fila.parcial
+                        console.log("fecha_total_soles",fecha_total_soles);
+                        
+                        
                         fila.fecha = fila.fecha.getDate()+" de "+month[fila.fecha.getMonth()]+" del "+fila.fecha.getFullYear()
+
                         if(fila.id_componente != lastIdComponente){
                             if(i != 0 ){
-                          
+                                componente.componente_total_soles = componente_total_soles
+                                componente_total_soles = 0
+                                componente.fecha_total_soles = fecha_total_soles
+                                fecha_total_soles = 0
                                 componentes.push(componente);
                                 componente = {}
+                                
                             }
-                                           
-                            
+
                             componente.id_componente = fila.id_componente
                             componente.numero = fila.numero
                             componente.nombre_componente = fila.nombre_componente
-                            componente.componente_total_soles = "123",
-                            componente.componente_total_porcentaje = "123"
+                            componente.componente_total_soles = "9999"
+                            componente.componente_total_porcentaje = "9999"
                             componente.fechas = [
                                 {
                                     "fecha": fila.fecha,
-                                    "fecha_total_soles":123,
+                                    "fecha_total_soles":fecha_total_soles,
                                     "fecha_total_porcentaje":123,
                                     "historial":[
                                         {
@@ -518,10 +530,12 @@ userModel.getHistorial = (id_ficha,callback)=>{
                         }
                         else{
                             if(fila.fecha != lastFecha){
+                                
+                                fecha_total_soles = 0
                                 componente.fechas.push(
                                     {
                                         "fecha": fila.fecha,
-                                        "fecha_total_soles":123,
+                                        "fecha_total_soles":fecha_total_soles,
                                         "fecha_total_porcentaje":123,                                        "historial":[
                                             {
                                                 "item" : fila.item,
@@ -537,6 +551,7 @@ userModel.getHistorial = (id_ficha,callback)=>{
                                     }
                                     
                                 )   
+                                
                             }else{
                                 componente.fechas[componente.fechas.length-1].historial.push(
                                     {
@@ -560,6 +575,11 @@ userModel.getHistorial = (id_ficha,callback)=>{
 
                         
                     }
+                    console.log("componente_total_soles",componente_total_soles);
+                    
+                    componente.componente_total_soles = componente_total_soles
+                    componente.fecha_total_soles = fecha_total_soles
+                    
                     componentes.push(componente);
                     
                     callback(null,componentes);
@@ -584,7 +604,7 @@ userModel.getHistorialComponentes = (id_ficha,callback)=>{
                     callback(err.code);
                 }else if(res.length==0){
                     console.log("vacio");
-                    callback("vacio");
+                    callback(null,"vacio");
                 }else{                    
                     
                     
@@ -611,7 +631,7 @@ userModel.getHistorialFechas = (id_componente,callback)=>{
                     callback(err.code);
                 }else if(res.length==0){
                     
-                    callback("vacio");
+                    callback(null,"vacio");
                     conn.destroy()
                 }else{                    
                     
@@ -639,7 +659,7 @@ userModel.getHistorialFechasHistorial = (id_ficha,callback)=>{
                     callback(err.code);
                 }else if(res.length==0){
                     console.log("vacio");
-                    callback("vacio");
+                    callback(null,"vacio");
                 }else{                    
                     
                     
@@ -669,7 +689,7 @@ userModel.getValGeneral = (id_ficha,callback)=>{
                 }else if(res.length == 0){
                     console.log("vacio");
                     
-                    callback("vacio");
+                    callback(null,"vacio");
                 
                 }else{
                     var periodos = []
@@ -973,7 +993,7 @@ userModel.getValGeneralExtras = (id_ficha,tipo,callback)=>{
                 }else if(res.length == 0){
                     console.log("vacio");
                     
-                    callback("vacio");
+                    callback(null,"vacio");
                 
                 }else{
                     var periodos = []
@@ -1278,7 +1298,7 @@ userModel.getActividadesDuracion = (id_ficha,callback)=>{
                     callback(err.code);
                 }else if(res.length == 0){
                     console.log("vacio");                    
-                    callback("vacio");
+                    callback(null,"vacio");
                 }else{  
                                                                       
                     for (let i = 0; i < res.length; i++) {
@@ -1328,7 +1348,7 @@ userModel.getMaterialesPorObra = (id_ficha,callback)=>{
                     callback(err.code);
                 }else if(res.length == 0){
                     console.log("vacio");                    
-                    callback("vacio");
+                    callback(null,"vacio");
                     conn.destroy()
                 }else{ 
                     for (let i = 0; i < res.length; i++) {

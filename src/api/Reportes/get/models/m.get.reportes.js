@@ -194,18 +194,18 @@ userModel.getInformeDataGeneral  = (id_ficha,id_historial,fecha,callback)=>{
     })
 }
 //6.1 cuadro demetradosEJECUTADOS
-userModel.CuadroMetradosEjecutados = (id_ficha,callback)=>{
+userModel.CuadroMetradosEjecutados = (id_ficha,id_historial,fecha,callback)=>{
     
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
         else{
-            conn.query('SELECT componentes.id_componente, componentes.numero, componentes.nombre nombre_componente, partidas.item, partidas.descripcion descripcion_partida, actividades.nombre nombre_actividad, avanceactividades.descripcion descripcion_actividad, avanceactividades.observacion, DATE(avanceactividades.fecha) fecha, avanceactividades.valor, partidas.costo_unitario, avanceactividades.valor * partidas.costo_unitario parcial FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida RIGHT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE componentes.Fichas_id_ficha = ? ORDER BY componentes.id_componente , avanceactividades.fecha DESC , partidas.id_partida',id_ficha,(err,res)=>{
+            conn.query("SELECT componentes.id_componente, componentes.numero, componentes.nombre nombre_componente, partidas.item, partidas.descripcion descripcion_partida, actividades.nombre nombre_actividad, avanceactividades.descripcion descripcion_actividad, avanceactividades.observacion, DATE(avanceactividades.fecha) fecha, avanceactividades.valor, partidas.costo_unitario, avanceactividades.valor * partidas.costo_unitario parcial FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida RIGHT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE componentes.Fichas_id_ficha = ? and avanceactividades.historialEstados_id_historialEstado =? and avanceactividades.fecha<? ORDER BY componentes.id_componente , avanceactividades.fecha DESC , partidas.id_partida",[id_ficha,id_historial,fecha],(err,res)=>{
                 if(err){
                     console.log(err);
                     callback(err.code);
                 }else if(res.length==0){
                     console.log("vacio");
-                    callback("vacio");
+                    callback(null,"vacio");
                     conn.destroy()
                 }else{                    
                     // console.log("res",res); 
