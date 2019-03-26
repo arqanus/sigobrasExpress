@@ -885,6 +885,31 @@ userModel.avanceMensualComparativoPresupuesto = (id_ficha,fecha_inicial,fecha_fi
     })
 }
 //6.9 avance comparativ diagraa degantt
+userModel.avanceComparativoDiagramaGantt = (id_ficha,fecha_inicial,fecha_final,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){ callback(err);}
+        else{conn.query("/*************** D+ = MB-MA D- = MB-MA   MA>M P+ = D+/MB P- = D-/MB Consulta Consolidado de valorizacion *************/ SELECT componentes.id_componente,componentes.numero,componentes.nombre, item, tipo, descripcion, unidad_medida, partidas.metrado, costo_unitario, COALESCE(tb_avance_anterior.metrado, 0) Metrado_Ejecutado_Anterior, COALESCE(tb_avance_anterior.valor, 0) Valorizado_Anterior, COALESCE(tb_avance_actual.metrado, 0) Metrado_Ejecutado_Actual, COALESCE(tb_avance_actual.valor, 0) Valorizado_actual, COALESCE(tb_avance_anterior.metrado, 0) + COALESCE(tb_avance_actual.metrado, 0) Metrado_Ejecutado_Acumulado, COALESCE(tb_avance_anterior.valor, 0) + COALESCE(tb_avance_actual.valor, 0) Valorizado_Acumulado, partidas.metrado - COALESCE(tb_avance_anterior.metrado, 0) - COALESCE(tb_avance_actual.metrado, 0) Diferencia_Mas, IF((COALESCE(tb_avance_anterior.metrado, 0) + COALESCE(tb_avance_actual.metrado, 0)) > partidas.metrado, COALESCE(partidas.metrado, 0) - (COALESCE(tb_avance_anterior.metrado, 0) + COALESCE(tb_avance_actual.metrado, 0)), 0) Diferencia_Menos, (partidas.metrado - (COALESCE(tb_avance_anterior.metrado, 0) + COALESCE(tb_avance_actual.metrado, 0))) / partidas.metrado * 100 Porcentaje_Mas, IF((COALESCE(tb_avance_anterior.metrado, 0) + COALESCE(tb_avance_actual.metrado, 0)) > partidas.metrado, partidas.metrado - (COALESCE(tb_avance_anterior.metrado, 0) + COALESCE(tb_avance_actual.metrado, 0)), 0) / partidas.metrado * 100 Porcentaje_Menos FROM componentes INNER JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN (SELECT id_partida, SUM(valor) metrado, SUM(valor * costo_unitario) valor FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.fecha < ? GROUP BY partidas.id_partida) tb_avance_anterior ON tb_avance_anterior.id_partida = partidas.id_partida LEFT JOIN (SELECT id_partida, SUM(valor) metrado, SUM(valor * costo_unitario) valor FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.fecha >= ? AND avanceactividades.fecha <= ? GROUP BY partidas.id_partida) tb_avance_actual ON tb_avance_actual.id_partida = partidas.id_partida WHERE componentes.fichas_id_ficha = ?",[fecha_inicial,fecha_inicial,fecha_final,id_ficha],(error,res)=>{ 
+                if(error){
+                    callback(error);
+                }else if(res.length == 0){
+                    console.log("vacio");
+                    
+                    callback(null,"vacio");
+                    conn.destroy()
+                
+                }else{
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }
+        
+                
+    })
+}
 //6.10 histograma del avance de obras curva s
 //6.11 proyeccion de trabajos prosxioms mes cronograma
 //6.12 informe
