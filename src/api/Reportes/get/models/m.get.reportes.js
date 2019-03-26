@@ -212,23 +212,22 @@ userModel.CuadroMetradosEjecutados = (id_ficha,id_historial,fecha,callback)=>{
                     var lastIdComponente = -1
                     var componentes = []
                     var componente = {}
-                    var componente_avance_valor = 0
-                    var fecha_avance_valor = 0
+                    var componente_total_soles = 0
+                    var fecha_total_soles = 0
                     for (let i = 0; i < res.length; i++) {
                         const fila = res[i];
                         
                         fila.fecha = fila.fecha.getDate()+" de "+month[fila.fecha.getMonth()]+" del "+fila.fecha.getFullYear()
-                        //calculo delavance por componente y fecha
-                        
+                     
 
                         if(fila.id_componente != lastIdComponente){
                             if(i != 0 ){
-                                componente.componente_avance_valor = formato(componente_avance_valor)
-                                componente.fechas[componente.fechas.length-1].fecha_avance_valor = formato(fecha_avance_valor)
+                                componente.componente_total_soles = formato(componente_total_soles)
+                                componente.fechas[componente.fechas.length-1].fecha_total_soles = formato(fecha_total_soles)
                                 componentes.push(componente);
                                 componente = {}
-                                componente_avance_valor = 0
-                                fecha_avance_valor = 0
+                                componente_total_soles = 0
+                                fecha_total_soles = 0
                             }   
                             
 
@@ -236,12 +235,12 @@ userModel.CuadroMetradosEjecutados = (id_ficha,id_historial,fecha,callback)=>{
                             componente.id_componente = fila.id_componente
                             componente.numero = fila.numero
                             componente.nombre_componente = fila.nombre_componente
-                            componente.componente_avance_valor = 9999
+                            componente.componente_total_soles = 9999
                             componente.fechas = [
                                 {
                                     "fecha": fila.fecha,
                                     
-                                    "fecha_avance_valor":9999,
+                                    "fecha_total_soles":9999,
                                     "historial":[
                                         {
                                             "item" : fila.item,
@@ -262,12 +261,12 @@ userModel.CuadroMetradosEjecutados = (id_ficha,id_historial,fecha,callback)=>{
                         }
                         else{
                             if(fila.fecha != lastFecha){
-                                componente.fechas[componente.fechas.length-1].fecha_avance_valor = formato(fecha_avance_valor)
-                                fecha_avance_valor=0
+                                componente.fechas[componente.fechas.length-1].fecha_total_soles = formato(fecha_total_soles)
+                                fecha_total_soles=0
                                 componente.fechas.push(
                                     {
                                         "fecha": fila.fecha,                                        
-                                        "fecha_avance_valor":9999,
+                                        "fecha_total_soles":9999,
                                         "historial":[
                                             {
                                                 "item" : fila.item,
@@ -283,7 +282,7 @@ userModel.CuadroMetradosEjecutados = (id_ficha,id_historial,fecha,callback)=>{
                                     }
                                     
                                 )   
-                                fecha_avance_valor = 0
+                                fecha_total_soles = 0
                             }else{
                                 componente.fechas[componente.fechas.length-1].historial.push(
                                     {
@@ -301,19 +300,17 @@ userModel.CuadroMetradosEjecutados = (id_ficha,id_historial,fecha,callback)=>{
                                                      
 
                         }
-                        componente_avance_valor +=fila.parcial
-                        fecha_avance_valor +=fila.parcial  
+                        componente_total_soles +=fila.parcial
+                        fecha_total_soles +=fila.parcial  
                         
-
                         lastIdComponente = fila.id_componente
                         lastFecha = fila.fecha
 
                         
                     }
 
-                    componente.componente_avance_valor = formato(componente_avance_valor)
-                    componente.fechas[componente.fechas.length-1].fecha_avance_valor = formato(fecha_avance_valor)
-                    
+                    componente.componente_total_soles = formato(componente_total_soles)
+                    componente.fechas[componente.fechas.length-1].fecha_total_soles = formato(fecha_total_soles)
                     componentes.push(componente);
                     
                     callback(null,componentes);
