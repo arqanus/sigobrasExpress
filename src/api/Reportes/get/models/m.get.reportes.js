@@ -216,7 +216,7 @@ userModel.CuadroMetradosEjecutados = (id_ficha,id_historial,fecha,callback)=>{
                     var fecha_avance_valor = 0
                     for (let i = 0; i < res.length; i++) {
                         const fila = res[i];
-                        console.log("fila",fila.id_componente)
+                        
                         fila.fecha = fila.fecha.getDate()+" de "+month[fila.fecha.getMonth()]+" del "+fila.fecha.getFullYear()
                         //calculo delavance por componente y fecha
                         componente_avance_valor +=fila.parcial
@@ -323,12 +323,12 @@ userModel.CuadroMetradosEjecutados = (id_ficha,id_historial,fecha,callback)=>{
 }
 
 //6.2 VALORIZACION PRINCIPALDELAOBRA-PRESUPUESTO-BASE
-userModel.valorizacionPrincipal = (id_ficha,id_historial,fecha_inicial,fecha_final,callback)=>{
+userModel.valorizacionPrincipal = (id_ficha,fecha_inicial,fecha_final,callback)=>{
     
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
         else{
-            conn.query("SELECT componentes.id_componente, componentes.numero, componentes.nombre,componentes.presupuesto, partidas.item, partidas.descripcion, partidas.metrado, partidas.costo_unitario, partidas.metrado * partidas.costo_unitario precio_parcial, periodo_anterior.metrado metrado_anterior, periodo_anterior.valor valor_anterior, periodo_anterior.porcentaje porcentaje_anterior, periodo_actual.metrado metrado_actual, periodo_actual.valor valor_actual, periodo_actual.porcentaje porcentaje_actual, coalesce(periodo_anterior.metrado,0) + coalesce(periodo_actual.metrado,0) metrado_total, coalesce(periodo_anterior.valor,0) + coalesce(periodo_actual.valor,0) valor_total, (coalesce(periodo_anterior.metrado,0) + coalesce(periodo_actual.metrado,0)) porcentaje_total, partidas.metrado - (coalesce(periodo_anterior.metrado,0) + coalesce(periodo_actual.metrado,0)) metrado_saldo, partidas.metrado*costo_unitario - (coalesce(periodo_anterior.valor,0) + coalesce(periodo_actual.valor,0)) valor_saldo, 100 - (coalesce(periodo_anterior.porcentaje,0) + coalesce(periodo_actual.porcentaje,0)) porcentaje_saldo FROM componentes INNER JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN (SELECT partidas.id_partida, SUM(avanceactividades.valor) metrado, SUM(avanceactividades.valor * costo_unitario) valor, SUM(avanceactividades.valor) / metrado * 100 porcentaje FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.id_historialEstado = avanceactividades.historialEstados_id_historialEstado WHERE componentes.fichas_id_ficha=? AND avanceactividades.fecha < ? GROUP BY partidas.id_partida) periodo_anterior ON periodo_anterior.id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, SUM(avanceactividades.valor) metrado, SUM(avanceactividades.valor * costo_unitario) valor, SUM(avanceactividades.valor) / metrado * 100 porcentaje FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.id_historialEstado = avanceactividades.historialEstados_id_historialEstado WHERE avanceactividades.historialEstados_id_historialEstado = ? AND avanceactividades.fecha >= ? AND avanceactividades.fecha <= ? GROUP BY partidas.id_partida) periodo_actual ON periodo_actual.id_partida = partidas.id_partida WHERE componentes.fichas_id_ficha = ? ORDER BY componentes.id_componente , partidas.id_partida",[id_ficha,fecha_inicial,id_historial,fecha_inicial,fecha_final,id_ficha],(error,res)=>{ 
+            conn.query("SELECT componentes.id_componente, componentes.numero, componentes.nombre, componentes.presupuesto, partidas.item, partidas.descripcion, partidas.metrado, partidas.costo_unitario, partidas.metrado * partidas.costo_unitario precio_parcial, periodo_anterior.metrado metrado_anterior, periodo_anterior.valor valor_anterior, periodo_anterior.porcentaje porcentaje_anterior, periodo_actual.metrado metrado_actual, periodo_actual.valor valor_actual, periodo_actual.porcentaje porcentaje_actual, COALESCE(periodo_anterior.metrado, 0) + COALESCE(periodo_actual.metrado, 0) metrado_total, COALESCE(periodo_anterior.valor, 0) + COALESCE(periodo_actual.valor, 0) valor_total, (COALESCE(periodo_anterior.metrado, 0) + COALESCE(periodo_actual.metrado, 0)) porcentaje_total, partidas.metrado - (COALESCE(periodo_anterior.metrado, 0) + COALESCE(periodo_actual.metrado, 0)) metrado_saldo, partidas.metrado * costo_unitario - COALESCE(periodo_anterior.valor, 0) - COALESCE(periodo_actual.valor, 0) valor_saldo, 100 - COALESCE(periodo_anterior.porcentaje, 0) - COALESCE(periodo_actual.porcentaje, 0) porcentaje_saldo FROM componentes INNER JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN (SELECT partidas.id_partida, SUM(avanceactividades.valor) metrado, SUM(avanceactividades.valor * costo_unitario) valor, SUM(avanceactividades.valor) / metrado * 100 porcentaje FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.fecha < ? AND historialactividades.estado IS NULL GROUP BY partidas.id_partida) periodo_anterior ON periodo_anterior.id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, SUM(avanceactividades.valor) metrado, SUM(avanceactividades.valor * costo_unitario) valor, SUM(avanceactividades.valor) / metrado * 100 porcentaje FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.fecha >= ? AND avanceactividades.fecha <= ? AND historialactividades.estado IS NULL GROUP BY partidas.id_partida) periodo_actual ON periodo_actual.id_partida = partidas.id_partida WHERE componentes.fichas_id_ficha = ? ORDER BY componentes.id_componente , partidas.id_partida",[fecha_inicial,fecha_inicial,fecha_final,id_ficha],(error,res)=>{ 
                 if(error){
                     callback(error);
                 }else if(res.length == 0){
@@ -389,13 +389,13 @@ userModel.valorizacionPrincipal = (id_ficha,id_historial,fecha_inicial,fecha_fin
     })
 }
 //6.3 resumen delavalorizacion principaldelaobrapresupuestobase
-userModel.getCostosIndirectos  = (id_ficha,callback)=>{    
+userModel.getCostosIndirectos  = (id_ficha,fecha_inicial,fecha_final,callback)=>{    
     pool.getConnection(function(err ,conn){
         if(err){ 
             callback(err);
         }        
         else{
-            conn.query("SELECT costosindirectos.nombre, costosindirectos.presupuesto, COALESCE(t2.anterior, 0) anterior, COALESCE(t2.anterior / t1.presupuesto * 100, 0) porcentaje_anterior, COALESCE(t1.actual, 0) actual, COALESCE(t1.actual / t1.presupuesto * 100, 0) porcentaje_actual, COALESCE(t2.anterior, 0) + COALESCE(t1.actual, 0) acumulado, (COALESCE(t2.anterior, 0) + COALESCE(t1.actual, 0)) / COALESCE(t1.presupuesto, 0) * 100 porcentaje_acumuado, COALESCE(t1.presupuesto, 0) - (COALESCE(t2.anterior, 0) + COALESCE(t1.actual, 0)) saldo, (COALESCE(t1.presupuesto, 0) - (COALESCE(t2.anterior, 0) + COALESCE(t1.actual, 0))) / COALESCE(t1.presupuesto, 0) * 100 porcentaje_saldo FROM costosindirectos left join (SELECT costosindirectos.fichas_id_ficha, costosindirectos.id_CostoIndirecto, costosindirectos.nombre, costosindirectos.presupuesto, historialcostosindirectos.monto actual FROM costosindirectos LEFT JOIN historialcostosindirectos ON historialcostosindirectos.CostosIndirectos_id_CostoIndirecto = costosindirectos.id_CostoIndirecto WHERE MONTH(NOW()) = MONTH(historialcostosindirectos.fecha) GROUP BY costosindirectos.id_CostoIndirecto) t1 on t1.id_CostoIndirecto = costosindirectos.id_CostoIndirecto LEFT JOIN (SELECT costosindirectos.id_CostoIndirecto, historialcostosindirectos.monto anterior FROM costosindirectos LEFT JOIN historialcostosindirectos ON historialcostosindirectos.CostosIndirectos_id_CostoIndirecto = costosindirectos.id_CostoIndirecto WHERE MONTH(NOW()) > MONTH(historialcostosindirectos.fecha) GROUP BY costosindirectos.id_CostoIndirecto) t2 ON t1.id_CostoIndirecto = t2.id_CostoIndirecto WHERE costosindirectos.fichas_id_ficha = ?",id_ficha,(err,res)=>{
+            conn.query("SELECT costosindirectos.nombre, costosindirectos.presupuesto, historial_anterior.valor anterior, historial_anterior.porcentaje porcentaje_anterior, historial_actual.valor actual, historial_actual.porcentaje porcentaje_actual, coalesce(historial_anterior.valor,0)+coalesce(historial_actual.valor,0) acumulado, coalesce(historial_anterior.porcentaje,0)+coalesce(historial_actual.porcentaje,0) porcentaje_acumulado, costosindirectos.presupuesto-coalesce(historial_anterior.valor,0)-coalesce(historial_actual.valor,0) saldo, 100-coalesce(historial_anterior.porcentaje,0)-coalesce(historial_actual.porcentaje,0) porcentaje_saldo FROM costosindirectos LEFT JOIN (SELECT costosindirectos.id_CostoIndirecto, historialcostosindirectos.monto valor, historialcostosindirectos.monto/costosindirectos.presupuesto*100 porcentaje FROM costosindirectos LEFT JOIN historialcostosindirectos ON historialcostosindirectos.CostosIndirectos_id_CostoIndirecto = costosindirectos.id_CostoIndirecto WHERE historialcostosindirectos.fecha < ? GROUP BY costosindirectos.id_CostoIndirecto) historial_anterior ON historial_anterior.id_CostoIndirecto = costosindirectos.id_CostoIndirecto LEFT JOIN (SELECT costosindirectos.id_CostoIndirecto, historialcostosindirectos.monto valor, historialcostosindirectos.monto/costosindirectos.presupuesto*100 porcentaje FROM costosindirectos LEFT JOIN historialcostosindirectos ON historialcostosindirectos.CostosIndirectos_id_CostoIndirecto = costosindirectos.id_CostoIndirecto WHERE historialcostosindirectos.fecha >= ? AND historialcostosindirectos.fecha <= ? GROUP BY costosindirectos.id_CostoIndirecto) historial_actual ON historial_actual.id_CostoIndirecto = costosindirectos.id_CostoIndirecto where costosindirectos.fichas_id_ficha = ?",[fecha_inicial,fecha_inicial,fecha_final,id_ficha],(err,res)=>{
                 if(err){
                     console.log(err);                    
                     callback(err.code);                
@@ -412,13 +412,13 @@ userModel.getCostosIndirectos  = (id_ficha,callback)=>{
                 
     })
 }
-userModel.resumenValorizacionPrincipal  = (id_ficha,costosIndirectos,callback)=>{    
+userModel.resumenValorizacionPrincipal  = (id_ficha,fecha_inicial,fecha_final,id_historial,costosIndirectos,callback)=>{    
     pool.getConnection(function(err ,conn){
         if(err){ 
             callback(err);
         }        
         else{
-            conn.query("SELECT t1.numero, t1.nombre, t1.presupuesto, COALESCE(t2.anterior, 0) anterior, COALESCE(t2.anterior / t1.presupuesto * 100, 0) porcentaje_anterior, COALESCE(t1.actual, 0) actual, COALESCE(t1.actual / t1.presupuesto * 100, 0) porcentaje_actual, COALESCE(t2.anterior, 0) + COALESCE(t1.actual, 0) acumulado, (COALESCE(t2.anterior, 0) + COALESCE(t1.actual, 0)) / COALESCE(t1.presupuesto, 0) * 100 porcentaje_acumuado, COALESCE(t1.presupuesto, 0) - (COALESCE(t2.anterior, 0) + COALESCE(t1.actual, 0)) saldo, (COALESCE(t1.presupuesto, 0) - (COALESCE(t2.anterior, 0) + COALESCE(t1.actual, 0))) / COALESCE(t1.presupuesto, 0) * 100 porcentaje_saldo FROM componentes left join (SELECT componentes.Fichas_id_ficha, componentes.id_componente, componentes.numero, componentes.nombre, componentes.presupuesto, COALESCE(SUM(avanceactividades.valor * partidas.costo_unitario), 0) actual FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE MONTH(NOW()) = MONTH(avanceactividades.fecha) GROUP BY componentes.id_componente) t1 on t1.id_componente = componentes.id_componente LEFT JOIN (SELECT componentes.id_componente, COALESCE(SUM(avanceactividades.valor * partidas.costo_unitario), 0) anterior FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE MONTH(NOW()) > MONTH(avanceactividades.fecha) GROUP BY componentes.id_componente) t2 ON t2.id_componente = t1.id_componente WHERE t1.fichas_id_ficha = ?",id_ficha,(err,res)=>{
+            conn.query("SELECT componentes.numero, componentes.nombre, componentes.presupuesto, componentes_anterior.valor anterior, componentes_anterior.porcentaje porcentaje_anterior, componentes_actual.valor actual, componentes_actual.porcentaje porcentaje_actual, coalesce(componentes_anterior.valor,0)+coalesce(componentes_actual.valor,0) acumulado, coalesce(componentes_anterior.porcentaje,0)+coalesce(componentes_actual.porcentaje,0) porcentaje_acumulado, componentes.presupuesto-coalesce(componentes_anterior.valor,0)-coalesce(componentes_actual.valor,0) saldo, 100-coalesce(componentes_anterior.porcentaje,0)-coalesce(componentes_actual.porcentaje,0) porcentaje_saldo FROM componentes LEFT JOIN (SELECT componentes.id_componente, SUM(avanceactividades.valor * partidas.costo_unitario) valor, SUM(avanceactividades.valor * partidas.costo_unitario) / componentes.presupuesto * 100 porcentaje FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE  avanceactividades.fecha < ? GROUP BY componentes.id_componente) componentes_anterior ON componentes_anterior.id_componente = componentes.id_componente LEFT JOIN (SELECT componentes.id_componente, SUM(avanceactividades.valor * partidas.costo_unitario) valor, SUM(avanceactividades.valor * partidas.costo_unitario) / componentes.presupuesto * 100 porcentaje FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE  avanceactividades.fecha >= ? AND avanceactividades.fecha <= ? GROUP BY componentes.id_componente) componentes_actual ON componentes_actual.id_componente = componentes.id_componente where componentes.fichas_id_ficha = ?",[fecha_inicial,fecha_inicial,fecha_final,id_ficha],(err,res)=>{
                 if(err){
                     console.log(err);                    
                     callback(err.code);                
@@ -433,7 +433,7 @@ userModel.resumenValorizacionPrincipal  = (id_ficha,costosIndirectos,callback)=>
                     var actual = 0
                     var porcentaje_actual = 0
                     var acumulado = 0
-                    var porcentaje_acumuado = 0
+                    var porcentaje_acumulado = 0
                     var saldo = 0
                     var porcentaje_saldo = 0
                     //calculo de costo directo
@@ -445,7 +445,7 @@ userModel.resumenValorizacionPrincipal  = (id_ficha,costosIndirectos,callback)=>
                         actual+=fila.actual
                         porcentaje_actual+=fila.porcentaje_actual
                         acumulado+=fila.acumulado
-                        porcentaje_acumuado+=fila.porcentaje_acumuado
+                        porcentaje_acumulado+=fila.porcentaje_acumulado
                         saldo+=fila.saldo
                         porcentaje_saldo+=fila.porcentaje_saldo
 
@@ -455,7 +455,7 @@ userModel.resumenValorizacionPrincipal  = (id_ficha,costosIndirectos,callback)=>
                         fila.actual = formato(fila.actual)
                         fila.porcentaje_actual = formatoPorcentaje(fila.porcentaje_actual)
                         fila.acumulado = formato(fila.acumulado)
-                        fila.porcentaje_acumuado = formatoPorcentaje(fila.porcentaje_acumuado)
+                        fila.porcentaje_acumulado = formatoPorcentaje(fila.porcentaje_acumulado)
                         fila.saldo = formato(fila.saldo)
                         fila.porcentaje_saldo = formatoPorcentaje(fila.porcentaje_saldo)
                     }
@@ -466,7 +466,7 @@ userModel.resumenValorizacionPrincipal  = (id_ficha,costosIndirectos,callback)=>
                     var actual2 = 0
                     var porcentaje_actual2 = 0
                     var acumulado2 = 0
-                    var porcentaje_acumuado2 = 0
+                    var porcentaje_acumulado2 = 0
                     var saldo2 = 0
                     var porcentaje_saldo2 = 0
                     for (let i = 0; i < costosIndirectos.length; i++) {
@@ -477,7 +477,7 @@ userModel.resumenValorizacionPrincipal  = (id_ficha,costosIndirectos,callback)=>
                         actual2+=fila.actual
                         porcentaje_actual2+=fila.porcentaje_actual
                         acumulado2+=fila.acumulado
-                        porcentaje_acumuado2+=fila.porcentaje_acumuado
+                        porcentaje_acumulado2+=fila.porcentaje_acumulado
                         saldo2+=fila.saldo
                         porcentaje_saldo2+=fila.porcentaje_saldo
 
@@ -487,7 +487,7 @@ userModel.resumenValorizacionPrincipal  = (id_ficha,costosIndirectos,callback)=>
                         fila.actual = formato(fila.actual)
                         fila.porcentaje_actual = formatoPorcentaje(fila.porcentaje_actual)
                         fila.acumulado = formato(fila.acumulado)
-                        fila.porcentaje_acumuado = formatoPorcentaje(fila.porcentaje_acumuado)
+                        fila.porcentaje_acumulado = formatoPorcentaje(fila.porcentaje_acumulado)
                         fila.saldo = formato(fila.saldo)
                         fila.porcentaje_saldo = formatoPorcentaje(fila.porcentaje_saldo)
                     }
@@ -507,7 +507,7 @@ userModel.resumenValorizacionPrincipal  = (id_ficha,costosIndirectos,callback)=>
                                 "actual":formato( actual),
                                 "porcentaje_actual":formatoPorcentaje( porcentaje_actual),
                                 "acumulado":formato( acumulado),
-                                "porcentaje_acumuado":formatoPorcentaje( porcentaje_acumuado),
+                                "porcentaje_acumulado":formatoPorcentaje( porcentaje_acumulado),
                                 "saldo":formato( saldo),
                                 "porcentaje_saldo":formatoPorcentaje( porcentaje_saldo)
                             }
@@ -526,7 +526,7 @@ userModel.resumenValorizacionPrincipal  = (id_ficha,costosIndirectos,callback)=>
                                 "actual":formato( actual2),
                                 "porcentaje_actual":formatoPorcentaje( porcentaje_actual2),
                                 "acumulado":formato( acumulado2),
-                                "porcentaje_acumuado":formatoPorcentaje( porcentaje_acumuado2),
+                                "porcentaje_acumulado":formatoPorcentaje( porcentaje_acumulado2),
                                 "saldo":formato( saldo2),
                                 "porcentaje_saldo":formatoPorcentaje( porcentaje_saldo2)
                             }                            
@@ -542,7 +542,7 @@ userModel.resumenValorizacionPrincipal  = (id_ficha,costosIndirectos,callback)=>
                                 "actual":formato(actual+actual2),
                                 "porcentaje_actual":formatoPorcentaje(porcentaje_actual+porcentaje_actual2),
                                 "acumulado":formato(acumulado+acumulado2),
-                                "porcentaje_acumuado":formatoPorcentaje(porcentaje_acumuado+porcentaje_acumuado2),
+                                "porcentaje_acumulado":formatoPorcentaje(porcentaje_acumulado+porcentaje_acumulado2),
                                 "saldo":formato(saldo+saldo2),
                                 "porcentaje_saldo":formatoPorcentaje(porcentaje_saldo+porcentaje_saldo2)
                             }                            
@@ -569,12 +569,12 @@ userModel.resumenValorizacionPrincipal  = (id_ficha,costosIndirectos,callback)=>
     })
 }
 //6.4 vaorizacion pormayores metrados
-userModel.getValGeneralExtras = (id_ficha,tipo,callback)=>{
+userModel.getValGeneralExtras = (id_ficha,fecha_inicial,fecha_final,tipo,callback)=>{
     
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
         else{
-            conn.query(" SELECT t1.Fichas_id_ficha, t1.id_historialEstado, t1.id_periodo, t1.numero_periodo, t1.numero, t1.id_componente, t1.nombre, t1.presupuesto, 0 valor_total_anterior, 0 valor_total_actual, 0 valor_suma_acumulado, 0 valor_total_saldo, t1.id_partida, t1.tipo, t1.item, t1.descripcion, t1.unidad_medida, t1.metrado, t1.costo_unitario, t1.costo_unitario * t1.metrado parcial, 0 metrado_anterior, 0 valor_anterior, 0 porcentaje_anterior, t2.metrado_actual, t2.valor_actual, t2.porcentaje_actual, 0 metrado_total, 0 valor_total, 0 porcentaje_total, 0 metrado_saldo, 0 valor_saldo, 0 porcentaje_saldo FROM (SELECT periodo.id_periodo, periodo.id_historialEstado, (CONCAT(periodo.codigo, periodo.numero)) numero_periodo, componentes.Fichas_id_ficha, componentes.numero, componentes.id_componente, componentes.nombre, componentes.presupuesto, partida.id_partida, partida.tipo, partida.item, partida.unidad_medida, partida.descripcion, partida.metrado, partida.costo_unitario, partida.metrado * partida.costo_unitario parcial FROM componentes INNER JOIN (SELECT partidas.id_partida, partidas.tipo, partidas.item, partidas.unidad_medida, partidas.descripcion, partidas.metrado, partidas.costo_unitario, partidas.componentes_id_componente FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado = ? GROUP BY partidas.id_partida) partida ON partida.componentes_id_componente = componentes.id_componente CROSS JOIN (SELECT TIMESTAMPDIFF(MONTH, fichas.fecha_inicial, historialestados.fecha) + 1 numero, estados.codigo codigo, historialestados.id_historialEstado, CONCAT(TIMESTAMPDIFF(MONTH, fichas.fecha_inicial, historialestados.fecha) + 1, '.', historialestados.id_historialestado) id_periodo FROM fichas LEFT JOIN historialestados ON historialestados.Fichas_id_ficha = fichas.id_ficha LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado WHERE historialestados.Fichas_id_ficha = ?) periodo) t1 LEFT JOIN (SELECT periodo.id_periodo, componentes.id_componente, partidas.id_partida, SUM(avanceactividades.valor) metrado_actual, SUM(avanceactividades.valor * partidas.costo_unitario) valor_actual, (SUM(avanceactividades.valor) / partidas.metrado) * 100 porcentaje_actual FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad INNER JOIN (SELECT CONCAT(TIMESTAMPDIFF(MONTH, fichas.fecha_inicial, historialestados.fecha) + 1, '.', historialestados.id_historialestado) id_periodo, historialestados.id_historialestado FROM fichas LEFT JOIN historialestados ON historialestados.Fichas_id_ficha = fichas.id_ficha LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado) periodo ON periodo.id_historialEstado = avanceactividades.historialEstados_id_historialEstado GROUP BY periodo.id_periodo , partidas.id_partida) t2 ON t1.id_periodo = t2.id_periodo AND t1.id_componente = t2.id_componente AND t1.id_partida = t2.id_partida WHERE t1.numero IS NOT NULL AND t1.Fichas_id_ficha = ? ORDER BY t1.id_historialEstado , t1.id_partida",[tipo,id_ficha,id_ficha],(error,res)=>{ 
+            conn.query("SELECT componentes.id_componente, componentes.numero, componentes.nombre, componentes.presupuesto, partidas.item, partidas.descripcion, partidas.metrado, partidas.costo_unitario, partidas.metrado * partidas.costo_unitario precio_parcial, periodo_anterior.metrado metrado_anterior, periodo_anterior.valor valor_anterior, periodo_anterior.porcentaje porcentaje_anterior, periodo_actual.metrado metrado_actual, periodo_actual.valor valor_actual, periodo_actual.porcentaje porcentaje_actual, COALESCE(periodo_anterior.metrado, 0) + COALESCE(periodo_actual.metrado, 0) metrado_total, COALESCE(periodo_anterior.valor, 0) + COALESCE(periodo_actual.valor, 0) valor_total, (COALESCE(periodo_anterior.metrado, 0) + COALESCE(periodo_actual.metrado, 0)) porcentaje_total, partidas.metrado - (COALESCE(periodo_anterior.metrado, 0) + COALESCE(periodo_actual.metrado, 0)) metrado_saldo, partidas.metrado * costo_unitario - COALESCE(periodo_anterior.valor, 0) - COALESCE(periodo_actual.valor, 0) valor_saldo, 100 - COALESCE(periodo_anterior.porcentaje, 0) - COALESCE(periodo_actual.porcentaje, 0) porcentaje_saldo FROM componentes INNER JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN (SELECT partidas.id_partida, SUM(avanceactividades.valor) metrado, SUM(avanceactividades.valor * costo_unitario) valor, SUM(avanceactividades.valor) / metrado * 100 porcentaje FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.fecha < ? AND historialactividades.estado =? GROUP BY partidas.id_partida) periodo_anterior ON periodo_anterior.id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, SUM(avanceactividades.valor) metrado, SUM(avanceactividades.valor * costo_unitario) valor, SUM(avanceactividades.valor) / metrado * 100 porcentaje FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.fecha >= ? AND avanceactividades.fecha <= ? AND historialactividades.estado =? GROUP BY partidas.id_partida) periodo_actual ON periodo_actual.id_partida = partidas.id_partida WHERE componentes.fichas_id_ficha = ? ORDER BY componentes.id_componente , partidas.id_partida",[fecha_inicial,tipo,fecha_inicial,fecha_final,tipo,id_ficha],(error,res)=>{ 
                 if(error){
                     callback(error);
                 }else if(res.length == 0){
@@ -584,284 +584,46 @@ userModel.getValGeneralExtras = (id_ficha,tipo,callback)=>{
                     conn.destroy()
                 
                 }else{
-                    var periodos = []
-                    var periodo = {}                    
-                    var lastIdPeriodo = -1
-                    var lastIdComponente = -1
-                    var lastIdPartida = -1
-                    var valor_total_actual=0
-                    //se estructuran los datos
+                    var componentes = []
+                    var componente = {}                                        
+                    var id_componente = -1                   
+                    
                     for (let i = 0; i < res.length; i++) {
-                        const fila = res[i];
+                        const fila = res[i];                        
 
-                        //variables temporales
-                        valor_total_actual+=fila.valor_actual                    
-                        
-
-                        if(fila.id_periodo != lastIdPeriodo){
+                        if(fila.id_componente != id_componente){
                             if(i != 0){
-                                periodos.push(periodo)
-                                periodo = {}
-                                valor_total_actual = 0
+                                componentes.push(componente)
+                                componente = {}
+                                
                             }
                             
-                            
-                            //insercion de datos
-                            periodo.id_periodo = fila.id_periodo
-                            periodo.numero_periodo = fila.numero_periodo
-                            periodo.componentes=[
+                            componente.id_componente = fila.id_componente
+                            componente.numero = fila.numero
+                            componente.nombre = fila.nombre
+                            componente.presupuesto = fila.presupuesto
+                            componente.partidas = [ 
                                 {
-                                    "componente_numero": fila.numero,
-                                    "id_componente": fila.id_componente,
-                                    "nombre":fila.nombre,
-                                    "presupuesto":fila.presupuesto,
-                                    "valor_total_anterior":fila.valor_total_anterior,
-                                    "valor_total_actual":valor_total_actual,
-                                    "valor_suma_acumulado":fila.valor_suma_acumulado,
-                                    "valor_total_saldo": fila.valor_total_saldo,
-                                    "partidas":[
-                                        {
-                                            "tipo":fila.tipo,
-                                            "item":fila.item,
-                                            "descripcion":fila.descripcion,
-                                            "unidad_medida":fila.unidad_medida,
-                                            "metrado":fila.metrado,
-                                            "costo_unitario":fila.costo_unitario,
-                                            "parcial":fila.parcial,
-                                            "metrado_anterior":fila.metrado_anterior,
-                                            "valor_anterior":fila.valor_anterior,
-                                            "porcentaje_anterior":fila.porcentaje_anterior,
-                                            "metrado_actual":fila.metrado_actual,
-                                            "valor_actual":fila.valor_actual,
-                                            "porcentaje_actual":fila.porcentaje_actual,
-                                            "metrado_total":fila.metrado_total,
-                                            "valor_total":fila.valor_total,
-                                            "porcentaje_total":fila.porcentaje_total,
-                                            "metrado_saldo":fila.metrado_saldo,
-                                            "valor_saldo":fila.valor_saldo,
-                                            "porcentaje_saldo":fila.porcentaje_saldo
-                                        }
-                                    ]
+                                    "item":fila.item,                                    "descripcion":fila.descripcion,
+                                    "metrado":fila.metrado,                                    "costo_unitario":fila.costo_unitario,                                    "precio_parcial":fila.precio_parcial,                                    "metrado_anterior":fila.metrado_anterior,                                    "valor_anterior":fila.valor_anterior,                                    "porcentaje_anterior":fila.porcentaje_anterior,                                "metrado_actual":fila.metrado_actual,                                    "valor_actual":fila.valor_actual,                                    "porcentaje_actual":fila.porcentaje_actual,                                    "metrado_total":fila.metrado_total,                                    "valor_total":fila.valor_total,                                    "porcentaje_total":fila.porcentaje_total,                                    "metrado_saldo":fila.metrado_saldo,                                    "valor_saldo":fila.valor_saldo,                                    "porcentaje_saldo":fila.porcentaje_saldo
                                 }
-                            ]
+                            ]                            
+                         
                         }else{
-                            
-                            if(fila.id_componente != lastIdComponente){
-                                var componente = {
-                                    "componente_numero": fila.numero,
-                                    "id_componente": fila.id_componente,
-                                    "nombre":fila.nombre,
-                                    "presupuesto":fila.presupuesto,
-                                    "valor_total_anterior":fila.valor_total_anterior,
-                                    "valor_total_actual":valor_total_actual,
-                                    "valor_suma_acumulado":fila.valor_suma_acumulado,
-                                    "valor_total_saldo": fila.valor_total_saldo,
-                                    "partidas":[
-                                        {
-                                            "tipo":fila.tipo,
-                                            "item":fila.item,
-                                            "descripcion":fila.descripcion,
-                                            "unidad_medida":fila.unidad_medida,
-                                            "metrado":fila.metrado,
-                                            "costo_unitario":fila.costo_unitario,
-                                            "parcial":fila.parcial,
-                                            "metrado_anterior":fila.metrado_anterior,
-                                            "valor_anterior":fila.valor_anterior,
-                                            "porcentaje_anterior":fila.porcentaje_anterior,
-                                            "metrado_actual":fila.metrado_actual,
-                                            "valor_actual":fila.valor_actual,
-                                            "porcentaje_actual":fila.porcentaje_actual,
-                                            "metrado_total":fila.metrado_total,
-                                            "valor_total":fila.valor_total,
-                                            "porcentaje_total":fila.porcentaje_total,
-                                            "metrado_saldo":fila.metrado_saldo,
-                                            "valor_saldo":fila.valor_saldo,
-                                            "porcentaje_saldo":fila.porcentaje_saldo
-                                        }
-                                    ]
-                                }
-                                periodo.componentes.push(componente) 
-                                valor_total_actual = 0
-                            }else{
-                                periodo.componentes[periodo.componentes.length-1].valor_total_actual =valor_total_actual
-                                var partida = {
-                                        "tipo":fila.tipo,
-                                        "item":fila.item,
-                                        "descripcion":fila.descripcion,
-                                        "unidad_medida":fila.unidad_medida,
-                                        "metrado":fila.metrado,
-                                        "costo_unitario":fila.costo_unitario,
-                                        "parcial":fila.parcial,
-                                        "metrado_anterior":fila.metrado_anterior,
-                                        "valor_anterior":fila.valor_anterior,
-                                        "porcentaje_anterior":fila.porcentaje_anterior,
-                                        "metrado_actual":fila.metrado_actual,
-                                        "valor_actual":fila.valor_actual,
-                                        "porcentaje_actual":fila.porcentaje_actual,
-                                        "metrado_total":fila.metrado_total,
-                                        "valor_total":fila.valor_total,
-                                        "porcentaje_total":fila.porcentaje_total,
-                                        "metrado_saldo":fila.metrado_saldo,
-                                        "valor_saldo":fila.valor_saldo,
-                                        "porcentaje_saldo":fila.porcentaje_saldo
-                                }
-                                periodo.componentes[periodo.componentes.length-1].partidas.push(partida)
-                                
-
-                            }
-                                                     
-
-                        }
-                        lastIdPeriodo = fila.id_periodo
-                        lastIdComponente = fila.id_componente
-                        lastIdPartida = fila.lastIdPartida
-                    }
-                    periodos.push(periodo)
-                    //operaciones de anterior total y saldo
-                    for (let i = 0; i < periodos.length; i++) {
-                        //variables de resumen
-                        periodos[i].resumen = {
-                            "presupuesto_total":0,
-                            "avance_anterior":0,
-                            "avance_actual":0,
-                            "avance_acumulado":0,
-                            "saldo":0,
-                            "componentes":[]
-                        }
-
-
-                        const componentes = periodos[i].componentes;
-                        
-                        for (let j = 0; j < componentes.length; j++) {
-
-                            const componente = componentes[j]        
-                            
-
-                                                
-                            //comp valor total anterior
-                            if(i > 0){
-                                componente.valor_total_anterior = periodos[i-1].componentes[j].valor_total_actual                               
-                            }
-                            //comp valor total acumulado
-                            componente.valor_suma_acumulado = componente.valor_total_anterior + componente.valor_total_actual
-                            //comp valor saldo
-                            componente.valor_total_saldo = componente.presupuesto - componente.valor_suma_acumulado
-
-                            //datos de resumen
-                            periodos[i].resumen.presupuesto_total += componente.presupuesto
-                            periodos[i].resumen.avance_anterior += componente.valor_total_anterior
-                            periodos[i].resumen.avance_actual += componente.valor_total_actual         
-                            periodos[i].resumen.avance_acumulado += componente.valor_suma_acumulado    
-                            periodos[i].resumen.saldo += componente.valor_total_saldo     
-
-                             //datos de resumen componentes
-                            periodos[i].resumen.componentes.push(
+                            componente.partidas.push( 
                                 {
-                                    "componente_numero": componente.componente_numero,
-                                    "nombre": componente.nombre,
-                                    "presupuesto": formato(componente.presupuesto),
-                                    "valor_total_anterior":formato( componente.valor_total_anterior),
-                                    "valor_total_anterior_porcentaje":formato(componente.valor_total_anterior/componente.presupuesto * 100),
-                                    "valor_total_actual":formato( componente.valor_total_actual),
-                                    "valor_total_actual_porcentaje":formato(componente.valor_total_actual/componente.presupuesto * 100),
-                                    "valor_suma_acumulado":formato( componente.valor_suma_acumulado),
-                                    "valor_suma_acumulado_porcentaje":formato(componente.valor_suma_acumulado/componente.presupuesto * 100),
-                                    "valor_total_saldo":formato( componente.valor_total_saldo),
-                                    "valor_total_saldo_porcentaje":formato(componente.valor_total_saldo/componente.presupuesto * 100)
+                                    "item":fila.item,                                    "descripcion":fila.descripcion,
+                                    "metrado":fila.metrado,                                    "costo_unitario":fila.costo_unitario,                                    "precio_parcial":fila.precio_parcial,                                    "metrado_anterior":fila.metrado_anterior,                                    "valor_anterior":fila.valor_anterior,                                    "porcentaje_anterior":fila.porcentaje_anterior,                                "metrado_actual":fila.metrado_actual,                                    "valor_actual":fila.valor_actual,                                    "porcentaje_actual":fila.porcentaje_actual,                                    "metrado_total":fila.metrado_total,                                    "valor_total":fila.valor_total,                                    "porcentaje_total":fila.porcentaje_total,                                    "metrado_saldo":fila.metrado_saldo,                                    "valor_saldo":fila.valor_saldo,                                    "porcentaje_saldo":fila.porcentaje_saldo
                                 }
-                            )
-
-                            
-                            const partidas = componente.partidas
-                            for (let k = 0; k < partidas.length; k++) {
-                                
-                                var partida = partidas[k];
-                                
-                                // part valor total anterior
-                                if(i > 0){
-                                    //metrado anterior
-                                    partida.metrado_anterior = periodos[i-1].componentes[j].partidas[k].metrado_actual
-                                    //valor anterior
-                                    partida.valor_anterior = periodos[i-1].componentes[j].partidas[k].valor_actual
-                                    //porcentaje anterior
-                                    partida.porcentaje_anterior = periodos[i-1].componentes[j].partidas[k].porcentaje_actual
-                                }
-                                //partida metrado acumulado
-                                partida.metrado_total = partida.metrado_actual + partida.metrado_anterior
-                                
-                                
-                                //partida valor acumulado
-                                partida.valor_total = partida.valor_actual + partida.valor_anterior
-                                //partida porcentaje acumuado
-                                partida.porcentaje_total = partida.porcentaje_actual + partida.porcentaje_anterior
-
-                                //partida metrado saldo
-                                partida.metrado_saldo = partida.metrado - partida.metrado_total
-                                console.log(partida.metrado,"-",partida.metrado_total,"=",partida.metrado_saldo);
-                                //partida valor saldo
-                                partida.valor_saldo = partida.parcial - partida.valor_total
-                                console.log(partida.parcial,"-",partida.valor_total,"=",partida.valor_saldo);
-                                //partida porcenjata saldo
-                                partida.porcentaje_saldo = 100 - partida.porcentaje_total
-                                
-
-                               
-                               
-                            }
-                            
-
-                            
-                        }                        
-
+                            )                 
                         
-                    }
-                    //aplicando formato en 2 decimales
-                    for (let i = 0; i < periodos.length; i++) {
-                        const componentes = periodos[i].componentes;
-
-
-                        periodos[i].resumen.presupuesto_total=formato(periodos[i].resumen.presupuesto_total)
-                        periodos[i].resumen.avance_anterior =formato(periodos[i].resumen.avance_anterior )
-                        periodos[i].resumen.avance_actual =formato(periodos[i].resumen.avance_actual )
-                        periodos[i].resumen.avance_acumulado =formato(periodos[i].resumen.avance_acumulado )
-                        periodos[i].resumen.saldo =formato(periodos[i].resumen.saldo )
-                        for (let j = 0; j < componentes.length; j++) {
-                            const componente = componentes[j];
-                            //formato 2 digitos
-                            componente.presupuesto = formato(componente.presupuesto)
-                            componente.valor_total_anterior = formato(componente.valor_total_anterior)
-                            componente.valor_total_actual = formato(componente.valor_total_actual)
-                            componente.valor_suma_acumulado = formato(componente.valor_suma_acumulado)
-                            componente.valor_total_saldo = formato(componente.valor_total_saldo)
-                            const partidas = componente.partidas
-                            for (let k = 0; k < partidas.length; k++) {
-                                const partida = partidas[k];
-                                 //formato de dos digitos
-                                partida.metrado = formato(partida.metrado)
-                                partida.costo_unitario = formato(partida.costo_unitario)
-                                partida.parcial = formato(partida.parcial)
-
-                                 partida.metrado_anterior = formato(partida.metrado_anterior)
-                                 partida.valor_anterior = formato(partida.valor_anterior)
-                                 partida.porcentaje_anterior = formato(partida.porcentaje_anterior)
-                                 partida.metrado_actual = formato(partida.metrado_actual)
-                                 partida.valor_actual = formato(partida.valor_actual)
-                                 partida.porcentaje_actual = formato(partida.porcentaje_actual)
-                                 partida.metrado_total = formato(partida.metrado_total)
-                                 partida.valor_total = formato(partida.valor_total)
-                                 partida.porcentaje_total = formato(partida.porcentaje_total)
-                                 partida.metrado_saldo = formato(partida.metrado_saldo)
-                                 partida.valor_saldo = formato(partida.valor_saldo)
-                                 partida.porcentaje_saldo = formato(partida.porcentaje_saldo)
-                                
-                            }
-
-                            
                         }
-                        
+                        id_componente = fila.id_componente
                     }
+                    componentes.push(componente)
+             
 
-                    callback(null,periodos);
+                    callback(null,componentes);
                     conn.destroy()
                 }
                 
@@ -1018,11 +780,11 @@ userModel.resumenAvanceFisicoPartidasObraMes = (meses,id_ficha,callback)=>{
     })
 }
 //6.8 avance mensual comparativos de acuerdo al presupuesto delaobra y mesavance comparativos
-userModel.avanceMensualComparativoPresupuesto = (id_ficha,callback)=>{
+userModel.avanceMensualComparativoPresupuesto = (id_ficha,fecha_inicial,fecha_final,callback)=>{
     
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
-        else{conn.query("/*************** D+ = MB-MA D- = MB-MA   MA>M P+ = D+/MB P- = D-/MB Consulta Consolidado de valorizacion *************/ SELECT item, tipo, descripcion, unidad_medida, metrado, costo_unitario, COALESCE(tb_avance_anterior.Metrado_Ejecutado_Anterior, 0) Metrado_Ejecutado_Anterior, COALESCE(tb_avance_anterior.Valorizado_Anterior, 0)Valorizado_Anterior, COALESCE(tb_avance_actual.Metrado_Ejecutado_Actual, 0)Metrado_Ejecutado_Actual, COALESCE(tb_avance_actual.Valorizado_actual, 0)Valorizado_actual, COALESCE(tb_avance_anterior.Metrado_Ejecutado_Anterior, 0) + COALESCE(tb_avance_actual.Metrado_Ejecutado_Actual, 0) Metrado_Ejecutado_Acumulado, COALESCE(tb_avance_anterior.Valorizado_Anterior, 0) + COALESCE(tb_avance_actual.Valorizado_actual, 0) Valorizado_Acumulado, COALESCE(metrado, 0) - (COALESCE(tb_avance_anterior.Metrado_Ejecutado_Anterior, 0) + COALESCE(tb_avance_actual.Metrado_Ejecutado_Actual, 0)) Diferencia_Mas, IF((COALESCE(tb_avance_anterior.Metrado_Ejecutado_Anterior, 0) + COALESCE(tb_avance_actual.Metrado_Ejecutado_Actual, 0)) > metrado, COALESCE(metrado, 0) - (COALESCE(tb_avance_anterior.Metrado_Ejecutado_Anterior, 0) + COALESCE(tb_avance_actual.Metrado_Ejecutado_Actual, 0)), 0) Diferencia_Menos, (COALESCE(metrado, 0) - (COALESCE(tb_avance_anterior.Metrado_Ejecutado_Anterior, 0) + COALESCE(tb_avance_actual.Metrado_Ejecutado_Actual, 0))) / metrado * 100 Porcentaje_Mas, IF((COALESCE(tb_avance_anterior.Metrado_Ejecutado_Anterior, 0) + COALESCE(tb_avance_actual.Metrado_Ejecutado_Actual, 0)) > metrado, COALESCE(metrado, 0) - (COALESCE(tb_avance_anterior.Metrado_Ejecutado_Anterior, 0) + COALESCE(tb_avance_actual.Metrado_Ejecutado_Actual, 0)), 0) / metrado * 100 Porcentaje_Menos FROM componentes INNER JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN (SELECT id_partida, SUM(valor) Metrado_Ejecutado_Actual, SUM(valor * costo_unitario) Valorizado_actual FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE MONTH(avanceactividades.fecha) = MONTH(NOW()) GROUP BY partidas.id_partida) tb_avance_actual ON tb_avance_actual.id_partida = partidas.id_partida LEFT JOIN (SELECT id_partida, SUM(valor) Metrado_Ejecutado_Anterior, SUM(valor * costo_unitario) Valorizado_Anterior FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE MONTH(avanceactividades.fecha) < MONTH(NOW()) OR YEAR(avanceactividades.fecha) < YEAR(NOW()) GROUP BY partidas.id_partida) tb_avance_anterior ON tb_avance_anterior.id_partida = partidas.id_partida WHERE componentes.fichas_id_ficha = ?",[id_ficha],(error,res)=>{ 
+        else{conn.query("/*************** D+ = MB-MA D- = MB-MA   MA>M P+ = D+/MB P- = D-/MB Consulta Consolidado de valorizacion *************/ SELECT componentes.id_componente,componentes.numero,componentes.nombre, item, tipo, descripcion, unidad_medida, partidas.metrado, costo_unitario, COALESCE(tb_avance_anterior.metrado, 0) Metrado_Ejecutado_Anterior, COALESCE(tb_avance_anterior.valor, 0) Valorizado_Anterior, COALESCE(tb_avance_actual.metrado, 0) Metrado_Ejecutado_Actual, COALESCE(tb_avance_actual.valor, 0) Valorizado_actual, COALESCE(tb_avance_anterior.metrado, 0) + COALESCE(tb_avance_actual.metrado, 0) Metrado_Ejecutado_Acumulado, COALESCE(tb_avance_anterior.valor, 0) + COALESCE(tb_avance_actual.valor, 0) Valorizado_Acumulado, partidas.metrado - COALESCE(tb_avance_anterior.metrado, 0) - COALESCE(tb_avance_actual.metrado, 0) Diferencia_Mas, IF((COALESCE(tb_avance_anterior.metrado, 0) + COALESCE(tb_avance_actual.metrado, 0)) > partidas.metrado, COALESCE(partidas.metrado, 0) - (COALESCE(tb_avance_anterior.metrado, 0) + COALESCE(tb_avance_actual.metrado, 0)), 0) Diferencia_Menos, (partidas.metrado - (COALESCE(tb_avance_anterior.metrado, 0) + COALESCE(tb_avance_actual.metrado, 0))) / partidas.metrado * 100 Porcentaje_Mas, IF((COALESCE(tb_avance_anterior.metrado, 0) + COALESCE(tb_avance_actual.metrado, 0)) > partidas.metrado, partidas.metrado - (COALESCE(tb_avance_anterior.metrado, 0) + COALESCE(tb_avance_actual.metrado, 0)), 0) / partidas.metrado * 100 Porcentaje_Menos FROM componentes INNER JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN (SELECT id_partida, SUM(valor) metrado, SUM(valor * costo_unitario) valor FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.fecha < ? GROUP BY partidas.id_partida) tb_avance_anterior ON tb_avance_anterior.id_partida = partidas.id_partida LEFT JOIN (SELECT id_partida, SUM(valor) metrado, SUM(valor * costo_unitario) valor FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.fecha >= ? AND avanceactividades.fecha <= ? GROUP BY partidas.id_partida) tb_avance_actual ON tb_avance_actual.id_partida = partidas.id_partida WHERE componentes.fichas_id_ficha = ?",[fecha_inicial,fecha_inicial,fecha_final,id_ficha],(error,res)=>{ 
                 if(error){
                     callback(error);
                 }else if(res.length == 0){
@@ -1032,6 +794,65 @@ userModel.avanceMensualComparativoPresupuesto = (id_ficha,callback)=>{
                     conn.destroy()
                 
                 }else{
+                    var componentes=[]
+                    var componente ={}
+                    var id_componente = -1
+
+                    for (let i = 0; i < res.length; i++) {
+                        const fila = res[i];
+                        if (id_componente -=fila.id_componente) {
+                            if(i!=0){
+                                componentes.push(componente)
+                                componente = {}
+                            }
+                            componente.numero = fila.numero
+                            componente.nombre = fila.nombre
+                            componente.partidas = [
+                                {
+                                    "item":fila.item,
+                                    "tipo":fila.tipo,
+                                    "descripcion":fila.descripcion,
+                                    "unidad_medida":fila.unidad_medida,
+                                    "metrado":fila.metrado,
+                                    "costo_unitario":fila.costo_unitario,
+                                    "Metrado_Ejecutado_Anterior":fila.Metrado_Ejecutado_Anterior,
+                                    "Valorizado_Anterior":fila.Valorizado_Anterior,
+                                    "Metrado_Ejecutado_Actual":fila.Metrado_Ejecutado_Actual,
+                                    "Valorizado_actual":fila.Valorizado_actual,
+                                    "Metrado_Ejecutado_Acumulado":fila.Metrado_Ejecutado_Acumulado,
+                                    "Valorizado_Acumulado":fila.Valorizado_Acumulado,
+                                    "Diferencia_Mas":fila.Diferencia_Mas,
+                                    "Diferencia_Menos":fila.Diferencia_Menos,
+                                    "Porcentaje_Mas":fila.Porcentaje_Mas,
+                                    "Porcentaje_Menos":fila.Porcentaje_Menos
+                                }
+                            ]
+                        }else{
+                            componente.partidas.push(
+                                {
+                                    "item":fila.item,
+                                    "tipo":fila.tipo,
+                                    "descripcion":fila.descripcion,
+                                    "unidad_medida":fila.unidad_medida,
+                                    "metrado":fila.metrado,
+                                    "costo_unitario":fila.costo_unitario,
+                                    "Metrado_Ejecutado_Anterior":fila.Metrado_Ejecutado_Anterior,
+                                    "Valorizado_Anterior":fila.Valorizado_Anterior,
+                                    "Metrado_Ejecutado_Actual":fila.Metrado_Ejecutado_Actual,
+                                    "Valorizado_actual":fila.Valorizado_actual,
+                                    "Metrado_Ejecutado_Acumulado":fila.Metrado_Ejecutado_Acumulado,
+                                    "Valorizado_Acumulado":fila.Valorizado_Acumulado,
+                                    "Diferencia_Mas":fila.Diferencia_Mas,
+                                    "Diferencia_Menos":fila.Diferencia_Menos,
+                                    "Porcentaje_Mas":fila.Porcentaje_Mas,
+                                    "Porcentaje_Menos":fila.Porcentaje_Menos
+                                }
+                            )
+
+                        }
+                        id_componente = fila.id_componente
+                    }
+
                     for (let i = 0; i < res.length; i++) {
                         const fila = res[i];
                         if(fila.tipo =="titulo"){
@@ -1048,10 +869,11 @@ userModel.avanceMensualComparativoPresupuesto = (id_ficha,callback)=>{
                             fila.Diferencia_Menos = ""
                             fila.Porcentaje_Mas = ""
                             fila.Porcentaje_Menos = ""
-                        }                     
+                        }                
                         
                     }
-                    callback(null,res);
+                    componentes.push(componente)
+                    callback(null,componentes);
                     conn.destroy()
                 }
                 
