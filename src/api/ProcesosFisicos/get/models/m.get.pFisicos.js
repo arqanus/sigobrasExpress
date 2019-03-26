@@ -477,8 +477,8 @@ userModel.getHistorial = (id_ficha,callback)=>{
                     var lastIdComponente = -1
                     var componentes = []
                     var componente = {}
-                    var componente_avance_valor = 0
-                    var fecha_avance_valor = 0
+                    var componente_total_soles = 0
+                    var fecha_total_soles = 0
                     for (let i = 0; i < res.length; i++) {
                         const fila = res[i];
                         
@@ -487,12 +487,12 @@ userModel.getHistorial = (id_ficha,callback)=>{
 
                         if(fila.id_componente != lastIdComponente){
                             if(i != 0 ){
-                                componente.componente_avance_valor = formato(componente_avance_valor)
-                                componente.fechas[componente.fechas.length-1].fecha_avance_valor = formato(fecha_avance_valor)
+                                componente.componente_total_soles = formato(componente_total_soles)
+                                componente.fechas[componente.fechas.length-1].fecha_total_soles = formato(fecha_total_soles)
                                 componentes.push(componente);
                                 componente = {}
-                                componente_avance_valor = 0
-                                fecha_avance_valor = 0
+                                componente_total_soles = 0
+                                fecha_total_soles = 0
                             }   
                             
 
@@ -500,12 +500,12 @@ userModel.getHistorial = (id_ficha,callback)=>{
                             componente.id_componente = fila.id_componente
                             componente.numero = fila.numero
                             componente.nombre_componente = fila.nombre_componente
-                            componente.componente_avance_valor = 9999
+                            componente.componente_total_soles = 9999
                             componente.fechas = [
                                 {
                                     "fecha": fila.fecha,
                                     
-                                    "fecha_avance_valor":9999,
+                                    "fecha_total_soles":9999,
                                     "historial":[
                                         {
                                             "item" : fila.item,
@@ -526,12 +526,12 @@ userModel.getHistorial = (id_ficha,callback)=>{
                         }
                         else{
                             if(fila.fecha != lastFecha){
-                                componente.fechas[componente.fechas.length-1].fecha_avance_valor = formato(fecha_avance_valor)
-                                fecha_avance_valor=0
+                                componente.fechas[componente.fechas.length-1].fecha_total_soles = formato(fecha_total_soles)
+                                fecha_total_soles=0
                                 componente.fechas.push(
                                     {
                                         "fecha": fila.fecha,                                        
-                                        "fecha_avance_valor":9999,
+                                        "fecha_total_soles":9999,
                                         "historial":[
                                             {
                                                 "item" : fila.item,
@@ -547,7 +547,7 @@ userModel.getHistorial = (id_ficha,callback)=>{
                                     }
                                     
                                 )   
-                                fecha_avance_valor = 0
+                                fecha_total_soles = 0
                             }else{
                                 componente.fechas[componente.fechas.length-1].historial.push(
                                     {
@@ -565,8 +565,8 @@ userModel.getHistorial = (id_ficha,callback)=>{
                                                      
 
                         }
-                        componente_avance_valor +=fila.parcial
-                        fecha_avance_valor +=fila.parcial  
+                        componente_total_soles +=fila.parcial
+                        fecha_total_soles +=fila.parcial  
                         
                         lastIdComponente = fila.id_componente
                         lastFecha = fila.fecha
@@ -574,8 +574,8 @@ userModel.getHistorial = (id_ficha,callback)=>{
                         
                     }
 
-                    componente.componente_avance_valor = formato(componente_avance_valor)
-                    componente.fechas[componente.fechas.length-1].fecha_avance_valor = formato(fecha_avance_valor)
+                    componente.componente_total_soles = formato(componente_total_soles)
+                    componente.fechas[componente.fechas.length-1].fecha_total_soles = formato(fecha_total_soles)
                     componentes.push(componente);
                     
                     callback(null,componentes);
