@@ -51,18 +51,24 @@ module.exports = function(app){
 			User.getActividades(req.body.id_partida,(err,data)=>{
 				if(err){ res.status(204).json(err);}
 				else{
-					res.json(
-                        {
-                            "mayor_metrado":{
-                                "mm_avance_metrado": "1",
-                                "mm_avance_costo": "1",
-                                "mm_metrados_saldo": "1",
-                                "mm_metrados_costo_saldo": "1",
-                                "mm_porcentaje": "10",  
-                            },
-                            "actividades":data
+                    User.getPartidasMayorMetradoAvance(req.body.id_partida,(err,mayorMetrado)=>{
+                        if(err){ res.status(204).json(err);}
+                        else{
+                            res.json(
+                                
+                                {
+                                    "mayor_metrado":{
+                                        "mm_avance_metrado": mayorMetrado.avance_metrado,
+                                        "mm_avance_costo": mayorMetrado.avance_costo,
+                                        "mm_metrados_saldo": mayorMetrado.metrados_saldo,
+                                        "mm_metrados_costo_saldo": mayorMetrado.metrados_costo_saldo,
+                                        "mm_porcentaje": mayorMetrado.porcentaje
+                                    },
+                                    "actividades":data
+                                }
+                            );
                         }
-                    );	
+                    })	
 				}
 			})
 		}
