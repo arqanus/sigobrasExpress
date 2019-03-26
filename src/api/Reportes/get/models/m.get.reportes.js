@@ -199,7 +199,7 @@ userModel.CuadroMetradosEjecutados = (id_ficha,id_historial,fecha,callback)=>{
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
         else{
-            conn.query("SELECT componentes.id_componente, componentes.numero, componentes.nombre nombre_componente, partidas.item, partidas.descripcion descripcion_partida, actividades.nombre nombre_actividad, avanceactividades.descripcion descripcion_actividad, avanceactividades.observacion, DATE(avanceactividades.fecha) fecha, avanceactividades.valor, partidas.costo_unitario, avanceactividades.valor * partidas.costo_unitario parcial FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida RIGHT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE componentes.Fichas_id_ficha = ? and avanceactividades.historialEstados_id_historialEstado =? and avanceactividades.fecha<? ORDER BY componentes.id_componente , avanceactividades.fecha DESC , partidas.id_partida",[id_ficha,id_historial,fecha],(err,res)=>{
+            conn.query("SELECT componentes.id_componente, componentes.numero, componentes.nombre nombre_componente, partidas.item, partidas.descripcion descripcion_partida, actividades.nombre nombre_actividad, avanceactividades.descripcion descripcion_actividad, avanceactividades.observacion, DATE(avanceactividades.fecha) fecha, avanceactividades.valor, partidas.costo_unitario, avanceactividades.valor * partidas.costo_unitario parcial FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida RIGHT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE componentes.Fichas_id_ficha = ? and avanceactividades.fecha<? ORDER BY componentes.id_componente , avanceactividades.fecha DESC , partidas.id_partida",[id_ficha,fecha],(err,res)=>{
                 if(err){
                     console.log(err);
                     callback(err.code);
@@ -219,8 +219,7 @@ userModel.CuadroMetradosEjecutados = (id_ficha,id_historial,fecha,callback)=>{
                         
                         fila.fecha = fila.fecha.getDate()+" de "+month[fila.fecha.getMonth()]+" del "+fila.fecha.getFullYear()
                         //calculo delavance por componente y fecha
-                        componente_avance_valor +=fila.parcial
-                        fecha_avance_valor +=fila.parcial
+                        
 
                         if(fila.id_componente != lastIdComponente){
                             if(i != 0 ){
@@ -231,17 +230,18 @@ userModel.CuadroMetradosEjecutados = (id_ficha,id_historial,fecha,callback)=>{
                                 componente_avance_valor = 0
                                 fecha_avance_valor = 0
                             }   
+                            
 
                             
                             componente.id_componente = fila.id_componente
                             componente.numero = fila.numero
                             componente.nombre_componente = fila.nombre_componente
-                            componente.componente_avance_valor = 0
+                            componente.componente_avance_valor = 9999
                             componente.fechas = [
                                 {
                                     "fecha": fila.fecha,
                                     
-                                    "fecha_avance_valor":0,
+                                    "fecha_avance_valor":9999,
                                     "historial":[
                                         {
                                             "item" : fila.item,
@@ -256,17 +256,18 @@ userModel.CuadroMetradosEjecutados = (id_ficha,id_historial,fecha,callback)=>{
                                     ]
                                 }
                                 
-                            ]                         
+                            ]  
+                                          
                             
                         }
                         else{
                             if(fila.fecha != lastFecha){
-                                componente.fechas[componente.fechas.length-1].fecha_avance_valor = fecha_avance_valor
+                                componente.fechas[componente.fechas.length-1].fecha_avance_valor = formato(fecha_avance_valor)
+                                fecha_avance_valor=0
                                 componente.fechas.push(
                                     {
-                                        "fecha": fila.fecha,
-                                        
-                                        "fecha_avance_valor":0,
+                                        "fecha": fila.fecha,                                        
+                                        "fecha_avance_valor":9999,
                                         "historial":[
                                             {
                                                 "item" : fila.item,
@@ -282,6 +283,7 @@ userModel.CuadroMetradosEjecutados = (id_ficha,id_historial,fecha,callback)=>{
                                     }
                                     
                                 )   
+                                fecha_avance_valor = 0
                             }else{
                                 componente.fechas[componente.fechas.length-1].historial.push(
                                     {
@@ -296,10 +298,13 @@ userModel.CuadroMetradosEjecutados = (id_ficha,id_historial,fecha,callback)=>{
                                     }
                                 )
                             }
-
-                            
+                                                     
 
                         }
+                        componente_avance_valor +=fila.parcial
+                        fecha_avance_valor +=fila.parcial  
+                        
+
                         lastIdComponente = fila.id_componente
                         lastFecha = fila.fecha
 
@@ -308,6 +313,7 @@ userModel.CuadroMetradosEjecutados = (id_ficha,id_historial,fecha,callback)=>{
 
                     componente.componente_avance_valor = formato(componente_avance_valor)
                     componente.fechas[componente.fechas.length-1].fecha_avance_valor = formato(fecha_avance_valor)
+                    
                     componentes.push(componente);
                     
                     callback(null,componentes);
