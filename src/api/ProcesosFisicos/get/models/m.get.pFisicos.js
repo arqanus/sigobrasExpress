@@ -386,6 +386,14 @@ userModel.getActividades = (id_partida,callback)=>{
                             fila.actividad_metrados_costo_saldo = ""
                             fila.actividad_porcentaje = ""
                             fila.unidad_medida = ""
+                        }else if(fila.parcial_actividad <0){
+                            fila.parcial_actividad = 0
+                            fila.actividad_avance_metrado = 0
+                            fila.actividad_avance_costo = 0
+                            fila.actividad_metrados_saldo = 0
+                            fila.actividad_metrados_costo_saldo = 0
+                            fila.actividad_porcentaje = 0
+                            fila.unidad_medida = 0
                         }else{
                             fila.metrado_actividad = formato(fila.metrado_actividad )
                             fila.costo_unitario = formato(fila.costo_unitario )                            
