@@ -344,11 +344,8 @@ userModel.getPartidasMayorMetradoAvance= (id_partida,callback)=>{
                 if(err){
                     console.log(err);
                     callback(err.code);
-                }else if(res.length == 0){
-                    console.log("vacio");                    
-                    callback("vacio");
-                    conn.destroy()
-                }else{                             
+                }else {      
+                    res = res||{}
                     callback(null,res[0]);
                     conn.destroy()
                 }
