@@ -71,13 +71,36 @@ userModel.getComponentesPgerenciales = (id_ficha,callback)=>{
                                         callback("vacio"); 
                                         conn.destroy() 
                                 }else{      
-                                        
+                                        var costo_directo={
+                                                "numero": "",
+                                                "nombre": "COSTO DIRECTO",
+                                                "presupuesto": 0,
+                                                "comp_avance": 0,
+                                                "porcentaje_avance_componentes": 0
+                                        }
                                         for (let i = 0; i < res.length; i++) {
                                                 const fila = res[i];
+
+                                                //calculo de costo directo
+                                                costo_directo.presupuesto+=fila.presupuesto
+                                                costo_directo.comp_avance+=fila.comp_avance
+                                                costo_directo.porcentaje_avance_componentes+=fila.porcentaje_avance_componentes
+
+                                                //formateo
                                                 fila.presupuesto = formato(fila.presupuesto)         
                                                 fila.comp_avance = formato(fila.comp_avance)   
-                                                fila.porcentaje_avance_componentes = formato(fila.porcentaje_avance_componentes)   
+                                                fila.porcentaje_avance_componentes = formato(fila.porcentaje_avance_componentes)
+                                                
+                                                
                                         }
+                                        costo_directo.porcentaje_avance_componentes = costo_directo.comp_avance/costo_directo.presupuesto *100
+                                        costo_directo.presupuesto = formato(costo_directo.presupuesto)
+                                        costo_directo.comp_avance = formato(costo_directo.comp_avance)
+                                        costo_directo.porcentaje_avance_componentes = formato(costo_directo.porcentaje_avance_componentes)
+                                   
+                                        res.push(
+                                                costo_directo
+                                        )
                                         callback(null,res);
                                         conn.destroy()
                                 }
