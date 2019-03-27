@@ -36,7 +36,7 @@ module.exports = function(app){
 			res.json("null");		
 		}else{
 
-			User.getInformeDataGeneral(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha,(err,data)=>{							
+			User.getInformeDataGeneral(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha_final,(err,data)=>{							
 				if(err){ res.status(204).json(err);}
 				else{
 					res.json(data);	
@@ -51,7 +51,7 @@ module.exports = function(app){
 		if(req.body.id_ficha == null){
 			res.json("null");		
 		}else{
-			User.CuadroMetradosEjecutados(req.body.id_ficha,req.body.fecha,(err,data)=>{							
+			User.CuadroMetradosEjecutados(req.body.id_ficha,req.body.fecha_final,(err,data)=>{							
 				if(err){ res.status(204).json(err);}
 				else{
 					res.json(data);	
@@ -66,7 +66,7 @@ module.exports = function(app){
 		if(req.body.id_ficha == null){
 			res.json("null");		
 		}else{
-			User.valorizacionPrincipal(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha,(err,data)=>{							
+			User.valorizacionPrincipal(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha_final,(err,data)=>{							
 				if(err){ res.status(204).json(err);}
 				else{
 					res.json(data);	
@@ -81,10 +81,10 @@ module.exports = function(app){
 		if(req.body.id_ficha == null){
 			res.json("null");		
 		}else{
-			User.getCostosIndirectos(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha,(err,costosIndirectos)=>{							
+			User.getCostosIndirectos(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha_final,(err,costosIndirectos)=>{							
 					if(err){ res.status(204).json(err);}
 					else{
-						User.resumenValorizacionPrincipal(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha,costosIndirectos,(err,data)=>{							
+						User.resumenValorizacionPrincipal(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha_final,costosIndirectos,(err,data)=>{							
 							if(err){ res.status(204).json(err);}
 							else{
 								res.json(data);	
@@ -103,7 +103,7 @@ module.exports = function(app){
 		if(req.body.id_ficha == null){
 			res.json("null");		
 		}else{
-			User.getValGeneralExtras(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha,'Mayor Metrado',(err,data)=>{							
+			User.getValGeneralExtras(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha_final,'Mayor Metrado',(err,data)=>{							
 					if(err){ res.status(204).json(err);}
 					else{
 						res.json(data)
@@ -119,7 +119,7 @@ module.exports = function(app){
 		if(req.body.id_ficha == null){
 			res.json("null");		
 		}else{
-			User.getValGeneralExtras(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha,'Partida Nueva',(err,data)=>{							
+			User.getValGeneralExtras(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha_final,'Partida Nueva',(err,data)=>{							
 					if(err){ res.status(204).json(err);}
 					else{
 						res.json(data)
@@ -159,7 +159,7 @@ module.exports = function(app){
 		if(req.body.id_ficha == null){
 			res.json("null");		
 		}else{
-			User.avanceMensualComparativoPresupuesto(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha,(err,data)=>{							
+			User.avanceMensualComparativoPresupuesto(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha_final,(err,data)=>{							
 				if(err){ res.status(204).json(err);}
 				else{
 					res.json(data)
