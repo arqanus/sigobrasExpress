@@ -937,6 +937,13 @@ userModel.getcronograma = (id_ficha,callback)=>{
                     var porcentaje_financiero_acumulado = 0
                     var porcentaje_fisico_acumulado = 0
                     ///ac tres arrays de la consulta
+                    var actual = false
+                    var d = new Date();
+                    var mes = month[d.getMonth()];
+                    var anyo = d.getFullYear()
+                    var Anyo_Mes = mes+" "+anyo
+                    console.log(Anyo_Mes);
+                    
                     for (let i = 0; i < res.length; i++) {
                         const element = res[i];
                         porcentaje_programado_acumulado += element.porcentaje_programado
@@ -944,11 +951,16 @@ userModel.getcronograma = (id_ficha,callback)=>{
                         porcentaje_fisico_acumulado += element.porcentaje_fisico
                         
                         listaMes.push(element.Anyo_Mes)
-                        porcentaje_programado.push(Number(formato(porcentaje_programado_acumulado)))
-                        porcentaje_financiero.push(Number(formato(porcentaje_financiero_acumulado)))
-                        porcentaje_fisico.push(Number(formato(porcentaje_fisico_acumulado)))
-
+                        console.log(Anyo_Mes,element.Anyo_Mes);
                         
+                        porcentaje_programado.push(Number(formato(porcentaje_programado_acumulado)))
+                        if(!actual){
+                            porcentaje_financiero.push(Number(formato(porcentaje_financiero_acumulado)))
+                            porcentaje_fisico.push(Number(formato(porcentaje_fisico_acumulado)))
+                        }
+                        if(Anyo_Mes.toUpperCase() == element.Anyo_Mes.toUpperCase()){
+                            actual = true
+                        }
                     }
 
                     var cronogramamensual = {
@@ -958,10 +970,7 @@ userModel.getcronograma = (id_ficha,callback)=>{
                         "porcentaje_fisico":porcentaje_fisico
                     }
 
-                   /* console.log()*/
-                    //hasta aqui
                    
-                    // console.log("res",listaMes); 
                     callback(null,cronogramamensual);
                     conn.destroy()
                 }
