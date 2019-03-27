@@ -43,11 +43,12 @@ module.exports = function(app){
 	
 		
 	}) 	
-	app.post('/postAvanceFinanciero',(req,res)=>{
+	app.put('/postAvanceFinanciero',(req,res)=>{
 		if(req.body.id_ficha == null){
 			res.json("null");	
 		}else{
-			 //vist del resultado
+			 console.log("body",req.body);
+				
 			User.postAvanceFinanciero(req.body.financieroEjecutado,req.body.id_ficha,req.body.mes,(err,data)=>{							
 				if(err){ res.status(204).json(err);}
 				else{
