@@ -36,10 +36,12 @@ userModel.getId_acceso = (data,callback)=>{
                 if(error) {
                     console.log(error);                    
                     callback(error);
+                    conn.destroy()
                 }
                 else if(res.length == 0){
                     console.log("vacio");                    
-                    callback("vacio");
+                    callback(null,"vacio");
+                    conn.destroy()
                 
                 }else{                    
                     console.log("res",res); 
