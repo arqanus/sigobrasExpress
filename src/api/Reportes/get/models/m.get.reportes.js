@@ -984,17 +984,15 @@ userModel.getcronogramadinero = (id_ficha,callback)=>{
                     var programado_dinero = []
                     var financiero_dinero = []
                     var fisico_dinero = []
+                    var acumulado_programado_dinero = 0
                     ///ac tres arrays de la consulta
                     for (let i = 0; i < res.length; i++) {
                         const element = res[i];
-                        
+                        acumulado_programado_dinero +=element.programado_dinero
                         listaMes.push(element.Anyo_Mes)
-                        programado_dinero.push(element.programado_dinero)
-                        financiero_dinero.push(element.financiero_dinero)
-                        
-                        fisico_dinero.push(formato(element.fisico_dinero))
-                        
-                        
+                        programado_dinero.push(acumulado_programado_dinero)
+                        financiero_dinero.push(element.financiero_dinero)                        
+                        fisico_dinero.push(element.fisico_dinero)              
                     }
 
                     var cronograma = {
