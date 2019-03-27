@@ -967,6 +967,57 @@ userModel.getcronograma = (id_ficha,callback)=>{
         }                
     })
 } 
+userModel.getcronogramadinero = (id_ficha,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){                        
+            callback(err);
+        }
+        else{     
+            //insertar datos query
+            conn.query("SELECT fichas_id_ficha, porcentaje_programado, porcentaje_financiero, t1.fecha, t1.Anyo_Mes, porcentaje_fisico FROM (SELECT fichas_id_ficha, programado porcentaje_programado, financieroEjecutado porcentaje_financiero, DATE_ADD(fichas.fecha_inicial_real, INTERVAL (mes - 1) MONTH) Fecha, DATE_FORMAT(DATE_ADD(fichas.fecha_inicial_real, INTERVAL mes - 1 MONTH), '%M %Y ') Anyo_Mes FROM cronogramamensual LEFT JOIN fichas ON fichas.id_ficha = cronogramamensual.fichas_id_ficha WHERE fichas_id_ficha = ?) t1 LEFT JOIN (SELECT id_ficha, SUM(valor * costo_unitario) / fichas.g_total_presu * 100 porcentaje_fisico, avanceactividades.fecha, DATE_FORMAT(avanceactividades.fecha, '%M %Y ') Anyo_Mes FROM fichas LEFT JOIN componentes ON componentes.Fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE fichas.id_ficha = ? GROUP BY MONTH(avanceactividades.fecha)) t2 ON t1.Anyo_Mes = t2.Anyo_Mes",[id_ficha,id_ficha],(error,res)=>{ 
+                if(error){
+                    console.log(error);                    
+                    callback(error.code);
+                }else{
+                    var listaMes = []
+                    var programado_dinero = []
+                    var financiero_dinero = []
+                    var fisico_dinero = []
+                    ///ac tres arrays de la consulta
+                    for (let i = 0; i < res.length; i++) {
+                        const element = res[i];
+                        
+                        listaMes.push(element.Anyo_Mes)
+                        programado_dinero.push(element.porcentaje_programado)
+                        financiero_dinero.push(element.porcentaje_financiero)
+                        if(element.porcentaje_fisico != null){
+                            fisico_dinero.push(Number(formato(element.porcentaje_fisico)))
+                        }
+                        
+                    }
+
+                    var cronograma = {
+                        "mes":listaMes,
+                        "programado_dinero":programado_dinero,
+                        "financiero_dinero":financiero_dinero,
+                        "fisico_dinero":fisico_dinero
+                    }
+
+                   /* console.log()*/
+                    //hasta aqui
+                   
+                    // console.log("res",listaMes); 
+                    callback(null,cronograma);
+                    conn.destroy()
+                }
+                
+                
+                
+            })
+        }                
+    })
+} 
 userModel.getinformeControlEjecucionObras = (id_ficha,callback)=>{    
     pool.getConnection(function(err ,conn){
         if(err){ 
