@@ -924,7 +924,7 @@ userModel.getcronograma = (id_ficha,callback)=>{
         }
         else{     
             //insertar datos query
-            conn.query("SELECT fichas_id_ficha, porcentaje_programado, porcentaje_financiero, t1.fecha, t1.Anyo_Mes, porcentaje_fisico FROM (SELECT fichas_id_ficha, programado porcentaje_programado, financieroEjecutado porcentaje_financiero, DATE_ADD(fichas.fecha_inicial_real, INTERVAL (mes - 1) MONTH) Fecha, DATE_FORMAT(DATE_ADD(fichas.fecha_inicial_real, INTERVAL mes - 1 MONTH), '%M %Y ') Anyo_Mes FROM cronogramamensual LEFT JOIN fichas ON fichas.id_ficha = cronogramamensual.fichas_id_ficha WHERE fichas_id_ficha = ?) t1 LEFT JOIN (SELECT id_ficha, SUM(valor * costo_unitario) / fichas.g_total_presu * 100 porcentaje_fisico, avanceactividades.fecha, DATE_FORMAT(avanceactividades.fecha, '%M %Y ') Anyo_Mes FROM fichas LEFT JOIN componentes ON componentes.Fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE fichas.id_ficha = ? GROUP BY MONTH(avanceactividades.fecha)) t2 ON t1.Anyo_Mes = t2.Anyo_Mes",[id_ficha,id_ficha],(error,res)=>{ 
+            conn.query("SELECT cronogramamensual.fichas_id_ficha, DATE_FORMAT(cronogramamensual.mes, '%M %Y') Anyo_Mes, cronogramamensual.programado porcentaje_programado, cronogramamensual.financieroEjecutado porcentaje_financiero, fisico.avance porcentaje_fisico FROM cronogramamensual LEFT JOIN (SELECT componentes.fichas_id_ficha, DATE_FORMAT(avanceactividades.fecha, '%M %Y ') Anyo_Mes, SUM(valor * costo_unitario) avance FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad GROUP BY fichas_id_ficha , DATE_FORMAT(avanceactividades.fecha, '%M %Y ')) fisico ON fisico.fichas_id_ficha = cronogramamensual.fichas_id_ficha AND DATE_FORMAT(cronogramamensual.mes, '%M %Y') = fisico.Anyo_Mes where cronogramamensual.fichas_id_ficha = ?",[id_ficha,id_ficha],(error,res)=>{ 
                 if(error){
                     console.log(error);                    
                     callback(error.code);
@@ -933,16 +933,21 @@ userModel.getcronograma = (id_ficha,callback)=>{
                     var porcentaje_programado = []
                     var porcentaje_financiero = []
                     var porcentaje_fisico = []
+                    var porcentaje_programado_acumulado = 0
+                    var porcentaje_financiero_acumulado = 0
+                    var porcentaje_fisico_acumulado = 0
                     ///ac tres arrays de la consulta
                     for (let i = 0; i < res.length; i++) {
                         const element = res[i];
+                        porcentaje_programado_acumulado += element.porcentaje_programado
+                        porcentaje_financiero_acumulado += element.porcentaje_financiero
+                        porcentaje_fisico_acumulado += element.porcentaje_fisico
                         
                         listaMes.push(element.Anyo_Mes)
-                        porcentaje_programado.push(element.porcentaje_programado)
-                        porcentaje_financiero.push(element.porcentaje_financiero)
-                        if(element.porcentaje_fisico != null){
-                            porcentaje_fisico.push(Number(formato(element.porcentaje_fisico)))
-                        }
+                        porcentaje_programado.push(porcentaje_programado_acumulado)
+                        porcentaje_financiero.push(porcentaje_financiero_acumulado)
+                        porcentaje_fisico.push(porcentaje_fisico_acumulado)   
+
                         
                     }
 
