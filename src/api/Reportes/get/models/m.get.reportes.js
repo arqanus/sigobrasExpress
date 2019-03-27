@@ -944,9 +944,9 @@ userModel.getcronograma = (id_ficha,callback)=>{
                         porcentaje_fisico_acumulado += element.porcentaje_fisico
                         
                         listaMes.push(element.Anyo_Mes)
-                        porcentaje_programado.push(formato(porcentaje_programado_acumulado))
-                        porcentaje_financiero.push(formato(porcentaje_financiero_acumulado))
-                        porcentaje_fisico.push(formato(porcentaje_fisico_acumulado))  
+                        porcentaje_programado.push(Number(formato(porcentaje_programado_acumulado)))
+                        porcentaje_financiero.push(Number(formato(porcentaje_financiero_acumulado)))
+                        porcentaje_fisico.push(Number(formato(porcentaje_fisico_acumulado)))
 
                         
                     }
