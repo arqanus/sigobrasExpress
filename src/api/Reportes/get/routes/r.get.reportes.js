@@ -36,7 +36,7 @@ module.exports = function(app){
 			res.json("null");		
 		}else{
 
-			User.getInformeDataGeneral(req.body.id_ficha,req.body.historialestados_id_historialestado,req.body.fecha,(err,data)=>{							
+			User.getInformeDataGeneral(req.body.id_ficha,req.body.fecha,(err,data)=>{							
 				if(err){ res.status(204).json(err);}
 				else{
 					res.json(data);	
@@ -51,7 +51,7 @@ module.exports = function(app){
 		if(req.body.id_ficha == null){
 			res.json("null");		
 		}else{
-			User.CuadroMetradosEjecutados(req.body.id_ficha,req.body.historialestados_id_historialestado,req.body.fecha,(err,data)=>{							
+			User.CuadroMetradosEjecutados(req.body.id_ficha,req.body.fecha,(err,data)=>{							
 				if(err){ res.status(204).json(err);}
 				else{
 					res.json(data);	
@@ -84,7 +84,7 @@ module.exports = function(app){
 			User.getCostosIndirectos(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha,(err,costosIndirectos)=>{							
 					if(err){ res.status(204).json(err);}
 					else{
-						User.resumenValorizacionPrincipal(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha,req.body.historialestados_id_historialestado,costosIndirectos,(err,data)=>{							
+						User.resumenValorizacionPrincipal(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha,costosIndirectos,(err,data)=>{							
 							if(err){ res.status(204).json(err);}
 							else{
 								res.json(data);	
