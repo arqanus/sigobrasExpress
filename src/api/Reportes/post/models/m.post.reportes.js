@@ -30,7 +30,7 @@ userModel.postcronogramamensual = (data,callback)=>{
         }
         else{     
             //insertar datos query
-            conn.query("insert into cronogramamensual (fichas_id_ficha,mes,programado,financieroEjecutado)values ?",[data],(error,res)=>{ 
+            conn.query("insert into cronogramamensual (fichas_id_ficha,mes,programado)values ?",[data],(error,res)=>{ 
                 if(error){
                     console.log(error);                    
                     callback(error.code);
