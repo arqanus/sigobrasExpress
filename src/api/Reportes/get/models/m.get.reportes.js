@@ -157,13 +157,13 @@ userModel.getPeriodsByAnyo  = (id_ficha,anyo,callback)=>{
                 
     })
 }
-userModel.getInformeDataGeneral  = (id_ficha,id_historial,fecha,callback)=>{    
+userModel.getInformeDataGeneral  = (id_ficha,fecha_inicial,fecha,callback)=>{    
     pool.getConnection(function(err ,conn){
         if(err){ 
             callback(err);
         }        
         else{
-            conn.query("SELECT fichas.id_ficha, UPPER(fichas.g_meta) g_meta, fichas.g_total_presu presupuesto_general, UPPER(MONTHNAME(NOW())) mes, UPPER(fichas.tiempo_ejec) plazo_de_ejecucion, tb_avance_actual.avance_actual, tb_avance_actual.avance_actual_valor, avance_acumulado.avance_acumulado, avance_acumulado.avance_acumulado_valor, UPPER(fichas.g_local_reg) region, UPPER(fichas.g_local_prov) provincia, UPPER(fichas.g_local_dist) distrito, UPPER(COALESCE(fichas.lugar, '')) lugar, UPPER(COALESCE(residente.usuario, '')) residente, UPPER(COALESCE(supervisor.usuario, '')) supervisor, tb_avance_actual.avance_actual_valor / fichas.g_total_presu * 100 porcentaje_avance_fisico, avance_acumulado.avance_acumulado_valor / fichas.g_total_presu * 100 porcentaje_avance_acumulado FROM fichas LEFT JOIN (SELECT id_ficha, SUM(valor) avance_acumulado, SUM(valor * costo_unitario) avance_acumulado_valor FROM fichas LEFT JOIN componentes ON componentes.Fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.fecha <= ? and avanceactividades.historialEstados_id_historialEstado<=? GROUP BY fichas.id_ficha) avance_acumulado ON avance_acumulado.id_ficha = fichas.id_ficha LEFT JOIN (SELECT id_ficha, SUM(valor) avance_actual, SUM(valor * costo_unitario) avance_actual_valor FROM fichas LEFT JOIN componentes ON componentes.Fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE MONTH(?) = MONTH(avanceactividades.fecha) AND YEAR(?) = YEAR(avanceactividades.fecha) and avanceactividades.historialEstados_id_historialEstado = ? GROUP BY fichas.id_ficha ) tb_avance_actual ON tb_avance_actual.id_ficha = fichas.id_ficha LEFT JOIN (SELECT fichas_has_accesos.Fichas_id_ficha, CONCAT(usuarios.nombre, ' ', usuarios.apellido_paterno, ' ', usuarios.apellido_materno) usuario FROM fichas_has_accesos LEFT JOIN accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso LEFT JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo WHERE cargos.nombre = 'residente' GROUP BY fichas_has_accesos.Fichas_id_ficha) residente ON residente.Fichas_id_ficha = fichas.id_ficha LEFT JOIN (SELECT fichas_has_accesos.Fichas_id_ficha, CONCAT(usuarios.nombre, ' ', usuarios.apellido_paterno, ' ', usuarios.apellido_materno) usuario FROM fichas_has_accesos LEFT JOIN accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso LEFT JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo WHERE cargos.nombre = 'supervisor' GROUP BY fichas_has_accesos.Fichas_id_ficha) supervisor ON supervisor.Fichas_id_ficha = fichas.id_ficha WHERE fichas.id_ficha = ?",[fecha,id_historial,fecha,fecha,id_historial,id_ficha],(err,res)=>{ 
+            conn.query("SELECT fichas.id_ficha, UPPER(fichas.g_meta) g_meta, fichas.g_total_presu presupuesto_general, UPPER(MONTHNAME(?)) mes, UPPER(fichas.tiempo_ejec) plazo_de_ejecucion, presupuesto.presupuesto costo_directo, tb_avance_actual.avance_actual, tb_avance_actual.avance_actual_valor, tb_avance_actual.avance_actual_valor / presupuesto.presupuesto* 100 porcentaje_avance_fisico, avance_acumulado.avance_acumulado, avance_acumulado.avance_acumulado_valor, avance_acumulado.avance_acumulado_valor / presupuesto.presupuesto * 100 porcentaje_avance_acumulado, UPPER(fichas.g_local_reg) region, UPPER(fichas.g_local_prov) provincia, UPPER(fichas.g_local_dist) distrito, UPPER(COALESCE(fichas.lugar, '')) lugar, UPPER(COALESCE(residente.usuario, '')) residente, UPPER(COALESCE(supervisor.usuario, '')) supervisor FROM fichas LEFT JOIN (SELECT id_ficha, SUM(valor) avance_acumulado, SUM(valor * costo_unitario) avance_acumulado_valor FROM fichas LEFT JOIN componentes ON componentes.Fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.fecha <= ? GROUP BY fichas.id_ficha) avance_acumulado ON avance_acumulado.id_ficha = fichas.id_ficha LEFT JOIN (SELECT id_ficha, SUM(valor) avance_actual, SUM(valor * costo_unitario) avance_actual_valor FROM fichas LEFT JOIN componentes ON componentes.Fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.fecha>=? and avanceactividades.fecha <= ? GROUP BY fichas.id_ficha) tb_avance_actual ON tb_avance_actual.id_ficha = fichas.id_ficha left join( SELECT componentes.fichas_id_ficha, componentes.id_componente, SUM(componentes.presupuesto) presupuesto FROM componentes GROUP BY componentes.fichas_id_ficha) Presupuesto on presupuesto.fichas_id_ficha = fichas.id_ficha LEFT JOIN (SELECT fichas_has_accesos.Fichas_id_ficha, CONCAT(usuarios.nombre, ' ', usuarios.apellido_paterno, ' ', usuarios.apellido_materno) usuario FROM fichas_has_accesos LEFT JOIN accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso LEFT JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo WHERE cargos.nombre = 'residente' GROUP BY fichas_has_accesos.Fichas_id_ficha) residente ON residente.Fichas_id_ficha = fichas.id_ficha LEFT JOIN (SELECT fichas_has_accesos.Fichas_id_ficha, CONCAT(usuarios.nombre, ' ', usuarios.apellido_paterno, ' ', usuarios.apellido_materno) usuario FROM fichas_has_accesos LEFT JOIN accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso LEFT JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo WHERE cargos.nombre = 'supervisor' GROUP BY fichas_has_accesos.Fichas_id_ficha) supervisor ON supervisor.Fichas_id_ficha = fichas.id_ficha WHERE fichas.id_ficha = ?",[fecha,fecha,fecha_inicial,fecha,id_ficha],(err,res)=>{ 
                 if(err){
                     console.log(err);                    
                     callback(err.code);                 
@@ -194,7 +194,7 @@ userModel.getInformeDataGeneral  = (id_ficha,id_historial,fecha,callback)=>{
     })
 }
 //6.1 cuadro demetradosEJECUTADOS
-userModel.CuadroMetradosEjecutados = (id_ficha,id_historial,fecha,callback)=>{
+userModel.CuadroMetradosEjecutados = (id_ficha,fecha,callback)=>{
     
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
@@ -415,7 +415,7 @@ userModel.getCostosIndirectos  = (id_ficha,fecha_inicial,fecha_final,callback)=>
                 
     })
 }
-userModel.resumenValorizacionPrincipal  = (id_ficha,fecha_inicial,fecha_final,id_historial,costosIndirectos,callback)=>{    
+userModel.resumenValorizacionPrincipal  = (id_ficha,fecha_inicial,fecha_final,costosIndirectos,callback)=>{    
     pool.getConnection(function(err ,conn){
         if(err){ 
             callback(err);
@@ -498,7 +498,7 @@ userModel.resumenValorizacionPrincipal  = (id_ficha,fecha_inicial,fecha_final,id
                     
                     var datatemp = 
                     {
-                        mes:month[new Date().getMonth()],
+                        
                         componentes:res,
                         costosDirecto:[
                             {
@@ -707,76 +707,76 @@ userModel.resumenAvanceFisicoPartidasObraMes = (meses,id_ficha,callback)=>{
             }
             query = query.concat("WHERE fichas.id_ficha = ? GROUP BY partidas.id_partida ORDER BY componentes.id_componente,partidas.id_partida")
             
-            callback(null,query)
-            // conn.query(query,id_ficha,(err,res)=>{
-            //     if(err){
-            //         console.log(err);                    
-            //         callback(err.code);                
-            //     }
-            //     else if(res.length == 0){
-            //         callback(null,"vacio");   
-            //     }else{  
-            //         // var dataTotal = [
-            //         //     cabeceras
-            //         // ]    
-            //         var componentes = []  
-            //         var componente = {}
-            //         var lastIdComponente = -1
-            //         for (let i = 0; i < res.length; i++) {
-            //             const fila = res[i];
-            //             if(lastIdComponente != fila.id_componente){
-            //                 if(i >0){
-            //                     componentes.push(componente)
-            //                     componente = {}
-            //                     console.log("idcomponente",componente.numero);
-            //                     console.log("numero",componentes[0].numero);
-            //                     // callback(null,componentes);s
+            
+            conn.query(query,id_ficha,(err,res)=>{
+                if(err){
+                    console.log(err);                    
+                    callback(err.code);                
+                }
+                else if(res.length == 0){
+                    callback(null,"vacio");   
+                }else{  
+                    // var dataTotal = [
+                    //     cabeceras
+                    // ]    
+                    var componentes = []  
+                    var componente = {}
+                    var lastIdComponente = -1
+                    for (let i = 0; i < res.length; i++) {
+                        const fila = res[i];
+                        if(lastIdComponente != fila.id_componente){
+                            if(i >0){
+                                componentes.push(componente)
+                                componente = {}
+                                console.log("idcomponente",componente.numero);
+                                console.log("numero",componentes[0].numero);
+                                // callback(null,componentes);s
                                 
-            //                 }
-            //                 componente.numero =  fila.numero
-            //                 componente.nombre =  fila.nombre
-            //                 componente.presupuesto =  fila.presupuesto
-            //                 componente.partidas = [
-            //                     cabeceras,
-            //                     [
-            //                         fila.item,
-            //                         fila.descripcion,
-            //                         fila.unidad_medida,
-            //                         fila.metrado,
-            //                         fila.r0,
-            //                         fila.r1,
-            //                         fila.avance_acumulado,            
-            //                         fila.saldo
-            //                     ]                                
-            //                 ]
+                            }
+                            componente.numero =  fila.numero
+                            componente.nombre =  fila.nombre
+                            componente.presupuesto =  fila.presupuesto
+                            componente.partidas = [
+                                cabeceras,
+                                [
+                                    fila.item,
+                                    fila.descripcion,
+                                    fila.unidad_medida,
+                                    fila.metrado,
+                                    fila.r0,
+                                    fila.r1,
+                                    fila.avance_acumulado,            
+                                    fila.saldo
+                                ]                                
+                            ]
                          
-            //             }else{
-            //                 componente.partidas.push(
-            //                     [
-            //                         fila.item,
-            //                         fila.descripcion,
-            //                         fila.unidad_medida,
-            //                         fila.metrado,
-            //                         fila.r0,
-            //                         fila.r1,
-            //                         fila.avance_acumulado,            
-            //                         fila.saldo
-            //                     ]                                
-            //                 )
-            //             }
-            //             lastIdComponente = fila.id_componente
+                        }else{
+                            componente.partidas.push(
+                                [
+                                    fila.item,
+                                    fila.descripcion,
+                                    fila.unidad_medida,
+                                    fila.metrado,
+                                    fila.r0,
+                                    fila.r1,
+                                    fila.avance_acumulado,            
+                                    fila.saldo
+                                ]                                
+                            )
+                        }
+                        lastIdComponente = fila.id_componente
                         
                         
                           
                         
-            //         }
-            //         componentes.push(componente)
-            //         callback(null,componentes);
-            //         conn.destroy()
-            //     }
+                    }
+                    componentes.push(componente)
+                    callback(null,componentes);
+                    conn.destroy()
+                }
                 
                 
-            // })
+            })
         }
         
                 
