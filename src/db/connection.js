@@ -26,10 +26,6 @@ var pool = mysql.createPool({
     password: 'password',    
     database: 'SIGOBRAS_DB',
     connectTimeout: 10000
-    
-    
-    
-    
 });    
 connection.on('error', function(err) {
   console.log(err.code); // 'ER_BAD_DB_ERROR'
