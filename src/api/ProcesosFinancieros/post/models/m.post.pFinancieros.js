@@ -13,6 +13,7 @@ userModel.postCostosIndirectos = (data,callback)=>{
                 if(error){
                     console.log(error);                    
                     callback(error.code);
+                    conn.destroy()
                 }else{
                    
                     console.log("res",res); 
@@ -37,6 +38,32 @@ userModel.postHistorialCostosIndirectos = (data,callback)=>{
                 if(error){
                     console.log(error);                    
                     callback(error.code);
+                    conn.destroy()
+                }else{
+                   
+                    console.log("res",res); 
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }                
+    })
+}
+userModel.postAvanceFinanciero = (financieroEjecutado,id_ficha,mes,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){                        
+            callback(err);
+        }
+        else{     
+            //insertar datos query
+            conn.query("update cronogramamensual set cronogramamensual.financieroEjecutado =? where cronogramamensual.fichas_id_ficha = ? and cronogramamensual.mes = ? ",[financieroEjecutado,id_ficha,mes],(error,res)=>{ 
+                if(error){
+                    console.log(error);                    
+                    callback(error.code);
+                    conn.destroy()
                 }else{
                    
                     console.log("res",res); 
