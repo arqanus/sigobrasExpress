@@ -1,6 +1,8 @@
 const pool = require('../../../../db/connection');
 let userModel = {};
-
+function isNumber(n) {
+    return !isNaN(parseFloat(n)) && isFinite(n);
+}
 var month = new Array();
 month[0] = "Enero";
 month[1] = "Febrero";
@@ -17,6 +19,9 @@ month[11] = "Diciembre";
 function formato(data){
     
     // data = parseFloat(data)
+    if(!isNumber(data)){
+        return data
+    }
     data = Number(data)
     if(isNaN(data)){
         
@@ -395,6 +400,10 @@ userModel.getActividades = (id_partida,callback)=>{
                             fila.actividad_porcentaje = 0
                             fila.unidad_medida = 0
                         }else{
+                            fila.veces_actividad = formato(fila.veces_actividad)
+                            fila.largo_actividad = formato(fila.largo_actividad)
+                            fila.ancho_actividad = formato(fila.ancho_actividad)
+                            fila.alto_actividad = formato(fila.alto_actividad)
                             fila.metrado_actividad = formato(fila.metrado_actividad )
                             fila.costo_unitario = formato(fila.costo_unitario )                            
                             fila.parcial_actividad = formato(fila.parcial_actividad )
