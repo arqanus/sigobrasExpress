@@ -207,6 +207,20 @@ module.exports = function(app){
 		res.sendFile(path.resolve(ruta));
 		
 	});
+	app.post('/getcronogramadinero',(req,res)=>{
+		if(req.body.id_ficha == null){
+			res.json("null");		
+		}else{
+			User.getcronogramadinero(req.body.id_ficha,(err,data)=>{							
+				if(err){ res.status(204).json(err);}
+				else{
+					res.json(data)
+				}
+
+			})
+		}
+		
+	})
 
 
 }
