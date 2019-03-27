@@ -36,7 +36,7 @@ module.exports = function(app){
 			res.json("null");		
 		}else{
 
-			User.getInformeDataGeneral(req.body.id_ficha,req.body.fecha,(err,data)=>{							
+			User.getInformeDataGeneral(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha,(err,data)=>{							
 				if(err){ res.status(204).json(err);}
 				else{
 					res.json(data);	

@@ -157,7 +157,7 @@ userModel.getPeriodsByAnyo  = (id_ficha,anyo,callback)=>{
                 
     })
 }
-userModel.getInformeDataGeneral  = (id_ficha,fecha,callback)=>{    
+userModel.getInformeDataGeneral  = (id_ficha,fecha_inicial,fecha,callback)=>{    
     pool.getConnection(function(err ,conn){
         if(err){ 
             callback(err);
@@ -498,7 +498,7 @@ userModel.resumenValorizacionPrincipal  = (id_ficha,fecha_inicial,fecha_final,co
                     
                     var datatemp = 
                     {
-                        mes:month[new Date().getMonth()],
+                        
                         componentes:res,
                         costosDirecto:[
                             {
@@ -707,76 +707,76 @@ userModel.resumenAvanceFisicoPartidasObraMes = (meses,id_ficha,callback)=>{
             }
             query = query.concat("WHERE fichas.id_ficha = ? GROUP BY partidas.id_partida ORDER BY componentes.id_componente,partidas.id_partida")
             
-            callback(null,query)
-            // conn.query(query,id_ficha,(err,res)=>{
-            //     if(err){
-            //         console.log(err);                    
-            //         callback(err.code);                
-            //     }
-            //     else if(res.length == 0){
-            //         callback(null,"vacio");   
-            //     }else{  
-            //         // var dataTotal = [
-            //         //     cabeceras
-            //         // ]    
-            //         var componentes = []  
-            //         var componente = {}
-            //         var lastIdComponente = -1
-            //         for (let i = 0; i < res.length; i++) {
-            //             const fila = res[i];
-            //             if(lastIdComponente != fila.id_componente){
-            //                 if(i >0){
-            //                     componentes.push(componente)
-            //                     componente = {}
-            //                     console.log("idcomponente",componente.numero);
-            //                     console.log("numero",componentes[0].numero);
-            //                     // callback(null,componentes);s
+            
+            conn.query(query,id_ficha,(err,res)=>{
+                if(err){
+                    console.log(err);                    
+                    callback(err.code);                
+                }
+                else if(res.length == 0){
+                    callback(null,"vacio");   
+                }else{  
+                    // var dataTotal = [
+                    //     cabeceras
+                    // ]    
+                    var componentes = []  
+                    var componente = {}
+                    var lastIdComponente = -1
+                    for (let i = 0; i < res.length; i++) {
+                        const fila = res[i];
+                        if(lastIdComponente != fila.id_componente){
+                            if(i >0){
+                                componentes.push(componente)
+                                componente = {}
+                                console.log("idcomponente",componente.numero);
+                                console.log("numero",componentes[0].numero);
+                                // callback(null,componentes);s
                                 
-            //                 }
-            //                 componente.numero =  fila.numero
-            //                 componente.nombre =  fila.nombre
-            //                 componente.presupuesto =  fila.presupuesto
-            //                 componente.partidas = [
-            //                     cabeceras,
-            //                     [
-            //                         fila.item,
-            //                         fila.descripcion,
-            //                         fila.unidad_medida,
-            //                         fila.metrado,
-            //                         fila.r0,
-            //                         fila.r1,
-            //                         fila.avance_acumulado,            
-            //                         fila.saldo
-            //                     ]                                
-            //                 ]
+                            }
+                            componente.numero =  fila.numero
+                            componente.nombre =  fila.nombre
+                            componente.presupuesto =  fila.presupuesto
+                            componente.partidas = [
+                                cabeceras,
+                                [
+                                    fila.item,
+                                    fila.descripcion,
+                                    fila.unidad_medida,
+                                    fila.metrado,
+                                    fila.r0,
+                                    fila.r1,
+                                    fila.avance_acumulado,            
+                                    fila.saldo
+                                ]                                
+                            ]
                          
-            //             }else{
-            //                 componente.partidas.push(
-            //                     [
-            //                         fila.item,
-            //                         fila.descripcion,
-            //                         fila.unidad_medida,
-            //                         fila.metrado,
-            //                         fila.r0,
-            //                         fila.r1,
-            //                         fila.avance_acumulado,            
-            //                         fila.saldo
-            //                     ]                                
-            //                 )
-            //             }
-            //             lastIdComponente = fila.id_componente
+                        }else{
+                            componente.partidas.push(
+                                [
+                                    fila.item,
+                                    fila.descripcion,
+                                    fila.unidad_medida,
+                                    fila.metrado,
+                                    fila.r0,
+                                    fila.r1,
+                                    fila.avance_acumulado,            
+                                    fila.saldo
+                                ]                                
+                            )
+                        }
+                        lastIdComponente = fila.id_componente
                         
                         
                           
                         
-            //         }
-            //         componentes.push(componente)
-            //         callback(null,componentes);
-            //         conn.destroy()
-            //     }
+                    }
+                    componentes.push(componente)
+                    callback(null,componentes);
+                    conn.destroy()
+                }
                 
                 
-            // })
+            })
         }
         
                 
