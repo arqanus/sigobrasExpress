@@ -40,7 +40,7 @@ userModel.getId_acceso = (data,callback)=>{
                 }
                 else if(res.length == 0){
                     console.log("vacio");                    
-                    callback(null,"vacio");
+                    callback("vacio");
                     conn.destroy()
                 
                 }else{                    
