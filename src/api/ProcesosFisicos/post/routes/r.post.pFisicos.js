@@ -232,7 +232,7 @@ module.exports = function(app){
     
     
     
-      var dir = __dirname+'/../../../../../../imagenesActividades/'
+      var dir = __dirname+'/../../../../public/'
       if (!fs.existsSync(dir)){
         fs.mkdirSync(dir);
       }
@@ -248,7 +248,8 @@ module.exports = function(app){
             fs.mkdirSync(obraFolder);
           }  // TODO: make sure my_file and project_id exist    
           if(files.foto){
-            fs.rename(files.foto.path, obraFolder+"/"+fields.id_acceso+"_"+fields.id_actividad+"_"+datetime()+".jpg", function(err) {
+            var ruta = "/"+fields.id_acceso+"_"+fields.id_actividad+"_"+datetime()+".jpg"
+            fs.rename(files.foto.path,obraFolder+ruta , function(err) {
               if (err) next(err);
               
               User.getIdHistorial(fields.id_ficha,(err,data)=>{
@@ -259,7 +260,8 @@ module.exports = function(app){
                   var imagen = {
                 
                     "Actividades_id_actividad":fields.id_actividad,
-                    "imagen":fields.codigo_obra+"/"+fields.id_acceso+"_"+fields.id_actividad+"_"+datetime()+".jpg",
+                    "imagen":"/static/"+fields.codigo_obra+ruta,
+                    "imagenAlt":fields.codigo_obra,
                     "descripcion":"IMAGEN",
                     "observacion":"IMAGEN",                
                     "fecha":new Date(fecha()),
