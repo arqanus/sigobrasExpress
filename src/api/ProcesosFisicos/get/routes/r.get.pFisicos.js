@@ -109,10 +109,27 @@ module.exports = function(app){
 		if (req.body.id_partida == null ||req.body.id_partida == "null"||req.body.id_partida == "") {
 			res.json("null");
 		} else {
-			User.getActividadesPNuevas(req.body.id_partida,(err,data)=>{
+			User.getActividades(req.body.id_partida,(err,data)=>{
 				if(err){ res.status(204).json(err);}
 				else{
-					res.json(data);	
+                    User.getPartidasMayorMetradoAvance(req.body.id_partida,(err,mayorMetrado)=>{
+                        if(err){ res.status(204).json(err);}
+                        else{
+                            mayorMetrado = mayorMetrado||{}
+                            res.json(
+                                {
+                                    "mayor_metrado":{
+                                        "mm_avance_metrado": mayorMetrado.avance_metrado||0,
+                                        "mm_avance_costo": mayorMetrado.avance_costo||0,
+                                        "mm_metrados_saldo": mayorMetrado.metrados_saldo||0,
+                                        "mm_metrados_costo_saldo": mayorMetrado.metrados_costo_saldo||0,
+                                        "mm_porcentaje": mayorMetrado.porcentaje||0
+                                    },
+                                    "actividades":data
+                                }
+                            );
+                        }
+                    })	
 				}
 			})
 		}
