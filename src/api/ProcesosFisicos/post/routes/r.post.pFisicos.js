@@ -145,22 +145,23 @@ module.exports = function(app){
 						if(err){ res.status(204).json(err);}
 						else{
               
-              User.getPartidasbyIdActividad(id_actividad,(err,partida)=>{
-                  if(err){ res.status(204).json(err);}
-                  else{
-                    User.getActividadesbyIdActividad(id_actividad,(err,actividades)=>{
-                      if(err){ res.status(204).json(err);}
-                      else{
-                          res.json(
-                            {
-                              "partida":partida,
-                              "actividades":actividades
-                            }                                        
-                          );	
-                      }
+              User.getPartidasbyIdActividad(req.body.Actividades_id_actividad,(err,partida)=>{
+                if(err){ res.status(204).json(err);}
+                else{
+                  
+                  User.getActividadesbyIdActividad(partida[0].id_partida,(err,actividades)=>{
+                    if(err){ res.status(204).json(err);}
+                    else{
+                        res.json(
+                          {
+                            "partida":partida[0],
+                            "actividades":actividades
+                          }                                        
+                        );	
+                    }
                   })
-                  }
-              })
+                }
+            })
 						}
 					})
 				}
