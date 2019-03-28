@@ -316,6 +316,7 @@ userModel.getPartidas = (id_componente,callback)=>{
                             fila.metrados_costo_saldo = ""
                             fila.porcentaje = ""
                         }else{
+                            fila.metrado = formato(fila.metrado)
                             fila.costo_unitario = formato(fila.costo_unitario)
                             fila.parcial = formato(fila.parcial)
                             fila.avance_metrado = formato(fila.avance_metrado)
