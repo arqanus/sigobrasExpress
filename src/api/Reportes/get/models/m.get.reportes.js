@@ -1021,7 +1021,7 @@ userModel.getcronogramadinero = (id_ficha,callback)=>{
                     //hasta aqui
                    
                     // console.log("res",listaMes); 
-                    callback(null,cronograma);
+                    callback(null,res);
                     conn.destroy()
                 }
                 
