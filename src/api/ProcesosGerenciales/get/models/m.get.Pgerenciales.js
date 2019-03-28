@@ -44,6 +44,7 @@ userModel.getObras = (id_acceso,callback)=>{
                                 fila.g_total_presu = formato(fila.g_total_presu)
                                 fila.presu_avance = formato(fila.presu_avance)
                                 fila.porcentaje_avance = formato(fila.porcentaje_avance)
+                                fila.costo_directo = formato(fila.costo_directo)
                                 
                         }  
                     callback(null,res);
