@@ -1005,17 +1005,17 @@ userModel.getcronogramadinero = (id_ficha,callback)=>{
                         
 
                         listaMes.push(element.Anyo_Mes)
-                        programado_dinero.push(formato(element.programado_dinero))
-                        financiero_dinero.push(formato(element.financiero_dinero))
-                        fisico_dinero.push(formato(element.fisico_dinero))
+                        element.programado_dinero= formato(element.programado_dinero)
+                        element.financiero_dinero= formato(element.financiero_dinero)
+                        element.fisico_dinero= formato(element.fisico_dinero)
                     }
 
-                    var cronograma = {
-                        "mes":listaMes,
-                        "programado_dinero":programado_dinero,
-                        "financiero_dinero":financiero_dinero,
-                        "fisico_dinero":fisico_dinero
-                    }
+                    // var cronograma = {
+                    //     "mes":listaMes,
+                    //     "programado_dinero":programado_dinero,
+                    //     "financiero_dinero":financiero_dinero,
+                    //     "fisico_dinero":fisico_dinero
+                    // }
 
                    /* console.log()*/
                     //hasta aqui
