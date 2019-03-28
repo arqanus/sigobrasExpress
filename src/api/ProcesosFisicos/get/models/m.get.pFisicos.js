@@ -44,6 +44,7 @@ function formato(data){
 
     return data
 }
+
 userModel.getPartidasCompletas = (id_ficha,callback)=>{
     
     pool.getConnection(function(err ,conn){
@@ -574,7 +575,7 @@ userModel.getHistorial = (id_ficha,callback)=>{
                                             "nombre_actividad" : fila.nombre_actividad,
                                             "descripcion_actividad" : fila.descripcion_actividad,
                                             "observacion":fila.observacion,                 
-                                            "valor":fila.valor,
+                                            "valor":formato(fila.valor),
                                             "costo_unitario":fila.costo_unitario,
                                             "parcial":formato( fila.parcial)
                                         }
@@ -600,7 +601,7 @@ userModel.getHistorial = (id_ficha,callback)=>{
                                                 "nombre_actividad" : fila.nombre_actividad,
                                                 "descripcion_actividad" : fila.descripcion_actividad,
                                                 "observacion":fila.observacion,                 
-                                                "valor":fila.valor,
+                                                "valor":formato(fila.valor),
                                                 "costo_unitario":fila.costo_unitario,
                                                 "parcial":formato( fila.parcial)
                                             }
@@ -617,7 +618,7 @@ userModel.getHistorial = (id_ficha,callback)=>{
                                         "nombre_actividad" : fila.nombre_actividad,
                                         "descripcion_actividad" : fila.descripcion_actividad,
                                         "observacion":fila.observacion,                 
-                                        "valor":fila.valor,
+                                        "valor":formato(fila.valor),
                                         "costo_unitario":fila.costo_unitario,
                                         "parcial":formato( fila.parcial)
                                     }
