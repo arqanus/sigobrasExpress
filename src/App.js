@@ -31,6 +31,9 @@ app.use(morgan('dev'));
 	//entender jason
 app.use(bodyParser.json({limit: '200kb'}));
 morganBody(app);
+
+//static
+app.use('/static', express.static(__dirname + '/public'));
  
 //routes 
 require('./api/Admin/get/routes/r.get.obras')(app);

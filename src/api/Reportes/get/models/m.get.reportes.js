@@ -916,6 +916,30 @@ userModel.avanceComparativoDiagramaGantt = (id_ficha,fecha_inicial,fecha_final,c
 //6.10 histograma del avance de obras curva s
 //6.11 proyeccion de trabajos prosxioms mes cronograma
 //6.12 informe
+userModel.getInformeImagen = (id_ficha,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){                        
+            callback(err);
+        }
+        else{     
+            //insertar datos query
+            conn.query("(SELECT avanceactividades.imagen, avanceactividades.imagenAlt FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.imagen IS NOT NULL AND componentes.fichas_id_ficha = ? ORDER BY avanceactividades.id_AvanceActividades DESC LIMIT 1) UNION (SELECT avanceactividades.imagen, avanceactividades.imagenAlt FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.imagen IS NOT NULL AND componentes.fichas_id_ficha = ? AND avanceactividades.id_AvanceActividades != (SELECT avanceactividades.id_AvanceActividades FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.imagen IS NOT NULL AND componentes.fichas_id_ficha = ? ORDER BY avanceactividades.id_AvanceActividades DESC LIMIT 1) ORDER BY RAND() LIMIT 1)",[id_ficha,id_ficha,id_ficha],(error,res)=>{ 
+                if(error){
+                    console.log(error);                    
+                    callback(error.code);
+                }else{                   
+                   
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+                
+            })
+        }                
+    })
+}
 userModel.getcronograma = (id_ficha,callback)=>{
     
     pool.getConnection(function(err ,conn){

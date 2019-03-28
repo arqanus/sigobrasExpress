@@ -201,11 +201,18 @@ module.exports = function(app){
 		}
 		
 	})
-	app.post('/getImagen', (req, res)=>{
+	app.post('/getInformeImagen', (req, res)=>{
+		if(req.body.id_ficha == null){
+			res.json("null");		
+		}else{
+			User.getInformeImagen(req.body.id_ficha,(err,data)=>{							
+				if(err){ res.status(204).json(err);}
+				else{
+					res.json(data)
+				}
 
-		var ruta  = __dirname+'/../../../../../../imagenesActividades/'+"E001/12_31869_18-3-2019_0-40-38.jpg"
-		res.sendFile(path.resolve(ruta));
-		
+			})
+		}
 	});
 	app.post('/getcronogramadinero',(req,res)=>{
 		if(req.body.id_ficha == null){
