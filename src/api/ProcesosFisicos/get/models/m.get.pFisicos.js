@@ -315,6 +315,7 @@ userModel.getPartidas = (id_componente,callback)=>{
                             fila.metrados_saldo = ""
                             fila.metrados_costo_saldo = ""
                             fila.porcentaje = ""
+                            fila.porcentaje_negatividad = ""
                         }else{
                             fila.metrado = formato(fila.metrado)
                             fila.costo_unitario = formato(fila.costo_unitario)
@@ -326,21 +327,24 @@ userModel.getPartidas = (id_componente,callback)=>{
                             fila.porcentaje = formato(fila.porcentaje)
                         }
 
+                        if(fila.partida_duracion!=""){
+                            fila.partida_duracion = fila.partida_duracion*480
+                            if(fila.partida_duracion < 60){
+                                fila.partida_duracion = Math.round(fila.partida_duracion) + "m"
+                            }else if(fila.partida_duracion < 480){
+                                var horas = Math.trunc(fila.partida_duracion/60)+"h"
+                                var minutos = Math.round(fila.partida_duracion%60)+"m"
+                                fila.partida_duracion = horas + " "+minutos
+                            }else {
+                                var dias = Math.trunc(fila.partida_duracion/480)+"d"
+                                var residuo_dias = Math.trunc(fila.partida_duracion%480)
+                                var horas =  Math.trunc(residuo_dias/60)+"h"
+                                var minutos = Math.round(residuo_dias%60)+"m"
+                                fila.partida_duracion = dias+" "+horas + " "+minutos
+                            }   
+                        }
                         
-                        // fila.duracion_real = fila.duracion
-                        // if(fila.partida_duracion < 60){
-                        //     fila.partida_duracion = formato(fila.partida_duracion) + "min"
-                        // }else if(fila.partida_duracion < 480){
-                        //     var horas = Math.trunc(fila.partida_duracion/60)+"h"
-                        //     var minutos = formato(fila.partida_duracion%60)+"min"
-                        //     fila.partida_duracion = horas + " "+minutos
-                        // }else {
-                        //     var dias = Math.trunc(fila.partida_duracion/480)+"d"
-                        //     var residuo_dias = Math.trunc(fila.partida_duracion%480)
-                        //     var horas =  Math.trunc(residuo_dias/60)+"h"
-                        //     var minutos = formato(residuo_dias%60)+"min"
-                        //     fila.partida_duracion = dias+" "+horas + " "+minutos
-                        // }   
+                 
                         
                         
                     }
