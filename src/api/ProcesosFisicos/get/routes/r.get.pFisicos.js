@@ -75,13 +75,20 @@ module.exports = function(app){
     })
     
     app.post('/getComponentesPNuevas',(req,res)=>{
-		if (req.body.id_ficha == null ||req.body.id_ficha == "null"||req.body.id_ficha == "") {
+        if (req.body.id_ficha == null ||req.body.id_ficha == "null"||req.body.id_ficha == "") {
 			res.json("null");
 		} else {
-			User.getComponentesPNuevas(req.body.id_ficha,(err,data)=>{
+			User.getComponentesPNuevas(req.body.id_ficha,(err,componentes)=>{
 				if(err){ res.status(204).json(err);}
 				else{
-					res.json(data);	
+                    User.getPartidasPNuevas(componentes[0].id_componente,(err,partidas)=>{
+                        if(err){ res.status(204).json(err);}
+                        else{
+                            componentes[0].partidas = partidas
+                            res.json(componentes);	
+                        }
+                    })
+                   
 				}
 			})
 		}
