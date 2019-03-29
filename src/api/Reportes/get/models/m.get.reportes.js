@@ -888,6 +888,38 @@ userModel.avanceMensualComparativoPresupuesto = (id_ficha,fecha_inicial,fecha_fi
     })
 }
 //6.9 avance comparativ diagraa degantt
+userModel.getCortes = (id_ficha,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){ callback(err);}
+        else{conn.query("SELECT MIN(avanceactividades.fecha) fecha_inicial FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.id_historialEstado = avanceactividades.historialestados_id_historialEstado LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado WHERE estados.nombre = 'Corte' AND componentes.fichas_id_ficha = ? GROUP BY avanceactividades.historialEstados_id_historialEstado ",[id_ficha],(error,res)=>{ 
+                if(error){
+                    callback(error);
+                }else if(res.length == 0){
+                    console.log("vacio");                    
+                    callback(null,"vacio");
+                    conn.destroy()            
+                }else{
+                    for (let i = 0; i < res.length; i++) {
+                        const fila = res[i];
+                        if(i+1<res.length){
+                            res[i].fecha_final = res[i+1].fecha_inicial
+                        }else{
+                            res[i].fecha_final = new Date();
+                        }            
+                        
+                    }
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }
+        
+                
+    })
+}
 userModel.avanceComparativoDiagramaGantt = (id_ficha,fecha_inicial,fecha_final,callback)=>{
     
     pool.getConnection(function(err ,conn){
