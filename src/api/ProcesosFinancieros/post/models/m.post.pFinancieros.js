@@ -51,7 +51,7 @@ userModel.postHistorialCostosIndirectos = (data,callback)=>{
         }                
     })
 }
-userModel.postAvanceFinanciero = (financieroEjecutado,id_ficha,mes,callback)=>{
+userModel.postAvanceFinanciero = (data,callback)=>{
     
     pool.getConnection(function(err ,conn){
         if(err){                        
@@ -59,7 +59,7 @@ userModel.postAvanceFinanciero = (financieroEjecutado,id_ficha,mes,callback)=>{
         }
         else{     
             //insertar datos query
-            conn.query("update cronogramamensual set cronogramamensual.financieroEjecutado =? where cronogramamensual.fichas_id_ficha = ? and DATE_FORMAT(cronogramamensual.mes, '%M %Y') = ? ",[financieroEjecutado,id_ficha,mes],(error,res)=>{ 
+            conn.query("INSERT INTO cronogramamensual (fichas_id_ficha,mes, financieroEjecutado) VALUES ? ON DUPLICATE key UPDATE financieroEjecutado = VALUES(financieroEjecutado) ",[data],(error,res)=>{ 
                 if(error){
                     console.log(error);                    
                     callback(error.code);
