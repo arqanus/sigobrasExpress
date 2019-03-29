@@ -1084,7 +1084,7 @@ userModel.getFechaInicioCronograma = (id_ficha,callback)=>{
                     conn.destroy()
                 
                 }else{    
-                    callback(null,res);
+                    callback(null,res[0]);
                     conn.destroy()
                 }
                 
@@ -1108,7 +1108,7 @@ userModel.getAcumuladoFisicoAnterior = (id_ficha,fecha_inicial,callback)=>{
                     callback(error.code);
                     conn.destroy()                
                 }else{    
-                    callback(null,res);
+                    callback(null,res[0]);
                     conn.destroy()
                 }
                 

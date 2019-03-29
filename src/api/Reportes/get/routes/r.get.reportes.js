@@ -237,18 +237,17 @@ module.exports = function(app){
 				}
 				else if(err){ res.status(204).json(err);}
 				else{
-					User.getAcumuladoFisicoAnterior(req.body.id_ficha,fecha_inicio,(err,avance)=>{							
+					User.getAcumuladoFisicoAnterior(req.body.id_ficha,fecha_inicio.fecha_inicial,(err,avance)=>{							
 						if(err){ res.status(204).json(err);}
 						else{
-							User.getcronogramadinero(req.body.id_ficha,fecha_inicio,(err,cronogramadinero)=>{							
+							User.getcronogramadinero(req.body.id_ficha,fecha_inicio.fecha_inicial,(err,cronogramadinero)=>{							
 								if(err){ res.status(204).json(err);}
 								else{
 									res.json(
 										{
-											"fecha_inicio":fecha_inicio,
-											"avance_Acumulado":avance,
+											"fecha_inicial":fecha_inicio.fecha_inicial,
+											"avance_Acumulado":avance.avance,
 											"cronogramadinero":cronogramadinero
-
 										}
 									)
 								}
