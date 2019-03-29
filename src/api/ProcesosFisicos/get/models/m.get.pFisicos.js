@@ -457,7 +457,7 @@ userModel.getComponentesPNuevas = (id_ficha,callback)=>{
                     callback(error);
                 }else if(res.length == 0){
                     console.log("vacio");                    
-                    callback(null,"vacio");
+                    callback("vacio");
                     conn.destroy()
                 }else{                          
                     callback(null,res);
