@@ -231,10 +231,31 @@ module.exports = function(app){
 		if(req.body.id_ficha == null){
 			res.json("null");		
 		}else{
-			User.getcronogramadinero(req.body.id_ficha,(err,data)=>{							
-				if(err){ res.status(204).json(err);}
+			User.getFechaInicioCronograma(req.body.id_ficha,(err,fecha_inicio)=>{			
+				if(err =="vacio")				{
+					res.json(err)
+				}
+				else if(err){ res.status(204).json(err);}
 				else{
-					res.json(data)
+					User.getAcumuladoFisicoAnterior(req.body.id_ficha,fecha_inicio.fecha_inicial,(err,avance)=>{							
+						if(err){ res.status(204).json(err);}
+						else{
+							User.getcronogramadinero(req.body.id_ficha,fecha_inicio.fecha_inicial,(err,cronogramadinero)=>{							
+								if(err){ res.status(204).json(err);}
+								else{
+									res.json(
+										{
+											"fecha_inicial":fecha_inicio.fecha_inicial,
+											"avance_Acumulado":avance.avance,
+											"cronogramadinero":cronogramadinero
+										}
+									)
+								}
+				
+							})
+						}
+		
+					})
 				}
 
 			})
