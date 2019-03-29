@@ -153,7 +153,7 @@ module.exports = function(app){
                       else{
                           res.json(
                             {
-                              "partida":partida,
+                              "partida":partida[0],
                               "actividades":actividades
                             }                                        
                           );	
