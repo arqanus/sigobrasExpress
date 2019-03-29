@@ -84,6 +84,26 @@ function formatoFecha(fecha){
 	return date + "-" +(month + 1) + "-" + year;
 
 }
+function formatoNumero(data){
+    
+    // data = parseFloat(data)
+    data = Number(data)
+    if(isNaN(data)){
+        
+        data=0
+    }    
+    
+    else if(data < 1){
+        data = data.toLocaleString('es-PE', {
+            minimumFractionDigits: 4,
+            maximumFractionDigits: 4
+        })
+    }else{
+        data = data.toFixed(4)
+    } 
+
+    return data
+}
 //data cabecera
 userModel.getAnyoReportes  = (id_ficha,callback)=>{    
     pool.getConnection(function(err ,conn){
@@ -1002,21 +1022,29 @@ userModel.getcronograma = (id_ficha,callback)=>{
                     
                     for (let i = 0; i < res.length; i++) {
                         const element = res[i];
+                        
                         porcentaje_programado_acumulado += element.porcentaje_programado
                         porcentaje_financiero_acumulado += element.porcentaje_financiero
                         porcentaje_fisico_acumulado += element.porcentaje_fisico
                         
                         listaMes.push(element.Anyo_Mes)
-                        console.log(Anyo_Mes,element.Anyo_Mes);
+
+                       
                         
-                        porcentaje_programado.push(Number(formato(porcentaje_programado_acumulado)))
+                        
+                        
+                        porcentaje_programado.push(Number(formatoNumero(porcentaje_programado_acumulado)))
                         if(!actual){
-                            porcentaje_financiero.push(Number(formato(porcentaje_financiero_acumulado)))
-                            porcentaje_fisico.push(Number(formato(porcentaje_fisico_acumulado)))
+                            
+                            
+                            porcentaje_financiero.push(Number(formatoNumero(porcentaje_financiero_acumulado)))
+                            porcentaje_fisico.push(Number(formatoNumero(porcentaje_fisico_acumulado)))
                         }
                         if(Anyo_Mes.toUpperCase() == element.Anyo_Mes.toUpperCase()){
                             actual = true
                         }
+                ;
+                        
                     }
 
                     var cronogramamensual = {
