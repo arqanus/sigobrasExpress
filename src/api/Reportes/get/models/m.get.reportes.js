@@ -1065,7 +1065,7 @@ userModel.getcronograma = (id_ficha,callback)=>{
         }                
     })
 } 
-userModel.getcronogramadinero = (id_ficha,callback)=>{
+userModel.getFechaInicioCronograma = (id_ficha,callback)=>{
     
     pool.getConnection(function(err ,conn){
         if(err){                        
@@ -1073,7 +1073,60 @@ userModel.getcronogramadinero = (id_ficha,callback)=>{
         }
         else{     
             //insertar datos query
-            conn.query("SELECT cronogramamensual.fichas_id_ficha, DATE_FORMAT(cronogramamensual.mes, '%M %Y') Anyo_Mes, cronogramamensual.programado programado_dinero, cronogramamensual.financieroEjecutado financiero_dinero, fisico.avance fisico_dinero,DATE_FORMAT(cronogramamensual.mes, '%Y-%m-%d') fecha FROM cronogramamensual LEFT JOIN (SELECT componentes.fichas_id_ficha, DATE_FORMAT(avanceactividades.fecha, '%M %Y ') Anyo_Mes, SUM(valor * costo_unitario) avance FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad GROUP BY fichas_id_ficha , DATE_FORMAT(avanceactividades.fecha, '%M %Y ')) fisico ON fisico.fichas_id_ficha = cronogramamensual.fichas_id_ficha AND DATE_FORMAT(cronogramamensual.mes, '%M %Y') = fisico.Anyo_Mes where cronogramamensual.fichas_id_ficha = ?",[id_ficha],(error,res)=>{ 
+            conn.query("SELECT coalesce(fecha_corte.fecha_inicial,fichas.fecha_inicial_real) fecha_inicial FROM fichas LEFT JOIN (SELECT componentes.fichas_id_ficha, MIN(avanceactividades.fecha) fecha_inicial FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.id_historialEstado = avanceactividades.historialestados_id_historialEstado LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado WHERE estados.nombre = 'Corte' GROUP BY avanceactividades.historialEstados_id_historialEstado ORDER BY historialestados.id_historialEstado DESC LIMIT 1) fecha_corte ON fecha_corte.fichas_id_ficha = fichas.id_ficha where fichas.id_ficha = ? ",[id_ficha],(error,res)=>{ 
+                if(error){
+                    console.log(error);                    
+                    callback(error.code);
+                }
+                else if(res.length == 0){
+                    console.log("vacio");                    
+                    callback("vacio","Fecha Real No ingresada");
+                    conn.destroy()
+                
+                }else{    
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+                
+            })
+        }                
+    })
+} 
+userModel.getAcumuladoFisicoAnterior = (id_ficha,fecha_inicial,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){                        
+            callback(err);
+        }
+        else{     
+            //insertar datos query
+            conn.query("SELECT coalesce(SUM(avanceactividades.valor), 0) avance FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad where componentes.fichas_id_ficha = ? and avanceactividades.fecha < ?",[id_ficha,fecha_inicial],(error,res)=>{ 
+                if(error){
+                    console.log(error);                    
+                    callback(error.code);
+                    conn.destroy()                
+                }else{    
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+                
+            })
+        }                
+    })
+}
+userModel.getcronogramadinero = (id_ficha,fecha_inicio,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){                        
+            callback(err);
+        }
+        else{     
+            //insertar datos query
+            conn.query("SELECT cronogramamensual.fichas_id_ficha, DATE_FORMAT(cronogramamensual.mes, '%M %Y') Anyo_Mes, cronogramamensual.programado programado_dinero, cronogramamensual.financieroEjecutado financiero_dinero, fisico.avance fisico_dinero,DATE_FORMAT(cronogramamensual.mes, '%Y-%m-%d') fecha FROM cronogramamensual LEFT JOIN (SELECT componentes.fichas_id_ficha, DATE_FORMAT(avanceactividades.fecha, '%M %Y ') Anyo_Mes, SUM(valor * costo_unitario) avance FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad GROUP BY fichas_id_ficha , DATE_FORMAT(avanceactividades.fecha, '%M %Y ')) fisico ON fisico.fichas_id_ficha = cronogramamensual.fichas_id_ficha AND DATE_FORMAT(cronogramamensual.mes, '%M %Y') = fisico.Anyo_Mes where cronogramamensual.fichas_id_ficha = ? and month(cronogramamensual.mes) >= month(?)",[id_ficha,fecha_inicio],(error,res)=>{ 
                 if(error){
                     console.log(error);                    
                     callback(error.code);
@@ -1085,26 +1138,12 @@ userModel.getcronogramadinero = (id_ficha,callback)=>{
                
                     ///ac tres arrays de la consulta
                     for (let i = 0; i < res.length; i++) {
-                        const element = res[i];
-                        
-
+                        const element = res[i]; 
                         listaMes.push(element.Anyo_Mes)
                         element.programado_dinero= formato(element.programado_dinero)
                         element.financiero_dinero= formato(element.financiero_dinero)
                         element.fisico_dinero= formato(element.fisico_dinero)
                     }
-
-                    // var cronograma = {
-                    //     "mes":listaMes,
-                    //     "programado_dinero":programado_dinero,
-                    //     "financiero_dinero":financiero_dinero,
-                    //     "fisico_dinero":fisico_dinero
-                    // }
-
-                   /* console.log()*/
-                    //hasta aqui
-                   
-                    // console.log("res",listaMes); 
                     callback(null,res);
                     conn.destroy()
                 }
