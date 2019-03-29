@@ -39,7 +39,7 @@ module.exports = function(app){
 		User.postcronogramamensual(req.body,(err,data)=>{							
 			if(err){ res.status(204).json(err);}
 			else{
-				User2.getcronogramadinero(req.body[0][0],(err,data)=>{							
+				User2.getcronograma(req.body[0][0],(err,data)=>{							
 					if(err){ res.status(204).json(err);}
 					else{
 						res.json(data)
