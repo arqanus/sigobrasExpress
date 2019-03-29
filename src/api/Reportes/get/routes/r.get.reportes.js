@@ -169,6 +169,19 @@ module.exports = function(app){
 		
 	})
 	//6.9 avance comparativ diagraa degantt
+	app.post('/getCortes',(req,res)=>{
+		if(req.body.id_ficha == null){
+			res.json("null");		
+		}else{
+			User.getCortes(req.body.id_ficha,(err,data)=>{							
+				if(err){ res.status(204).json(err);}
+				else{
+					res.json(data)
+				}
+			})
+		}
+		
+	})
 	//6.10 histograma del avance de obras curva s
 	//6.11 proyeccion de trabajos prosxioms mes cronograma
 	//6.12 informe mensual

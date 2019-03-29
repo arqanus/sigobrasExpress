@@ -1,4 +1,5 @@
 const User = require('../models/m.post.reportes');
+const User2 = require('../../get/models/m.get.reportes');
 
 function soloLetras(req,res,next){
 	var regla = /^[A-Za-z0-9]+$/
@@ -38,7 +39,13 @@ module.exports = function(app){
 		User.postcronogramamensual(req.body,(err,data)=>{							
 			if(err){ res.status(204).json(err);}
 			else{
-				res.json(data);	
+				User2.getcronograma(req.body[0][0],(err,data)=>{							
+					if(err){ res.status(204).json(err);}
+					else{
+						res.json(data)
+					}
+		
+				})
 			}
 
 		})
