@@ -276,10 +276,10 @@ module.exports = function(app){
         if (req.body.id_ficha == null) {
             res.json("null")
         } else {
-            User.getValGeneralPeriodos(req.body.id_ficha,req.body.anyo,(err,data)=>{
+            User.getValGeneralPeriodos(req.body.id_ficha,req.body.anyo,(err,periodos)=>{
                 if(err){ res.status(204).json(err);}
                 else{
-                    res.json(data);	
+                    res.json(periodos)
                 }
             })
         }            
