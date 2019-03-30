@@ -237,7 +237,7 @@ module.exports = function(app){
         }			
         
     })  
-    
+    //valorizacionesgenerales
     app.post('/getValGeneralAnyos',(req,res)=>{
         if (req.body.id_ficha == null) {
             res.json("null")
@@ -248,14 +248,21 @@ module.exports = function(app){
                     User.getValGeneralPeriodos(req.body.id_ficha,anyos[0].anyo,(err,periodos)=>{
                         if(err){ res.status(204).json(err);}
                         else{
-                            User.getValGeneralComponentes(req.body.id_ficha,(err,componentes)=>{
+                            User.getValGeneralResumenPeriodo(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha_final,(err,resumen)=>{
                                 if(err){ res.status(204).json(err);}
                                 else{
-                                    periodos[0].componentes = componentes
-                                    anyos[0].periodos = periodos
-                                    res.json(anyos);	
+                                    User.getValGeneralComponentes(req.body.id_ficha,(err,componentes)=>{
+                                        if(err){ res.status(204).json(err);}
+                                        else{
+                                            periodos[0].resumen = resumen
+                                            periodos[0].componentes = componentes
+                                            anyos[0].periodos = periodos
+                                            res.json(anyos);	
+                                        }
+                                    })
                                 }
                             })
+                           
                             
                             
                         }
@@ -292,11 +299,25 @@ module.exports = function(app){
             
         
     })
-    app.post('/getValGeneralPartidas',(req,res)=>{
+    app.post('/getValGeneralResumenPeriodo',(req,res)=>{
         if (req.body.id_ficha == null) {
             res.json("null")
         } else {
-            User.getValGeneralPartidas(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha_final,(err,data)=>{
+            User.getValGeneralResumenPeriodo(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha_final,(err,data)=>{
+                if(err){ res.status(204).json(err);}
+                else{
+                    res.json(data);	
+                }
+            })
+        }
+            
+        
+    })
+    app.post('/getValGeneralPartidas',(req,res)=>{
+        if (req.body.id_componente == null) {
+            res.json("null")
+        } else {
+            User.getValGeneralPartidas(req.body.id_componente,req.body.fecha_inicial,req.body.fecha_final,(err,data)=>{
                 if(err){ res.status(204).json(err);}
                 else{
                     res.json(data);	
