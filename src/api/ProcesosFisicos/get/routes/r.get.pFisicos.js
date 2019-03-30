@@ -242,14 +242,27 @@ module.exports = function(app){
         if (req.body.id_ficha == null) {
             res.json("null")
         } else {
-            User.getValGeneralAnyos(req.body.id_ficha,(err,data)=>{
+            User.getValGeneralAnyos(req.body.id_ficha,(err,anyos)=>{
                 if(err){ res.status(204).json(err);}
                 else{
-                    res.json(data);	
+                    User.getValGeneralPeriodos(req.body.id_ficha,anyos[0].anyo,(err,periodos)=>{
+                        if(err){ res.status(204).json(err);}
+                        else{
+                            User.getValGeneralComponentes(req.body.id_ficha,(err,componentes)=>{
+                                if(err){ res.status(204).json(err);}
+                                else{
+                                    periodos[0].componentes = componentes
+                                    anyos[0].periodos = periodos
+                                    res.json(anyos);	
+                                }
+                            })
+                            
+                            
+                        }
+                    })
                 }
             })
-        }
-            
+        }            
         
     })
     app.post('/getValGeneralPeriodos',(req,res)=>{
