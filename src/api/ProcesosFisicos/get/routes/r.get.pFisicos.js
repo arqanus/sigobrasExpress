@@ -236,7 +236,64 @@ module.exports = function(app){
             })
         }			
         
-    })    
+    })  
+    
+    app.post('/getValGeneralAnyos',(req,res)=>{
+        if (req.body.id_ficha == null) {
+            res.json("null")
+        } else {
+            User.getValGeneralAnyos(req.body.id_ficha,(err,data)=>{
+                if(err){ res.status(204).json(err);}
+                else{
+                    res.json(data);	
+                }
+            })
+        }
+            
+        
+    })
+    app.post('/getValGeneralPeriodos',(req,res)=>{
+        if (req.body.id_ficha == null) {
+            res.json("null")
+        } else {
+            User.getValGeneralPeriodos(req.body.id_ficha,req.body.anyo,(err,data)=>{
+                if(err){ res.status(204).json(err);}
+                else{
+                    res.json(data);	
+                }
+            })
+        }            
+        
+    })
+    app.post('/getValGeneralComponentes',(req,res)=>{
+        if (req.body.id_ficha == null) {
+            res.json("null")
+        } else {
+            User.getValGeneralComponentes(req.body.id_ficha,(err,data)=>{
+                if(err){ res.status(204).json(err);}
+                else{
+                    res.json(data);	
+                }
+            })
+        }
+            
+        
+    })
+    app.post('/getValGeneralPartidas',(req,res)=>{
+        if (req.body.id_ficha == null) {
+            res.json("null")
+        } else {
+            User.getValGeneralPartidas(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha_final,(err,data)=>{
+                if(err){ res.status(204).json(err);}
+                else{
+                    res.json(data);	
+                }
+            })
+        }
+            
+        
+    })
+    
 
     app.post('/getActividadesDuracion',(req,res)=>{
         if (req.body.id_ficha == null) {
