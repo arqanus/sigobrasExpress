@@ -1,5 +1,12 @@
 const pool = require('../../../../db/connection');
 let userModel = {};
+function rome(N,s,b,a,o,t){
+    t=N/1e3|0;N%=1e3;
+    for(s=b='',a=5;N;b++,a^=7)
+      for(o=N%a,N=N/a^0;o--;)
+        s='IVXLCDM'.charAt(o>2?b+N-(N&=~1)+(o=1):b)+s;
+    return Array(t+1).join('M')+s;
+}
 function isNumber(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
 }
@@ -1342,6 +1349,171 @@ userModel.getValGeneralExtras = (id_ficha,tipo,callback)=>{
                 
     })
 }
+
+userModel.getValGeneralAnyos  = (id_ficha,callback)=>{    
+    pool.getConnection(function(err ,conn){
+        if(err){ 
+            callback(err);
+        }        
+        else{
+            conn.query("SELECT YEAR(avanceactividades.fecha) anyo FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE componentes.fichas_id_ficha = ? GROUP BY YEAR(avanceactividades.fecha) ORDER BY avanceactividades.fecha",id_ficha,(err,res)=>{ 
+                if(err){
+                    console.log(err);                    
+                    callback(err.code);                 
+                }
+                else if(res.length == 0){
+                    callback(null,"vacio");    
+                    conn.destroy()    
+                }else{     
+                   
+                       
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }
+        
+                
+    })
+}
+userModel.getValGeneralPeriodos  = (id_ficha,anyo,callback)=>{    
+    pool.getConnection(function(err ,conn){
+        if(err){ 
+            callback(err);
+        }        
+        else{
+            conn.query("/********** Consulta de periodos de una obra***************/ SELECT * FROM ((SELECT fichas.id_ficha, avanceactividades.historialestados_id_historialestado, estados.codigo, IF(MONTH(MAX(avanceactividades.fecha)) = MONTH(historialestados.fecha), historialestados.fecha, DATE_ADD(DATE_ADD(LAST_DAY(MAX(avanceactividades.fecha)), INTERVAL 1 DAY), INTERVAL - 1 MONTH)) fecha_inicial, MAX(avanceactividades.fecha) fecha_final, DATE_FORMAT(MAX(avanceactividades.fecha), ' %Y') anyo, DATE_FORMAT(MAX(avanceactividades.fecha), ' %b') mes FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.id_historialEstado = avanceactividades.historialestados_id_historialEstado LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado WHERE estados.nombre = 'Ejecucion' GROUP BY TIMESTAMPDIFF(MONTH, fichas.fecha_inicial, avanceactividades.fecha) , avanceactividades.historialestados_id_historialestado ORDER BY TIMESTAMPDIFF(MONTH, fichas.fecha_inicial, avanceactividades.fecha)) UNION (SELECT fichas.id_ficha, avanceactividades.historialestados_id_historialestado, estados.codigo, IF(MONTH(MAX(avanceactividades.fecha)) = MONTH(historialestados.fecha), historialestados.fecha, DATE_ADD(DATE_ADD(LAST_DAY(MAX(avanceactividades.fecha)), INTERVAL 1 DAY), INTERVAL - 1 MONTH)) fecha_inicial, MAX(avanceactividades.fecha) fecha, DATE_FORMAT(MAX(avanceactividades.fecha), ' %Y') anyo, DATE_FORMAT(MAX(avanceactividades.fecha), ' %b') mes FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.id_historialEstado = avanceactividades.historialestados_id_historialEstado LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado WHERE estados.nombre = 'Corte' GROUP BY avanceactividades.historialEstados_id_historialEstado)) periodos_obra WHERE periodos_obra.id_ficha = ? AND YEAR(periodos_obra.fecha_final) = ? ORDER BY periodos_obra.fecha_final",[id_ficha,anyo],(err,res)=>{ 
+                if(err){
+                    console.log(err);                    
+                    callback(err.code);                 
+                }
+                else if(res.length == 0){
+                    callback(null,"vacio");    
+                    conn.destroy()    
+                }else{  
+                    cont = 1
+                    for (let i = 0; i < res.length; i++) {
+                        const fila = res[i];
+                        if(fila.codigo=="E"){
+                            fila.codigo = fila.mes+" "+rome(cont)+fila.anyo
+                            cont++
+                            
+                        }else{
+                            cont= 1
+                        }
+                        delete fila.mes
+                        delete fila.anyo
+                        delete fila.id_ficha
+                        
+                    }              
+            
+                  
+                       
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }
+        
+                
+    })
+}
+userModel.getValGeneralComponentes = (id_ficha,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){ callback(err);}
+        else{
+            conn.query("SELECT componentes.id_componente, componentes.numero, componentes.nombre, componentes.presupuesto FROM componentes where componentes.fichas_id_ficha = ?",[id_ficha],(error,res)=>{ 
+                if(error){
+                    callback(error);
+                }else if(res.length == 0){
+                    console.log("vacio");
+                    
+                    callback(null,"vacio");
+                    conn.destroy()
+                
+                }else{    
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }
+        
+                
+    })
+}
+userModel.getValGeneralPartidas = (id_ficha,fecha_inicial,fecha_final,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){ callback(err);}
+        else{
+            conn.query("SELECT componentes.id_componente, componentes.numero, componentes.nombre, componentes.presupuesto, partidas.item, partidas.descripcion, partidas.metrado, partidas.costo_unitario, partidas.metrado * partidas.costo_unitario precio_parcial, periodo_anterior.metrado metrado_anterior, periodo_anterior.valor valor_anterior, periodo_anterior.porcentaje porcentaje_anterior, periodo_actual.metrado metrado_actual, periodo_actual.valor valor_actual, periodo_actual.porcentaje porcentaje_actual, COALESCE(periodo_anterior.metrado, 0) + COALESCE(periodo_actual.metrado, 0) metrado_total, COALESCE(periodo_anterior.valor, 0) + COALESCE(periodo_actual.valor, 0) valor_total, (COALESCE(periodo_anterior.metrado, 0) + COALESCE(periodo_actual.metrado, 0)) porcentaje_total, partidas.metrado - (COALESCE(periodo_anterior.metrado, 0) + COALESCE(periodo_actual.metrado, 0)) metrado_saldo, partidas.metrado * costo_unitario - COALESCE(periodo_anterior.valor, 0) - COALESCE(periodo_actual.valor, 0) valor_saldo, 100 - COALESCE(periodo_anterior.porcentaje, 0) - COALESCE(periodo_actual.porcentaje, 0) porcentaje_saldo FROM componentes INNER JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN (SELECT partidas.id_partida, SUM(avanceactividades.valor) metrado, SUM(avanceactividades.valor * costo_unitario) valor, SUM(avanceactividades.valor) / metrado * 100 porcentaje FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.fecha < ? AND historialactividades.estado IS NULL GROUP BY partidas.id_partida) periodo_anterior ON periodo_anterior.id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, SUM(avanceactividades.valor) metrado, SUM(avanceactividades.valor * costo_unitario) valor, SUM(avanceactividades.valor) / metrado * 100 porcentaje FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.fecha >= ? AND avanceactividades.fecha <= ? AND historialactividades.estado IS NULL GROUP BY partidas.id_partida) periodo_actual ON periodo_actual.id_partida = partidas.id_partida WHERE componentes.fichas_id_ficha = ? ORDER BY componentes.id_componente , partidas.id_partida",[fecha_inicial,fecha_inicial,fecha_final,id_ficha],(error,res)=>{ 
+                if(error){
+                    callback(error);
+                }else if(res.length == 0){
+                    console.log("vacio");
+                    
+                    callback(null,"vacio");
+                    conn.destroy()
+                
+                }else{
+                    var componentes = []
+                    var componente = {}                                        
+                    var id_componente = -1                   
+                    
+                    for (let i = 0; i < res.length; i++) {
+                        const fila = res[i];                        
+
+                        if(fila.id_componente != id_componente){
+                            if(i != 0){
+                                componentes.push(componente)
+                                componente = {}
+                                
+                            }
+                            
+                            componente.id_componente = fila.id_componente
+                            componente.numero = fila.numero
+                            componente.nombre = fila.nombre
+                            componente.presupuesto = fila.presupuesto
+                            componente.partidas = [ 
+                                {
+                                    "item":fila.item,                                    "descripcion":fila.descripcion,
+                                    "metrado":fila.metrado,                                    "costo_unitario":fila.costo_unitario,                                    "precio_parcial":fila.precio_parcial,                                    "metrado_anterior":fila.metrado_anterior,                                    "valor_anterior":fila.valor_anterior,                                    "porcentaje_anterior":fila.porcentaje_anterior,                                "metrado_actual":fila.metrado_actual,                                    "valor_actual":fila.valor_actual,                                    "porcentaje_actual":fila.porcentaje_actual,                                    "metrado_total":fila.metrado_total,                                    "valor_total":fila.valor_total,                                    "porcentaje_total":fila.porcentaje_total,                                    "metrado_saldo":fila.metrado_saldo,                                    "valor_saldo":fila.valor_saldo,                                    "porcentaje_saldo":fila.porcentaje_saldo
+                                }
+                            ]                            
+                         
+                        }else{
+                            componente.partidas.push( 
+                                {
+                                    "item":fila.item,                                    "descripcion":fila.descripcion,
+                                    "metrado":fila.metrado,                                    "costo_unitario":fila.costo_unitario,                                    "precio_parcial":fila.precio_parcial,                                    "metrado_anterior":fila.metrado_anterior,                                    "valor_anterior":fila.valor_anterior,                                    "porcentaje_anterior":fila.porcentaje_anterior,                                "metrado_actual":fila.metrado_actual,                                    "valor_actual":fila.valor_actual,                                    "porcentaje_actual":fila.porcentaje_actual,                                    "metrado_total":fila.metrado_total,                                    "valor_total":fila.valor_total,                                    "porcentaje_total":fila.porcentaje_total,                                    "metrado_saldo":fila.metrado_saldo,                                    "valor_saldo":fila.valor_saldo,                                    "porcentaje_saldo":fila.porcentaje_saldo
+                                }
+                            )                 
+                        
+                        }
+                        id_componente = fila.id_componente
+                    }
+                    componentes.push(componente)
+             
+
+                    callback(null,componentes);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }
+        
+                
+    })
+}
+
 
 
 userModel.getActividadesDuracion = (id_ficha,callback)=>{
