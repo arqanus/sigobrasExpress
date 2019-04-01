@@ -30,7 +30,7 @@ userModel.getObras = (id_acceso,callback)=>{
         if(err){ callback(err);}
         
         else{
-            conn.query("SELECT costo_directo.presupuesto costo_directo,fichas.id_ficha, fichas.g_meta, fichas.g_total_presu, SUM(avanceactividades.valor * partidas.costo_unitario) presu_avance, SUM(avanceactividades.valor * partidas.costo_unitario) / costo_directo.presupuesto * 100 porcentaje_avance, fichas.codigo, estado.nombre estado_nombre FROM fichas left join(select componentes.fichas_id_ficha,sum(componentes.presupuesto)presupuesto from componentes group by componentes.fichas_id_ficha) costo_directo on costo_directo.fichas_id_ficha = fichas.id_ficha LEFT JOIN (SELECT Fichas_id_ficha, nombre, codigo FROM historialestados INNER JOIN (SELECT MAX(id_historialEstado) id_historialEstado FROM historialestados GROUP BY fichas_id_ficha) historial ON historial.id_historialEstado = historialestados.id_historialEstado LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado) estado ON estado.Fichas_id_ficha = fichas.id_ficha LEFT JOIN componentes ON componentes.Fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN fichas_has_accesos ON fichas_has_accesos.Fichas_id_ficha = fichas.id_ficha left join historialactividades on historialactividades.actividades_id_actividad = actividades.id_actividad WHERE fichas_has_accesos.Accesos_id_acceso = ? and historialactividades.estado is null GROUP BY fichas.id_ficha",id_acceso,(err,res)=>{
+            conn.query("SELECT costo_directo.presupuesto costo_directo, fichas.id_ficha, fichas.g_meta, fichas.g_total_presu, SUM(avanceactividades.valor * partidas.costo_unitario) presu_avance, SUM(avanceactividades.valor * partidas.costo_unitario) / costo_directo.presupuesto * 100 porcentaje_avance, fichas.codigo, estado.nombre estado_nombre, tipoobras.nombre tipo_obra, financiero.avance avance_financiero, financiero.avance/ costo_directo.presupuesto * 100 porcentaje_financiero FROM fichas LEFT JOIN tipoobras ON tipoobras.id_tipoObra = fichas.tipoObras_id_tipoObra LEFT JOIN (SELECT cronogramamensual.fichas_id_ficha, SUM(financieroEjecutado) avance FROM cronogramamensual GROUP BY cronogramamensual.fichas_id_ficha) financiero ON financiero.fichas_id_ficha = fichas.id_ficha LEFT JOIN (SELECT componentes.fichas_id_ficha, SUM(componentes.presupuesto) presupuesto FROM componentes GROUP BY componentes.fichas_id_ficha) costo_directo ON costo_directo.fichas_id_ficha = fichas.id_ficha LEFT JOIN (SELECT Fichas_id_ficha, nombre, codigo FROM historialestados INNER JOIN (SELECT MAX(id_historialEstado) id_historialEstado FROM historialestados GROUP BY fichas_id_ficha) historial ON historial.id_historialEstado = historialestados.id_historialEstado LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado) estado ON estado.Fichas_id_ficha = fichas.id_ficha LEFT JOIN componentes ON componentes.Fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN fichas_has_accesos ON fichas_has_accesos.Fichas_id_ficha = fichas.id_ficha LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE fichas_has_accesos.Accesos_id_acceso = ? AND historialactividades.estado IS NULL GROUP BY fichas.id_ficha",id_acceso,(err,res)=>{
                 if(err){
                     callback(err);                
                 }
@@ -45,6 +45,8 @@ userModel.getObras = (id_acceso,callback)=>{
                                 fila.presu_avance = formato(fila.presu_avance)
                                 fila.porcentaje_avance = formato(fila.porcentaje_avance)
                                 fila.costo_directo = formato(fila.costo_directo)
+                                fila.avance_financiero = formato(fila.avance_financiero)
+                                fila.porcentaje_financiero = formato(fila.porcentaje_financiero)
                                 
                         }  
                     callback(null,res);
@@ -167,6 +169,29 @@ userModel.getCargosById = (id_ficha,callback)=>{
                                         }
                                         data.push(cargos)
                                         callback(null,data);
+                                        conn.destroy()
+                                
+                                }   
+                        })
+                }
+                
+                                
+        })
+}
+userModel.getImagenesPorObra = (id_ficha,callback)=>{    
+        pool.getConnection(function(err ,conn){
+                if(err){ callback(err);}        
+                else{
+                        conn.query("SELECT accesos.id_acceso,cargos.nombre cargo_nombre, CONCAT(usuarios.apellido_paterno, ' ', usuarios.apellido_materno, ' ', usuarios.nombre) nombre_usuario, usuarios.celular, usuarios.direccion, usuarios.dni, usuarios.email FROM fichas_has_accesos LEFT JOIN accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo LEFT JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario where fichas_has_accesos.Fichas_id_ficha = ? order by cargos.id_Cargo",id_ficha,(err,res)=>{
+                                if(err){
+                                        callback(err);                
+                                }
+                                else if(res.length == 0){
+                                        callback(null,"vacio"); 
+                                        conn.destroy()       
+                                }else{
+                                       
+                                        callback(null,res);
                                         conn.destroy()
                                 
                                 }   

@@ -51,6 +51,15 @@ function formato(data){
 
     return data
 }
+function getDaysInMonth() {
+    var date = new Date("2018-03-01");
+    var days = [];
+    while (date.getMonth() === month) {
+       days.push(new Date(date));
+       date.setDate(date.getDate() + 1);
+    }
+    return days;
+}
 
 userModel.getPartidasCompletas = (id_ficha,callback)=>{
     
@@ -529,6 +538,7 @@ userModel.getActividadesPNuevas = (id_partida,callback)=>{
                 
     })
 }
+//historial
 userModel.getHistorial = (id_ficha,callback)=>{
     
     pool.getConnection(function(err ,conn){
@@ -735,6 +745,38 @@ userModel.getHistorialFechasHistorial = (id_ficha,callback)=>{
                 
                 
             })
+        }
+        
+                
+    })
+}
+userModel.getHistorialRegresionLineal = (id_ficha,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){ callback(err);}
+        else{
+            console.log("dias",getDaysInMonth());
+            
+            callback(null,getDaysInMonth());
+            conn.destroy()
+
+            // conn.query("",id_ficha,(err,res)=>{
+            //      if(err){
+            //         console.log(err);
+            //         callback(err.code);
+            //     }else if(res.length==0){
+            //         console.log("vacio");
+            //         callback(null,"vacio");
+            //     }else{                    
+                    
+                    
+                    
+            //         callback(null,res);
+            //         conn.destroy()
+            //     }
+                
+                
+            // })
         }
         
                 
