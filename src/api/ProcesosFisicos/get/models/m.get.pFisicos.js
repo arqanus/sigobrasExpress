@@ -55,7 +55,7 @@ function formato(data){
     return data
 }
 function shortDate(fecha){
-    return (fecha.getFullYear()+"-"+(fecha.getMonth() + 1)+"-"+ fecha.getDate())
+    return (fecha.getFullYear()+"-"+('0' + (fecha.getMonth()+1)).slice(-2) + '-'+('0' + fecha.getDate()).slice(-2))
 }
 function getDaysInMonth() {
     var date = new Date();
@@ -767,28 +767,42 @@ userModel.getHistorialRegresionLineal = (id_ficha,callback)=>{
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
         else{
-            var dias = 
-            
-            callback(null,getDaysInMonth());
-            conn.destroy()
+            var fechasDelMes = getDaysInMonth()
 
-            // conn.query("",id_ficha,(err,res)=>{
-            //      if(err){
-            //         console.log(err);
-            //         callback(err.code);
-            //     }else if(res.length==0){
-            //         console.log("vacio");
-            //         callback(null,"vacio");
-            //     }else{                    
+            conn.query("/*********avance por dia***************/ SELECT id_ficha, date_format(avanceactividades.fecha,'%Y-%m-%d') fecha, SUM(valor * costo_unitario) Avance FROM fichas left join componentes on componentes.fichas_id_ficha= fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida inner JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE month(avanceactividades.fecha) = month(now()) and fichas.id_ficha = ? GROUP BY fichas.id_ficha, date_format(avanceactividades.fecha,'%Y-%m-%d') ",id_ficha,(err,res)=>{
+                 if(err){
+                    console.log(err);
+                    callback(err.code);
+                }else if(res.length==0){
+                    console.log("vacio");
+                    callback(null,"vacio");
+                }else{      
+                    var dias = []
+                    var avances1 = []
+                    for (let i = 0; i < fechasDelMes.length; i++) {
+                        const fecha = fechasDelMes[i];
+                        dias.push(i+1)
+                        if(fecha == res[0].fecha){
+                            console.log("igual");                            
+                            avances1.push(res[0].Avance)
+                        }else{
+                            avances1.push(0)
+                        }
+                        
+                    }             
                     
                     
                     
-            //         callback(null,res);
-            //         conn.destroy()
-            //     }
+                    callback(null,
+                        {
+                            "dias":dias,
+                            "avances1":avances1
+                        });
+                    conn.destroy()
+                }
                 
                 
-            // })
+            })
         }
         
                 
@@ -1517,6 +1531,19 @@ userModel.getValGeneralResumenPeriodo = (id_ficha,fecha_inicial,fecha_final,call
                     conn.destroy()
                 
                 }else{
+                    for (let i = 0; i < res.length; i++) {
+                        const fila = res[i];
+                        fila.presupuesto = formato(fila.presupuesto)
+                        fila.valor_anterior = formato(fila.valor_anterior)
+                        fila.porcentaje_anterior = formato(fila.porcentaje_anterior)
+                        fila.valor_actual = formato(fila.valor_actual)
+                        fila.porcentaje_actual = formato(fila.porcentaje_actual)
+                        fila.valor_total = formato(fila.valor_total)
+                        fila.porcentaje_total = formato(fila.porcentaje_total)
+                        fila.valor_saldo = formato(fila.valor_saldo)
+                        fila.porcentaje_saldo = formato(fila.porcentaje_saldo)
+                        
+                    }
           
                     callback(null,res);
                     conn.destroy()
@@ -1573,9 +1600,9 @@ userModel.getValGeneralPartidas = (id_componente,fecha_inicial,fecha_final,callb
                             fila.metrado_actual  = formato( fila.metrado_actual )
                             fila.valor_actual  = formato( fila.valor_actual )
                             fila.porcentaje_actual  = formato( fila.porcentaje_actual )
-                            fila.metrado_tota = formato( fila.metrado_tota)
-                            fila.valor_tota = formato( fila.valor_tota)
-                            fila.porcentaje_tota = formato( fila.porcentaje_tota)
+                            fila.metrado_total = formato( fila.metrado_total)
+                            fila.valor_total = formato( fila.valor_total)
+                            fila.porcentaje_total = formato( fila.porcentaje_total)
                             fila.metrado_saldo  = formato( fila.metrado_saldo )
                             fila.valor_saldo  = formato( fila.valor_saldo )
                             fila.porcentaje_saldo = formato( fila.porcentaje_saldo)
