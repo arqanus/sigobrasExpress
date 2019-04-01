@@ -61,6 +61,7 @@ userModel.postAvanceActividad = (data,callback)=>{
             conn.query('INSERT INTO AvanceActividades set ?',data,(error,res)=>{
                 if(error){
                     callback(error);
+                    conn.destroy()
                 }else{
                     console.log("affectedRows",res); 
                     callback(null,res);
@@ -196,6 +197,7 @@ userModel.postActividad = (data,callback)=>{
             conn.query('INSERT INTO actividades set ?',data,(error,res)=>{
                 if(error){
                     callback(error);
+                    conn.destroy()
                 }else{
                     console.log("affectedRows",res); 
                     callback(null,res.insertId);
@@ -217,6 +219,7 @@ userModel.posthistorialActividades = (data,callback)=>{
             conn.query('INSERT INTO historialActividades set ?',data,(error,res)=>{
                 if(error){
                     callback(error);
+                    conn.destroy()
                 }else{
                     console.log("affectedRows",res); 
                     callback(null,res.insertId);
@@ -240,6 +243,7 @@ userModel.getAvanceById = (id_actividad,callback)=>{
                 if(err){
                     console.log(err);
                     callback(err.code);
+                    conn.destroy()
                 }else if(res.length == 0){
                     console.log("vacio");                    
                     callback("vacio");

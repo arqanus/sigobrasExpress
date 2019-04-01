@@ -197,6 +197,20 @@ module.exports = function(app){
     
     
     })  
+    app.post('/getHistorialRegresionLineal',(req,res)=>{
+        if (req.body.id_ficha == null) {
+            res.json("null")
+        } else {			
+            User.getHistorialRegresionLineal(req.body.id_ficha,(err,data)=>{
+                if(err){ res.status(204).json(err);}
+                else{
+                    res.json(data);	
+                }
+            })
+        }
+    
+    
+    })
 
     //old apis
     app.post('/getValGeneral',(req,res)=>{
