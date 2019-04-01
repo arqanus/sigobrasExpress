@@ -1452,7 +1452,7 @@ userModel.getValGeneralPeriodos  = (id_ficha,anyo,callback)=>{
             callback(err);
         }        
         else{
-            conn.query("/********** Consulta de periodos de una obra***************/ SELECT * FROM ((SELECT fichas.id_ficha, avanceactividades.historialestados_id_historialestado, estados.codigo, IF(MONTH(MAX(avanceactividades.fecha)) = MONTH(historialestados.fecha), historialestados.fecha, DATE_ADD(DATE_ADD(LAST_DAY(MAX(avanceactividades.fecha)), INTERVAL 1 DAY), INTERVAL - 1 MONTH)) fecha_inicial, MAX(avanceactividades.fecha) fecha_final, DATE_FORMAT(MAX(avanceactividades.fecha), ' %Y') anyo, DATE_FORMAT(MAX(avanceactividades.fecha), ' %b') mes FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.id_historialEstado = avanceactividades.historialestados_id_historialEstado LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado WHERE estados.nombre = 'Ejecucion' GROUP BY TIMESTAMPDIFF(MONTH, fichas.fecha_inicial, avanceactividades.fecha) , avanceactividades.historialestados_id_historialestado ORDER BY TIMESTAMPDIFF(MONTH, fichas.fecha_inicial, avanceactividades.fecha)) UNION (SELECT fichas.id_ficha, avanceactividades.historialestados_id_historialestado, estados.codigo, IF(MONTH(MAX(avanceactividades.fecha)) = MONTH(historialestados.fecha), historialestados.fecha, DATE_ADD(DATE_ADD(LAST_DAY(MAX(avanceactividades.fecha)), INTERVAL 1 DAY), INTERVAL - 1 MONTH)) fecha_inicial, MAX(avanceactividades.fecha) fecha, DATE_FORMAT(MAX(avanceactividades.fecha), ' %Y') anyo, DATE_FORMAT(MAX(avanceactividades.fecha), ' %b') mes FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.id_historialEstado = avanceactividades.historialestados_id_historialEstado LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado WHERE estados.nombre = 'Corte' GROUP BY avanceactividades.historialEstados_id_historialEstado)) periodos_obra WHERE periodos_obra.id_ficha = ? AND YEAR(periodos_obra.fecha_final) = ? ORDER BY periodos_obra.fecha_final",[id_ficha,anyo],(err,res)=>{ 
+            conn.query("/********** Consulta de periodos de una obra***************/ SELECT * FROM ((SELECT fichas.id_ficha, estados.codigo, MIN(avanceactividades.fecha) fecha_inicial, DATE_FORMAT(MAX(avanceactividades.fecha), ' %Y') anyo, DATE_FORMAT(MAX(avanceactividades.fecha), ' %b') mes FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.id_historialEstado = avanceactividades.historialestados_id_historialEstado LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado WHERE estados.nombre = 'Ejecucion' GROUP BY DATE_FORMAT(avanceactividades.fecha, ' %Y %b') , avanceactividades.historialEstados_id_historialEstado) UNION (SELECT fichas.id_ficha, estados.codigo, MIN(historialestados.fecha) fecha_inicial, DATE_FORMAT(MAX(avanceactividades.fecha), ' %Y') anyo, DATE_FORMAT(MAX(avanceactividades.fecha), ' %b') mes FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.id_historialEstado = avanceactividades.historialestados_id_historialEstado LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado WHERE estados.nombre = 'Corte' GROUP BY avanceactividades.historialEstados_id_historialEstado)) periodos_obra WHERE periodos_obra.id_ficha = ? AND YEAR(periodos_obra.fecha_inicial) = ? ORDER BY periodos_obra.fecha_inicial",[id_ficha,anyo],(err,res)=>{ 
                 if(err){
                     console.log(err);                    
                     callback(err.code);                 
@@ -1623,9 +1623,6 @@ userModel.getValGeneralPartidas = (id_componente,fecha_inicial,fecha_final,callb
     })
 }
 
-
-
-
 userModel.getActividadesDuracion = (id_ficha,callback)=>{
     
     pool.getConnection(function(err ,conn){
@@ -1718,5 +1715,100 @@ userModel.getMaterialesPorObra = (id_ficha,callback)=>{
     })
 }
 
+//imagenes
+userModel.getImagenesComponentes = (id_ficha,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){ callback(err);}
+        else{
+            conn.query("SELECT id_componente,numero,nombre from componentes where componentes.fichas_id_ficha=?",id_ficha,(error,res)=>{ if(error){
+                    callback(error);
+                }else if(res.length == 0){
+                    console.log("vacio");                    
+                    callback(null,"vacio");
+                    conn.destroy()
+                }else{                          
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }
+        
+                
+    })
+}
+userModel.getImagenesPartidas = (id_componente,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){ callback(err);}
+        else{
+            conn.query("/*COALESCE(parcial_negativo / parcial_positivo, 0) + 1 porcentaje_negatividad_ajustado*/SELECT partida.id_partida, partida.tipo, partida.item, partida.descripcion, TRIM(BOTH '/DIA' FROM partida.unidad_medida) unidad_medida, partida.metrado, partida.costo_unitario, partida.parcial, partida.avance_metrado * (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) avance_metrado, partida.avance_costo * (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) avance_costo, partida.metrado - COALESCE(partida.avance_metrado, 0) * (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) metrados_saldo, (partida.metrado * partida.costo_unitario) - (COALESCE(partida.avance_costo, 0) * (COALESCE(parcial_negativo / parcial_positivo, 0) + 1)) metrados_costo_saldo, partida.porcentaje * (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) porcentaje, (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) porcentaje_negatividad,  coalesce(partida.metrado /partida.rendimiento,'') partida_duracion FROM (SELECT partidas.Componentes_id_componente, partidas.id_partida, partidas.tipo, partidas.item, partidas.descripcion, partidas.unidad_medida, partidas.metrado, partidas.costo_unitario, partidas.metrado * partidas.costo_unitario parcial, SUM(avanceactividades.valor) avance_metrado, SUM(avanceactividades.valor * partidas.costo_unitario) avance_costo, SUM(avanceactividades.valor) / partidas.metrado * 100 porcentaje, partidas.rendimiento FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad GROUP BY partidas.id_partida) partida LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_positivo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE actividades.parcial > 0 GROUP BY partidas.id_partida) p1 ON p1.id_partida = partida.id_partida LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_negativo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE actividades.parcial < 0 GROUP BY partidas.id_partida) p2 ON p2.id_partida = partida.id_partida LEFT JOIN (SELECT historialpartidas.estado, historialpartidas.partidas_id_partida FROM (SELECT MAX(id_historialPartida) id_historialPartida FROM historialpartidas GROUP BY historialpartidas.partidas_id_partida) maximoHistorial LEFT JOIN historialpartidas ON historialpartidas.id_historialPartida = maximoHistorial.id_historialPartida) historialPartida ON historialPartida.partidas_id_partida = partida.id_partida WHERE partida.componentes_id_componente = ? and historialpartida.estado is null",id_componente,(error,res)=>{ 
+                if(error){
+                    callback(error);
+                }else if(res.length == 0){
+                    console.log("vacio");                    
+                    callback(null,"vacio");
+                    conn.destroy()
+                }else{      
+                    for (let i = 0; i < res.length; i++) {
+                        const fila = res[i];
+                        if(fila.tipo=="titulo"){
+                            fila.unidad_medida = ""
+                            fila.metrado = ""
+                            fila.costo_unitario = ""
+                            fila.parcial = ""
+                            fila.avance_metrado = ""
+                            fila.avance_costo = ""
+                            fila.metrados_saldo = ""
+                            fila.metrados_costo_saldo = ""
+                            fila.porcentaje = ""
+                            fila.porcentaje_negatividad = ""
+                        }else{
+                            fila.metrado = formato(fila.metrado)
+                            fila.costo_unitario = formato(fila.costo_unitario)
+                            fila.parcial = formato(fila.parcial)
+                            fila.avance_metrado = formato(fila.avance_metrado)
+                            fila.avance_costo = formato(fila.avance_costo)
+                            fila.metrados_saldo = formato(fila.metrados_saldo)
+                            fila.metrados_costo_saldo = formato(fila.metrados_costo_saldo)
+                            fila.porcentaje = formato(fila.porcentaje)
+                        }
+
+                        if(fila.partida_duracion!=""){
+                            fila.partida_duracion = fila.partida_duracion*480
+                            if(fila.partida_duracion < 60){
+                                fila.partida_duracion = Math.round(fila.partida_duracion) + "m"
+                            }else if(fila.partida_duracion < 480){
+                                var horas = Math.trunc(fila.partida_duracion/60)+"h"
+                                var minutos = Math.round(fila.partida_duracion%60)+"m"
+                                fila.partida_duracion = horas + " "+minutos
+                            }else {
+                                var dias = Math.trunc(fila.partida_duracion/480)+"d"
+                                var residuo_dias = Math.trunc(fila.partida_duracion%480)
+                                var horas =  Math.trunc(residuo_dias/60)+"h"
+                                var minutos = Math.round(residuo_dias%60)+"m"
+                                fila.partida_duracion = dias+" "+horas + " "+minutos
+                            }   
+                        }
+                        
+                 
+                        
+                        
+                    }
+
+                    
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }
+        
+                
+    })
+}
 
 module.exports = userModel;

@@ -369,4 +369,36 @@ module.exports = function(app){
         }			
         
     })
+    //imagenes
+    app.post('/getImagenesComponentes',(req,res)=>{
+		if (req.body.id_ficha == null ||req.body.id_ficha == "null"||req.body.id_ficha == "") {
+			res.json("null");
+		} else {
+			User.getImagenesComponentes(req.body.id_ficha,(err,componentes)=>{
+				if(err){ res.status(204).json(err);}
+				else{
+                    User.getPartidas(componentes[0].id_componente,(err,partidas)=>{
+                        if(err){ res.status(204).json(err);}
+                        else{
+                            componentes[0].partidas = partidas
+                            res.json(componentes);	
+                        }
+                    })
+                   
+				}
+			})
+		}
+    })
+    app.post('/getImagenesPartidas',(req,res)=>{
+		if (req.body.id_componente == null ||req.body.id_componente == "null"||req.body.id_componente == "") {
+			res.json("null");
+		} else {
+			User.getImagenesPartidas(req.body.id_componente,(err,data)=>{
+				if(err){ res.status(204).json(err);}
+				else{
+					res.json(data);	
+				}
+			})
+		}
+    })
 }
