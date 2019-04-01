@@ -1472,10 +1472,11 @@ userModel.getValGeneralPeriodos  = (id_ficha,anyo,callback)=>{
                         delete fila.mes
                         delete fila.anyo
                         delete fila.id_ficha
+                        fila.fecha_inicial = fila.fecha_inicial.toLocaleString()
                         if(i< res.length-1){
-                            fila.fecha_final = res[i+1].fecha_inicial
+                            fila.fecha_final = res[i+1].fecha_inicial.toLocaleString()
                         }else{
-                            fila.fecha_final = new Date();
+                            fila.fecha_final = new Date().toLocaleString();
                         }
                         
                         
