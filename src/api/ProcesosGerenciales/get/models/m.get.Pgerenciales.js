@@ -182,7 +182,7 @@ userModel.getImagenesPorObra = (id_ficha,callback)=>{
         pool.getConnection(function(err ,conn){
                 if(err){ callback(err);}        
                 else{
-                        conn.query("SELECT accesos.id_acceso,cargos.nombre cargo_nombre, CONCAT(usuarios.apellido_paterno, ' ', usuarios.apellido_materno, ' ', usuarios.nombre) nombre_usuario, usuarios.celular, usuarios.direccion, usuarios.dni, usuarios.email FROM fichas_has_accesos LEFT JOIN accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo LEFT JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario where fichas_has_accesos.Fichas_id_ficha = ? order by cargos.id_Cargo",id_ficha,(err,res)=>{
+                        conn.query("/*********Consulta Imagenes por Obra************/ SELECT componentes.fichas_id_ficha, partidas.id_partida, partidas.item Item_Partida, partidas.descripcion descripcion_Partida, imagen, imagenAlt, avanceactividades.fecha, avanceactividades.descripcion Desripcion_Imagen FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE imagen IS NOT NULL and componentes.fichas_id_ficha = ?",id_ficha,(err,res)=>{
                                 if(err){
                                         callback(err);                
                                 }
