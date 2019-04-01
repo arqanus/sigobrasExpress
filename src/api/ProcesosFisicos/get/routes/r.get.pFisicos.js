@@ -262,7 +262,7 @@ module.exports = function(app){
                     User.getValGeneralPeriodos(req.body.id_ficha,anyos[0].anyo,(err,periodos)=>{
                         if(err){ res.status(204).json(err);}
                         else{
-                            User.getValGeneralResumenPeriodo(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha_final,(err,resumen)=>{
+                            User.getValGeneralResumenPeriodo(req.body.id_ficha,periodos[0].fecha_inicial,periodos[0].fecha_final,(err,resumen)=>{
                                 if(err){ res.status(204).json(err);}
                                 else{
                                     User.getValGeneralComponentes(req.body.id_ficha,(err,componentes)=>{
