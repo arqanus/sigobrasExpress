@@ -1474,6 +1474,12 @@ userModel.getValGeneralPeriodos  = (id_ficha,anyo,callback)=>{
                         delete fila.mes
                         delete fila.anyo
                         delete fila.id_ficha
+                        if(i< res.length-1){
+                            fila.fecha_final = res[i+1].fecha_inicial
+                        }else{
+                            fila.fecha_final = new Date();
+                        }
+                        
                         
                     }              
             
@@ -1721,7 +1727,7 @@ userModel.getImagenesComponentes = (id_ficha,callback)=>{
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
         else{
-            conn.query("SELECT id_componente,numero,nombre from componentes where componentes.fichas_id_ficha=?",id_ficha,(error,res)=>{ if(error){
+            conn.query("SELECT id_componente,numero,componentes.nombre from componentes left join partidas on partidas.componentes_id_componente = componentes.id_componente left join actividades on actividades.Partidas_id_partida = partidas.id_partida left join avanceactividades on avanceactividades.Actividades_id_actividad = actividades.id_actividad where avanceactividades.imagen is not null and componentes.fichas_id_ficha=? group by componentes.id_componente",id_ficha,(error,res)=>{ if(error){
                     callback(error);
                 }else if(res.length == 0){
                     console.log("vacio");                    
