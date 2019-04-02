@@ -916,8 +916,18 @@ userModel.getCortes = (id_ficha,callback)=>{
                 if(error){
                     callback(error);
                 }else if(res.length == 0){
-                    console.log("vacio");                    
-                    callback(null,"vacio");
+                    console.log("fecha_creada");
+                    
+                    var fecha_creada = 
+                        [
+                            {
+                                "fecha_inicial": "2000-01-20T16:05:00.000Z",
+                                "fecha_final": new Date()
+                            }
+                           
+                        ]
+                    
+                    callback(null,fecha_creada);
                     conn.destroy()            
                 }else{
                     for (let i = 0; i < res.length; i++) {
@@ -926,8 +936,7 @@ userModel.getCortes = (id_ficha,callback)=>{
                             res[i].fecha_final = res[i+1].fecha_inicial
                         }else{
                             res[i].fecha_final = new Date();
-                        }            
-                        
+                        }      
                     }
                     callback(null,res);
                     conn.destroy()
@@ -944,7 +953,7 @@ userModel.avanceComparativoDiagramaGantt = (id_ficha,fecha_inicial,fecha_final,c
     
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
-        else{conn.query("SELECT cronogramamensual.fichas_id_ficha, DATE_FORMAT(cronogramamensual.mes, '%M ') mes, DATE_FORMAT(cronogramamensual.mes, '%Y ') anyo, programado programado_monto, programado / tb_presupuesto.presupuesto * 100 programado_porcentaje, COALESCE(tb_fisico.fisico_monto, 0) fisico_monto, COALESCE(tb_fisico.fisico_monto, 0) / tb_presupuesto.presupuesto * 100 fisico_porcentaje, COALESCE(financieroEjecutado, 0) financiero_monto, COALESCE(financieroEjecutado, 0) / tb_presupuesto.presupuesto * 100 financiero_porcentaje FROM cronogramamensual LEFT JOIN (SELECT componentes.fichas_id_ficha, estados.codigo, DATE_FORMAT(avanceactividades.fecha, '%M ') mes, DATE_FORMAT(avanceactividades.fecha, '%Y ') anyo, SUM(avanceactividades.valor) fisico_monto FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.id_historialEstado = avanceactividades.historialEstados_id_historialEstado LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado GROUP BY DATE_FORMAT(avanceactividades.fecha, '%M %Y ') , avanceactividades.historialEstados_id_historialEstado ORDER BY avanceactividades.fecha) tb_fisico ON tb_fisico.fichas_id_ficha = cronogramamensual.fichas_id_ficha AND tb_fisico.anyo = DATE_FORMAT(cronogramamensual.mes, '%Y ') AND tb_fisico.mes = DATE_FORMAT(cronogramamensual.mes, '%M ') LEFT JOIN (SELECT componentes.fichas_id_ficha, SUM(componentes.presupuesto) presupuesto FROM componentes GROUP BY componentes.fichas_id_ficha) tb_presupuesto ON tb_presupuesto.fichas_id_ficha = cronogramamensual.fichas_id_ficha where cronogramamensual.fichas_id_ficha = ?",[fecha_inicial,fecha_inicial,fecha_final,id_ficha],(error,res)=>{ 
+        else{conn.query("SELECT tb_fisico.codigo, cronogramamensual.fichas_id_ficha, DATE_FORMAT(cronogramamensual.mes, '%M ') mes, DATE_FORMAT(cronogramamensual.mes, '%Y ') anyo, programado programado_monto, programado / tb_presupuesto.presupuesto * 100 programado_porcentaje, COALESCE(tb_fisico.fisico_monto, 0) fisico_monto, COALESCE(tb_fisico.fisico_monto, 0) / tb_presupuesto.presupuesto * 100 fisico_porcentaje, COALESCE(financieroEjecutado, 0) financiero_monto, COALESCE(financieroEjecutado, 0) / tb_presupuesto.presupuesto * 100 financiero_porcentaje FROM cronogramamensual LEFT JOIN (SELECT componentes.fichas_id_ficha, estados.codigo, DATE_FORMAT(avanceactividades.fecha, '%M ') mes, DATE_FORMAT(avanceactividades.fecha, '%Y ') anyo, SUM(avanceactividades.valor) fisico_monto FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.id_historialEstado = avanceactividades.historialEstados_id_historialEstado LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado GROUP BY DATE_FORMAT(avanceactividades.fecha, '%M %Y ') ORDER BY avanceactividades.fecha) tb_fisico ON tb_fisico.fichas_id_ficha = cronogramamensual.fichas_id_ficha AND tb_fisico.anyo = DATE_FORMAT(cronogramamensual.mes, '%Y ') AND tb_fisico.mes = DATE_FORMAT(cronogramamensual.mes, '%M ') LEFT JOIN (SELECT componentes.fichas_id_ficha, SUM(componentes.presupuesto) presupuesto FROM componentes GROUP BY componentes.fichas_id_ficha) tb_presupuesto ON tb_presupuesto.fichas_id_ficha = cronogramamensual.fichas_id_ficha WHERE DATE_FORMAT(?, '%Y-%m-01 ') <= DATE_FORMAT(cronogramamensual.mes, '%Y-%m-01') AND DATE_FORMAT(?, '%Y-%m-01 ') > DATE_FORMAT(cronogramamensual.mes, '%Y-%m-01') and cronogramamensual.fichas_id_ficha = ? ",[fecha_inicial,fecha_final,id_ficha],(error,res)=>{ 
             if(error){
                     callback(error);
                 }else if(res.length == 0){
@@ -954,6 +963,11 @@ userModel.avanceComparativoDiagramaGantt = (id_ficha,fecha_inicial,fecha_final,c
                     conn.destroy()
                 
                 }else{
+                    // for (let i = 0; i < res.length; i++) {
+                    //     const fila = res[i];
+                    //     if()
+                    //     fila.periodo =
+                    // }
                     callback(null,res);
                     conn.destroy()
                 }
