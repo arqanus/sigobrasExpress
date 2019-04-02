@@ -1659,6 +1659,7 @@ userModel.getValGeneralPartidas = (id_componente,fecha_inicial,fecha_final,callb
                     var valor_total = 0
                     
                     var valor_saldo  = 0
+                    var precio_parcial = 0
                     
                     for (let i = 0; i < res.length; i++) {
                         const fila = res[i];
@@ -1666,6 +1667,7 @@ userModel.getValGeneralPartidas = (id_componente,fecha_inicial,fecha_final,callb
                         valor_actual += fila.valor_actual 
                         valor_total += fila.valor_total 
                         valor_saldo += fila.valor_saldo 
+                        precio_parcial += fila.precio_parcial
 
                         if(fila.tipo == "titulo"){
                             fila.metrado  = ""
@@ -1711,6 +1713,7 @@ userModel.getValGeneralPartidas = (id_componente,fecha_inicial,fecha_final,callb
                             "valor_actual":formato(valor_actual ),
                             "valor_total":formato(valor_total ),
                             "valor_saldo":formato(valor_saldo ),
+                            "precio_parcial":formato(precio_parcial),
                             "partidas":res
                         }
                         );
