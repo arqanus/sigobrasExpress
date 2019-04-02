@@ -1591,8 +1591,20 @@ userModel.getValGeneralResumenPeriodo = (id_ficha,fecha_inicial,fecha_final,call
                     conn.destroy()
                 
                 }else{
+                    var presupuesto = 0 
+                    var valor_anterior = 0 
+                    var valor_actual = 0 
+                    var valor_total = 0 
+                    var valor_saldo = 0 
+                    
                     for (let i = 0; i < res.length; i++) {
                         const fila = res[i];
+                        presupuesto +=  fila.presupuesto 
+                        valor_anterior += fila.valor_anterior
+                        valor_actual += fila.valor_actual
+                        valor_total += fila.valor_total
+                        valor_saldo += fila.valor_saldo
+                        
                         fila.presupuesto = formato(fila.presupuesto)
                         fila.valor_anterior = formato(fila.valor_anterior)
                         fila.porcentaje_anterior = formato(fila.porcentaje_anterior)
@@ -1605,7 +1617,16 @@ userModel.getValGeneralResumenPeriodo = (id_ficha,fecha_inicial,fecha_final,call
                         
                     }
           
-                    callback(null,res);
+                    callback(null,
+                        {
+                            "presupuesto":formato(presupuesto),
+                            "valor_anterior":formato( valor_anterior),
+                            "valor_actual":formato(valor_actual),
+                            "valor_total":formato( valor_total),
+                            "valor_saldo":formato(valor_saldo),
+                            "componentes":res
+                        }
+                        );
                     conn.destroy()
                 }
                 
@@ -1631,8 +1652,21 @@ userModel.getValGeneralPartidas = (id_componente,fecha_inicial,fecha_final,callb
                     conn.destroy()
                 
                 }else{
+                    var valor_anterior  = 0
+                    
+                    var valor_actual  = 0
+                    
+                    var valor_total = 0
+                    
+                    var valor_saldo  = 0
+                    
                     for (let i = 0; i < res.length; i++) {
                         const fila = res[i];
+                        valor_anterior +=  fila.valor_anterior 
+                        valor_actual += fila.valor_actual 
+                        valor_total += fila.valor_total 
+                        valor_saldo += fila.valor_saldo 
+
                         if(fila.tipo == "titulo"){
                             fila.metrado  = ""
                             fila.costo_unitario  = ""
@@ -1671,7 +1705,15 @@ userModel.getValGeneralPartidas = (id_componente,fecha_inicial,fecha_final,callb
                         
                     }
           
-                    callback(null,res);
+                    callback(null,
+                        {
+                            "valor_anterior":formato(valor_anterior),
+                            "valor_actual ":formato(valor_actual ),
+                            "valor_total ":formato(valor_total ),
+                            "valor_saldo ":formato(valor_saldo ),
+                            "partidas":res
+                        }
+                        );
                     conn.destroy()
                 }
                 
