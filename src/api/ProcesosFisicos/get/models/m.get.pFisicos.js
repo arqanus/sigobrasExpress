@@ -389,7 +389,7 @@ userModel.getPartidas = (id_componente,callback)=>{
                             fila.metrados_costo_saldo = ""
                             fila.porcentaje = ""
                             fila.porcentaje_negatividad = ""
-                            fila.prioridad = "1"
+                            fila.prioridad = 1
 
                         }else{
                             fila.metrado = formato(fila.metrado)
@@ -400,7 +400,7 @@ userModel.getPartidas = (id_componente,callback)=>{
                             fila.metrados_saldo = formato(fila.metrados_saldo)
                             fila.metrados_costo_saldo = formato(fila.metrados_costo_saldo)
                             fila.porcentaje = formato(fila.porcentaje)
-                            fila.prioridad = "1"
+                            fila.prioridad = 1
                         }
 
                         if(fila.partida_duracion!=""){
