@@ -402,4 +402,16 @@ module.exports = function(app){
 			})
 		}
     })
+    app.post('/getImagenesListaPorPartida',(req,res)=>{
+		if (req.body.id_partida == null) {
+			res.json("null");
+		} else {
+			User.getImagenesListaPorPartida(req.body.id_partida,(err,data)=>{
+				if(err){ res.status(204).json(err);}
+				else{
+					res.json(data);	
+				}
+			})
+		}
+    })
 }
