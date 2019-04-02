@@ -1708,9 +1708,9 @@ userModel.getValGeneralPartidas = (id_componente,fecha_inicial,fecha_final,callb
                     callback(null,
                         {
                             "valor_anterior":formato(valor_anterior),
-                            "valor_actual ":formato(valor_actual ),
-                            "valor_total ":formato(valor_total ),
-                            "valor_saldo ":formato(valor_saldo ),
+                            "valor_actual":formato(valor_actual ),
+                            "valor_total":formato(valor_total ),
+                            "valor_saldo":formato(valor_saldo ),
                             "partidas":res
                         }
                         );
