@@ -377,13 +377,14 @@ module.exports = function(app){
 			User.getImagenesComponentes(req.body.id_ficha,(err,componentes)=>{
 				if(err){ res.status(204).json(err);}
 				else{
-                    User.getPartidas(componentes[0].id_componente,(err,partidas)=>{
-                        if(err){ res.status(204).json(err);}
-                        else{
-                            componentes[0].partidas = partidas
-                            res.json(componentes);	
-                        }
-                    })
+                    res.json(componentes)
+                    // User.getPartidas(componentes[0].id_componente,(err,partidas)=>{
+                    //     if(err){ res.status(204).json(err);}
+                    //     else{
+                    //         componentes[0].partidas = partidas
+                    //         res.json(componentes);	
+                    //     }
+                    // })
                    
 				}
 			})
