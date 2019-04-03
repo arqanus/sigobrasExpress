@@ -71,6 +71,7 @@ module.exports = function(app){
 									res.json(
 										{
 											"fecha_inicial":fecha_inicio.fecha_inicial,
+											"fecha_final":cronogramadinero[cronogramadinero.length-1].fecha,
 											"avance_Acumulado":avance.avance,
 											"cronogramadinero":cronogramadinero
 										}
