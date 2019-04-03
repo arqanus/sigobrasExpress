@@ -1849,7 +1849,7 @@ userModel.getImagenesPartidas = (id_componente,callback)=>{
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
         else{
-            conn.query("/*COALESCE(parcial_negativo / parcial_positivo, 0) + 1 porcentaje_negatividad_ajustado*/SELECT partida.id_partida, partida.tipo, partida.item, partida.descripcion, imagenes.numero_imagenes, partida.porcentaje * (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) porcentaje_avance, imagenes.imagen primera_imagen, imagenes.imagenAlt primera_imagenAlt, ultima_imagen.imagen ultima_imagen, ultima_imagen.imagenAlt ultima_imagenAlt FROM (SELECT partidas.componentes_id_componente, partidas.id_partida, partidas.tipo, partidas.item, partidas.descripcion, SUM(avanceactividades.valor) / partidas.metrado * 100 porcentaje FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad GROUP BY partidas.id_partida) partida LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_positivo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE actividades.parcial > 0 GROUP BY partidas.id_partida) p1 ON p1.id_partida = partida.id_partida LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_negativo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE actividades.parcial < 0 GROUP BY partidas.id_partida) p2 ON p2.id_partida = partida.id_partida LEFT JOIN (SELECT partidas.id_partida, COUNT(avanceactividades.fecha) numero_imagenes, avanceactividades.imagen, avanceactividades.imagenAlt FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.imagen IS NOT NULL GROUP BY partidas.id_partida) imagenes ON imagenes.id_partida = partida.id_partida LEFT JOIN (SELECT partidas.id_partida, avanceactividades.imagen, avanceactividades.imagenAlt FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.id_AvanceActividades = (SELECT MAX(b3.id_AvanceActividades) ultima FROM partidas b1 LEFT JOIN actividades b2 ON b2.Partidas_id_partida = b1.id_partida INNER JOIN avanceactividades b3 ON b3.Actividades_id_actividad = b2.id_actividad WHERE b1.id_partida = partidas.id_partida AND b3.imagen IS NOT NULL) GROUP BY partidas.id_partida) ultima_imagen ON ultima_imagen.id_partida = partida.id_partida WHERE partida.componentes_id_componente = ?",id_componente,(error,res)=>{ 
+            conn.query("/*COALESCE(parcial_negativo / parcial_positivo, 0) + 1 porcentaje_negatividad_ajustado*/SELECT partida.id_partida, partida.tipo, partida.item, partida.descripcion, imagenes.numero_imagenes, partida.porcentaje * (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) porcentaje_avance FROM (SELECT partidas.componentes_id_componente, partidas.id_partida, partidas.tipo, partidas.item, partidas.descripcion, SUM(avanceactividades.valor) / partidas.metrado * 100 porcentaje FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad GROUP BY partidas.id_partida) partida LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_positivo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE actividades.parcial > 0 GROUP BY partidas.id_partida) p1 ON p1.id_partida = partida.id_partida LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_negativo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE actividades.parcial < 0 GROUP BY partidas.id_partida) p2 ON p2.id_partida = partida.id_partida LEFT JOIN (SELECT partidas.id_partida, COUNT(avanceactividades.fecha) numero_imagenes FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.imagen IS NOT NULL GROUP BY partidas.id_partida) imagenes ON imagenes.id_partida = partida.id_partida WHERE partida.componentes_id_componente = ?",id_componente,(error,res)=>{ 
                 if(error){
                     callback(error);
                 }else if(res.length == 0){
@@ -1861,24 +1861,13 @@ userModel.getImagenesPartidas = (id_componente,callback)=>{
                         const fila = res[i];
                         if(fila.tipo=="titulo"){
                             fila.numero_imagenes = ""
-                            fila.porcentaje_avance = ""
-                            fila.primera_imagen = ""
-                            fila.primera_imagenAlt = ""
-                            fila.ultima_imagen = ""
-                            fila.ultima_imagenAlt = ""
+                            fila.porcentaje_avance = ""                                       
                         }else{
                             fila.numero_imagenes = formato(fila.numero_imagenes)
                             fila.porcentaje_avance = formato(fila.porcentaje_avance)
                             
                         }
-
-                  
-                 
-                        
-                        
                     }
-
-                    
                     callback(null,res);
                     conn.destroy()
                 }
@@ -1906,6 +1895,54 @@ userModel.getImagenesListaPorPartida = (id_componente,callback)=>{
                    
 
                     
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }
+        
+                
+    })
+}
+userModel.getImagenesUltimaImagenPartida = (id_partida,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){ callback(err);}
+        else{
+            conn.query("SELECT avanceactividades.id_AvanceActividades,fecha, valor, imagen, imagenAlt, descripcion FROM actividades INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.imagen IS NOT NULL AND actividades.Partidas_id_partida = ? order by avanceactividades.id_AvanceActividades desc limit 1",id_partida,(error,res)=>{ 
+                if(error){
+                    callback(error);
+                }else if(res.length == 0){
+                    console.log("vacio");                    
+                    callback(null,"vacio");
+                    conn.destroy()
+                }else{      
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }
+        
+                
+    })
+}
+userModel.getImagenesPrimeraImagenPartida = (id_partida,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){ callback(err);}
+        else{
+            conn.query("SELECT avanceactividades.id_AvanceActividades,fecha, valor, imagen, imagenAlt, descripcion FROM actividades INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.imagen IS NOT NULL AND actividades.Partidas_id_partida = ? order by avanceactividades.id_AvanceActividades limit 1",id_partida,(error,res)=>{ 
+                if(error){
+                    callback(error);
+                }else if(res.length == 0){
+                    console.log("vacio");                    
+                    callback(null,"vacio");
+                    conn.destroy()
+                }else{      
                     callback(null,res);
                     conn.destroy()
                 }

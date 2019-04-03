@@ -263,8 +263,7 @@ module.exports = function(app){
                     "imagen":"/static/"+fields.codigo_obra+ruta,
                     "imagenAlt":fields.codigo_obra,
                     "descripcion":"IMAGEN",
-                    "observacion":"IMAGEN",                
-                    "fecha":new Date(fecha()),
+                    "observacion":"IMAGEN",                                    
                     "historialEstados_id_historialEstado":historialEstados_id_historialEstado
                   }
                   User.postAvanceActividad(imagen,(err,data)=>{
