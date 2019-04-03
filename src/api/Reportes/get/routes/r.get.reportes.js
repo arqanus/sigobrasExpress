@@ -186,7 +186,7 @@ module.exports = function(app){
 		if(req.body.id_ficha == null){
 			res.json("null");		
 		}else{
-			User.avanceComparativoDiagramaGantt(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha_final,(err,data)=>{							
+			User.histogramaAvanceObra(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha_final,(err,data)=>{							
 				if(err){ res.status(204).json(err);}
 				else{
 					res.json(data)
@@ -196,6 +196,19 @@ module.exports = function(app){
 		
 	})
 	//6.10 histograma del avance de obras curva s
+	app.post('/histogramaAvanceObra',(req,res)=>{
+		if(req.body.id_ficha == null){
+			res.json("null");		
+		}else{
+			User.histogramaAvanceObra(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha_final,(err,data)=>{							
+				if(err){ res.status(204).json(err);}
+				else{
+					res.json(data)
+				}
+			})
+		}
+		
+	})
 	//6.11 proyeccion de trabajos prosxioms mes cronograma
 	//6.12 informe mensual
 	app.post('/informeControlEjecucionObras',(req,res)=>{
@@ -240,41 +253,7 @@ module.exports = function(app){
 			})
 		}
 	});
-	app.post('/getcronogramadinero',(req,res)=>{
-		if(req.body.id_ficha == null){
-			res.json("null");		
-		}else{
-			User.getFechaInicioCronograma(req.body.id_ficha,(err,fecha_inicio)=>{			
-				if(err =="vacio")				{
-					res.json(err)
-				}
-				else if(err){ res.status(204).json(err);}
-				else{
-					User.getAcumuladoFisicoAnterior(req.body.id_ficha,fecha_inicio.fecha_inicial,(err,avance)=>{							
-						if(err){ res.status(204).json(err);}
-						else{
-							User.getcronogramadinero(req.body.id_ficha,fecha_inicio.fecha_inicial,(err,cronogramadinero)=>{							
-								if(err){ res.status(204).json(err);}
-								else{
-									res.json(
-										{
-											"fecha_inicial":fecha_inicio.fecha_inicial,
-											"avance_Acumulado":avance.avance,
-											"cronogramadinero":cronogramadinero
-										}
-									)
-								}
-				
-							})
-						}
-		
-					})
-				}
-
-			})
-		}
-		
-	})
+	
 
 
 }

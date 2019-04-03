@@ -924,22 +924,12 @@ userModel.getCortes = (id_ficha,callback)=>{
     
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
-        else{conn.query("SELECT MIN(avanceactividades.fecha) fecha_inicial FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.id_historialEstado = avanceactividades.historialestados_id_historialEstado LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado WHERE estados.nombre = 'Corte' AND componentes.fichas_id_ficha = ? GROUP BY avanceactividades.historialEstados_id_historialEstado ",[id_ficha],(error,res)=>{ 
+        else{conn.query(" SELECT tb.fecha_inicial FROM ((SELECT fichas.id_ficha, fichas.fecha_inicial_real fecha_inicial FROM fichas) UNION (SELECT historialestados.Fichas_id_ficha id_ficha, historialestados.fecha fecha_inicial FROM avanceactividades LEFT JOIN historialestados ON historialestados.id_historialEstado = avanceactividades.historialestados_id_historialEstado LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado WHERE estados.codigo = 'C' GROUP BY avanceactividades.historialEstados_id_historialEstado)) tb WHERE tb.id_ficha = ? order by fecha_inicial",[id_ficha],(error,res)=>{ 
                 if(error){
                     callback(error);
                 }else if(res.length == 0){
-                    console.log("fecha_creada");
-                    
-                    var fecha_creada = 
-                        [
-                            {
-                                "fecha_inicial": "2000-01-20T16:05:00.000Z",
-                                "fecha_final": new Date()
-                            }
-                           
-                        ]
-                    
-                    callback(null,fecha_creada);
+        
+                    callback(null,"vacio");
                     conn.destroy()            
                 }else{
                     for (let i = 0; i < res.length; i++) {
@@ -948,7 +938,12 @@ userModel.getCortes = (id_ficha,callback)=>{
                             res[i].fecha_final = res[i+1].fecha_inicial
                         }else{
                             res[i].fecha_final = new Date();
-                        }      
+                        }
+                        if(i==0){
+                            res[i].codigo = "INICIO"
+                        }else{
+                            res[i].codigo = "CORTE "+i
+                        }
                     }
                     callback(null,res);
                     conn.destroy()
@@ -961,11 +956,11 @@ userModel.getCortes = (id_ficha,callback)=>{
                 
     })
 }
-userModel.avanceComparativoDiagramaGantt = (id_ficha,fecha_inicial,fecha_final,callback)=>{
+userModel.histogramaAvanceObra = (id_ficha,fecha_inicial,fecha_final,callback)=>{
     
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
-        else{conn.query("SELECT tb_fisico.codigo, cronogramamensual.fichas_id_ficha, DATE_FORMAT(cronogramamensual.mes, '%M ') mes, DATE_FORMAT(cronogramamensual.mes, '%Y ') anyo, programado programado_monto, programado / tb_presupuesto.presupuesto * 100 programado_porcentaje, COALESCE(tb_fisico.fisico_monto, 0) fisico_monto, COALESCE(tb_fisico.fisico_monto, 0) / tb_presupuesto.presupuesto * 100 fisico_porcentaje, COALESCE(financieroEjecutado, 0) financiero_monto, COALESCE(financieroEjecutado, 0) / tb_presupuesto.presupuesto * 100 financiero_porcentaje FROM cronogramamensual LEFT JOIN (SELECT componentes.fichas_id_ficha, estados.codigo, DATE_FORMAT(avanceactividades.fecha, '%M ') mes, DATE_FORMAT(avanceactividades.fecha, '%Y ') anyo, SUM(avanceactividades.valor) fisico_monto FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.id_historialEstado = avanceactividades.historialEstados_id_historialEstado LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado GROUP BY DATE_FORMAT(avanceactividades.fecha, '%M %Y ') ORDER BY avanceactividades.fecha) tb_fisico ON tb_fisico.fichas_id_ficha = cronogramamensual.fichas_id_ficha AND tb_fisico.anyo = DATE_FORMAT(cronogramamensual.mes, '%Y ') AND tb_fisico.mes = DATE_FORMAT(cronogramamensual.mes, '%M ') LEFT JOIN (SELECT componentes.fichas_id_ficha, SUM(componentes.presupuesto) presupuesto FROM componentes GROUP BY componentes.fichas_id_ficha) tb_presupuesto ON tb_presupuesto.fichas_id_ficha = cronogramamensual.fichas_id_ficha WHERE DATE_FORMAT(?, '%Y-%m-01 ') <= DATE_FORMAT(cronogramamensual.mes, '%Y-%m-01') AND DATE_FORMAT(?, '%Y-%m-01 ') > DATE_FORMAT(cronogramamensual.mes, '%Y-%m-01') and cronogramamensual.fichas_id_ficha = ? ",[fecha_inicial,fecha_final,id_ficha],(error,res)=>{ 
+        else{conn.query("SELECT tb_fisico.codigo, DATE_FORMAT(cronogramamensual.mes, '%M') mes, DATE_FORMAT(cronogramamensual.mes, '%Y') anyo, programado programado_monto, programado / tb_presupuesto.presupuesto * 100 programado_porcentaje, COALESCE(tb_fisico.fisico_monto, 0) fisico_monto, COALESCE(tb_fisico.fisico_monto, 0) / tb_presupuesto.presupuesto * 100 fisico_porcentaje, COALESCE(financieroEjecutado, 0) financiero_monto, COALESCE(financieroEjecutado, 0) / tb_presupuesto.presupuesto * 100 financiero_porcentaje FROM cronogramamensual LEFT JOIN (SELECT componentes.fichas_id_ficha, min(estados.codigo) codigo, DATE_FORMAT(avanceactividades.fecha, '%m ') mes, DATE_FORMAT(avanceactividades.fecha, '%Y ') anyo, SUM(avanceactividades.valor) fisico_monto FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.id_historialEstado = avanceactividades.historialEstados_id_historialEstado LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado WHERE componentes.fichas_id_ficha = 92 GROUP BY DATE_FORMAT(avanceactividades.fecha, '%m %Y') ORDER BY avanceactividades.fecha) tb_fisico ON tb_fisico.fichas_id_ficha = cronogramamensual.fichas_id_ficha AND tb_fisico.anyo = DATE_FORMAT(cronogramamensual.mes, '%Y') AND tb_fisico.mes = DATE_FORMAT(cronogramamensual.mes, '%m') LEFT JOIN (SELECT componentes.fichas_id_ficha, SUM(componentes.presupuesto) presupuesto FROM componentes GROUP BY componentes.fichas_id_ficha) tb_presupuesto ON tb_presupuesto.fichas_id_ficha = cronogramamensual.fichas_id_ficha WHERE DATE_FORMAT(?, '%Y-%m-01 ') <= DATE_FORMAT(cronogramamensual.mes, '%Y-%m-01') AND DATE_FORMAT(?, '%Y-%m-01 ') > DATE_FORMAT(cronogramamensual.mes, '%Y-%m-01') AND cronogramamensual.fichas_id_ficha = ?",[fecha_inicial,fecha_final,id_ficha],(error,res)=>{ 
             if(error){
                     callback(error);
                 }else if(res.length == 0){
@@ -975,12 +970,67 @@ userModel.avanceComparativoDiagramaGantt = (id_ficha,fecha_inicial,fecha_final,c
                     conn.destroy()
                 
                 }else{
-                    // for (let i = 0; i < res.length; i++) {
-                    //     const fila = res[i];
-                    //     if()
-                    //     fila.periodo =
-                    // }
-                    callback(null,res);
+                    var programado_acumulado = 0
+                    var fisico_acumulado = 0
+                    var financiero_acumulado = 0
+
+                    var programado_monto = 0
+                    var fisico_monto = 0
+                    var financiero_monto = 0
+
+                    var grafico_programado = []
+                    var grafico_fisico = []
+                    var grafico_financiero = []
+                    var periodos = []
+
+                    for (let i = 0; i < res.length; i++) {
+                        const fila = res[i];
+
+                        programado_acumulado+= fila.programado_porcentaje
+                        fisico_acumulado+= fila.fisico_porcentaje
+                        financiero_acumulado+= fila.financiero_porcentaje
+                        programado_monto+= fila.programado_monto
+                        fisico_monto+= fila.fisico_monto
+                        financiero_monto+= fila.financiero_monto
+
+                        fila.programado_acumulado = programado_acumulado
+                        fila.fisico_acumulado = fisico_acumulado
+                        fila.financiero_acumulado = financiero_acumulado
+
+                        
+                        
+                        if(i==0 && fila.codigo == null){
+                            fila.periodo = "INICIO "+ fila.mes+" "+fila.anyo
+                        }else if(fila.codigo == "C"){
+                            fila.periodo = "CORTE "+ fila.mes+" "+fila.anyo
+                        }else{
+                            fila.periodo = fila.mes+" "+fila.anyo
+                        }
+                        delete fila.codigo
+                        delete fila.mes
+                        delete fila.anyo
+
+                        grafico_programado.push(programado_acumulado)
+                        grafico_fisico.push(fisico_acumulado)
+                        grafico_financiero.push(financiero_acumulado)
+                        periodos.push(fila.periodo)
+                        
+                    }
+
+                    callback(null,{
+                        
+                        "programado_monto_total":programado_monto,
+                        "programado_porcentaje_total":programado_acumulado,
+                        "fisico_monto_total":fisico_monto,
+                        "fisico_porcentaje_total":fisico_acumulado,
+                        "financiero_monto_total":financiero_monto,
+                        "financiero_porcentaje_total":financiero_acumulado,
+                        "grafico_programado":grafico_programado,
+                        "grafico_fisico":grafico_fisico,
+                        "grafico_financiero":grafico_financiero,
+                        "grafico_periodos":periodos,
+                        "data":res
+                    });
                     conn.destroy()
                 }
                 
@@ -992,6 +1042,7 @@ userModel.avanceComparativoDiagramaGantt = (id_ficha,fecha_inicial,fecha_final,c
     })
 }
 //6.10 histograma del avance de obras curva s
+//se usa el histogramaAvanceObra del 6.9
 //6.11 proyeccion de trabajos prosxioms mes cronograma
 //6.12 informe
 userModel.getInformeImagen = (id_ficha,callback)=>{
@@ -1091,95 +1142,7 @@ userModel.getcronograma = (id_ficha,callback)=>{
         }                
     })
 } 
-userModel.getFechaInicioCronograma = (id_ficha,callback)=>{
-    
-    pool.getConnection(function(err ,conn){
-        if(err){                        
-            callback(err);
-        }
-        else{     
-            //insertar datos query
-            conn.query("SELECT DATE_FORMAT(coalesce(fecha_corte.fecha_inicial,fichas.fecha_inicial_real), '%Y-%m-%d') fecha_inicial FROM fichas LEFT JOIN (SELECT componentes.fichas_id_ficha, MIN(avanceactividades.fecha) fecha_inicial FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.id_historialEstado = avanceactividades.historialestados_id_historialEstado LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado WHERE estados.nombre = 'Corte' GROUP BY avanceactividades.historialEstados_id_historialEstado ORDER BY historialestados.id_historialEstado DESC LIMIT 1) fecha_corte ON fecha_corte.fichas_id_ficha = fichas.id_ficha where fichas.id_ficha = ? ",[id_ficha],(error,res)=>{ 
-                if(error){
-                    console.log(error);                    
-                    callback(error.code);
-                }
-                else if(res.length == 0){
-                    console.log("vacio");                    
-                    callback("vacio","Fecha Real No ingresada");
-                    conn.destroy()
-                
-                }else{    
-                    callback(null,res[0]);
-                    conn.destroy()
-                }
-                
-                
-                
-            })
-        }                
-    })
-} 
-userModel.getAcumuladoFisicoAnterior = (id_ficha,fecha_inicial,callback)=>{
-    
-    pool.getConnection(function(err ,conn){
-        if(err){                        
-            callback(err);
-        }
-        else{     
-            //insertar datos query
-            conn.query("SELECT coalesce(SUM(avanceactividades.valor), 0) avance FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad where componentes.fichas_id_ficha = ? and avanceactividades.fecha < ?",[id_ficha,fecha_inicial],(error,res)=>{ 
-                if(error){
-                    console.log(error);                    
-                    callback(error.code);
-                    conn.destroy()                
-                }else{    
-                    callback(null,res[0]);
-                    conn.destroy()
-                }
-                
-                
-                
-            })
-        }                
-    })
-}
-userModel.getcronogramadinero = (id_ficha,fecha_inicio,callback)=>{
-    
-    pool.getConnection(function(err ,conn){
-        if(err){                        
-            callback(err);
-        }
-        else{     
-            //insertar datos query
-            conn.query("SELECT cronogramamensual.fichas_id_ficha, DATE_FORMAT(cronogramamensual.mes, '%M %Y') Anyo_Mes, cronogramamensual.programado programado_dinero, cronogramamensual.financieroEjecutado financiero_dinero, fisico.avance fisico_dinero,DATE_FORMAT(cronogramamensual.mes, '%Y-%m-%d') fecha FROM cronogramamensual LEFT JOIN (SELECT componentes.fichas_id_ficha, DATE_FORMAT(avanceactividades.fecha, '%M %Y ') Anyo_Mes, SUM(valor * costo_unitario) avance FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad GROUP BY fichas_id_ficha , DATE_FORMAT(avanceactividades.fecha, '%M %Y ')) fisico ON fisico.fichas_id_ficha = cronogramamensual.fichas_id_ficha AND DATE_FORMAT(cronogramamensual.mes, '%M %Y') = fisico.Anyo_Mes where cronogramamensual.fichas_id_ficha = ? and month(cronogramamensual.mes) >= month(?)",[id_ficha,fecha_inicio],(error,res)=>{ 
-                if(error){
-                    console.log(error);                    
-                    callback(error.code);
-                }else{
-                    var listaMes = []
-                    var programado_dinero = []
-                    var financiero_dinero = []
-                    var fisico_dinero = []
-               
-                    ///ac tres arrays de la consulta
-                    for (let i = 0; i < res.length; i++) {
-                        const element = res[i]; 
-                        listaMes.push(element.Anyo_Mes)
-                        element.programado_dinero= formato(element.programado_dinero)
-                        element.financiero_dinero= formato(element.financiero_dinero)
-                        element.fisico_dinero= formato(element.fisico_dinero)
-                    }
-                    callback(null,res);
-                    conn.destroy()
-                }
-                
-                
-                
-            })
-        }                
-    })
-} 
+ 
 userModel.getinformeControlEjecucionObras = (id_ficha,callback)=>{    
     pool.getConnection(function(err ,conn){
         if(err){ 
