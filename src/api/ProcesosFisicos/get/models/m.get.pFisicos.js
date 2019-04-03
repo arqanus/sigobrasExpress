@@ -1472,7 +1472,7 @@ userModel.getValGeneralExtras = (id_ficha,tipo,callback)=>{
                 
     })
 }
-
+//val general principal
 userModel.getValGeneralAnyos  = (id_ficha,callback)=>{    
     pool.getConnection(function(err ,conn){
         if(err){ 
@@ -1727,7 +1727,7 @@ userModel.getValGeneralPartidas = (id_componente,fecha_inicial,fecha_final,callb
                 
     })
 }
-
+//recursos
 userModel.getActividadesDuracion = (id_ficha,callback)=>{
     
     pool.getConnection(function(err ,conn){
