@@ -1,5 +1,4 @@
 const User = require('../models/m.post.pFinancieros');
-const User2 = require('../../../Reportes/get/models/m.get.reportes');
 
 function soloLetras(req,res,next){
 	var regla = /^[A-Za-z0-9]+$/
@@ -44,24 +43,5 @@ module.exports = function(app){
 	
 		
 	}) 	
-	app.put('/postAvanceFinanciero',(req,res)=>{
-		 console.log("body",req.body);
-				
-			User.postAvanceFinanciero(req.body,(err,data)=>{							
-				if(err){ res.status(204).json(err);}
-				else{
-					User2.getcronograma(req.body[0][0],(err,data)=>{							
-						if(err){ res.status(204).json(err);}
-						else{
-							res.json(data)
-						}
-			
-					})
-				}
 	
-			})
-		
-	
-		
-	})
 }

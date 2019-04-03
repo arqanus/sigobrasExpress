@@ -40,15 +40,22 @@ require('./api/Admin/get/routes/r.get.obras')(app);
 require('./api/Admin/get/routes/r.get.users')(app);
 require('./api/Admin/post/routes/r.post.obras')(app);
 require('./api/Admin/post/routes/r.post.users')(app);
-require('./api/ProcesosFisicos/get/routes/r.get.pFisicos')(app);
-require('./api/ProcesosFisicos/post/routes/r.post.pFisicos')(app);
+
 require('./api/Interfaz/post/routes/r.post.interfaz')(app);
 require('./api/Interfaz/get/routes/r.get.interfaz')(app);
-require('./api/ProcesosGerenciales/get/routes/r.get.Pgerenciales')(app);
-require('./api/Reportes/get/routes/r.get.reportes')(app);
-require('./api/Reportes/post/routes/r.post.reportes')(app);
+
+require('./api/Inicio/get/routes/r.get.Inicio')(app);
+require('./api/Inicio/post/routes/r.post.Inicio')(app);
+
+require('./api/ProcesosFisicos/get/routes/r.get.pFisicos')(app);
+require('./api/ProcesosFisicos/post/routes/r.post.pFisicos')(app);
+
+
 require('./api/ProcesosFinancieros/post/routes/r.post.Pfinancieros')(app);
 require('./api/ProcesosFinancieros/get/routes/r.get.Pfinancieros')(app);
+
+require('./api/Reportes/get/routes/r.get.reportes')(app);
+require('./api/Reportes/post/routes/r.post.reportes')(app);
 
 // require('./routes/rutasProcesosIniciales')(app);
 // require('./routes/rutasProcesosGerenciales')(app);
