@@ -756,32 +756,41 @@ userModel.resumenAvanceFisicoPartidasObraMes = (meses,id_ficha,callback)=>{
                             componente.numero =  fila.numero
                             componente.nombre =  fila.nombre
                             componente.presupuesto =  fila.presupuesto
-                            componente.partidas = [
-                                cabeceras,
-                                [
-                                    fila.item,
-                                    fila.descripcion,
-                                    fila.unidad_medida,
-                                    fila.metrado,
-                                    fila.r0,
-                                    fila.r1,
-                                    fila.avance_acumulado,            
-                                    fila.saldo
-                                ]                                
+                            
+
+                            var temp =[
+                                fila.item,
+                                fila.descripcion,
+                                fila.unidad_medida,
+                                fila.metrado
+                            ]
+                            for (let j = 0; j < cabeceras.length-6; j++) {
+                                temp.push(j+1)                                
+                            }
+                            temp.push(
+                                fila.avance_acumulado,            
+                                fila.saldo
+                            )
+                            componente.partidas = [                                
+                                temp                            
                             ]
                          
                         }else{
+                            var temp =[
+                                fila.item,
+                                fila.descripcion,
+                                fila.unidad_medida,
+                                fila.metrado
+                            ]
+                            for (let j = 0; j < cabeceras.length-6; j++) {
+                                temp.push(j+1)                                
+                            }
+                            temp.push(
+                                fila.avance_acumulado,            
+                                fila.saldo
+                            )
                             componente.partidas.push(
-                                [
-                                    fila.item,
-                                    fila.descripcion,
-                                    fila.unidad_medida,
-                                    fila.metrado,
-                                    fila.r0,
-                                    fila.r1,
-                                    fila.avance_acumulado,            
-                                    fila.saldo
-                                ]                                
+                                temp                            
                             )
                         }
                         lastIdComponente = fila.id_componente
@@ -791,7 +800,10 @@ userModel.resumenAvanceFisicoPartidasObraMes = (meses,id_ficha,callback)=>{
                         
                     }
                     componentes.push(componente)
-                    callback(null,componentes);
+                    callback(null,{
+                        "cabecereras":cabeceras,
+                        "componentes":componentes
+                    });
                     conn.destroy()
                 }
                 
