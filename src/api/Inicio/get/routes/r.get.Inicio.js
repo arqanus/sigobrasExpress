@@ -69,10 +69,11 @@ module.exports = function(app){
 								if(err){ res.status(204).json(err);}
 								else{
 									var fecha_final = null
-									if(cronogramadinero.length==0){
-										fecha_final = cronogramadinero[cronogramadinero.length-1].fecha
-									}else{
+									if(!cronogramadinero ||cronogramadinero.length==0){
 										fecha_final = fecha_inicio.fecha_inicial
+										
+									}else{
+										fecha_final = cronogramadinero[cronogramadinero.length-1].fecha
 									}
 									res.json(
 										{
