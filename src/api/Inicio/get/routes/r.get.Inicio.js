@@ -102,6 +102,9 @@ module.exports = function(app){
 			User.getCortesInicio(req.body.id_ficha,(err,cortes)=>{			
 				cortes = cortes[cortes.length-1]				
 				User.getcronogramaInicio(req.body.id_ficha,cortes.fecha_inicial,cortes.fecha_final,(err,data)=>{			
+					data.fecha_inicial = cortes.fecha_inicial
+					data.fecha_final = cortes.fecha_final
+					data.avance_Acumulado = 0
 					res.json(data)
 				})
 			})
