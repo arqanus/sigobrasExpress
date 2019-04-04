@@ -603,7 +603,7 @@ userModel.getHistorial = (id_ficha,callback)=>{
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
         else{
-            conn.query("/*COALESCE(parcial_negativo / parcial_positivo, 0) + 1 porcentaje_negatividad_ajustado*/ SELECT componentes.id_componente, componentes.numero, componentes.nombre nombre_componente, partidas.item, partidas.descripcion descripcion_partida, TRIM(BOTH '/DIA' FROM partidas.unidad_medida) unidad_medida, actividades.nombre nombre_actividad, avanceactividades.descripcion descripcion_actividad, avanceactividades.observacion, DATE(avanceactividades.fecha) fecha, (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) *avanceactividades.valor valor, partidas.costo_unitario, (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) *avanceactividades.valor * partidas.costo_unitario parcial FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_positivo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE actividades.parcial > 0 GROUP BY partidas.id_partida) p1 ON p1.id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_negativo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE actividades.parcial < 0 GROUP BY partidas.id_partida) p2 ON p2.id_partida = partidas.id_partida LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida RIGHT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE componentes.Fichas_id_ficha = ? ORDER BY componentes.id_componente , avanceactividades.fecha DESC , partidas.id_partida",id_ficha,(err,res)=>{
+            conn.query("/*COALESCE(parcial_negativo / parcial_positivo, 0) + 1 porcentaje_negatividad_ajustado*/ SELECT componentes.id_componente, componentes.numero, componentes.nombre nombre_componente, partidas.item, partidas.descripcion descripcion_partida, TRIM(BOTH '/DIA' FROM partidas.unidad_medida) unidad_medida, actividades.nombre nombre_actividad, avanceactividades.descripcion descripcion_actividad, avanceactividades.observacion, DATE(avanceactividades.fecha) fecha, (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) * avanceactividades.valor valor, partidas.costo_unitario, (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) * avanceactividades.valor * partidas.costo_unitario parcial, actividades.parcial- (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) * avanceactividades.valor saldo FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_positivo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE actividades.parcial > 0 GROUP BY partidas.id_partida) p1 ON p1.id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_negativo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE actividades.parcial < 0 GROUP BY partidas.id_partida) p2 ON p2.id_partida = partidas.id_partida LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida RIGHT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE componentes.Fichas_id_ficha = ? ORDER BY componentes.id_componente , avanceactividades.fecha DESC , partidas.id_partida",id_ficha,(err,res)=>{
                 if(err){
                     console.log(err);
                     callback(err.code);
@@ -653,7 +653,8 @@ userModel.getHistorial = (id_ficha,callback)=>{
                                             "observacion":fila.observacion,                 
                                             "valor":formato(fila.valor),
                                             "costo_unitario":fila.costo_unitario,
-                                            "parcial":formato( fila.parcial)
+                                            "parcial":formato( fila.parcial),
+                                            "saldo":fila.saldo
                                         }
                                     ]
                                 }
@@ -679,7 +680,8 @@ userModel.getHistorial = (id_ficha,callback)=>{
                                                 "observacion":fila.observacion,                 
                                                 "valor":formato(fila.valor),
                                                 "costo_unitario":fila.costo_unitario,
-                                                "parcial":formato( fila.parcial)
+                                                "parcial":formato( fila.parcial),
+                                                "saldo":fila.saldo
                                             }
                                         ]
                                     }
@@ -696,7 +698,8 @@ userModel.getHistorial = (id_ficha,callback)=>{
                                         "observacion":fila.observacion,                 
                                         "valor":formato(fila.valor),
                                         "costo_unitario":fila.costo_unitario,
-                                        "parcial":formato( fila.parcial)
+                                        "parcial":formato( fila.parcial),
+                                        "saldo":fila.saldo
                                     }
                                 )
                             }
