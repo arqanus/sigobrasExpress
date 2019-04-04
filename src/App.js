@@ -46,6 +46,7 @@ require('./api/Interfaz/get/routes/r.get.interfaz')(app);
 
 require('./api/Inicio/get/routes/r.get.Inicio')(app);
 require('./api/Inicio/post/routes/r.post.Inicio')(app);
+require('./api/Inicio/delete/routes/r.del.Inicio')(app);
 
 require('./api/ProcesosFisicos/get/routes/r.get.pFisicos')(app);
 require('./api/ProcesosFisicos/post/routes/r.post.pFisicos')(app);
