@@ -68,10 +68,16 @@ module.exports = function(app){
 							User.getcronogramadinero(req.body.id_ficha,fecha_inicio.fecha_inicial,(err,cronogramadinero)=>{							
 								if(err){ res.status(204).json(err);}
 								else{
+									var fecha_final = null
+									if(cronogramadinero){
+										fecha_final = cronogramadinero[cronogramadinero.length-1].fecha
+									}else{
+										fecha_final = fecha_inicio.fecha_inicial
+									}
 									res.json(
 										{
 											"fecha_inicial":fecha_inicio.fecha_inicial,
-											"fecha_final":cronogramadinero[cronogramadinero.length-1].fecha,
+											"fecha_final":fecha_final,
 											"avance_Acumulado":avance.avance,
 											"cronogramadinero":cronogramadinero
 										}
