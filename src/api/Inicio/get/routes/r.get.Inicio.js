@@ -1,4 +1,15 @@
 const User = require('../models/m.get.Inicio');
+function fechaLargaCorta(MyDate){
+
+	var MyDateString;
+
+	MyDate.setDate(MyDate.getDate() + 20);
+
+	MyDateString = ('0' + MyDate.getDate()).slice(-2) + '-'
+														+ ('0' + (MyDate.getMonth()+1)).slice(-2) + '-'
+														+ MyDate.getFullYear();
+														return MyDateString
+}
 
 
 module.exports = function(app){
@@ -102,8 +113,14 @@ module.exports = function(app){
 			User.getCortesInicio(req.body.id_ficha,(err,cortes)=>{			
 				cortes = cortes[cortes.length-1]				
 				User.getcronogramaInicio(req.body.id_ficha,cortes.fecha_inicial,cortes.fecha_final,(err,data)=>{			
-					data.fecha_inicial = cortes.fecha_inicial.toLocaleDateString()
-					data.fecha_final = cortes.fecha_final.toLocaleDateString()
+					var fecha_final = null
+					if(!data.data ||data.data.length==0){
+						fecha_final = cortes.fecha_inicial.toLocaleDateString()						
+					}else{
+						fecha_final = data.data[data.data.length-1].fecha
+					}
+					data.fecha_inicial = fechaLargaCorta(cortes.fecha_inicial)
+					data.fecha_final = fecha_final
 					data.avance_Acumulado = 0
 					res.json(data)
 				})

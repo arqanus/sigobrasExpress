@@ -349,31 +349,31 @@ module.exports = function(app){
             User.getValGeneraMayoresMetradoslAnyos(req.body.id_ficha,(err,anyos)=>{
                 if(err){ res.status(204).json(err);}
                 else{
-                    // res.json(anyos)
-                    User.getValGeneralMayoresMetradosPeriodos(req.body.id_ficha,anyos[0].anyo,(err,periodos)=>{
-                        if(err){ res.status(204).json(err);}
-                        else{
-                            User.getValGeneralMayoresMetradosResumenPeriodo(req.body.id_ficha,periodos[0].fecha_inicial,periodos[0].fecha_final,(err,resumen)=>{
-                                if(err){ res.status(204).json(err);}
-                                else{
+                    res.json(anyos)
+                    // User.getValGeneralMayoresMetradosPeriodos(req.body.id_ficha,anyos[0].anyo,(err,periodos)=>{
+                    //     if(err){ res.status(204).json(err);}
+                    //     else{
+                    //         User.getValGeneralMayoresMetradosResumenPeriodo(req.body.id_ficha,periodos[0].fecha_inicial,periodos[0].fecha_final,(err,resumen)=>{
+                    //             if(err){ res.status(204).json(err);}
+                    //             else{
                                     
-                                    User.getValGeneralMayoresMetradosComponentes(periodos[0].fecha_inicial,periodos[0].fecha_final,req.body.id_ficha,(err,componentes)=>{
-                                        // res.json(periodos)
-                                        if(err){ res.status(204).json(err);}
-                                        else{
-                                            periodos[0].resumen = resumen
-                                            periodos[0].componentes = componentes
-                                            anyos[0].periodos = periodos
-                                            res.json(anyos);	
-                                        }
-                                    })
-                                }
-                            })
+                    //                 User.getValGeneralMayoresMetradosComponentes(periodos[0].fecha_inicial,periodos[0].fecha_final,req.body.id_ficha,(err,componentes)=>{
+                    //                     // res.json(periodos)
+                    //                     if(err){ res.status(204).json(err);}
+                    //                     else{
+                    //                         periodos[0].resumen = resumen
+                    //                         periodos[0].componentes = componentes
+                    //                         anyos[0].periodos = periodos
+                    //                         res.json(anyos);	
+                    //                     }
+                    //                 })
+                    //             }
+                    //         })
                            
                             
                             
-                        }
-                    })
+                    //     }
+                    // })
                 }
             })
         }            
