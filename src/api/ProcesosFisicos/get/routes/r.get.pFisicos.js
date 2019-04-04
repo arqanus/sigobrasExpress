@@ -346,7 +346,7 @@ module.exports = function(app){
         if (req.body.id_ficha == null) {
             res.json("null")
         } else {
-            User.getValGeneraMayoresMetradoslAnyos(req.body.id_ficha,(err,anyos)=>{
+            User.getValGeneraMayoresMetradoslAnyos(req.body.id_ficha,'Mayor Metrado',(err,anyos)=>{
                 if(err){ res.status(204).json(err);}
                 else{
                     res.json(anyos)
@@ -383,7 +383,7 @@ module.exports = function(app){
         if (req.body.id_ficha == null) {
             res.json("null")
         } else {
-            User.getValGeneralMayoresMetradosPeriodos(req.body.id_ficha,req.body.anyo,(err,periodos)=>{
+            User.getValGeneralMayoresMetradosPeriodos(req.body.id_ficha,req.body.anyo,'Mayor Metrado',(err,periodos)=>{
                 if(err){ res.status(204).json(err);}
                 else{
                     res.json(periodos)
@@ -397,7 +397,7 @@ module.exports = function(app){
             res.json("null")
         } else {
             // res.json("test")
-            User.getValGeneralMayoresMetradosComponentes(req.body.fecha_inicial,req.body.fecha_final,req.body.id_ficha,(err,data)=>{
+            User.getValGeneralMayoresMetradosComponentes(req.body.fecha_inicial,req.body.fecha_final,req.body.id_ficha,'Mayor Metrado',(err,data)=>{
                 if(err){ res.status(204).json(err);}
                 else{
                     res.json(data);	
@@ -411,7 +411,7 @@ module.exports = function(app){
         if (req.body.id_ficha == null) {
             res.json("null")
         } else {
-            User.getValGeneralMayoresMetradosResumenPeriodo(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha_final,(err,data)=>{
+            User.getValGeneralMayoresMetradosResumenPeriodo(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha_final,'Mayor Metrado',(err,data)=>{
                 if(err){ res.status(204).json(err);}
                 else{
                     res.json(data);	
