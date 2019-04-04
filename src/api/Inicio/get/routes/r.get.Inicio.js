@@ -9,6 +9,23 @@ function fechaLargaCorta(MyDate){
 	
 	return MyDateString
 }
+function fechaActual(){
+	var today = new Date();
+	var dd = today.getDate();
+	var mm = today.getMonth()+1; //January is 0!
+	var yyyy = today.getFullYear();
+
+	if(dd<10) {
+					dd = '0'+dd
+	} 
+
+	if(mm<10) {
+					mm = '0'+mm
+	} 
+
+	return yyyy+"-"+mm;
+	
+}
 
 
 module.exports = function(app){
@@ -111,7 +128,21 @@ module.exports = function(app){
 		}else{
 			User.getCortesInicio(req.body.id_ficha,(err,cortes)=>{			
 				cortes = cortes[cortes.length-1]				
-				User.getcronogramaInicio(req.body.id_ficha,cortes.fecha_inicial,cortes.fecha_final,(err,data)=>{			
+				User.getcronogramaInicio(req.body.id_ficha,cortes.fecha_inicial,cortes.fecha_final,(err,data)=>{	
+					if(data=="vacio")		{
+						data = {}
+						data.programado_monto_total
+						data.programado_porcentaje_total
+						data.fisico_monto_total
+						data.fisico_porcentaje_total
+						data.financiero_monto_total
+						data.financiero_porcentaje_total
+						data.grafico_programado=[]
+						data.grafico_fisico=[]
+						data.grafico_financiero=[]
+						data.grafico_periodos=[]
+						data.data=[]
+					}
 					var fecha_final = null
 					if(!data.data ||data.data.length==0){
 						fecha_final = cortes.fecha_inicial.toLocaleDateString()						
@@ -121,6 +152,7 @@ module.exports = function(app){
 					data.fecha_inicial = fechaLargaCorta(cortes.fecha_inicial)
 					data.fecha_final = fecha_final
 					data.avance_Acumulado = 0
+					data.fechaActual = fechaActual()
 					res.json(data)
 				})
 			})
