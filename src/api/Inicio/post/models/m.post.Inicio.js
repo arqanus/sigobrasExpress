@@ -8,7 +8,7 @@ userModel.postcronogramamensual = (data,callback)=>{
         }
         else{     
             //insertar datos query
-            conn.query("INSERT INTO cronogramamensual (fichas_id_ficha,mes, programado) VALUES ? ON DUPLICATE key UPDATE programado = VALUES(programado) ",[data],(error,res)=>{ 
+            conn.query("INSERT INTO cronogramamensual (fichas_id_ficha,mes,programado, financieroEjecutado) VALUES ? ON DUPLICATE key UPDATE financieroEjecutado = VALUES(financieroEjecutado) ,programado = VALUES(programado) ",[data],(error,res)=>{ 
                 if(error){
                     console.log(error);                    
                     callback(error.code);
