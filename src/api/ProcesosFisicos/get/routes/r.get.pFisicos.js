@@ -341,6 +341,98 @@ module.exports = function(app){
             
         
     })
+    //valorizaciones Mayor metrado
+    app.post('/getValGeneraMayoresMetradoslAnyos',(req,res)=>{
+        if (req.body.id_ficha == null) {
+            res.json("null")
+        } else {
+            User.getValGeneraMayoresMetradoslAnyos(req.body.id_ficha,(err,anyos)=>{
+                if(err){ res.status(204).json(err);}
+                else{
+                    res.json(anyos)
+                    // User.getValGeneralMayoresMetradosPeriodos(req.body.id_ficha,anyos[0].anyo,(err,periodos)=>{
+                    //     if(err){ res.status(204).json(err);}
+                    //     else{
+                    //         User.getValGeneralMayoresMetradosResumenPeriodo(req.body.id_ficha,periodos[0].fecha_inicial,periodos[0].fecha_final,(err,resumen)=>{
+                    //             if(err){ res.status(204).json(err);}
+                    //             else{
+                    //                 User.getValGeneralMayoresMetradosComponentes(req.body.id_ficha,(err,componentes)=>{
+                    //                     if(err){ res.status(204).json(err);}
+                    //                     else{
+                    //                         periodos[0].resumen = resumen
+                    //                         periodos[0].componentes = componentes
+                    //                         anyos[0].periodos = periodos
+                    //                         res.json(anyos);	
+                    //                     }
+                    //                 })
+                    //             }
+                    //         })
+                           
+                            
+                            
+                    //     }
+                    // })
+                }
+            })
+        }            
+        
+    })
+    app.post('/getValGeneralMayoresMetradosPeriodos',(req,res)=>{
+        if (req.body.id_ficha == null) {
+            res.json("null")
+        } else {
+            User.getValGeneralMayoresMetradosPeriodos(req.body.id_ficha,req.body.anyo,(err,periodos)=>{
+                if(err){ res.status(204).json(err);}
+                else{
+                    res.json(periodos)
+                }
+            })
+        }            
+        
+    })
+    app.post('/getValGeneralMayoresMetradosComponentes',(req,res)=>{
+        if (req.body.id_ficha == null) {
+            res.json("null")
+        } else {
+            // res.json("test")
+            User.getValGeneralMayoresMetradosComponentes(req.body.fecha_inicial,req.body.fecha_final,req.body.id_ficha,(err,data)=>{
+                if(err){ res.status(204).json(err);}
+                else{
+                    res.json(data);	
+                }
+            })
+        }
+            
+        
+    })
+    app.post('/getValGeneralMayoresMetradosResumenPeriodo',(req,res)=>{
+        if (req.body.id_ficha == null) {
+            res.json("null")
+        } else {
+            User.getValGeneralMayoresMetradosResumenPeriodo(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha_final,(err,data)=>{
+                if(err){ res.status(204).json(err);}
+                else{
+                    res.json(data);	
+                }
+            })
+        }
+            
+        
+    })
+    app.post('/getValGeneralMayoresMetradosPartidas',(req,res)=>{
+        if (req.body.id_componente == null) {
+            res.json("null")
+        } else {
+            User.getValGeneralMayoresMetradosPartidas(req.body.id_componente,req.body.fecha_inicial,req.body.fecha_final,(err,data)=>{
+                if(err){ res.status(204).json(err);}
+                else{
+                    res.json(data);	
+                }
+            })
+        }
+            
+        
+    })
     
 
     app.post('/getActividadesDuracion',(req,res)=>{
