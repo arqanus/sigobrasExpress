@@ -532,5 +532,44 @@ module.exports = function(app){
 			})
 		}
     })
+    app.post('/getmaterialescomponentes',(req,res)=>{
+		if (req.body.id_ficha == null) {
+			res.json("null");
+		} else {
+			User.getmaterialescomponentes(req.body.id_ficha,(err,data)=>{
+				if(err){ res.status(204).json(err);}
+				else{
+					res.json(data);	
+				}
+			})
+		}
+    })
 
+    app.post('/getmaterialespartidacomponente',(req,res)=>{
+		if (req.body.id_componente== null) {
+			res.json("null");
+		} else {
+			User.getmaterialespartidacomponente(req.body.id_componente,(err,data)=>{
+				if(err){ res.status(204).json(err);}
+				else{
+					res.json(data);	
+				}
+			})
+		}
+    })
+
+    app.post('/getmaterialespartida',(req,res)=>{
+		if (req.body.id_partida== null) {
+			res.json("null");
+		} else {
+			User.getmaterialespartida (req.body.id_partida,(err,data)=>{
+				if(err){ res.status(204).json(err);}
+				else{
+					res.json(data);	
+				}
+			})
+		}
+    })
+
+    
 }
