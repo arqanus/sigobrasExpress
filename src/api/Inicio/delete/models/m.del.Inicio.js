@@ -106,7 +106,12 @@ userModel.delCronogramaitem = (id_ficha,fecha,callback)=>{
             conn.query("delete from cronogramamensual where cronogramamensual.fichas_id_ficha = ? and cronogramamensual.mes = ?",[id_ficha,fecha],(err,res)=>{
                 if(err){
                     callback(err);                
-                }else{                              
+                }else{ 
+                        if(res.affectedRows >0){
+                                res = "eliminado"
+                        }else{
+                                res = "no found"
+                        }
                     callback(null,res);
                     conn.destroy()
                 }
