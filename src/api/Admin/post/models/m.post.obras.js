@@ -64,7 +64,7 @@ userModel.postHistorialEstado = (data,callback)=>{
     })
 }
 userModel.postComponentes = (data,callback)=>{
-    console.log("postcomponentes");
+    // console.log("postcomponentes");
      
     pool.getConnection(function(err,conn){
         if(err){ 

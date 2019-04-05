@@ -118,11 +118,37 @@ module.exports = function(app){
 			
         })	
     })
-    app.post('/postComponentes',(req,res)=>{       
-        User.postComponentes(req.body,(err,idComponente)=>{
+    app.post('/postComponentes',(req,res)=>{
+        var componentes = []  
+        for (let i = 0; i < req.body.componentes.length; i++) {
+            const fila = req.body.componentes[i];
+            componentes.push(
+                [
+                    fila[0],
+                    fila[1],
+                    fila[2],
+                    req.body.id_ficha
+                ]
+            )
+        }        
+        User.postComponentes(componentes,(err,idComponente)=>{
             if(err) {res.status(204).json(err);}
             else{
-                res.json("exito")                   
+                var HistorialComponentes = []
+                for (let i = 0; i < req.body.componentes.length; i++) {
+                    const fila = req.body.componentes[i];
+                    HistorialComponentes.push(
+                        ['Partida Nueva',idComponente]
+                    )
+                    idComponente++
+                    
+                }                
+                User.postHistorialComponentes(HistorialComponentes,(err,idComponente)=>{
+                    if(err) {res.status(204).json(err);}
+                    else{
+                        res.json("exito")                   
+                    }              
+                })                    
             }              
         })    
     })	    
@@ -221,7 +247,7 @@ module.exports = function(app){
                                     for (let i = 0; i < data.length; i++) {
                                         
                                         var historial=[										
-                                            estado,
+                                            'Partida Nueva',
                                             element
                                         ]
                                         historialpartidas.push(historial)	
@@ -242,7 +268,7 @@ module.exports = function(app){
                                         }else{
                                             
                                             var historialActividad = {						
-                                                "estado":"Partida Nueva",
+                                                "estado":'Partida Nueva',
                                                 "actividades_id_actividad":id_actividad
                                             }
                                             User.posthistorialActividad(historialActividad,(err,data)=>{
