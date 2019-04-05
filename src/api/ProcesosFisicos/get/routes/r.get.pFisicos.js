@@ -251,7 +251,7 @@ module.exports = function(app){
         }			
         
     })  
-    //valorizacionesgenerales
+    // valorizacionesgenerales
     app.post('/getValGeneralAnyos',(req,res)=>{
         if (req.body.id_ficha == null) {
             res.json("null")
@@ -341,6 +341,99 @@ module.exports = function(app){
             
         
     })
+    // app.post('/getValGeneralAnyos',(req,res)=>{
+    //     if (req.body.id_ficha == null) {
+    //         res.json("null")
+    //     } else {
+    //         User.getValGeneraMayoresMetradoslAnyos(req.body.id_ficha,'principal',(err,anyos)=>{
+    //             if(err){ res.status(204).json(err);}
+    //             else{
+    //                 // res.json(anyos)
+    //                 User.getValGeneralMayoresMetradosPeriodos(req.body.id_ficha,anyos[0].anyo,'principal',(err,periodos)=>{
+    //                     if(err){ res.status(204).json(err);}
+    //                     else{
+    //                         User.getValGeneralMayoresMetradosResumenPeriodo(req.body.id_ficha,periodos[0].fecha_inicial,periodos[0].fecha_final,'principal',(err,resumen)=>{
+    //                             if(err){ res.status(204).json(err);}
+    //                             else{
+                                    
+    //                                 User.getValGeneralMayoresMetradosComponentes(periodos[0].fecha_inicial,periodos[0].fecha_final,req.body.id_ficha,'principal',(err,componentes)=>{
+    //                                     // res.json(periodos)
+    //                                     if(err){ res.status(204).json(err);}
+    //                                     else{
+    //                                         periodos[0].resumen = resumen
+    //                                         periodos[0].componentes = componentes
+    //                                         anyos[0].periodos = periodos
+    //                                         res.json(anyos);	
+    //                                     }
+    //                                 })
+    //                             }
+    //                         })
+                           
+                            
+                            
+    //                     }
+    //                 })
+    //             }
+    //         })
+    //     }            
+        
+    // })
+    // app.post('/getValGeneralPeriodos',(req,res)=>{
+    //     if (req.body.id_ficha == null) {
+    //         res.json("null")
+    //     } else {
+    //         User.getValGeneralMayoresMetradosPeriodos(req.body.id_ficha,req.body.anyo,'principal',(err,periodos)=>{
+    //             if(err){ res.status(204).json(err);}
+    //             else{
+    //                 res.json(periodos)
+    //             }
+    //         })
+    //     }            
+        
+    // })
+    // app.post('/getValGeneralComponentes',(req,res)=>{
+    //     if (req.body.id_ficha == null) {
+    //         res.json("null")
+    //     } else {
+    //         // res.json("test")
+    //         User.getValGeneralMayoresMetradosComponentes(req.body.fecha_inicial,req.body.fecha_final,req.body.id_ficha,'principal',(err,data)=>{
+    //             if(err){ res.status(204).json(err);}
+    //             else{
+    //                 res.json(data);	
+    //             }
+    //         })
+    //     }
+            
+        
+    // })
+    // app.post('/getValGeneralResumenPeriodo',(req,res)=>{
+    //     if (req.body.id_ficha == null) {
+    //         res.json("null")
+    //     } else {
+    //         User.getValGeneralMayoresMetradosResumenPeriodo(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha_final,'principal',(err,data)=>{
+    //             if(err){ res.status(204).json(err);}
+    //             else{
+    //                 res.json(data);	
+    //             }
+    //         })
+    //     }
+            
+        
+    // })
+    // app.post('/getValGeneralPartidas',(req,res)=>{
+    //     if (req.body.id_componente == null) {
+    //         res.json("null")
+    //     } else {
+    //         User.getValGeneralMayoresMetradosPartidas(req.body.id_componente,req.body.fecha_inicial,req.body.fecha_final,'principal',(err,data)=>{
+    //             if(err){ res.status(204).json(err);}
+    //             else{
+    //                 res.json(data);	
+    //             }
+    //         })
+    //     }
+            
+        
+    // })
     //valorizaciones Mayor metrado
     app.post('/getValGeneraMayoresMetradoslAnyos',(req,res)=>{
         if (req.body.id_ficha == null) {
