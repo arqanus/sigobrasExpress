@@ -140,7 +140,7 @@ module.exports = function(app){
 			})
 		}
     })
-    
+    //gethistorial
     app.post('/getHistorial',(req,res)=>{
         if (req.body.id_ficha == null) {
             res.json("null")
@@ -435,9 +435,103 @@ module.exports = function(app){
             
         
     })
+      //valorizaciones partidaNUEVA 
+    app.post('/getValGeneraPartidaNuevalAnyos',(req,res)=>{
+        if (req.body.id_ficha == null) {
+            res.json("null")
+        } else {
+            User.getValGeneraMayoresMetradoslAnyos(req.body.id_ficha,'Partida Nueva',(err,anyos)=>{
+                if(err){ res.status(204).json(err);}
+                else{
+                    // res.json(anyos)
+                    User.getValGeneralMayoresMetradosPeriodos(req.body.id_ficha,anyos[0].anyo,'Partida Nueva',(err,periodos)=>{
+                        if(err){ res.status(204).json(err);}
+                        else{
+                            User.getValGeneralMayoresMetradosResumenPeriodo(req.body.id_ficha,periodos[0].fecha_inicial,periodos[0].fecha_final,'Partida Nueva',(err,resumen)=>{
+                                if(err){ res.status(204).json(err);}
+                                else{
+                                    
+                                    User.getValGeneralMayoresMetradosComponentes(periodos[0].fecha_inicial,periodos[0].fecha_final,req.body.id_ficha,'Partida Nueva',(err,componentes)=>{
+                                        // res.json(periodos)
+                                        if(err){ res.status(204).json(err);}
+                                        else{
+                                            periodos[0].resumen = resumen
+                                            periodos[0].componentes = componentes
+                                            anyos[0].periodos = periodos
+                                            res.json(anyos);	
+                                        }
+                                    })
+                                }
+                            })
+                           
+                            
+                            
+                        }
+                    })
+                }
+            })
+        }            
+        
+    })
+    app.post('/getValGeneralPartidaNuevaPeriodos',(req,res)=>{
+        if (req.body.id_ficha == null) {
+            res.json("null")
+        } else {
+            User.getValGeneralMayoresMetradosPeriodos(req.body.id_ficha,req.body.anyo,'Partida Nueva',(err,periodos)=>{
+                if(err){ res.status(204).json(err);}
+                else{
+                    res.json(periodos)
+                }
+            })
+        }            
+        
+    })
+    app.post('/getValGeneralPartidaNuevaComponentes',(req,res)=>{
+        if (req.body.id_ficha == null) {
+            res.json("null")
+        } else {
+            // res.json("test")
+            User.getValGeneralMayoresMetradosComponentes(req.body.fecha_inicial,req.body.fecha_final,req.body.id_ficha,'Partida Nueva',(err,data)=>{
+                if(err){ res.status(204).json(err);}
+                else{
+                    res.json(data);	
+                }
+            })
+        }
+            
+        
+    })
+    app.post('/getValGeneralPartidaNuevaResumenPeriodo',(req,res)=>{
+        if (req.body.id_ficha == null) {
+            res.json("null")
+        } else {
+            User.getValGeneralMayoresMetradosResumenPeriodo(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha_final,'Partida Nueva',(err,data)=>{
+                if(err){ res.status(204).json(err);}
+                else{
+                    res.json(data);	
+                }
+            })
+        }
+            
+        
+    })
+    app.post('/getValGeneralPartidaNuevaPartidas',(req,res)=>{
+        if (req.body.id_componente == null) {
+            res.json("null")
+        } else {
+            User.getValGeneralMayoresMetradosPartidas(req.body.id_componente,req.body.fecha_inicial,req.body.fecha_final,'Partida Nueva',(err,data)=>{
+                if(err){ res.status(204).json(err);}
+                else{
+                    res.json(data);	
+                }
+            })
+        }
+            
+        
+    })
     
     
-
+    //recursos
     app.post('/getActividadesDuracion',(req,res)=>{
         if (req.body.id_ficha == null) {
             res.json("null")
