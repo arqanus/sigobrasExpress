@@ -135,18 +135,34 @@ module.exports = function(app){
             if(err) {res.status(204).json(err);}
             else{
                 var HistorialComponentes = []
+                var temp_idComponente = idComponente
                 for (let i = 0; i < req.body.componentes.length; i++) {
                     const fila = req.body.componentes[i];
                     HistorialComponentes.push(
-                        ['Partida Nueva',idComponente]
+                        ['Partida Nueva',temp_idComponente]
                     )
-                    idComponente++
+                    temp_idComponente++
                     
                 }                
-                User.postHistorialComponentes(HistorialComponentes,(err,idComponente)=>{
+                User.postHistorialComponentes(HistorialComponentes,(err,data)=>{
                     if(err) {res.status(204).json(err);}
                     else{
-                        res.json("exito")                   
+                        var dataComponentes={
+                            "componentes":[]
+                        }
+                        var idcomptemp = idComponente
+
+                                        
+                        for (let i = 0; i < componentes.length; i++) {
+                            dataComponentes.componentes.push(
+                                {
+                                "numero": i+1,
+                                "idComponente": idcomptemp,
+                                }
+                            )
+                            idcomptemp++                                            
+                        }
+                        res.json(dataComponentes)	                  
                     }              
                 })                    
             }              
