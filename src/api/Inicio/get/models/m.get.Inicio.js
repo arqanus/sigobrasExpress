@@ -15,15 +15,18 @@ month[10] = "Noviembre";
 month[11] = "Diciembre";
 function formato(data){
     
-        // data = parseFloat(data)
+        
         data = Number(data)
         if(isNaN(data)){
             
             data=0
         }
+        // if(data ==0){
+        //         return 0
+        // }
         if(data < 1){
             data = data.toLocaleString('es-PE', {
-                minimumFractionDigits: 4,
+                minimumFractionDigits: 2,
                 maximumFractionDigits: 4
               })
         }else{
@@ -458,17 +461,28 @@ userModel.getcronogramaInicio = (id_ficha,fecha_inicial,fecha_final,callback)=>{
                         grafico_fisico.push(fisico_acumulado)
                         grafico_financiero.push(financiero_acumulado)
                         periodos.push(fila.periodo)
+
+                        //format
+                        fila.programado_monto = formato(fila.programado_monto)
+                        fila.programado_porcentaje = formato(fila.programado_porcentaje)
+                        fila.fisico_monto = formato(fila.fisico_monto)
+                        fila.fisico_porcentaje = formato(fila.fisico_porcentaje)
+                        fila.financiero_monto = formato(fila.financiero_monto)
+                        fila.financiero_porcentaje = formato(fila.financiero_porcentaje)
+                        fila.programado_acumulado = formato(fila.programado_acumulado)
+                        fila.fisico_acumulado = formato(fila.fisico_acumulado)
+                        fila.financiero_acumulado = formato(fila.financiero_acumulado)
                         
                 }
 
                 callback(null,{
                         
-                        "programado_monto_total":programado_monto,
-                        "programado_porcentaje_total":programado_acumulado,
-                        "fisico_monto_total":fisico_monto,
-                        "fisico_porcentaje_total":fisico_acumulado,
-                        "financiero_monto_total":financiero_monto,
-                        "financiero_porcentaje_total":financiero_acumulado,
+                        "programado_monto_total":formato(programado_monto),
+                        "programado_porcentaje_total":formato(programado_acumulado),
+                        "fisico_monto_total":formato(fisico_monto),
+                        "fisico_porcentaje_total":formato(fisico_acumulado),
+                        "financiero_monto_total":formato(financiero_monto),
+                        "financiero_porcentaje_total":formato(financiero_acumulado),
                         "grafico_programado":grafico_programado,
                         "grafico_fisico":grafico_fisico,
                         "grafico_financiero":grafico_financiero,
