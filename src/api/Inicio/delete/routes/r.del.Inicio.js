@@ -13,14 +13,19 @@ function fechaLargaCorta(MyDate){
 
 module.exports = function(app){
  app.delete('/delCronogramaitem',(req,res)=>{
+		if(req.body.id_ficha==null||req.body.fecha==null){
+			res.json(null)
+
+		}else{
+			User.delCronogramaitem(req.body.id_ficha,req.body.fecha,(err,data)=>{
+				if(err) {res.status(204).json(err);}
+				else{
+					res.status(200).json(data);
+				}
+				
+			})	
+		}
 		
-		User.delCronogramaitem(req.body.id_ficha,req.body.fecha,(err,data)=>{
-			if(err) {res.status(204).json(err);}
-			else{
-				res.status(200).json(data);
-			}
-			
-		})	
 		
 	});	
 
