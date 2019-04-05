@@ -110,7 +110,7 @@ userModel.delCronogramaitem = (id_ficha,fecha,callback)=>{
                         if(res.affectedRows >0){
                                 res = "eliminado"
                         }else{
-                                res = "no found"
+                                res = "notFound"
                         }
                     callback(null,res);
                     conn.destroy()
