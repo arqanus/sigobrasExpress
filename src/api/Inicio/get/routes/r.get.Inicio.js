@@ -147,7 +147,7 @@ module.exports = function(app){
 					if(!data.data ||data.data.length==0){
 						fecha_final = fechaLargaCorta(cortes.fecha_inicial)
 					}else{
-						fecha_final = fechaLargaCorta(data.data[data.data.length-1].fecha)
+						fecha_final = data.data[data.data.length-1].fecha
 					}
 					data.fecha_inicial = fechaLargaCorta(cortes.fecha_inicial)
 					data.fecha_final = fecha_final
