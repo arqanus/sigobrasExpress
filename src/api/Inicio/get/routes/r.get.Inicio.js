@@ -145,9 +145,9 @@ module.exports = function(app){
 					}
 					var fecha_final = null
 					if(!data.data ||data.data.length==0){
-						fecha_final = cortes.fecha_inicial.toLocaleDateString()						
+						fecha_final = fechaLargaCorta(cortes.fecha_inicial)
 					}else{
-						fecha_final = data.data[data.data.length-1].fecha
+						fecha_final = fechaLargaCorta(data.data[data.data.length-1].fecha)
 					}
 					data.fecha_inicial = fechaLargaCorta(cortes.fecha_inicial)
 					data.fecha_final = fecha_final
