@@ -374,7 +374,7 @@ userModel.getCortesInicio = (id_ficha,callback)=>{
     
         pool.getConnection(function(err ,conn){
             if(err){ callback(err);}
-            else{conn.query("SELECT estados.codigo, fecha fecha_inicial FROM historialestados LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado where historialestados.Fichas_id_ficha = ? order by fecha",[id_ficha],(error,res)=>{ 
+            else{conn.query("(select 'I' codigo,fichas.fecha_inicial_real fecha_inicial from fichas where fichas.id_ficha = ? )union(SELECT estados.codigo, fecha fecha_inicial FROM historialestados LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado WHERE historialestados.Fichas_id_ficha = ? ORDER BY fecha)",[id_ficha,id_ficha],(error,res)=>{ 
                     if(error){
                         callback(error);
                     }else if(res.length == 0){
@@ -389,13 +389,13 @@ userModel.getCortesInicio = (id_ficha,callback)=>{
                             if(i+1<res.length && fila.codigo =="C"){
                                 res[i].fecha_final = res[i+1].fecha_inicial.toLocaleString()
                             }
-                             if(fila.codigo =="C"){
+                             if(fila.codigo =="C" ||fila.codigo =="I"){
                                 if(cortes.length >0){
                                         cortes[cortes.length-1].fecha_final_gestion = res[i].fecha_inicial
                                 }
 
 
-                                if(i+2 > res.length){
+                                if(i+2 > res.length||fila.codigo =="I"){
                                         dt = new Date();
                                         res[i].fecha_final = ""
                                         res[i].fecha_final_gestion = add_years(dt, 10).toLocaleString()
