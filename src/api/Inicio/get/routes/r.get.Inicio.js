@@ -130,7 +130,7 @@ module.exports = function(app){
 				if(req.body.id_ficha == null){
 					res.json("null");	
 				}else{
-					cortes = cortes[cortes.length-2]				
+					cortes = cortes[cortes.length-1]				
 					var fecha_inicial = 0
 					if(cortes.fecha_final == ""){
 						fecha_inicial = cortes.fecha_inicial
