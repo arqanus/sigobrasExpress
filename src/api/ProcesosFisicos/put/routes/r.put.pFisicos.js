@@ -35,7 +35,12 @@ module.exports = function(app){
 		User.putPrioridad(req.body.id_partida,req.body.prioridad,(err,data)=>{							
 			if(err){ res.status(204).json(err);}
 			else{
-        res.json(data)
+        User.getPrioridad(req.body.id_partida,(err,prioridad)=>{							
+          if(err){ res.status(204).json(err);}
+          else{
+            res.json(prioridad)
+          }
+        })
 			}
 		})
 })

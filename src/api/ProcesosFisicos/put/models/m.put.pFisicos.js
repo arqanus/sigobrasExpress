@@ -37,7 +37,26 @@ userModel.putPrioridad = (id_partida,prioridad,callback)=>{
                     callback(error);
                 }else{                
                     console.log("res",res); 
-                    callback(null,res);
+                    callback(null,res.last);
+                    conn.destroy()
+                }
+            })
+        }
+        
+                
+    })
+}
+userModel.getPrioridad = (id_partida,callback)=>{
+    pool.getConnection(function(err ,conn){
+        if(err){ 
+            callback(err);
+        }else{
+            conn.query('select prioridad from partidas where partidas.id_partida = ?',[id_partida],(error,res)=>{
+                if(error){
+                    callback(error);
+                }else{                
+                    console.log("res",res); 
+                    callback(null,res[0]);
                     conn.destroy()
                 }
             })
