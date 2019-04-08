@@ -418,20 +418,51 @@ userModel.getCortesInicio = (id_ficha,callback)=>{
                     
         })
 }
-userModel.getcronogramaInicio = (id_ficha,fecha_inicial,fecha_final,callback)=>{
+userModel.getAcumuladoCorte = (id_ficha,fecha_final,callback)=>{
+    
+        pool.getConnection(function(err ,conn){
+            if(err){ callback(err);}
+            else{conn.query("SELECT 'C' codigo, DATE_FORMAT(?, '%Y-%m-%d') fecha, DATE_FORMAT(?, '%b.') mes, DATE_FORMAT(?, '%Y') anyo, SUM(avanceactividades.valor * costo_unitario)  programado_monto, SUM(avanceactividades.valor * costo_unitario) / tb_presupuesto.presupuesto * 100 programado_porcentaje, SUM(avanceactividades.valor * costo_unitario)  fisico_monto, SUM(avanceactividades.valor * costo_unitario) / tb_presupuesto.presupuesto * 100 fisico_porcentaje, 100 financiero_monto, 100 financiero_porcentaje FROM componentes LEFT JOIN (SELECT componentes.fichas_id_ficha, SUM(componentes.presupuesto) presupuesto FROM componentes GROUP BY componentes.fichas_id_ficha) tb_presupuesto ON tb_presupuesto.fichas_id_ficha = componentes.fichas_id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND componentes.fichas_id_ficha = ? AND avanceactividades.fecha < ? GROUP BY componentes.fichas_id_ficha",[fecha_final,fecha_final,fecha_final,id_ficha,fecha_final],(error,res)=>{ 
+                    if(error){
+                        callback(error);
+                    }else if(res.length == 0){
+            
+                        callback(null,"vacio");
+                        conn.destroy()            
+                    }else{
+                      
+                        callback(null,res[0]);
+                        conn.destroy()
+                    }
+                    
+                    
+                })
+            }
+            
+                    
+        })
+}
+userModel.getcronogramaInicio = (AcumuladoCorte,id_ficha,fecha_inicial,fecha_final,callback)=>{
 
         pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
-        else{conn.query("SELECT tb_fisico.codigo, DATE_FORMAT(cronogramamensual.mes, '%Y-%m-%d') fecha,DATE_FORMAT(cronogramamensual.mes, '%b.') mes, DATE_FORMAT(cronogramamensual.mes, '%Y') anyo, programado programado_monto, programado / tb_presupuesto.presupuesto * 100 programado_porcentaje, COALESCE(tb_fisico.fisico_monto, 0) fisico_monto, COALESCE(tb_fisico.fisico_monto, 0) / tb_presupuesto.presupuesto * 100 fisico_porcentaje, COALESCE(financieroEjecutado, 0) financiero_monto, COALESCE(financieroEjecutado, 0) / tb_presupuesto.presupuesto * 100 financiero_porcentaje FROM cronogramamensual LEFT JOIN (SELECT componentes.fichas_id_ficha, min(estados.codigo) codigo, DATE_FORMAT(avanceactividades.fecha, '%m ') mes, DATE_FORMAT(avanceactividades.fecha, '%Y ') anyo, SUM(avanceactividades.valor) fisico_monto FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.id_historialEstado = avanceactividades.historialEstados_id_historialEstado LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado WHERE componentes.fichas_id_ficha = 92 GROUP BY DATE_FORMAT(avanceactividades.fecha, '%m %Y') ORDER BY avanceactividades.fecha) tb_fisico ON tb_fisico.fichas_id_ficha = cronogramamensual.fichas_id_ficha AND tb_fisico.anyo = DATE_FORMAT(cronogramamensual.mes, '%Y') AND tb_fisico.mes = DATE_FORMAT(cronogramamensual.mes, '%m') LEFT JOIN (SELECT componentes.fichas_id_ficha, SUM(componentes.presupuesto) presupuesto FROM componentes GROUP BY componentes.fichas_id_ficha) tb_presupuesto ON tb_presupuesto.fichas_id_ficha = cronogramamensual.fichas_id_ficha WHERE DATE_FORMAT(?, '%Y-%m-01 ') <= DATE_FORMAT(cronogramamensual.mes, '%Y-%m-01')  AND cronogramamensual.fichas_id_ficha = ?",[fecha_inicial,id_ficha],(error,res)=>{ 
+        else{conn.query("SELECT 'E' codigo,DATE_FORMAT(cronogramamensual.mes, '%Y-%m-%d') fecha, DATE_FORMAT(cronogramamensual.mes, '%b.') mes, DATE_FORMAT(cronogramamensual.mes, '%Y') anyo, programado programado_monto, programado / tb_presupuesto.presupuesto * 100 programado_porcentaje, COALESCE(tb_fisico.fisico_monto, 0) fisico_monto, COALESCE(tb_fisico.fisico_monto, 0) / tb_presupuesto.presupuesto * 100 fisico_porcentaje, COALESCE(financieroEjecutado, 0) financiero_monto, COALESCE(financieroEjecutado, 0) / tb_presupuesto.presupuesto * 100 financiero_porcentaje FROM cronogramamensual LEFT JOIN (SELECT componentes.fichas_id_ficha, avanceactividades.fecha, DATE_FORMAT(avanceactividades.fecha, '%m ') mes, DATE_FORMAT(avanceactividades.fecha, '%Y ') anyo, SUM(avanceactividades.valor) fisico_monto FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL and avanceactividades.fecha >= ? and avanceactividades.fecha < ? GROUP BY componentes.fichas_id_ficha,DATE_FORMAT(avanceactividades.fecha, '%m %Y') ORDER BY avanceactividades.fecha) tb_fisico ON tb_fisico.fichas_id_ficha = cronogramamensual.fichas_id_ficha AND DATE_FORMAT(tb_fisico.fecha, '%m %Y') = DATE_FORMAT(cronogramamensual.mes, '%m %Y') LEFT JOIN (SELECT componentes.fichas_id_ficha, SUM(componentes.presupuesto) presupuesto FROM componentes GROUP BY componentes.fichas_id_ficha) tb_presupuesto ON tb_presupuesto.fichas_id_ficha = cronogramamensual.fichas_id_ficha WHERE cronogramamensual.fichas_id_ficha = ?     and DATE_FORMAT(cronogramamensual.mes, '%Y-%m-01') >= DATE_FORMAT(?, '%Y-%m-01') and DATE_FORMAT(cronogramamensual.mes, '%Y-%m-01') <= DATE_FORMAT(?, '%Y-%m-01')",[fecha_inicial,fecha_final,id_ficha,fecha_inicial,fecha_final],(error,res)=>{ 
+                console.log(fecha_inicial,fecha_final,id_ficha);
         if(error){
                 callback(error);
-                }else if(res.length == 0){
+        }else if(res.length == 0){
                 console.log("vacio");
                 
                 callback(null,"vacio");
                 conn.destroy()
                 
-                }else{
+        }else{
+                        
+                if(AcumuladoCorte!="vacio"){
+                        res.unshift(AcumuladoCorte)
+                }
+                
+                // callback(null,res)
                 var programado_acumulado = 0
                 var fisico_acumulado = 0
                 var financiero_acumulado = 0
@@ -460,16 +491,8 @@ userModel.getcronogramaInicio = (id_ficha,fecha_inicial,fecha_final,callback)=>{
                         fila.financiero_acumulado = financiero_acumulado
 
                         
-                        
-                        // if(i==0 && fila.codigo == null){
-                        // fila.periodo = "INICIO "+ fila.mes+" "+fila.anyo
-                        // }else if(fila.codigo == "C"){
-                        // fila.periodo = "CORTE "+ fila.mes+" "+fila.anyo
-                        // }else{
-                        // fila.periodo = fila.mes+" "+fila.anyo
-                        // }
                         fila.periodo = fila.mes+" "+fila.anyo
-                        delete fila.codigo
+                        // delete fila.codigo
                         delete fila.mes
                         delete fila.anyo
 
