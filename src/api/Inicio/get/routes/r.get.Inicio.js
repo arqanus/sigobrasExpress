@@ -130,16 +130,13 @@ module.exports = function(app){
 				if(req.body.id_ficha == null){
 					res.json("null");	
 				}else{
+					// res.json(cortes)
 					cortes = cortes[cortes.length-1]				
 					var fecha_inicial = 0
 					if(cortes.fecha_final == ""){
 						fecha_inicial = cortes.fecha_inicial
-						
-						
-						
 					}else{
 						fecha_inicial = cortes.fecha_final
-						
 					}
 					User.getAcumuladoCorte(req.body.id_ficha,fecha_inicial,(err,AcumuladoCorte)=>{
 						if(err) {res.status(204).json(err);}
@@ -147,6 +144,11 @@ module.exports = function(app){
 							
 							
 							var avance_Acumulado = AcumuladoCorte.fisico_monto
+							console.log("aculadocorte",AcumuladoCorte);
+							if(AcumuladoCorte == "vacio"){
+								avance_Acumulado = 0
+							}
+							
 							if(cortes.fecha_final == ""){
 								AcumuladoCorte = "vacio"
 							}
@@ -165,12 +167,16 @@ module.exports = function(app){
 									data.grafico_financiero=[]
 									data.grafico_periodos=[]
 									data.data=[]
+									data.avance_Acumulado = 0
 								}
 								var fecha_final = null
 								if(!data.data ||data.data.length==0){
-									fecha_final = cortes.fecha_inicial
+									fecha_final = fechaLargaCorta(new Date(cortes.fecha_inicial))
+									console.log("caso1");
 								}else{
 									fecha_final = data.data[data.data.length-1].fecha
+									console.log("caso2");
+									
 								}
 								data.fecha_inicial = fechaLargaCorta(new Date(cortes.fecha_inicial))
 								data.fecha_final = fecha_final
