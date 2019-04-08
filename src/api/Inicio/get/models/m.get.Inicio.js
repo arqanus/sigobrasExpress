@@ -1,4 +1,8 @@
 const pool = require('../../../../db/connection');
+function add_years(dt,n) 
+ {
+        return new Date(dt.setFullYear(dt.getFullYear() + n));      
+ }
 
 var month = new Array();
 month[0] = "Enero";
@@ -370,7 +374,7 @@ userModel.getCortesInicio = (id_ficha,callback)=>{
     
         pool.getConnection(function(err ,conn){
             if(err){ callback(err);}
-            else{conn.query(" SELECT tb.fecha_inicial FROM ((SELECT fichas.id_ficha, fichas.fecha_inicial_real fecha_inicial FROM fichas) UNION (SELECT historialestados.Fichas_id_ficha id_ficha, historialestados.fecha fecha_inicial FROM avanceactividades LEFT JOIN historialestados ON historialestados.id_historialEstado = avanceactividades.historialestados_id_historialEstado LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado WHERE estados.codigo = 'C' GROUP BY avanceactividades.historialEstados_id_historialEstado)) tb WHERE tb.id_ficha = ? order by fecha_inicial",[id_ficha],(error,res)=>{ 
+            else{conn.query("SELECT estados.codigo, fecha fecha_inicial FROM historialestados LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado where historialestados.Fichas_id_ficha = ? order by fecha",[id_ficha],(error,res)=>{ 
                     if(error){
                         callback(error);
                     }else if(res.length == 0){
@@ -378,20 +382,32 @@ userModel.getCortesInicio = (id_ficha,callback)=>{
                         callback(null,"vacio");
                         conn.destroy()            
                     }else{
+                        var cortes = []
                         for (let i = 0; i < res.length; i++) {
                             const fila = res[i];
-                            if(i+1<res.length){
-                                res[i].fecha_final = res[i+1].fecha_inicial
-                            }else{
-                                res[i].fecha_final = new Date();
+                            fila.fecha_inicial = fila.fecha_inicial.toLocaleString()
+                            if(i+1<res.length && fila.codigo =="C"){
+                                res[i].fecha_final = res[i+1].fecha_inicial.toLocaleString()
                             }
-                            if(i==0){
-                                res[i].codigo = "INICIO"
-                            }else{
-                                res[i].codigo = "CORTE "+i
+                             if(fila.codigo =="C"){
+                                if(cortes.length >0){
+                                        cortes[cortes.length-1].fecha_final_gestion = res[i].fecha_inicial
+                                }
+
+
+                                if(i+2 > res.length){
+                                        dt = new Date();
+                                        res[i].fecha_final = ""
+                                        res[i].fecha_final_gestion = add_years(dt, 10).toLocaleString()
+                                }
+                                
+                                cortes.push(res[i])
                             }
+
+                            
+                            
                         }
-                        callback(null,res);
+                        callback(null,cortes);
                         conn.destroy()
                     }
                     

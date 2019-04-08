@@ -389,8 +389,7 @@ userModel.getPartidas = (id_componente,callback)=>{
                             fila.metrados_costo_saldo = ""
                             fila.porcentaje = ""
                             fila.porcentaje_negatividad = ""
-                            fila.prioridad = 1
-
+                            
                         }else{
                             fila.metrado = formato(fila.metrado)
                             fila.costo_unitario = formato(fila.costo_unitario)
@@ -1618,6 +1617,10 @@ userModel.getValGeneralResumenPeriodo = (id_ficha,fecha_inicial,fecha_final,call
                             "valor_actual":formato(valor_actual),
                             "valor_total":formato( valor_total),
                             "valor_saldo":formato(valor_saldo),
+                            "porcentaje_anterior":20,
+                            "porcentaje_actual":20,
+                            "porcentaje_total":20,
+                            "porcentaje_saldo":20,
                             "componentes":res
                         }
                         );
@@ -1708,6 +1711,10 @@ userModel.getValGeneralPartidas = (id_componente,fecha_inicial,fecha_final,callb
                             "valor_total":formato(valor_total ),
                             "valor_saldo":formato(valor_saldo ),
                             "precio_parcial":formato(precio_parcial),
+                            "porcentaje_anterior":20,
+                            "porcentaje_actual":20,
+                            "porcentaje_total":20,
+                            "porcentaje_saldo":20,
                             "partidas":res
                         }
                         );

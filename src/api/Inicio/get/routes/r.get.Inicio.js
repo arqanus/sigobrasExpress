@@ -127,34 +127,35 @@ module.exports = function(app){
 			res.json("null");		
 		}else{
 			User.getCortesInicio(req.body.id_ficha,(err,cortes)=>{			
-				cortes = cortes[cortes.length-1]				
-				User.getcronogramaInicio(req.body.id_ficha,cortes.fecha_inicial,cortes.fecha_final,(err,data)=>{	
-					if(data=="vacio")		{
-						data = {}
-						data.programado_monto_total
-						data.programado_porcentaje_total
-						data.fisico_monto_total
-						data.fisico_porcentaje_total
-						data.financiero_monto_total
-						data.financiero_porcentaje_total
-						data.grafico_programado=[]
-						data.grafico_fisico=[]
-						data.grafico_financiero=[]
-						data.grafico_periodos=[]
-						data.data=[]
-					}
-					var fecha_final = null
-					if(!data.data ||data.data.length==0){
-						fecha_final = fechaLargaCorta(cortes.fecha_inicial)
-					}else{
-						fecha_final = data.data[data.data.length-1].fecha
-					}
-					data.fecha_inicial = fechaLargaCorta(cortes.fecha_inicial)
-					data.fecha_final = fecha_final
-					data.avance_Acumulado = 0
-					data.fechaActual = fechaActual()
-					res.json(data)
-				})
+				res.json(cortes)
+				// cortes = cortes[cortes.length-1]				
+				// User.getcronogramaInicio(req.body.id_ficha,cortes.fecha_inicial,cortes.fecha_final,(err,data)=>{	
+				// 	if(data=="vacio")		{
+				// 		data = {}
+				// 		data.programado_monto_total
+				// 		data.programado_porcentaje_total
+				// 		data.fisico_monto_total
+				// 		data.fisico_porcentaje_total
+				// 		data.financiero_monto_total
+				// 		data.financiero_porcentaje_total
+				// 		data.grafico_programado=[]
+				// 		data.grafico_fisico=[]
+				// 		data.grafico_financiero=[]
+				// 		data.grafico_periodos=[]
+				// 		data.data=[]
+				// 	}
+				// 	var fecha_final = null
+				// 	if(!data.data ||data.data.length==0){
+				// 		fecha_final = fechaLargaCorta(cortes.fecha_inicial)
+				// 	}else{
+				// 		fecha_final = data.data[data.data.length-1].fecha
+				// 	}
+				// 	data.fecha_inicial = fechaLargaCorta(cortes.fecha_inicial)
+				// 	data.fecha_final = fecha_final
+				// 	data.avance_Acumulado = 0
+				// 	data.fechaActual = fechaActual()
+				// 	res.json(data)
+				// })
 			})
 		}
 		
