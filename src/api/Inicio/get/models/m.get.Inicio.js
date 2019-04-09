@@ -374,7 +374,7 @@ userModel.getCortesInicio = (id_ficha,callback)=>{
     
         pool.getConnection(function(err ,conn){
             if(err){ callback(err);}
-            else{conn.query("(select 'I' codigo,fichas.fecha_inicial_real fecha_inicial from fichas where fichas.id_ficha = ? )union(SELECT estados.codigo, fecha fecha_inicial FROM historialestados LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado WHERE historialestados.Fichas_id_ficha = ? ORDER BY fecha)",[id_ficha,id_ficha],(error,res)=>{ 
+            else{conn.query("select *from((SELECT 'I' codigo, fichas.fecha_inicial_real fecha_inicial FROM fichas WHERE fichas.id_ficha = ?) UNION (SELECT estados.codigo, fecha fecha_inicial FROM historialestados LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado WHERE historialestados.Fichas_id_ficha = ? ))tb_cortes ORDER BY fecha_inicial",[id_ficha,id_ficha],(error,res)=>{ 
                     if(error){
                         callback(error);
                     }else if(res.length == 0){
