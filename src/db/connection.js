@@ -15,17 +15,17 @@ var pool = mysql.createPool({
     // connectTimeout: 1000
 
     /**********config laptop run* */
-    // host: '192.168.0.4',
-    // user: 'kaido',
-    // password: 'kaido',    
-    // database: 'sigobras_db',
-    // connectTimeout: 1000
+    host: '192.168.0.4',
+    user: 'kaido',
+    password: 'kaido',    
+    database: 'sigobras_db',
+    connectTimeout: 1000
 
-    host: 'localhost',
-    user: 'root',
-    password: 'password',    
-    database: 'SIGOBRAS_DB',
-    connectTimeout: 10000
+    // host: 'localhost',
+    // user: 'root',
+    // password: 'password',    
+    // database: 'SIGOBRAS_DB',
+    // connectTimeout: 10000
 });    
 connection.on('error', function(err) {
   console.log(err.code); // 'ER_BAD_DB_ERROR'

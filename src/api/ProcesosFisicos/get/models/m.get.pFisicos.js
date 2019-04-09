@@ -619,7 +619,14 @@ userModel.getHistorial = (id_ficha,callback)=>{
                         if(fila.id_componente != lastIdComponente){
                             if(i != 0 ){
                                 componente.componente_total_soles = formato(componente_total_soles)
+                                  //dato falso
+                                componente.componente_total_porcentaje = formato(componente_total_soles)
+
                                 componente.fechas[componente.fechas.length-1].fecha_total_soles = formato(fecha_total_soles)
+
+                                //dato falso
+                                componente.fechas[componente.fechas.length-1].fecha_total_porcentaje = formato(fecha_total_soles)
+
                                 componentes.push(componente);
                                 componente = {}
                                 componente_total_soles = 0
@@ -641,6 +648,7 @@ userModel.getHistorial = (id_ficha,callback)=>{
                                         {
                                             "item" : fila.item,
                                             "descripcion_partida" : fila.descripcion_partida,
+                                            "unidad_medida":fila.unidad_medida,
                                             "nombre_actividad" : fila.nombre_actividad,
                                             "descripcion_actividad" : fila.descripcion_actividad,
                                             "observacion":fila.observacion,                 
@@ -667,6 +675,7 @@ userModel.getHistorial = (id_ficha,callback)=>{
                                             {
                                                 "item" : fila.item,
                                                 "descripcion_partida" : fila.descripcion_partida,
+                                                "unidad_medida":fila.unidad_medida,
                                                 "nombre_actividad" : fila.nombre_actividad,
                                                 "descripcion_actividad" : fila.descripcion_actividad,
                                                 "observacion":fila.observacion,                 
@@ -685,6 +694,7 @@ userModel.getHistorial = (id_ficha,callback)=>{
                                         "item" : fila.item,
                                         "descripcion_partida" : fila.descripcion_partida,
                                         "nombre_actividad" : fila.nombre_actividad,
+                                        "unidad_medida":fila.unidad_medida,
                                         "descripcion_actividad" : fila.descripcion_actividad,
                                         "observacion":fila.observacion,                 
                                         "valor":formato(fila.valor),
@@ -706,7 +716,13 @@ userModel.getHistorial = (id_ficha,callback)=>{
                     }
 
                     componente.componente_total_soles = formato(componente_total_soles)
+                    //dato falso
+                    componente.componente_total_porcentaje = formato(componente_total_soles)
+
                     componente.fechas[componente.fechas.length-1].fecha_total_soles = formato(fecha_total_soles)
+                    //dato falso
+                    componente.fechas[componente.fechas.length-1].fecha_total_porcentaje = formato(fecha_total_soles)
+
                     componentes.push(componente);
                     
                     callback(null,componentes);
