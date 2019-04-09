@@ -1,7 +1,16 @@
 const User = require('../models/m.post.Inicio');
 const User2 = require('../../get/models/m.get.Inicio');
 
+function fechaLargaCorta(MyDate){
 
+	var MyDateString;
+
+	MyDate.setDate(MyDate.getDate() + 20);
+
+	MyDateString = (MyDate.getFullYear()+'-'+('0' + (MyDate.getMonth()+1)).slice(-2)+'-'+('0' + MyDate.getDate()).slice(-2))
+	
+	return MyDateString
+}
 module.exports = function(app){
 	app.post('/postcronogramamensual',(req,res)=>{
 		
