@@ -1737,7 +1737,7 @@ userModel.getValGeneraMayoresMetradoslAnyos  = (id_ficha,tipo,callback)=>{
             callback(err);
         }        
         else{
-            conn.query("SELECT YEAR(avanceactividades.fecha) anyo FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado = ? AND componentes.fichas_id_ficha = ? GROUP BY YEAR(avanceactividades.fecha) ORDER BY avanceactividades.fecha",[tipo,id_ficha],(err,res)=>{ 
+            conn.query("SELECT YEAR(historialactividades.fecha) anyo FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida inner JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado = ? AND componentes.fichas_id_ficha = ? GROUP BY YEAR(historialactividades.fecha) ORDER BY historialactividades.fecha",[tipo,id_ficha],(err,res)=>{ 
                 if(err){
                     // console.log("err");
                     console.log(err);                    
