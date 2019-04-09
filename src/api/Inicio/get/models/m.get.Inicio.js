@@ -384,27 +384,25 @@ userModel.getCortesInicio = (id_ficha,callback)=>{
                     }else{
                         var cortes = []
                         for (let i = 0; i < res.length; i++) {
-                            const fila = res[i];
-                            fila.fecha_inicial = fila.fecha_inicial.toLocaleString()
-                            if(i+1<res.length && fila.codigo =="C"){
-                                res[i].fecha_final = res[i+1].fecha_inicial.toLocaleString()
-                            }
-                             if(fila.codigo =="C" ||fila.codigo =="I"){
-                                if(cortes.length >0){
-                                        cortes[cortes.length-1].fecha_final_gestion = res[i].fecha_inicial
-                                }
-
-
-                                if(i+2 > res.length||fila.codigo =="I"){
-                                        dt = new Date();
+                                const fila = res[i];
+                                fila.fecha_inicial = fila.fecha_inicial.toLocaleString()
+                                if(i+1<res.length && fila.codigo =="C"||fila.codigo =="I"){
+                                        res[i].fecha_final = res[i+1].fecha_inicial.toLocaleString()
+                                        cortes.push(res[i])
+                                }else if(fila.codigo =="C"||fila.codigo =="I"){
                                         res[i].fecha_final = ""
-                                        res[i].fecha_final_gestion = add_years(dt, 10).toLocaleString()
+                                        cortes.push(res[i])
                                 }
-                                
-                                cortes.push(res[i])
-                            }
-
-                            
+                               
+                        }
+                        for (let i = 0; i < cortes.length; i++) {
+                                const corte = cortes[i];
+                               if(i+1<cortes.length){
+                                        corte.fecha_final_gestion = cortes[i+1].fecha_inicial
+                               }else{
+                                dt = new Date();                                
+                                corte.fecha_final_gestion = add_years(dt, 10).toLocaleString()  
+                               }
                             
                         }
                         callback(null,cortes);

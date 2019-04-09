@@ -130,7 +130,7 @@ module.exports = function(app){
 				if(req.body.id_ficha == null){
 					res.json("null");	
 				}else{
-					// res.json(cortes)
+					// res.json(cortes)					
 					cortes = cortes[cortes.length-1]				
 					var fecha_inicial = 0
 					if(cortes.fecha_final == ""){
@@ -138,6 +138,7 @@ module.exports = function(app){
 					}else{
 						fecha_inicial = cortes.fecha_final
 					}
+					
 					User.getAcumuladoCorte(req.body.id_ficha,fecha_inicial,(err,AcumuladoCorte)=>{
 						if(err) {res.status(204).json(err);}
 						else{
