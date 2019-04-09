@@ -596,7 +596,7 @@ userModel.getHistorial = (id_ficha,callback)=>{
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
         else{
-            conn.query("/*COALESCE(parcial_negativo / parcial_positivo, 0) + 1 porcentaje_negatividad_ajustado*/ SELECT componentes.id_componente, componentes.numero, componentes.nombre nombre_componente, partidas.item, partidas.descripcion descripcion_partida, TRIM(BOTH '/DIA' FROM partidas.unidad_medida) unidad_medida, actividades.nombre nombre_actividad, avanceactividades.descripcion descripcion_actividad, avanceactividades.observacion, DATE(avanceactividades.fecha) fecha, (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) *avanceactividades.valor valor, partidas.costo_unitario, (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) *avanceactividades.valor * partidas.costo_unitario parcial FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_positivo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE actividades.parcial > 0 GROUP BY partidas.id_partida) p1 ON p1.id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_negativo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE actividades.parcial < 0 GROUP BY partidas.id_partida) p2 ON p2.id_partida = partidas.id_partida LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida RIGHT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE componentes.Fichas_id_ficha = ? ORDER BY componentes.id_componente , avanceactividades.fecha DESC , partidas.id_partida",id_ficha,(err,res)=>{
+            conn.query("/*COALESCE(parcial_negativo / parcial_positivo, 0) + 1 porcentaje_negatividad_ajustado*/ SELECT componentes.id_componente, componentes.numero, componentes.nombre nombre_componente, partidas.item, partidas.descripcion descripcion_partida, TRIM(BOTH '/DIA' FROM partidas.unidad_medida) unidad_medida, actividades.nombre nombre_actividad, avanceactividades.descripcion descripcion_actividad, avanceactividades.observacion, DATE(avanceactividades.fecha) fecha, (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) * avanceactividades.valor valor, partidas.costo_unitario, (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) * avanceactividades.valor * partidas.costo_unitario parcial, (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) * avanceactividades.valor * partidas.costo_unitario/tb_presupuesto.presupuesto *100 porcentaje FROM fichas LEFT JOIN (SELECT componentes.fichas_id_ficha id_ficha, SUM(presupuesto) presupuesto FROM componentes GROUP BY componentes.fichas_id_ficha) tb_presupuesto ON tb_presupuesto.id_ficha = fichas.id_ficha LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_positivo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE actividades.parcial > 0 GROUP BY partidas.id_partida) p1 ON p1.id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_negativo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE actividades.parcial < 0 GROUP BY partidas.id_partida) p2 ON p2.id_partida = partidas.id_partida LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida RIGHT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE componentes.Fichas_id_ficha = ? ORDER BY componentes.id_componente , avanceactividades.fecha DESC , partidas.id_partida",id_ficha,(err,res)=>{
                 if(err){
                     console.log(err);
                     callback(err.code);
@@ -610,6 +610,8 @@ userModel.getHistorial = (id_ficha,callback)=>{
                     var componente = {}
                     var componente_total_soles = 0
                     var fecha_total_soles = 0
+                    var componente_total_porcentaje = 0
+                    var fecha_total_porcentaje = 0
                     for (let i = 0; i < res.length; i++) {
                         const fila = res[i];
                         
@@ -619,18 +621,20 @@ userModel.getHistorial = (id_ficha,callback)=>{
                         if(fila.id_componente != lastIdComponente){
                             if(i != 0 ){
                                 componente.componente_total_soles = formato(componente_total_soles)
-                                  //dato falso
-                                componente.componente_total_porcentaje = formato(componente_total_soles)
+                               
+                                componente.componente_total_porcentaje = formato(componente_total_porcentaje)
 
                                 componente.fechas[componente.fechas.length-1].fecha_total_soles = formato(fecha_total_soles)
 
-                                //dato falso
-                                componente.fechas[componente.fechas.length-1].fecha_total_porcentaje = formato(fecha_total_soles)
+                            
+                                componente.fechas[componente.fechas.length-1].fecha_total_porcentaje = formato(fecha_total_porcentaje)
 
                                 componentes.push(componente);
                                 componente = {}
                                 componente_total_soles = 0
                                 fecha_total_soles = 0
+                                componente_total_porcentaje = 0
+                                fecha_total_porcentaje = 0
                             }   
                             
 
@@ -639,11 +643,13 @@ userModel.getHistorial = (id_ficha,callback)=>{
                             componente.numero = fila.numero
                             componente.nombre_componente = fila.nombre_componente
                             componente.componente_total_soles = 9999
+                            componente.componente_total_porcentaje = 9999
                             componente.fechas = [
                                 {
                                     "fecha": fila.fecha,
                                     
                                     "fecha_total_soles":9999,
+                                    "fecha_total_porcentaje":9999,
                                     "historial":[
                                         {
                                             "item" : fila.item,
@@ -667,10 +673,13 @@ userModel.getHistorial = (id_ficha,callback)=>{
                             if(fila.fecha != lastFecha){
                                 componente.fechas[componente.fechas.length-1].fecha_total_soles = formato(fecha_total_soles)
                                 fecha_total_soles=0
+                                componente.fechas[componente.fechas.length-1].fecha_total_porcentaje = formato(fecha_total_porcentaje)
+                                fecha_total_porcentaje=0
                                 componente.fechas.push(
                                     {
                                         "fecha": fila.fecha,                                        
                                         "fecha_total_soles":9999,
+                                        "fecha_total_porcentaje":9999,
                                         "historial":[
                                             {
                                                 "item" : fila.item,
@@ -708,6 +717,8 @@ userModel.getHistorial = (id_ficha,callback)=>{
                         }
                         componente_total_soles +=fila.parcial
                         fecha_total_soles +=fila.parcial  
+                        componente_total_porcentaje +=fila.porcentaje
+                        fecha_total_porcentaje +=fila.porcentaje 
                         
                         lastIdComponente = fila.id_componente
                         lastFecha = fila.fecha
@@ -716,12 +727,12 @@ userModel.getHistorial = (id_ficha,callback)=>{
                     }
 
                     componente.componente_total_soles = formato(componente_total_soles)
-                    //dato falso
-                    componente.componente_total_porcentaje = formato(componente_total_soles)
+                  
+                    componente.componente_total_porcentaje = formato(componente_total_porcentaje)
 
                     componente.fechas[componente.fechas.length-1].fecha_total_soles = formato(fecha_total_soles)
-                    //dato falso
-                    componente.fechas[componente.fechas.length-1].fecha_total_porcentaje = formato(fecha_total_soles)
+              
+                    componente.fechas[componente.fechas.length-1].fecha_total_porcentaje = formato(fecha_total_porcentaje)
 
                     componentes.push(componente);
                     
