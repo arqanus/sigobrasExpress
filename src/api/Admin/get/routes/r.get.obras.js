@@ -52,4 +52,17 @@ module.exports = function(app){
 	
 		
 	})
+	app.post('/getPartidasPorObra',(req,res)=>{
+		
+		User.getPartidasPorObra(req.body.id_ficha,(err,data)=>{							
+			if(err){ res.status(204).json(err);}
+			else{
+				res.json(data);	
+			}
+
+		})
+	
+	
+		
+	})
 }
