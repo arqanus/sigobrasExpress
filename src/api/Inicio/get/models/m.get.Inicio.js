@@ -505,10 +505,10 @@ userModel.getcronogramaInicio = (AcumuladoCorte,id_ficha,fecha_inicial,fecha_fin
                         delete fila.mes
                         delete fila.anyo
 
-                        grafico_programado.push(formato(programado_acumulado))
-                        grafico_fisico.push(formato(fisico_acumulado))
-                        grafico_financiero.push(formato(financiero_acumulado))
-                        periodos.push(formato(fila.periodo))
+                        grafico_programado.push(Number(formato(programado_acumulado)))
+                        grafico_fisico.push(Number(formato(fisico_acumulado)))
+                        grafico_financiero.push(Number(formato(financiero_acumulado)))
+                        periodos.push(fila.periodo)
 
                         //format
                         fila.programado_monto = formato(fila.programado_monto)
