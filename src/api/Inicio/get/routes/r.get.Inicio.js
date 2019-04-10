@@ -3,7 +3,7 @@ function fechaLargaCorta(MyDate){
 
 	var MyDateString;
 
-	MyDate.setDate(MyDate.getDate() + 20);
+	
 
 	MyDateString = (MyDate.getFullYear()+'-'+('0' + (MyDate.getMonth()+1)).slice(-2)+'-'+('0' + MyDate.getDate()).slice(-2))
 	

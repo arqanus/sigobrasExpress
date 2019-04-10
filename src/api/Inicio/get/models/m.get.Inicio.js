@@ -374,7 +374,7 @@ userModel.getCortesInicio = (id_ficha,callback)=>{
     
         pool.getConnection(function(err ,conn){
             if(err){ callback(err);}
-            else{conn.query("select *from((SELECT 'I' codigo, fichas.fecha_inicial_real fecha_inicial FROM fichas WHERE fichas.id_ficha = ?) UNION (SELECT estados.codigo, fecha fecha_inicial FROM historialestados LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado WHERE historialestados.Fichas_id_ficha = ? ))tb_cortes ORDER BY fecha_inicial",[id_ficha,id_ficha],(error,res)=>{ 
+            else{conn.query("SELECT estados.codigo, fecha fecha_inicial FROM historialestados LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado WHERE historialestados.Fichas_id_ficha = ? ORDER BY fecha_inicial",[id_ficha,id_ficha],(error,res)=>{ 
                     if(error){
                         callback(error);
                     }else if(res.length == 0){
@@ -386,10 +386,10 @@ userModel.getCortesInicio = (id_ficha,callback)=>{
                         for (let i = 0; i < res.length; i++) {
                                 const fila = res[i];
                                 fila.fecha_inicial = fila.fecha_inicial.toLocaleString()
-                                if(i+1<res.length && fila.codigo =="C"||fila.codigo =="I"){
+                                if(i+1<res.length && fila.codigo =="C"){
                                         res[i].fecha_final = res[i+1].fecha_inicial.toLocaleString()
                                         cortes.push(res[i])
-                                }else if(fila.codigo =="C"||fila.codigo =="I"){
+                                }else if(fila.codigo =="C"){
                                         res[i].fecha_final = ""
                                         cortes.push(res[i])
                                 }
@@ -404,6 +404,17 @@ userModel.getCortesInicio = (id_ficha,callback)=>{
                                 corte.fecha_final_gestion = add_years(dt, 10).toLocaleString()  
                                }
                             
+                        }
+                        if(cortes.length == 0){
+                                dt = new Date(); 
+                                cortes.push(
+                                        {
+                                                "codigo": "I",
+                                                "fecha_inicial": res[0].fecha_inicial,
+                                                "fecha_final": "",
+                                                "fecha_final_gestion": add_years(dt, 10).toLocaleString() 
+                                        }
+                                )
                         }
                         callback(null,cortes);
                         conn.destroy()
@@ -494,10 +505,10 @@ userModel.getcronogramaInicio = (AcumuladoCorte,id_ficha,fecha_inicial,fecha_fin
                         delete fila.mes
                         delete fila.anyo
 
-                        grafico_programado.push(programado_acumulado)
-                        grafico_fisico.push(fisico_acumulado)
-                        grafico_financiero.push(financiero_acumulado)
-                        periodos.push(fila.periodo)
+                        grafico_programado.push(formato(programado_acumulado))
+                        grafico_fisico.push(formato(fisico_acumulado))
+                        grafico_financiero.push(formato(financiero_acumulado))
+                        periodos.push(formato(fila.periodo))
 
                         //format
                         fila.programado_monto = formato(fila.programado_monto)

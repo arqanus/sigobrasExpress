@@ -91,5 +91,28 @@ userModel.getUnidadEjecutora = (callback)=>{
         }                
     })
 }
+userModel.getPartidasPorObra = (id_ficha,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){                        
+            callback(err);
+        }
+        else{                       
+            conn.query("select partidas.* from componentes left join partidas on partidas.componentes_id_componente = componentes.id_componente where componentes.fichas_id_ficha = ? ",id_ficha,(error,res)=>{
+                if(error){
+                    console.log(error);                    
+                    callback(error.code);
+                }else{
+                    console.log("res",res); 
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }                
+    })
+}
+
 
 module.exports = userModel;
