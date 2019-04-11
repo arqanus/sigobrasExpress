@@ -29,7 +29,7 @@ app.set('port',PORT);
 //middleares
 app.use(morgan('dev'));
 	//entender jason
-app.use(bodyParser.json({limit: '200kb'}));
+app.use(bodyParser.json({limit: '1mb'}));
 morganBody(app);
 
 //static
