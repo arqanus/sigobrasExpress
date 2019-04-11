@@ -41,11 +41,11 @@ module.exports = function(app){
 						res.json(err);	
 					}else{
 						// res.json(corte)
-						console.log(req.body.id_ficha,corte.fecha_final);
+						console.log(req.body[0][0],corte.fecha_final);
 						var fecha_inicial = fechaLargaCorta(new Date(corte.fecha_inicial))
 						var fecha_final = fechaLargaCorta(new Date(corte.fecha_final))
 						
-						User2.getAvanceGestionAnterior(req.body.id_ficha,corte.fecha_final,(err,avance)=>{
+						User2.getAvanceGestionAnterior(req.body[0][0],corte.fecha_final,(err,avance)=>{
 							if(err){
 								res.json(err);
 							}else{
@@ -57,7 +57,7 @@ module.exports = function(app){
 	
 								}
 								
-								User2.getcronogramaInicio(corte,req.body.id_ficha,corte.fecha_final,(err,data)=>{
+								User2.getcronogramaInicio(corte,req.body[0][0],corte.fecha_final,(err,data)=>{
 									if(err){
 										res.json(err);
 									}else{
