@@ -301,6 +301,27 @@ userModel.posthistorialActividad = (data,callback)=>{
                 
     })
 }
+userModel.postAvanceActividadPorObra = (data,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){ callback(err);}
+        else{
+            conn.query('Insert into avanceActividades (actividades_id_actividad,fecha,valor) values ?',[data],(err,res)=>{ 
+                if(err){
+                    console.log(err);
+                    callback(err.code);
+                }else{      
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }
+        
+                
+    })
+}
 
 
 module.exports = userModel;
