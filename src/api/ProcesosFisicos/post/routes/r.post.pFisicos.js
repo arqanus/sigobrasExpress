@@ -56,38 +56,31 @@ module.exports = function(app){
           res.status(200).send("fecha invalida")					
           
       }else{			
-          User.getIdHistorial(req.body.id_ficha,(err,data)=>{
-              if(err){ res.status(204).json(err);}
-              else{
-                  delete req.body.id_ficha
-                  req.body.historialEstados_id_historialEstado = data.id_historialEstado                    
-                  
-                  User.postAvanceActividad(req.body,(err,data)=>{
+        delete req.body.id_ficha
+        User.postAvanceActividad(req.body,(err,data)=>{
+            if(err){ res.status(204).json(err);}
+            else{
+              
+              User.getPartidasbyIdActividad(req.body.Actividades_id_actividad,(err,partida)=>{
+                  if(err){ res.status(204).json(err);}
+                  else{
+                    
+                    User.getActividadesbyIdActividad(partida[0].id_partida,(err,actividades)=>{
                       if(err){ res.status(204).json(err);}
                       else{
-                        
-                        User.getPartidasbyIdActividad(req.body.Actividades_id_actividad,(err,partida)=>{
-                            if(err){ res.status(204).json(err);}
-                            else{
-                              
-                              User.getActividadesbyIdActividad(partida[0].id_partida,(err,actividades)=>{
-                                if(err){ res.status(204).json(err);}
-                                else{
-                                    res.json(
-                                      {
-                                        "partida":partida[0],
-                                        "actividades":actividades
-                                      }                                        
-                                    );	
-                                }
-                              })
-                            }
-                        })
-                          
+                          res.json(
+                            {
+                              "partida":partida[0],
+                              "actividades":actividades
+                            }                                        
+                          );	
                       }
-                  })
-              }
-          })
+                    })
+                  }
+              })
+                
+            }
+        })
       }
       
   
@@ -96,38 +89,32 @@ module.exports = function(app){
       if (req.body.id_ficha == null) {
           res.json("null");
       } else {
-        User.getIdHistorial(req.body.id_ficha,(err,data)=>{
-          if(err){ res.status(204).json(err);}
-          else{
-              delete req.body.id_ficha
-              req.body.historialEstados_id_historialEstado = data.id_historialEstado                    
+        delete req.body.id_ficha
+        
+        User.postAvanceActividad(req.body,(err,data)=>{
+            if(err){ res.status(204).json(err);}
+            else{
               
-              User.postAvanceActividad(req.body,(err,data)=>{
-                  if(err){ res.status(204).json(err);}
-                  else{
-                    
-                    User.getPartidasbyIdActividad(req.body.Actividades_id_actividad,(err,partida)=>{
-                      if(err){ res.status(204).json(err);}
-                      else{
-                        
-                        User.getActividadesbyIdActividad(partida[0].id_partida,(err,actividades)=>{
-                          if(err){ res.status(204).json(err);}
-                          else{
-                              res.json(
-                                {
-                                  "partida":partida[0],
-                                  "actividades":actividades
-                                }                                        
-                              );	
-                          }
-                        })
-                      }
-                    })
-                      
-                  }
+              User.getPartidasbyIdActividad(req.body.Actividades_id_actividad,(err,partida)=>{
+                if(err){ res.status(204).json(err);}
+                else{
+                  
+                  User.getActividadesbyIdActividad(partida[0].id_partida,(err,actividades)=>{
+                    if(err){ res.status(204).json(err);}
+                    else{
+                        res.json(
+                          {
+                            "partida":partida[0],
+                            "actividades":actividades
+                          }                                        
+                        );	
+                    }
+                  })
+                }
               })
-          }
-       })
+                
+            }
+        })
       }
   })
   app.post('/postNuevaActividadMayorMetrado',(req,res)=>{
