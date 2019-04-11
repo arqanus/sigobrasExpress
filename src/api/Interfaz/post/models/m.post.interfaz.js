@@ -7,7 +7,7 @@ userModel.ultimoEstadoObra = (id_ficha,callback)=>{
             callback(err);
         
         }else{        
-            conn.query("select historialestados.Estados_id_Estado,estados.nombre from historialestados left join estados on estados.id_Estado = historialestados.Estados_id_Estado where historialestados.Fichas_id_ficha =? order by historialestados.id_historialEstado desc limit 1",id_ficha,(error,res)=>{
+            conn.query("select  historialestados.id_historialEstado,historialestados.Estados_id_Estado,estados.nombre from historialestados left join estados on estados.id_Estado = historialestados.Estados_id_Estado where historialestados.Fichas_id_ficha =? order by historialestados.id_historialEstado desc limit 1",id_ficha,(error,res)=>{
                 if(error){
                     callback(error);
                 }else if(res.length == 0){
@@ -68,6 +68,26 @@ userModel.getestadoIdHistorialEstados =(id_historial,callback)=>{
                 }else{
                     console.log("res",res); 
                     callback(null,res[0]);
+                    conn.destroy()
+                }
+                
+                
+            })
+        } 
+    })
+}
+userModel.postHistorialEstadosObra =(data,callback)=>{
+    pool.getConnection(function(err,conn){
+        if(err){ callback(err);}
+        else{     
+            conn.query('INSERT INTO historialestados (id_historialEstado,fichas_id_ficha,fecha_inicial,fecha_final,estados_id_estado) VALUES ? ON DUPLICATE key UPDATE fecha_inicial = VALUES(fecha_inicial),fecha_final = VALUES(fecha_final),estados_id_estado = VALUES(estados_id_estado)', [data],(error,res)=>{
+                if(error){
+                    console.log(error);
+                    callback(error.code);
+                    conn.destroy()
+                }else{
+                    console.log("res",res); 
+                    callback(null,res);
                     conn.destroy()
                 }
                 
