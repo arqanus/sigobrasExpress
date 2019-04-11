@@ -308,6 +308,17 @@ module.exports = function(app){
             }
         })	
     })
+    app.post('/postAvanceActividadPorObra',(req,res)=>{
+		
+		User.postAvanceActividadPorObra(req.body,(err,data)=>{
+			
+            if(err){ res.status(204).json(err);}
+            else{
+			res.status(200).json(data);
+
+            }
+		})
+	})
    
 	
 }

@@ -98,13 +98,44 @@ userModel.getPartidasPorObra = (id_ficha,callback)=>{
             callback(err);
         }
         else{                       
-            conn.query("select partidas.* from componentes left join partidas on partidas.componentes_id_componente = componentes.id_componente where componentes.fichas_id_ficha = ? ",id_ficha,(error,res)=>{
+            conn.query("select partidas.item,actividades.id_actividad,actividades.parcial/partidas.metrado porcentaje_metrado from componentes left join partidas on partidas.componentes_id_componente = componentes.id_componente left join actividades on actividades.Partidas_id_partida = partidas.id_partida where componentes.fichas_id_ficha = ? and actividades.parcial is not null and actividades.parcial >0",id_ficha,(error,res)=>{
                 if(error){
                     console.log(error);                    
                     callback(error.code);
                 }else{
-                    console.log("res",res); 
-                    callback(null,res);
+                    var partidas = []
+                    var partida={}
+                    var item = -1
+                    for (let i = 0; i < res.length; i++) {
+                        const fila = res[i];
+                        if(fila.item != item){
+                            if(i>0){
+                                partidas.push(partida)
+                                partida = {}
+                            }
+                            partida.item = fila.item
+                            partida.actividades=[
+                                {
+                                    "id_actividad":fila.id_actividad,
+                                    "porcentaje_metrado":fila.porcentaje_metrado
+                                }
+                            ]
+                            
+                        }else{
+                            partida.actividades.push({
+                                "id_actividad":fila.id_actividad,
+                                "porcentaje_metrado":fila.porcentaje_metrado
+                            })
+
+                        }
+                        item = fila.item
+
+                        
+                    }
+                    partidas.push(partida)
+
+                    
+                    callback(null,partidas);
                     conn.destroy()
                 }
                 
