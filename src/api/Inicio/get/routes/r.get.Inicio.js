@@ -126,74 +126,136 @@ module.exports = function(app){
 		if(req.body.id_ficha == null){
 			res.json("null");		
 		}else{
-			User.getCortesInicio(req.body.id_ficha,(err,cortes)=>{
-				if(req.body.id_ficha == null){
-					res.json("null");	
+			console.log("test");
+			
+			User.getUltimoCorte(req.body.id_ficha,(err,corte)=>{
+				if(err){
+					res.json(err);	
 				}else{
-					// res.json(cortes)					
-					cortes = cortes[cortes.length-1]				
-					var fecha_inicial = 0
-					if(cortes.fecha_final == ""){
-						fecha_inicial = cortes.fecha_inicial
-					}else{
-						fecha_inicial = cortes.fecha_final
-					}
+					// res.json(corte)
+					console.log(req.body.id_ficha,corte.fecha_final);
+					var fecha_inicial = fechaLargaCorta(new Date(corte.fecha_inicial))
+					var fecha_final = fechaLargaCorta(new Date(corte.fecha_final))
 					
-					User.getAcumuladoCorte(req.body.id_ficha,fecha_inicial,(err,AcumuladoCorte)=>{
-						if(err) {res.status(204).json(err);}
-						else{
-							
-							
-							var avance_Acumulado = AcumuladoCorte.fisico_monto
-							console.log("aculadocorte",AcumuladoCorte);
-							if(AcumuladoCorte == "vacio"){
-								avance_Acumulado = 0
+					User.getAvanceGestionAnterior(req.body.id_ficha,corte.fecha_final,(err,avance)=>{
+						if(err){
+							res.json(err);
+						}else{
+							console.log("avance",avance.avance);
+							corte.fisico_monto = avance.avance||0
+							var avance_Acumulado = 0
+							if(corte.codigo == "C"){
+								avance_Acumulado = corte.fisico_monto
+
 							}
 							
-							if(cortes.fecha_final == ""){
-								AcumuladoCorte = "vacio"
-							}
-							// res.json(AcumuladoCorte)
-							User.getcronogramaInicio(AcumuladoCorte,req.body.id_ficha,fecha_inicial,cortes.fecha_final_gestion,(err,data)=>{	
-								if(data=="vacio")		{
-									data = {}
-									data.programado_monto_total
-									data.programado_porcentaje_total
-									data.fisico_monto_total
-									data.fisico_porcentaje_total
-									data.financiero_monto_total
-									data.financiero_porcentaje_total
-									data.grafico_programado=[]
-									data.grafico_fisico=[]
-									data.grafico_financiero=[]
-									data.grafico_periodos=[]
-									data.data=[]
-									data.avance_Acumulado = 0
-								}
-								var fecha_final = null
-								if(!data.data ||data.data.length==0){
-									fecha_final = fechaLargaCorta(new Date(cortes.fecha_inicial))
-									console.log("caso1");
+							User.getcronogramaInicio(corte,req.body.id_ficha,corte.fecha_final,(err,data)=>{
+								if(err){
+									res.json(err);
 								}else{
-									fecha_final = data.data[data.data.length-1].fecha
-									console.log("caso2");
-									
-								}
-								data.fecha_inicial = fechaLargaCorta(new Date(cortes.fecha_inicial))
-								data.fecha_final = fecha_final
-								data.avance_Acumulado = avance_Acumulado
-								data.fechaActual = fechaActual()
-								res.json(data)
+									if(data=="vacio"){
+										data = {}
+										data.programado_monto_total
+										data.programado_porcentaje_total
+										data.fisico_monto_total
+										data.fisico_porcentaje_total
+										data.financiero_monto_total
+										data.financiero_porcentaje_total
+										data.grafico_programado=[]
+										data.grafico_fisico=[]
+										data.grafico_financiero=[]
+										data.grafico_periodos=[]
+										data.data=[]								
+									}
+									data.fecha_inicial = fecha_inicial
+									data.fecha_final = fecha_final
+									data.avance_Acumulado = avance_Acumulado
+									data.fechaActual = fechaActual()
+									res.json(data)
+								}	
+							
 							})
-						}
-						
-					})	
+						}	
+					
+					})
 				}	
-				
-				
 			
 			})
 		}
 		
 	})
+	// app.post('/getcronogramaInicio',(req,res)=>{
+	// 	if(req.body.id_ficha == null){
+	// 		res.json("null");		
+	// 	}else{
+	// 		User.getCortesInicio(req.body.id_ficha,(err,cortes)=>{
+	// 			if(req.body.id_ficha == null){
+	// 				res.json("null");	
+	// 			}else{
+	// 				// res.json(cortes)					
+	// 				cortes = cortes[cortes.length-1]				
+	// 				var fecha_inicial = 0
+	// 				if(cortes.fecha_final == ""){
+	// 					fecha_inicial = cortes.fecha_inicial
+	// 				}else{
+	// 					fecha_inicial = cortes.fecha_final
+	// 				}
+					
+	// 				User.getAcumuladoCorte(req.body.id_ficha,fecha_inicial,(err,AcumuladoCorte)=>{
+	// 					if(err) {res.status(204).json(err);}
+	// 					else{
+							
+							
+	// 						var avance_Acumulado = AcumuladoCorte.fisico_monto
+	// 						console.log("aculadocorte",AcumuladoCorte);
+	// 						if(AcumuladoCorte == "vacio"){
+	// 							avance_Acumulado = 0
+	// 						}
+							
+	// 						if(cortes.fecha_final == ""){
+	// 							AcumuladoCorte = "vacio"
+	// 						}
+	// 						res.json(AcumuladoCorte)
+	// 						// User.getcronogramaInicio(AcumuladoCorte,req.body.id_ficha,fecha_inicial,cortes.fecha_final_gestion,(err,data)=>{	
+	// 						// 	// if(data=="vacio")		{
+	// 						// 	// 	data = {}
+	// 						// 	// 	data.programado_monto_total
+	// 						// 	// 	data.programado_porcentaje_total
+	// 						// 	// 	data.fisico_monto_total
+	// 						// 	// 	data.fisico_porcentaje_total
+	// 						// 	// 	data.financiero_monto_total
+	// 						// 	// 	data.financiero_porcentaje_total
+	// 						// 	// 	data.grafico_programado=[]
+	// 						// 	// 	data.grafico_fisico=[]
+	// 						// 	// 	data.grafico_financiero=[]
+	// 						// 	// 	data.grafico_periodos=[]
+	// 						// 	// 	data.data=[]
+	// 						// 	// 	data.avance_Acumulado = 0
+	// 						// 	// }
+	// 						// 	// var fecha_final = null
+	// 						// 	// if(!data.data ||data.data.length==0){
+	// 						// 	// 	fecha_final = fechaLargaCorta(new Date(cortes.fecha_inicial))
+	// 						// 	// 	console.log("caso1");
+	// 						// 	// }else{
+	// 						// 	// 	fecha_final = data.data[data.data.length-1].fecha
+	// 						// 	// 	console.log("caso2");
+									
+	// 						// 	// }
+	// 						// 	// data.fecha_inicial = fechaLargaCorta(new Date(cortes.fecha_inicial))
+	// 						// 	// data.fecha_final = fecha_final
+	// 						// 	// data.avance_Acumulado = avance_Acumulado
+	// 						// 	// data.fechaActual = fechaActual()
+	// 						// 	res.json(data)
+	// 						// })
+	// 					}
+						
+	// 				})	
+	// 			}	
+				
+				
+			
+	// 		})
+	// 	}
+		
+	// })
 }

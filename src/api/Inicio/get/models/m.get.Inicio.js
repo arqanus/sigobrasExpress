@@ -370,76 +370,26 @@ pool.getConnection(function(err ,conn){
         }                
 })
 }
-userModel.getCortesInicio = (id_ficha,callback)=>{
+userModel.getUltimoCorte = (id_ficha,callback)=>{
     
         pool.getConnection(function(err ,conn){
             if(err){ callback(err);}
-            else{conn.query("SELECT estados.codigo, fecha fecha_inicial FROM historialestados LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado WHERE historialestados.Fichas_id_ficha = ? ORDER BY fecha_inicial",[id_ficha,id_ficha],(error,res)=>{ 
+            else{conn.query("(SELECT 'C' codigo, DATE_FORMAT(historialestados.fecha_inicial, '%Y-%m-%d') fecha, DATE_FORMAT(historialestados.fecha_inicial, '%b.') mes, DATE_FORMAT(historialestados.fecha_inicial, '%Y') anyo, 0 programado_monto, 0 programado_porcentaje, 0 fisico_monto, 0 fisico_porcentaje, historialestados.monto financiero_monto, 0 financiero_porcentaje, historialestados.id_historialEstado, historialestados.fecha_inicial, historialestados.fecha_final FROM historialestados LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado WHERE estados.codigo = 'C' AND historialestados.Fichas_id_ficha = ? ORDER BY historialestados.id_historialEstado DESC LIMIT 1) UNION (SELECT 'I' codigo, 0 fecha, 0 mes, 0 anyo, 0 programado_monto, 0 programado_porcentaje, 0 fisico_monto, 0 fisico_porcentaje, 0 financiero_monto, 0 financiero_porcentaje, 0 id_historialEstado, fichas.fecha_inicial_real fecha_inicial, fichas.fecha_inicial_real fecha_final FROM fichas WHERE fichas.id_ficha = ?)",[id_ficha,id_ficha],(error,res)=>{ 
                     if(error){
                         callback(error);
-                    }else if(res.length == 0){
-            
+                        conn.destroy()            
+                    }else if(res.length == 0){            
                         callback(null,"vacio");
                         conn.destroy()            
-                    }else{
-                        var cortes = []
+                    }else{                        
                         for (let i = 0; i < res.length; i++) {
                                 const fila = res[i];
+                                // console.log("fila",fila);
+                                
                                 fila.fecha_inicial = fila.fecha_inicial.toLocaleString()
-                                if(i+1<res.length && fila.codigo =="C"){
-                                        res[i].fecha_final = res[i+1].fecha_inicial.toLocaleString()
-                                        cortes.push(res[i])
-                                }else if(fila.codigo =="C"){
-                                        res[i].fecha_final = ""
-                                        cortes.push(res[i])
-                                }
-                               
+                                fila.fecha_final = fila.fecha_final.toLocaleString()
+                                
                         }
-                        for (let i = 0; i < cortes.length; i++) {
-                                const corte = cortes[i];
-                               if(i+1<cortes.length){
-                                        corte.fecha_final_gestion = cortes[i+1].fecha_inicial
-                               }else{
-                                dt = new Date();                                
-                                corte.fecha_final_gestion = add_years(dt, 10).toLocaleString()  
-                               }
-                            
-                        }
-                        if(cortes.length == 0){
-                                dt = new Date(); 
-                                cortes.push(
-                                        {
-                                                "codigo": "I",
-                                                "fecha_inicial": res[0].fecha_inicial,
-                                                "fecha_final": "",
-                                                "fecha_final_gestion": add_years(dt, 10).toLocaleString() 
-                                        }
-                                )
-                        }
-                        callback(null,cortes);
-                        conn.destroy()
-                    }
-                    
-                    
-                })
-            }
-            
-                    
-        })
-}
-userModel.getAcumuladoCorte = (id_ficha,fecha_final,callback)=>{
-    
-        pool.getConnection(function(err ,conn){
-            if(err){ callback(err);}
-            else{conn.query("SELECT 'C' codigo, DATE_FORMAT(?, '%Y-%m-%d') fecha, DATE_FORMAT(?, '%b.') mes, DATE_FORMAT(?, '%Y') anyo, SUM(avanceactividades.valor * costo_unitario)  programado_monto, SUM(avanceactividades.valor * costo_unitario) / tb_presupuesto.presupuesto * 100 programado_porcentaje, SUM(avanceactividades.valor * costo_unitario)  fisico_monto, SUM(avanceactividades.valor * costo_unitario) / tb_presupuesto.presupuesto * 100 fisico_porcentaje, 100 financiero_monto, 100 financiero_porcentaje FROM componentes LEFT JOIN (SELECT componentes.fichas_id_ficha, SUM(componentes.presupuesto) presupuesto FROM componentes GROUP BY componentes.fichas_id_ficha) tb_presupuesto ON tb_presupuesto.fichas_id_ficha = componentes.fichas_id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND componentes.fichas_id_ficha = ? AND avanceactividades.fecha < ? GROUP BY componentes.fichas_id_ficha",[fecha_final,fecha_final,fecha_final,id_ficha,fecha_final],(error,res)=>{ 
-                    if(error){
-                        callback(error);
-                    }else if(res.length == 0){
-            
-                        callback(null,"vacio");
-                        conn.destroy()            
-                    }else{
-                      
                         callback(null,res[0]);
                         conn.destroy()
                     }
@@ -451,12 +401,37 @@ userModel.getAcumuladoCorte = (id_ficha,fecha_final,callback)=>{
                     
         })
 }
-userModel.getcronogramaInicio = (AcumuladoCorte,id_ficha,fecha_inicial,fecha_final,callback)=>{
+userModel.getAvanceGestionAnterior = (id_ficha,fecha_final,callback)=>{
+    
+        pool.getConnection(function(err ,conn){
+            if(err){ 
+                callback(err);
+        }
+            else{
+                    conn.query("SELECT SUM(avanceactividades.valor * partidas.costo_unitario) avance FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.Actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND componentes.fichas_id_ficha = ? AND avanceactividades.fecha >? GROUP BY componentes.fichas_id_ficha",[id_ficha,fecha_final],(error,res)=>{ 
+                    if(error){
+                        callback(error);
+                        conn.destroy()            
+                    }else if(res.length == 0){            
+                        callback(null,"vacio");
+                        conn.destroy()            
+                    }else{                                               
+                        callback(null,res[0]);
+                        conn.destroy()
+                    }
+                    
+                    
+                })
+            }
+            
+                    
+        })
+}
+userModel.getcronogramaInicio = (corte,id_ficha,fecha_inicial,callback)=>{
 
         pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
-        else{conn.query("SELECT 'E' codigo,DATE_FORMAT(cronogramamensual.mes, '%Y-%m-%d') fecha, DATE_FORMAT(cronogramamensual.mes, '%b.') mes, DATE_FORMAT(cronogramamensual.mes, '%Y') anyo, programado programado_monto, programado / tb_presupuesto.presupuesto * 100 programado_porcentaje, COALESCE(tb_fisico.fisico_monto, 0) fisico_monto, COALESCE(tb_fisico.fisico_monto, 0) / tb_presupuesto.presupuesto * 100 fisico_porcentaje, COALESCE(financieroEjecutado, 0) financiero_monto, COALESCE(financieroEjecutado, 0) / tb_presupuesto.presupuesto * 100 financiero_porcentaje FROM cronogramamensual LEFT JOIN (SELECT componentes.fichas_id_ficha, avanceactividades.fecha, DATE_FORMAT(avanceactividades.fecha, '%m ') mes, DATE_FORMAT(avanceactividades.fecha, '%Y ') anyo, SUM(avanceactividades.valor) fisico_monto FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL and avanceactividades.fecha >= ? and avanceactividades.fecha < ? GROUP BY componentes.fichas_id_ficha,DATE_FORMAT(avanceactividades.fecha, '%m %Y') ORDER BY avanceactividades.fecha) tb_fisico ON tb_fisico.fichas_id_ficha = cronogramamensual.fichas_id_ficha AND DATE_FORMAT(tb_fisico.fecha, '%m %Y') = DATE_FORMAT(cronogramamensual.mes, '%m %Y') LEFT JOIN (SELECT componentes.fichas_id_ficha, SUM(componentes.presupuesto) presupuesto FROM componentes GROUP BY componentes.fichas_id_ficha) tb_presupuesto ON tb_presupuesto.fichas_id_ficha = cronogramamensual.fichas_id_ficha WHERE cronogramamensual.fichas_id_ficha = ?     and DATE_FORMAT(cronogramamensual.mes, '%Y-%m-01') >= DATE_FORMAT(?, '%Y-%m-01') and DATE_FORMAT(cronogramamensual.mes, '%Y-%m-01') <= DATE_FORMAT(?, '%Y-%m-01')",[fecha_inicial,fecha_final,id_ficha,fecha_inicial,fecha_final],(error,res)=>{ 
-                console.log(fecha_inicial,fecha_final,id_ficha);
+        else{conn.query("SELECT 'E' codigo, DATE_FORMAT(cronogramamensual.mes, '%Y-%m-%d') fecha, DATE_FORMAT(cronogramamensual.mes, '%b.') mes, DATE_FORMAT(cronogramamensual.mes, '%Y') anyo, programado programado_monto, programado / tb_presupuesto.presupuesto * 100 programado_porcentaje, COALESCE(tb_fisico.fisico_monto, 0) fisico_monto, COALESCE(tb_fisico.fisico_monto, 0) / tb_presupuesto.presupuesto * 100 fisico_porcentaje, COALESCE(financieroEjecutado, 0) financiero_monto, COALESCE(financieroEjecutado, 0) / tb_presupuesto.presupuesto * 100 financiero_porcentaje FROM cronogramamensual LEFT JOIN (SELECT componentes.fichas_id_ficha, avanceactividades.fecha, DATE_FORMAT(avanceactividades.fecha, '%m ') mes, DATE_FORMAT(avanceactividades.fecha, '%Y ') anyo, SUM(avanceactividades.valor) fisico_monto FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND avanceactividades.fecha >= ? GROUP BY componentes.fichas_id_ficha , DATE_FORMAT(avanceactividades.fecha, '%m %Y') ORDER BY avanceactividades.fecha) tb_fisico ON tb_fisico.fichas_id_ficha = cronogramamensual.fichas_id_ficha AND DATE_FORMAT(tb_fisico.fecha, '%m %Y') = DATE_FORMAT(cronogramamensual.mes, '%m %Y') LEFT JOIN (SELECT componentes.fichas_id_ficha, SUM(componentes.presupuesto) presupuesto FROM componentes GROUP BY componentes.fichas_id_ficha) tb_presupuesto ON tb_presupuesto.fichas_id_ficha = cronogramamensual.fichas_id_ficha WHERE cronogramamensual.fichas_id_ficha = ? AND DATE_FORMAT(cronogramamensual.mes, '%Y-%m-01') >= DATE_FORMAT(?, '%Y-%m-01') ",[fecha_inicial,id_ficha,fecha_inicial],(error,res)=>{ 
         if(error){
                 callback(error);
         }else if(res.length == 0){
@@ -467,8 +442,10 @@ userModel.getcronogramaInicio = (AcumuladoCorte,id_ficha,fecha_inicial,fecha_fin
                 
         }else{
                         
-                if(AcumuladoCorte!="vacio"){
-                        res.unshift(AcumuladoCorte)
+                if(corte!="vacio"&&corte.codigo!="I"){
+                        delete corte.fecha_inicial
+                        delete corte.fecha_final
+                        res.unshift(corte)
                 }
                 
                 // callback(null,res)
