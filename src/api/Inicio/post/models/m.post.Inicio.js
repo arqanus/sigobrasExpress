@@ -49,5 +49,30 @@ userModel.postAvanceFinanciero = (data,callback)=>{
         }                
     })
 }
+userModel.postFinancieroCorte = (monto,id_historialEstado,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){                        
+            callback(err);
+        }
+        else{     
+            //insertar datos query
+            conn.query("update historialEstados set monto =? where id_historialEstado=?",[monto,id_historialEstado],(error,res)=>{ 
+                if(error){
+                    console.log(error);                    
+                    callback(error.code);
+                    conn.destroy()
+                }else{
+                   
+                    console.log("res",res); 
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }                
+    })
+}
 
 module.exports = userModel;
