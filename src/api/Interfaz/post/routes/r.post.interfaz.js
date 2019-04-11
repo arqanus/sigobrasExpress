@@ -29,5 +29,17 @@ module.exports = function(app){
         })
 		
 		
+    })
+    app.post('/postHistorialEstadosObra',(req,res)=>{
+        User.postHistorialEstadosObra(req.body,(err,data)=>{							
+            if(err){ res.status(204).json(err);}
+            else{
+               res.json(data)
+                
+            }
+
+        })
+		
+		
 	})
 }
