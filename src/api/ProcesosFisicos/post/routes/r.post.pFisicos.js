@@ -159,6 +159,8 @@ module.exports = function(app){
 		
 	})
   app.post('/avanceActividad', (req, res)=>{    
+       
+    
     var a =""
     var anyo_ingreso =""
     var mes_ingreso =""
@@ -198,6 +200,13 @@ module.exports = function(app){
           form.uploadDir = dir;
             
           form.parse(req, function(err, fields, files) {
+            console.log("accesos_id_acceso :",fields.accesos_id_acceso);
+            console.log("codigo_obra :",fields.codigo_obra);
+            console.log("Actividades_id_actividad :",fields.Actividades_id_actividad);
+            console.log("valor :",fields.valor);
+            console.log("foto :",fields.foto);
+            console.log("observacion :",fields.observacion);
+            console.log("descripcion :",fields.descripcion); 
 
             if (err){
               res.json(err)
