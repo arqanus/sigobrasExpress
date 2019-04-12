@@ -1551,7 +1551,7 @@ userModel.getValGeneralComponentes = (id_ficha,callback)=>{
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
         else{
-            conn.query("SELECT componentes.id_componente, componentes.numero, componentes.nombre, componentes.presupuesto FROM componentes where componentes.fichas_id_ficha = ?",[id_ficha],(error,res)=>{ 
+            conn.query("SELECT componentes.id_componente, componentes.numero, componentes.nombre, componentes.presupuesto FROM componentes left join historialcomponentes on historialcomponentes.componentes_id_componente = componentes.id_componente WHERE historialcomponentes.componentes_id_componente is null and componentes.fichas_id_ficha = ?",[id_ficha],(error,res)=>{ 
                 if(error){
                     callback(error);
                 }else if(res.length == 0){
