@@ -28,63 +28,6 @@ function datetime(){
 }
 
 module.exports = function(app){
-  app.post('/avanceActividad',(req,res)=>{
-      var a =""
-      var anyo_ingreso =""
-      var mes_ingreso =""
-      var dia_ingreso =""
-      var d =""
-      var mes_actual =""
-      var dia_actual =""
-      var anyo_actual =""
-      if (req.body.fecha){
-          a = req.body.fecha.split("-")	
-          anyo_ingreso = a[0]		
-          mes_ingreso = a[1]
-          dia_ingreso = a[2]
-          d = new Date();
-          mes_actual = d.getMonth()+1;
-          dia_actual = d.getDate();
-          anyo_actual = d.getFullYear();
-      }
-              
-  
-      if(req.body.valor <=0 ||req.body.valor == ""){
-          res.status(204).json("valor no permitido");
-      }else if(req.body.fecha&&(anyo_actual!=anyo_ingreso||mes_actual!=mes_ingreso||dia_ingreso > dia_actual)){		
-          
-          res.status(200).send("fecha invalida")					
-          
-      }else{			
-        delete req.body.id_ficha
-        User.postAvanceActividad(req.body,(err,data)=>{
-            if(err){ res.status(204).json(err);}
-            else{
-              
-              User.getPartidasbyIdActividad(req.body.Actividades_id_actividad,(err,partida)=>{
-                  if(err){ res.status(204).json(err);}
-                  else{
-                    
-                    User.getActividadesbyIdActividad(partida[0].id_partida,(err,actividades)=>{
-                      if(err){ res.status(204).json(err);}
-                      else{
-                          res.json(
-                            {
-                              "partida":partida[0],
-                              "actividades":actividades
-                            }                                        
-                          );	
-                      }
-                    })
-                  }
-              })
-                
-            }
-        })
-      }
-      
-  
-  })
   app.post('/avanceActividadCorte',(req,res)=>{
       if (req.body.id_ficha == null) {
           res.json("null");
@@ -215,240 +158,105 @@ module.exports = function(app){
 		}			
 		
 	})
-  app.post('/imagenesActividad', function(req, res, next) {
-    
-    
-    
-      var dir = __dirname+'/../../../../public/'
-      if (!fs.existsSync(dir)){
-        fs.mkdirSync(dir);
-      }
-      
-      var form = new formidable.IncomingForm();
-      form.uploadDir = dir;
-      
-      form.parse(req, function(err, fields, files) {
-          if (err) next(err);
-          var obraFolder = dir+"/"+fields.codigo_obra
-          
-          if (!fs.existsSync(obraFolder)){
-            fs.mkdirSync(obraFolder);
-          }  // TODO: make sure my_file and project_id exist    
-          if(files.foto){
-            var ruta = "/"+fields.id_acceso+"_"+fields.id_actividad+"_"+datetime()+".jpg"
+  app.post('/avanceActividad', (req, res)=>{    
+    var a =""
+    var anyo_ingreso =""
+    var mes_ingreso =""
+    var dia_ingreso =""
+    var d =""
+    var mes_actual =""
+    var dia_actual =""
+    var anyo_actual =""
+    // if (req.body.fecha){
+    //     a = req.body.fecha.split("-")	
+    //     anyo_ingreso = a[0]		
+    //     mes_ingreso = a[1]
+    //     dia_ingreso = a[2]
+    //     d = new Date();
+    //     mes_actual = d.getMonth()+1;
+    //     dia_actual = d.getDate();
+    //     anyo_actual = d.getFullYear();
+    // }
+            
+
+    // if(req.body.valor <=0 ||req.body.valor == ""){
+    //     res.status(204).json("valor no permitido");
+    // }else if(req.body.fecha&&(anyo_actual!=anyo_ingreso||mes_actual!=mes_ingreso||dia_ingreso > dia_actual)){		
+        
+    //     res.status(200).send("fecha invalida")					
+        
+    // }else{
+           //ruta de la carpeta public de imagenes
+          var dir = __dirname+'/../../../../public/'
+          //crear ruta si no existe
+          if (!fs.existsSync(dir)){
+            fs.mkdirSync(dir);
+          }
+            
+          var form = new formidable.IncomingForm();
+          //se configura la ruta de guardar
+          form.uploadDir = dir;
+            
+          form.parse(req, function(err, fields, files) {
+
+            if (err){
+              res.json(err)
+            }
+            //folder de la obra
+            var obraFolder = dir+"/"+fields.codigo_obra
+            
+            if (!fs.existsSync(obraFolder)){
+              fs.mkdirSync(obraFolder);
+            }  // TODO: make sure my_file and project_id exist  
+            //verigica si la foto existe  
+            
+            var ruta = "/"+fields.accesos_id_acceso+"_"+fields.Actividades_id_actividad+"_"+datetime()+".jpg"
+            //files foto
             fs.rename(files.foto.path,obraFolder+ruta , function(err) {
-              if (err) next(err);
+              if (err){
+                res.json(err)
+              }
               
-              User.getIdHistorial(fields.id_ficha,(err,data)=>{
+              var avanceActividad = {
+            
+                "Actividades_id_actividad":fields.Actividades_id_actividad,
+                "valor":fields.valor,
+                "imagen":"/static/"+fields.codigo_obra+ruta,
+                "imagenAlt":fields.codigo_obra,
+                "descripcion":fields.descripcion,
+                "observacion":fields.observacion,
+                "accesos_id_acceso":fields.accesos_id_acceso
+              }
+              User.postAvanceActividad(avanceActividad,(err,data)=>{
                 if(err){ res.status(204).json(err);}
                 else{
                   
-                  var historialEstados_id_historialEstado = data.id_historialEstado
-                  var imagen = {
-                
-                    "Actividades_id_actividad":fields.id_actividad,
-                    "imagen":"/static/"+fields.codigo_obra+ruta,
-                    "imagenAlt":fields.codigo_obra,
-                    "descripcion":"IMAGEN",
-                    "observacion":"IMAGEN",                                    
-                    "historialEstados_id_historialEstado":historialEstados_id_historialEstado
-                  }
-                  User.postAvanceActividad(imagen,(err,data)=>{
-                    if(err){ res.status(204).json(err);}
-                    else{
-                      console.log("Date",datetime());
-                      
-                      res.end("exito");                      
-                    }
-                  })      
-                  
-            
+                  User.getPartidasbyIdActividad(avanceActividad.Actividades_id_actividad,(err,partida)=>{
+                      if(err){ res.status(204).json(err);}
+                      else{
+                        
+                        User.getActividadesbyIdActividad(partida[0].id_partida,(err,actividades)=>{
+                          if(err){ res.status(204).json(err);}
+                          else{
+                              res.json(
+                                {
+                                  "partida":partida[0],
+                                  "actividades":actividades
+                                }                                        
+                              );	
+                          }
+                        })
+                      }
+                  })
                 }
               })
-  
-              
-              
-            });
-          }else{
-            res.json("FOTO VACIA")
-            
-      
-          }
-        });
+            });          
+          });
+    // }
+    
+ 
                     
           
   })
-  //aantiguos
-  app.post('/avanceActividadOld',(req,res)=>{
-		var a =""
-		var anyo_ingreso =""
-		var mes_ingreso =""
-		var dia_ingreso =""
-		var d =""
-		var mes_actual =""
-		var dia_actual =""
-		var anyo_actual =""
-		if (req.body.fecha){
-			a = req.body.fecha.split("-")	
-			anyo_ingreso = a[0]		
-			mes_ingreso = a[1]
-			dia_ingreso = a[2]
-			d = new Date();
-			mes_actual = d.getMonth()+1;
-			dia_actual = d.getDate();
-			anyo_actual = d.getFullYear();
-		}
-				
 
-		if(req.body.valor <=0 ||req.body.valor == ""){
-			res.status(204).json("valor no permitido");
-		}else if(req.body.fecha&&(anyo_actual!=anyo_ingreso||mes_actual!=mes_ingreso||dia_ingreso > dia_actual)){		
-			
-			res.status(200).send("fecha invalida")					
-			
-		}else{			
-			User.getIdHistorial(req.body.id_ficha,(err,data)=>{
-				if(err||data.length==0){ res.status(204).json(err);}
-				else{
-					delete req.body.id_ficha
-					req.body.historialEstados_id_historialEstado = data.id_historialEstado
-					
-					
-					User.postAvanceActividad(req.body,(err,data)=>{
-						if(err){ res.status(204).json(err);}
-						else{
-							User.getAvanceById(req.body.Actividades_id_actividad,(err,data)=>{
-								if(err){ res.status(204).json(err);}
-								else{
-									res.json(data);	
-								}
-							})
-							
-						}
-					})
-				}
-			})
-		}
-		
-
-	})
-	app.post('/avanceActividadCorteOld',(req,res)=>{
-		if (req.body.id_ficha == null) {
-			res.json("null");
-		} else {
-			User.getIdHistorial(req.body.id_ficha,(err,data)=>{
-				if(err||data.length==0){ res.status(204).json(err);}
-				else{
-					delete req.body.id_ficha
-					req.body.historialEstados_id_historialEstado = data.id_historialEstado
-					
-					var id_actividad = req.body.Actividades_id_actividad
-					User.postAvanceActividad(req.body,(err,data)=>{
-						if(err){ res.status(204).json(err);}
-						else{
-							User.getAvanceById(req.body.Actividades_id_actividad,(err,data)=>{
-								if(err){ res.status(204).json(err);}
-								else{
-									res.json(data);	
-								}
-							})
-							
-						}
-					})
-				}
-			})
-		}
-		
-		
-		
-
-  })
-  app.post('/postNuevaActividadMayorMetradoOld',(req,res)=>{
-		if (req.body.partidas_id_partida == null) {
-			res.json("null")
-		} else {
-			User.postActividad(req.body,(err,id_actividad)=>{
-				if(err){ res.status(204).json(err);}
-				else{
-					var historialActividad = {						
-						"estado":"Mayor Metrado",
-						"actividades_id_actividad":id_actividad
-					}
-					User.posthistorialActividades(historialActividad,(err,data)=>{
-						if(err){ res.status(204).json(err);}
-						else{
-              
-              User.getPartidasbyIdActividad(id_actividad,(err,partida)=>{
-                  if(err){ res.status(204).json(err);}
-                  else{
-                    User.getAvanceById(id_actividad,(err,data)=>{
-                      if(err){ res.status(204).json(err);}
-                      else{
-                        res.json(data);	
-                      }
-                    })
-                  }
-              })
-						}
-					})
-				}
-			})
-		}			
-		
-  })
-  app.post('/postActividadMayorMetradoOld',(req,res)=>{
-		var actividad = req.body.actividad
-		if (actividad.partidas_id_partida == null) {
-			res.json("null")
-		}else{
-			User.postActividad(actividad,(err,id_actividad)=>{
-				if(err){ res.status(204).json(err);}
-				else{
-					var historialActividad = {						
-						"estado":"Mayor Metrado",
-						"actividades_id_actividad":id_actividad
-					}
-					User.posthistorialActividades(historialActividad,(err,data)=>{
-						if(err){ res.status(204).json(err);}
-						else{
-							var avanceActividad = req.body.avanceActividad
-							avanceActividad.Actividades_id_actividad = id_actividad
-							var id_ficha = avanceActividad.id_ficha
-							
-							User.getIdHistorial(id_ficha,(err,data)=>{
-								console.log("idhistorial");
-								if(err||data.length==0){ res.status(204).json(err);}
-								else{
-									delete avanceActividad.id_ficha
-									avanceActividad.historialEstados_id_historialEstado = data.id_historialEstado
-									
-									
-									User.postAvanceActividad(avanceActividad,(err,data)=>{
-										console.log("avance");
-										
-										if(err){ res.status(204).json(err);}
-										else{
-                      User.getPartidasbyIdActividad(id_actividad,(err,partida)=>{
-                        if(err){ res.status(204).json(err);}
-                        else{
-                          User.getAvanceById(id_actividad,(err,data)=>{
-                            if(err){ res.status(204).json(err);}
-                            else{
-                              res.json(data);	
-                            }
-                          })
-                        }
-                      })
-											
-										}
-									})
-								}
-							})
-						}
-					})
-				}
-			})
-		}			
-		
-	})
 }

@@ -96,5 +96,25 @@ userModel.postHistorialEstadosObra =(data,callback)=>{
         } 
     })
 }
+userModel.postFecha_finalHistorialEstados =(id_historialEstado,callback)=>{
+    pool.getConnection(function(err,conn){
+        if(err){ callback(err);}
+        else{     
+            conn.query('update historialestados set fecha_final = now() where id_historialEstado = ?', [id_historialEstado],(error,res)=>{
+                if(error){
+                    console.log(error);
+                    callback(error.code);
+                    conn.destroy()
+                }else{
+                    // console.log("res",res); 
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        } 
+    })
+}
 
 module.exports = userModel;
