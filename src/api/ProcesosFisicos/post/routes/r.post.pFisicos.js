@@ -217,20 +217,55 @@ module.exports = function(app){
             if (!fs.existsSync(obraFolder)){
               fs.mkdirSync(obraFolder);
             }  // TODO: make sure my_file and project_id exist  
-            //verigica si la foto existe  
+            
             
             var ruta = "/"+fields.accesos_id_acceso+"_"+fields.Actividades_id_actividad+"_"+datetime()+".jpg"
             //files foto
-            fs.rename(files.foto.path,obraFolder+ruta , function(err) {
-              if (err){
-                res.json(err)
-              }
+            if(files.foto){
+              fs.rename(files.foto.path,obraFolder+ruta , function(err) {
+                if (err){
+                  res.json(err)
+                }
+                
+                var avanceActividad = {
               
+                  "Actividades_id_actividad":fields.Actividades_id_actividad,
+                  "valor":fields.valor,
+                  "imagen":"/static/"+fields.codigo_obra+ruta,
+                  "imagenAlt":fields.codigo_obra,
+                  "descripcion":fields.descripcion,
+                  "observacion":fields.observacion,
+                  "accesos_id_acceso":fields.accesos_id_acceso
+                }
+                User.postAvanceActividad(avanceActividad,(err,data)=>{
+                  if(err){ res.status(204).json(err);}
+                  else{
+                    
+                    User.getPartidasbyIdActividad(avanceActividad.Actividades_id_actividad,(err,partida)=>{
+                        if(err){ res.status(204).json(err);}
+                        else{
+                          
+                          User.getActividadesbyIdActividad(partida[0].id_partida,(err,actividades)=>{
+                            if(err){ res.status(204).json(err);}
+                            else{
+                                res.json(
+                                  {
+                                    "partida":partida[0],
+                                    "actividades":actividades
+                                  }                                        
+                                );	
+                            }
+                          })
+                        }
+                    })
+                  }
+                })
+              }); 
+            }else{
               var avanceActividad = {
-            
+              
                 "Actividades_id_actividad":fields.Actividades_id_actividad,
-                "valor":fields.valor,
-                "imagen":"/static/"+fields.codigo_obra+ruta,
+                "valor":fields.valor,                
                 "imagenAlt":fields.codigo_obra,
                 "descripcion":fields.descripcion,
                 "observacion":fields.observacion,
@@ -259,7 +294,8 @@ module.exports = function(app){
                   })
                 }
               })
-            });          
+            }
+                     
           });
     // }
     
