@@ -596,7 +596,7 @@ userModel.getHistorial = (id_ficha,callback)=>{
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
         else{
-            conn.query("/*COALESCE(parcial_negativo / parcial_positivo, 0) + 1 porcentaje_negatividad_ajustado*/ SELECT componentes.id_componente, componentes.numero, componentes.nombre nombre_componente, partidas.item, partidas.descripcion descripcion_partida, TRIM(BOTH '/DIA' FROM partidas.unidad_medida) unidad_medida, actividades.nombre nombre_actividad, avanceactividades.descripcion descripcion_actividad, avanceactividades.observacion, DATE(avanceactividades.fecha) fecha, (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) *avanceactividades.valor valor, partidas.costo_unitario, (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) *avanceactividades.valor * partidas.costo_unitario parcial FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_positivo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE actividades.parcial > 0 GROUP BY partidas.id_partida) p1 ON p1.id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_negativo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE actividades.parcial < 0 GROUP BY partidas.id_partida) p2 ON p2.id_partida = partidas.id_partida LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida RIGHT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE componentes.Fichas_id_ficha = ? ORDER BY componentes.id_componente , avanceactividades.fecha DESC , partidas.id_partida",id_ficha,(err,res)=>{
+            conn.query("/*COALESCE(parcial_negativo / parcial_positivo, 0) + 1 porcentaje_negatividad_ajustado*/ SELECT componentes.id_componente, componentes.numero, componentes.nombre nombre_componente, partidas.item, partidas.descripcion descripcion_partida, TRIM(BOTH '/DIA' FROM partidas.unidad_medida) unidad_medida, actividades.nombre nombre_actividad, avanceactividades.descripcion descripcion_actividad, avanceactividades.observacion, DATE(avanceactividades.fecha) fecha, (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) * avanceactividades.valor valor, partidas.costo_unitario, (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) * avanceactividades.valor * partidas.costo_unitario parcial, actividades.parcial- (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) * avanceactividades.valor saldo FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_positivo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE actividades.parcial > 0 GROUP BY partidas.id_partida) p1 ON p1.id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_negativo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE actividades.parcial < 0 GROUP BY partidas.id_partida) p2 ON p2.id_partida = partidas.id_partida LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida RIGHT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE componentes.Fichas_id_ficha = ? ORDER BY componentes.id_componente , avanceactividades.fecha DESC , partidas.id_partida",id_ficha,(err,res)=>{
                 if(err){
                     console.log(err);
                     callback(err.code);
@@ -646,7 +646,8 @@ userModel.getHistorial = (id_ficha,callback)=>{
                                             "observacion":fila.observacion,                 
                                             "valor":formato(fila.valor),
                                             "costo_unitario":fila.costo_unitario,
-                                            "parcial":formato( fila.parcial)
+                                            "parcial":formato( fila.parcial),
+                                            "saldo":fila.saldo
                                         }
                                     ]
                                 }
@@ -672,7 +673,8 @@ userModel.getHistorial = (id_ficha,callback)=>{
                                                 "observacion":fila.observacion,                 
                                                 "valor":formato(fila.valor),
                                                 "costo_unitario":fila.costo_unitario,
-                                                "parcial":formato( fila.parcial)
+                                                "parcial":formato( fila.parcial),
+                                                "saldo":fila.saldo
                                             }
                                         ]
                                     }
@@ -689,7 +691,8 @@ userModel.getHistorial = (id_ficha,callback)=>{
                                         "observacion":fila.observacion,                 
                                         "valor":formato(fila.valor),
                                         "costo_unitario":fila.costo_unitario,
-                                        "parcial":formato( fila.parcial)
+                                        "parcial":formato( fila.parcial),
+                                        "saldo":fila.saldo
                                     }
                                 )
                             }
@@ -1986,7 +1989,7 @@ userModel.getActividadesDuracion = (id_ficha,callback)=>{
         if(err){ 
             callback(err);
         }else{
-            conn.query('SELECT actividades.id_actividad, item, descripcion, metrado, costo_unitario, (metrado * costo_unitario) costo_parcial, actividades.nombre nombre_actividad, veces, largo, ancho, alto, parcial metrado, costo_unitario, (parcial * costo_unitario) parcial_actividad, rendimiento, (parcial / rendimiento) duracion_dia, (parcial / rendimiento) * 480 duracion FROM fichas LEFT JOIN componentes ON componentes.Fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE fichas.id_ficha = ? AND (parcial / rendimiento) IS NOT NULL AND (parcial / rendimiento) > 0 ORDER BY (parcial / rendimiento) ASC ',id_ficha,(err,res)=>{ 
+            conn.query('/******** 02.04.06 Consulta de actividades por tiempo *************/ SELECT item, descripcion, actividades.nombre nombre_actividad, (parcial / rendimiento) duracion_dia, (parcial / rendimiento) * 480 duracion FROM fichas LEFT JOIN componentes ON componentes.Fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE fichas.id_ficha = ? AND (parcial / rendimiento) IS NOT NULL AND (parcial / rendimiento) > 0 ORDER BY (parcial / rendimiento) ASC',id_ficha,(err,res)=>{ 
                 if(err){
                     console.log(err);
                     callback(err.code);
@@ -2011,10 +2014,8 @@ userModel.getActividadesDuracion = (id_ficha,callback)=>{
                             var minutos = formato(residuo_dias%60)+"min"
                             fila.duracion = dias+" "+horas + " "+minutos
                         }   
-                        res[i].costo_parcial = formato(res[i].costo_parcial)
-                        res[i].parcial_actividad =formato(res[i].parcial_actividad)
                         res[i].duracion_dia =formato(res[i].duracion_dia)
-                        res[i].metrado =formato(res[i].metrado)                       
+                                              
                         
                     }                   
                                                 
@@ -2158,13 +2159,12 @@ userModel.getImagenesListaPorPartida = (id_componente,callback)=>{
                 
     })
 }
-userModel.getImagenesUltimaImagenPartida = (id_partida,callback)=>{
+userModel.getmaterialescomponentes = (id_ficha,callback)=>{
     
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
         else{
-            conn.query("SELECT avanceactividades.id_AvanceActividades,fecha, valor, imagen, imagenAlt, descripcion FROM actividades INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.imagen IS NOT NULL AND actividades.Partidas_id_partida = ? order by avanceactividades.id_AvanceActividades desc limit 1",id_partida,(error,res)=>{ 
-                if(error){
+            conn.query("/**********Consulta materiales por componentes*************/ select id_componente,numero,nombre from componentes where componentes.fichas_id_ficha = ?",id_ficha,(error,res)=>{ if(error){
                     callback(error);
                 }else if(res.length == 0){
                     console.log("vacio");                    
@@ -2182,13 +2182,40 @@ userModel.getImagenesUltimaImagenPartida = (id_partida,callback)=>{
                 
     })
 }
-userModel.getImagenesPrimeraImagenPartida = (id_partida,callback)=>{
+
+userModel.getmaterialespartidacomponente = (id_componente,callback)=>{
     
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
         else{
-            conn.query("SELECT avanceactividades.id_AvanceActividades,fecha, valor, imagen, imagenAlt, descripcion FROM actividades INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.imagen IS NOT NULL AND actividades.Partidas_id_partida = ? order by avanceactividades.id_AvanceActividades limit 1",id_partida,(error,res)=>{ 
+            conn.query("/**********Consulta de materiales de partidas por componente**********/ SELECT id_partida, partidas.item, partidas.descripcion, partidas.metrado, partidas.costo_unitario, metrado * costo_unitario precio_parcial, partidas.tipo FROM partidas WHERE partidas.componentes_id_componente = ?",id_componente,(error,res)=>{ 
                 if(error){
+                    callback(error);
+                }else if(res.length == 0){
+                    console.log("vacio");                    
+                    callback(null,"vacio");
+                    conn.destroy()
+                }else{      
+                   
+
+                    
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }
+        
+                
+    })
+}
+userModel.getmaterialespartida = (id_partida,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){ callback(err);}
+        else{
+            conn.query("/*********Consulta de recursos por partida***********/ SELECT recursos.tipo, recursos.codigo, recursos.descripcion, recursos.unidad, recursos.cuadrilla, recursos.cantidad, recursos.precio, recursos.parcial FROM recursos WHERE recursos.Partidas_id_partida = ?",id_partida,(error,res)=>{ if(error){
                     callback(error);
                 }else if(res.length == 0){
                     console.log("vacio");                    
