@@ -306,7 +306,7 @@ userModel.postAvanceActividadPorObra = (data,callback)=>{
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
         else{
-            conn.query('Insert into avanceActividades (actividades_id_actividad,fecha,valor) values ?',[data],(err,res)=>{ 
+            conn.query('Insert into avanceActividades (actividades_id_actividad,fecha,valor,accesos_id_acceso) values ?',[data],(err,res)=>{ 
                 if(err){
                     console.log(err);
                     callback(err.code);
