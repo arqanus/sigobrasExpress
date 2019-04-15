@@ -58,7 +58,7 @@ function formatoValorizaciones(data){
     
     
     if(data == null){
-        return 0
+        return "-"
     }
     if(!isNumber(data)){
         return data
