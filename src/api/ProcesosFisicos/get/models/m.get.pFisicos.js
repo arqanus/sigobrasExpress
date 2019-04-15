@@ -1689,10 +1689,10 @@ userModel.getValGeneralResumenPeriodo = (id_ficha,fecha_inicial,fecha_final,call
                             "valor_actual":formato(valor_actual),
                             "valor_total":formato( valor_total),
                             "valor_saldo":formato(valor_saldo),
-                            "porcentaje_anterior":porcentaje_anterior,
-                            "porcentaje_actual":porcentaje_actual,
-                            "porcentaje_total":porcentaje_total,
-                            "porcentaje_saldo":porcentaje_saldo,
+                            "porcentaje_anterior":formato(porcentaje_anterior),
+                            "porcentaje_actual":formato(porcentaje_actual),
+                            "porcentaje_total":formato(porcentaje_total),
+                            "porcentaje_saldo":formato(porcentaje_saldo),
                             "componentes":res
                         }
                         );
@@ -1799,10 +1799,10 @@ userModel.getValGeneralPartidas = (id_componente,fecha_inicial,fecha_final,callb
                             "valor_total":formatoValorizaciones(valor_total ),
                             "valor_saldo":formatoValorizaciones(valor_saldo ),
                             "precio_parcial":formatoValorizaciones(precio_parcial),
-                            "porcentaje_anterior":porcentaje_anterior,
-                            "porcentaje_actual":porcentaje_actual,
-                            "porcentaje_total":porcentaje_total,
-                            "porcentaje_saldo":porcentaje_saldo,
+                            "porcentaje_anterior":formato(porcentaje_anterior),
+                            "porcentaje_actual":formato(porcentaje_actual),
+                            "porcentaje_total":formato(porcentaje_total),
+                            "porcentaje_saldo":formato(porcentaje_saldo),
                             "partidas":res
                         }
                         );
