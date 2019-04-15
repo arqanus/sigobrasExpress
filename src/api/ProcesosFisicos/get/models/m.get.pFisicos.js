@@ -54,6 +54,37 @@ function formato(data){
 
     return data
 }
+function formatoValorizaciones(data){
+    
+    
+    if(data == null){
+        return 0
+    }
+    if(!isNumber(data)){
+        return data
+    }
+    data = Number(data)
+    if(isNaN(data)){
+        
+        data=0
+    }
+    if(data == 0){
+        return "-"
+    }
+    else if(data < 1){
+        data = data.toLocaleString('es-PE', {
+            minimumFractionDigits: 4,
+            maximumFractionDigits: 4
+          })
+    }else{
+        data = data.toLocaleString('es-PE', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          })
+    } 
+
+    return data
+}
 function shortDate(fecha){
     return (fecha.getFullYear()+"-"+('0' + (fecha.getMonth()+1)).slice(-2) + '-'+('0' + fecha.getDate()).slice(-2))
 }
@@ -1717,21 +1748,21 @@ userModel.getValGeneralPartidas = (id_componente,fecha_inicial,fecha_final,callb
                             fila.porcentaje_saldo = ""
 
                         }else {
-                            fila.metrado  = formato( fila.metrado )
-                            fila.costo_unitario  = formato( fila.costo_unitario )
-                            fila.precio_parcial  = formato( fila.precio_parcial )
-                            fila.metrado_anterior  = formato( fila.metrado_anterior )
-                            fila.valor_anterior  = formato( fila.valor_anterior )
-                            fila.porcentaje_anterior  = formato( fila.porcentaje_anterior )
-                            fila.metrado_actual  = formato( fila.metrado_actual )
-                            fila.valor_actual  = formato( fila.valor_actual )
-                            fila.porcentaje_actual  = formato( fila.porcentaje_actual )
-                            fila.metrado_total = formato( fila.metrado_total)
-                            fila.valor_total = formato( fila.valor_total)
-                            fila.porcentaje_total = formato( fila.porcentaje_total)
-                            fila.metrado_saldo  = formato( fila.metrado_saldo )
-                            fila.valor_saldo  = formato( fila.valor_saldo )
-                            fila.porcentaje_saldo = formato( fila.porcentaje_saldo)
+                            fila.metrado  = formatoValorizaciones( fila.metrado )
+                            fila.costo_unitario  = formatoValorizaciones( fila.costo_unitario )
+                            fila.precio_parcial  = formatoValorizaciones( fila.precio_parcial )
+                            fila.metrado_anterior  = formatoValorizaciones( fila.metrado_anterior )
+                            fila.valor_anterior  = formatoValorizaciones( fila.valor_anterior )
+                            fila.porcentaje_anterior  = formatoValorizaciones( fila.porcentaje_anterior )
+                            fila.metrado_actual  = formatoValorizaciones( fila.metrado_actual )
+                            fila.valor_actual  = formatoValorizaciones( fila.valor_actual )
+                            fila.porcentaje_actual  = formatoValorizaciones( fila.porcentaje_actual )
+                            fila.metrado_total = formatoValorizaciones( fila.metrado_total)
+                            fila.valor_total = formatoValorizaciones( fila.valor_total)
+                            fila.porcentaje_total = formatoValorizaciones( fila.porcentaje_total)
+                            fila.metrado_saldo  = formatoValorizaciones( fila.metrado_saldo )
+                            fila.valor_saldo  = formatoValorizaciones( fila.valor_saldo )
+                            fila.porcentaje_saldo = formatoValorizaciones( fila.porcentaje_saldo)
                         }
                         
                         
@@ -1739,11 +1770,11 @@ userModel.getValGeneralPartidas = (id_componente,fecha_inicial,fecha_final,callb
           
                     callback(null,
                         {
-                            "valor_anterior":formato(valor_anterior),
-                            "valor_actual":formato(valor_actual ),
-                            "valor_total":formato(valor_total ),
-                            "valor_saldo":formato(valor_saldo ),
-                            "precio_parcial":formato(precio_parcial),
+                            "valor_anterior":formatoValorizaciones(valor_anterior),
+                            "valor_actual":formatoValorizaciones(valor_actual ),
+                            "valor_total":formatoValorizaciones(valor_total ),
+                            "valor_saldo":formatoValorizaciones(valor_saldo ),
+                            "precio_parcial":formatoValorizaciones(precio_parcial),
                             "porcentaje_anterior":20,
                             "porcentaje_actual":20,
                             "porcentaje_total":20,
