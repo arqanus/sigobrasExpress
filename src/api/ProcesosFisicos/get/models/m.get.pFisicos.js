@@ -1650,14 +1650,25 @@ userModel.getValGeneralResumenPeriodo = (id_ficha,fecha_inicial,fecha_final,call
                     var valor_actual = 0 
                     var valor_total = 0 
                     var valor_saldo = 0 
+
+                    var porcentaje_anterior = 0
+                    var porcentaje_actual = 0
+                    var porcentaje_total = 0
+                    var porcentaje_saldo = 0
                     
                     for (let i = 0; i < res.length; i++) {
                         const fila = res[i];
                         presupuesto +=  fila.presupuesto 
+
                         valor_anterior += fila.valor_anterior
                         valor_actual += fila.valor_actual
                         valor_total += fila.valor_total
                         valor_saldo += fila.valor_saldo
+
+                        porcentaje_anterior += fila.porcentaje_anterior
+                        porcentaje_actual += fila.porcentaje_actual
+                        porcentaje_total += fila.porcentaje_total
+                        porcentaje_saldo += fila.porcentaje_saldo
                         
                         fila.presupuesto = formato(fila.presupuesto)
                         fila.valor_anterior = formato(fila.valor_anterior)
@@ -1678,10 +1689,10 @@ userModel.getValGeneralResumenPeriodo = (id_ficha,fecha_inicial,fecha_final,call
                             "valor_actual":formato(valor_actual),
                             "valor_total":formato( valor_total),
                             "valor_saldo":formato(valor_saldo),
-                            "porcentaje_anterior":20,
-                            "porcentaje_actual":20,
-                            "porcentaje_total":20,
-                            "porcentaje_saldo":20,
+                            "porcentaje_anterior":porcentaje_anterior,
+                            "porcentaje_actual":porcentaje_actual,
+                            "porcentaje_total":porcentaje_total,
+                            "porcentaje_saldo":porcentaje_saldo,
                             "componentes":res
                         }
                         );
@@ -1710,13 +1721,16 @@ userModel.getValGeneralPartidas = (id_componente,fecha_inicial,fecha_final,callb
                     conn.destroy()
                 
                 }else{
-                    var valor_anterior  = 0
-                    
-                    var valor_actual  = 0
-                    
-                    var valor_total = 0
-                    
+                    var valor_anterior  = 0                    
+                    var valor_actual  = 0                    
+                    var valor_total = 0                    
                     var valor_saldo  = 0
+
+                    var porcentaje_anterior = 0
+                    var porcentaje_actual = 0
+                    var porcentaje_total = 0
+                    var porcentaje_saldo = 0
+
                     var precio_parcial = 0
                     
                     for (let i = 0; i < res.length; i++) {
@@ -1725,8 +1739,18 @@ userModel.getValGeneralPartidas = (id_componente,fecha_inicial,fecha_final,callb
                         valor_actual += fila.valor_actual 
                         valor_total += fila.valor_total 
                         valor_saldo += fila.valor_saldo 
+
+                        porcentaje_anterior +=  fila.porcentaje_anterior 
+                        porcentaje_actual += fila.porcentaje_actual 
+                        porcentaje_total += fila.porcentaje_total 
+                        porcentaje_saldo += fila.porcentaje_saldo 
+
                         precio_parcial += fila.precio_parcial
+
+                        valor_anterior = Number(valor_anterior.toFixed(2))
                         valor_actual = Number(valor_actual.toFixed(2))
+                        valor_total = Number(valor_total.toFixed(2))
+                        valor_saldo = Number(valor_saldo.toFixed(2))
                     //    console.log(" fila.valor_actual %s valor_actual %s",fila.valor_actual,valor_actual );
                         
 
@@ -1775,10 +1799,10 @@ userModel.getValGeneralPartidas = (id_componente,fecha_inicial,fecha_final,callb
                             "valor_total":formatoValorizaciones(valor_total ),
                             "valor_saldo":formatoValorizaciones(valor_saldo ),
                             "precio_parcial":formatoValorizaciones(precio_parcial),
-                            "porcentaje_anterior":20,
-                            "porcentaje_actual":20,
-                            "porcentaje_total":20,
-                            "porcentaje_saldo":20,
+                            "porcentaje_anterior":porcentaje_anterior,
+                            "porcentaje_actual":porcentaje_actual,
+                            "porcentaje_total":porcentaje_total,
+                            "porcentaje_saldo":porcentaje_saldo,
                             "partidas":res
                         }
                         );
