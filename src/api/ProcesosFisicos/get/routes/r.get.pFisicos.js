@@ -726,10 +726,16 @@ module.exports = function(app){
 		if (req.body.id_ficha == null) {
 			res.json("null");
 		} else {
-			User.getmaterialescomponentes(req.body.id_ficha,(err,data)=>{
+			User.getmaterialescomponentes(req.body.id_ficha,(err,componentes)=>{
 				if(err){ res.status(204).json(err);}
 				else{
-					res.json(data);	
+					User.getmaterialespartidacomponente(componentes[0].id_componente,(err,partidas)=>{
+                        if(err){ res.status(204).json(err);}
+                        else{
+                            componentes[0].partidas = partidas
+                            res.json(componentes);
+                        }
+                    })	
 				}
 			})
 		}
