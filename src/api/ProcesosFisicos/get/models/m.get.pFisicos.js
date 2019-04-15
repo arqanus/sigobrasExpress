@@ -1760,9 +1760,9 @@ userModel.getValGeneralPartidas = (id_componente,fecha_inicial,fecha_final,callb
                             fila.metrado_total = formatoValorizaciones( fila.metrado_total)
                             fila.valor_total = formatoValorizaciones( fila.valor_total)
                             fila.porcentaje_total = formatoValorizaciones( fila.porcentaje_total)
-                            fila.metrado_saldo  = formatoValorizaciones( fila.metrado_saldo )
-                            fila.valor_saldo  = formatoValorizaciones( fila.valor_saldo )
-                            fila.porcentaje_saldo = formatoValorizaciones( fila.porcentaje_saldo)
+                            fila.metrado_saldo  = formato( fila.metrado_saldo )
+                            fila.valor_saldo  = formato( fila.valor_saldo )
+                            fila.porcentaje_saldo = formato( fila.porcentaje_saldo)
                         }
                         
                         
