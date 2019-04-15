@@ -2057,10 +2057,6 @@ userModel.getMaterialesPorObra = (id_ficha,callback)=>{
                         fila.parcial_total = formato(fila.parcial_total)
                         
                     } 
-                                                                      
-
-                    
-
                     callback(null,res);
                     conn.destroy()
                 }
