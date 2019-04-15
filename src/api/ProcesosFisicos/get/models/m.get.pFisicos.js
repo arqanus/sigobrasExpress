@@ -54,6 +54,37 @@ function formato(data){
 
     return data
 }
+function formatoAvance(data){
+    
+    
+    if(data == null){
+        return 0
+    }
+    if(!isNumber(data)){
+        return data
+    }
+    data = Number(data)
+    if(isNaN(data)){
+        
+        data=0
+    }
+    if(data == 0){
+        return 0
+    }
+    else if(data < 1){
+        data = data.toLocaleString('es-PE', {
+            minimumFractionDigits: 4,
+            maximumFractionDigits: 4
+          })
+    }else{
+        data = data.toLocaleString('es-PE', {
+            minimumFractionDigits: 3,
+            maximumFractionDigits: 3
+          })
+    } 
+
+    return data
+}
 function formatoValorizaciones(data){
     
     
@@ -88,28 +119,28 @@ function formatoValorizaciones(data){
 function shortDate(fecha){
     return (fecha.getFullYear()+"-"+('0' + (fecha.getMonth()+1)).slice(-2) + '-'+('0' + fecha.getDate()).slice(-2))
 }
-function getDaysInMonth( dia_final) {
-    var dia= 1
-    var days = []
-    var yarray = []
-     while (dia <= dia_final) {
-        days.push(dia);
+// function getDaysInMonth( dia_final) {
+//     var dia= 1
+//     var days = []
+//     var yarray = []
+//      while (dia <= dia_final) {
+//         days.push(dia);
         
         
         
-        if(dia <= (new Date()).getDate()){
-            yarray.push(0)
-        }
-        dia++
+//         if(dia <= (new Date()).getDate()){
+//             yarray.push(0)
+//         }
+//         dia++
         
-     }
-     return (
-         {
-            "xarray":days,
-            "yarray":yarray
-         }
-     );
-}
+//      }
+//      return (
+//          {
+//             "xarray":days,
+//             "yarray":yarray
+//          }
+//      );
+// }
 function regresionLineal(data){
         var
         xarray = data.xarray,
@@ -429,7 +460,7 @@ userModel.getPartidas = (id_componente,callback)=>{
                             fila.avance_costo = formato(fila.avance_costo)
                             fila.metrados_saldo = formato(fila.metrados_saldo)
                             fila.metrados_costo_saldo = formato(fila.metrados_costo_saldo)
-                            fila.porcentaje = formato(fila.porcentaje)
+                            fila.porcentaje = Number(formato(fila.porcentaje))
                             
                         }
 
@@ -527,9 +558,9 @@ userModel.getActividades = (id_partida,callback)=>{
                             fila.alto_actividad = formato(fila.alto_actividad)
                             fila.metrado_actividad = formato(fila.metrado_actividad )
                             fila.costo_unitario = formato(fila.costo_unitario )                            
-                            fila.parcial_actividad = formato(fila.parcial_actividad )
+                            fila.parcial_actividad = formatoAvance(fila.parcial_actividad )
                             fila.actividad_avance_metrado = formato(fila.actividad_avance_metrado )
-                            fila.actividad_avance_costo = formato(fila.actividad_avance_costo )
+                            fila.actividad_avance_costo = formatoAvance(fila.actividad_avance_costo )
                             fila.actividad_metrados_saldo = formato(fila.actividad_metrados_saldo )
                             fila.actividad_metrados_costo_saldo = formato(fila.actividad_metrados_costo_saldo )
                             fila.actividad_porcentaje = formato(fila.actividad_porcentaje )
@@ -2315,4 +2346,135 @@ userModel.getmaterialespartida = (id_partida,callback)=>{
     })
 }
 
+userModel.getGanttAnyos  = (id_ficha,callback)=>{    
+    pool.getConnection(function(err ,conn){
+        if(err){ 
+            callback(err);
+        }        
+        else{
+            conn.query("SELECT YEAR(avanceactividades.fecha) anyo FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE fichas.id_ficha = ? GROUP BY YEAR(avanceactividades.fecha)",id_ficha,(err,res)=>{ 
+                if(err){
+                    console.log(err);                    
+                    callback(err.code);                 
+                }
+                else if(res.length == 0){
+                    callback(null,"vacio");    
+                    conn.destroy()    
+                }else{   
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }
+        
+                
+    })
+}
+userModel.getGanttMeses  = (id_ficha,year,callback)=>{    
+    pool.getConnection(function(err ,conn){
+        if(err){ 
+            callback(err);
+        }        
+        else{
+            conn.query("SELECT DATE_FORMAT(avanceactividades.fecha, '%Y-%c-01') fecha, MONTHNAME(avanceactividades.fecha) nombre_mes FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE fichas.id_ficha = ? AND YEAR(avanceactividades.fecha) = ? GROUP BY DATE_FORMAT(avanceactividades.fecha, '%Y-%c-01')",[id_ficha,year],(err,res)=>{ 
+                if(err){
+                    console.log(err);                    
+                    callback(err.code);                 
+                }
+                else if(res.length == 0){
+                    callback(null,"vacio");    
+                    conn.destroy()    
+                }else{   
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }
+        
+                
+    })
+}
+userModel.getGanttComponentes  = (id_ficha,fecha,callback)=>{    
+    pool.getConnection(function(err ,conn){
+        if(err){ 
+            callback(err);
+        }        
+        else{
+            conn.query("SELECT componentes.id_componente, componentes.numero, componentes.nombre FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE fichas.id_ficha = ? AND DATE_FORMAT(?, '%Y-%m') = DATE_FORMAT(avanceactividades.fecha, '%Y-%m') GROUP BY componentes.id_componente",[id_ficha,fecha],(err,res)=>{ 
+                if(err){
+                    console.log(err);                    
+                    callback(err.code);                 
+                }
+                else if(res.length == 0){
+                    callback(null,"vacio");    
+                    conn.destroy()    
+                }else{   
+                    callback(null,res);
+                    conn.destroy()
+                }
+            })
+        }
+    })
+}
+userModel.getGanttPartidas  = (id_componente,fecha,callback)=>{    
+    pool.getConnection(function(err ,conn){
+        
+        if(err){ 
+            callback(err);
+        }        
+        else{
+            conn.query("/*********avance por dia***************/ SELECT id_partida, item, partidas.descripcion, metrado, partidas.rendimiento, ROUND(partidas.metrado / partidas.rendimiento, 2) duracion_dia, day(avanceactividades.fecha) dia, SUM(valor) avance_metrado, ROUND(SUM(valor * costo_unitario), 2) avance_dinero, metrado - SUM(valor) saldo FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE DATE_FORMAT(avanceactividades.fecha, '%Y-%m') = DATE_FORMAT(?, '%Y-%m') AND componentes.id_componente = ? GROUP BY partidas.id_partida , DATE_FORMAT(avanceactividades.fecha, '%Y-%m-%d')",[fecha,id_componente],(err,res)=>{ 
+                if(err){
+                    console.log(err);                    
+                    callback(err.code);                 
+                }
+                // else if(res.length == 0){
+                //     callback(null,"vacio");    
+                //     conn.destroy()    
+                // }
+                else{   
+                    var year = fecha.split("-")[0]
+                    var month = fecha.split("-")[1]
+                    console.log("mes",year,month);
+                    var lastDay = new Date(year, month, 0).getDate();
+                    console.log("lastDay",lastDay);
+                    // callback(null,{  
+                    //     dias:["L - 1", "M - 2", "M - 3", "J - 4", "V - 5", "S - 6", "D - 7", "L - 8", "M - 9", "M - 10", "J - 11", "V - 12", "S - 13", "D - 14", "L - 15", "M - 16", "M - 17", "J - 18", "V - 19", "S - 20", "D - 21"],
+                    //     partidas:[
+                    //         {
+                    //             "item": 1,
+                    //             "descripcion": "xt4nv4",
+                    //             "metrado": 8,
+                    //             "duracion_dias": 5,
+                    //             "avance":65656,
+                    //             "saldo":845454,
+                    //             "gant": [
+                    //             {
+                    //                 "IndicadorRango": 0,
+                    //                 "ejecutado": 7,
+                    //                 "perdidas": 8,
+                    //                 "ganancias": true
+                    //             }
+                    //         ]
+                    //         }
+                    //     ]
+                    // });
+                    callback(null,{
+                        dias:["L - 1", "M - 2", "M - 3", "J - 4", "V - 5", "S - 6", "D - 7", "L - 8", "M - 9", "M - 10", "J - 11", "V - 12", "S - 13", "D - 14", "L - 15", "M - 16", "M - 17", "J - 18", "V - 19", "S - 20", "D - 21"],
+                        partidas:res                        
+                    })
+                    conn.destroy()
+                }
+                
+                
+            })
+        }
+        
+                
+    })
+}
 module.exports = userModel;
