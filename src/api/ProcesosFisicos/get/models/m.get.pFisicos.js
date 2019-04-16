@@ -1913,21 +1913,21 @@ userModel.getValGeneralTodosComponentes = (id_ficha,fecha_inicial,fecha_final,ca
                             fila.porcentaje_saldo = ""
 
                         }else {
-                            fila.metrado  = formatoValorizaciones( fila.metrado )
-                            fila.costo_unitario  = formatoValorizaciones( fila.costo_unitario )
-                            fila.precio_parcial  = formatoValorizaciones( fila.precio_parcial )
-                            fila.metrado_anterior  = formatoValorizaciones( fila.metrado_anterior )
-                            fila.valor_anterior  = formatoValorizaciones( fila.valor_anterior )
-                            fila.porcentaje_anterior  = formatoValorizaciones( fila.porcentaje_anterior )
-                            fila.metrado_actual  = formatoValorizaciones( fila.metrado_actual )
-                            fila.valor_actual  = formatoValorizaciones( fila.valor_actual )
-                            fila.porcentaje_actual  = formatoValorizaciones( fila.porcentaje_actual )
-                            fila.metrado_total = formatoValorizaciones( fila.metrado_total)
-                            fila.valor_total = formatoValorizaciones( fila.valor_total)
-                            fila.porcentaje_total = formatoValorizaciones( fila.porcentaje_total)
-                            fila.metrado_saldo  = formato( fila.metrado_saldo )
-                            fila.valor_saldo  = formato( fila.valor_saldo )
-                            fila.porcentaje_saldo = formato( fila.porcentaje_saldo)
+                            // fila.metrado  = formatoValorizaciones( fila.metrado )
+                            // fila.costo_unitario  = formatoValorizaciones( fila.costo_unitario )
+                            // fila.precio_parcial  = formatoValorizaciones( fila.precio_parcial )
+                            // fila.metrado_anterior  = formatoValorizaciones( fila.metrado_anterior )
+                            // fila.valor_anterior  = formatoValorizaciones( fila.valor_anterior )
+                            // fila.porcentaje_anterior  = formatoValorizaciones( fila.porcentaje_anterior )
+                            // fila.metrado_actual  = formatoValorizaciones( fila.metrado_actual )
+                            // fila.valor_actual  = formatoValorizaciones( fila.valor_actual )
+                            // fila.porcentaje_actual  = formatoValorizaciones( fila.porcentaje_actual )
+                            // fila.metrado_total = formatoValorizaciones( fila.metrado_total)
+                            // fila.valor_total = formatoValorizaciones( fila.valor_total)
+                            // fila.porcentaje_total = formatoValorizaciones( fila.porcentaje_total)
+                            // fila.metrado_saldo  = formato( fila.metrado_saldo )
+                            // fila.valor_saldo  = formato( fila.valor_saldo )
+                            // fila.porcentaje_saldo = formato( fila.porcentaje_saldo)
                         }
                         
                         
