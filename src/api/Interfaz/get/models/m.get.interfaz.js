@@ -78,7 +78,7 @@ userModel.getMenu = (data,callback)=>{
                         const element = json[i];
                         console.log("nombremenu",element.nombreMenu);
                         if(element.nombreMenu=="PROCESOS FISICOS"){
-                            if(estado == "Ejecucion"){
+                            if(estado == "Ejecucion"||estado == "Corte"||estado == "Actualizacion"){
                                 element.submenus.splice(0,0,
                                     {
                                         "ruta": "/MDdiario",
@@ -86,22 +86,7 @@ userModel.getMenu = (data,callback)=>{
                                         "nombrecomponente":"MDdiario"
                                     }
                                 )
-                            }else if(estado == "Corte"){
-                                element.submenus.splice(0,0,
-                                    {
-                                        "nombreMenu": "Corte de obra",
-                                        "ruta": "/CorteObra",
-                                        "nombrecomponente":"CorteObra"
-                                    }
-                                )
-                            }else if(estado == "Actualizacion"){
-                                element.submenus.splice(0,0,
-                                    {
-                                        "nombreMenu": "Actualización de obra",
-                                        "ruta": "/ActualizacionObra",
-                                        "nombrecomponente":"ActualizacionObra"
-                                    }
-                                )
+                            
                             }else if(estado == "Paralizado"){
                                 element.submenus.splice(0,0,
                                     {
