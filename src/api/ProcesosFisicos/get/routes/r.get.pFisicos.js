@@ -740,6 +740,24 @@ module.exports = function(app){
 			})
 		}
     })
+    app.get('/getPrioridades',(req,res)=>{
+		
+        User.getPrioridades ((err,data)=>{
+            if(err){ res.status(204).json(err);}
+            else{
+                res.json(data);	
+            }
+        })
+    })
+    app.get('/getIconoscategorias',(req,res)=>{
+		
+        User.getIconoscategorias ((err,data)=>{
+            if(err){ res.status(204).json(err);}
+            else{
+                res.json(data);	
+            }
+        })
+    })
 
     
 }
