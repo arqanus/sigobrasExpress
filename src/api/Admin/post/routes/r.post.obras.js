@@ -265,42 +265,20 @@ module.exports = function(app){
                                             else{
                                                 if(estado == "oficial"){
                                                     res.json("exito")
-                                                }else{
-                                                    var element = idPartida
-                                                    var historialpartidas = []
+                                                }else{                                           
+                                                    var historialActividad = []
+                                                    var tempidactividad = id_actividad
                                                     for (let i = 0; i < data.length; i++) {
-                                                        
-                                                        var historial=[										
-                                                            'Partida Nueva',
-                                                            element
-                                                        ]
-                                                        historialpartidas.push(historial)	
-                                                        element+=1
-                                                    }
-                                                    
-                                                    
-                                                    
-                                                    User.postHistorialPartidas(historialpartidas,(err,data)=>{
-                                                        if (err) {
-                                                            errores.push(
-                                                                {
-                                                                    "elemento":"historial de partidas",
-                                                                    "error":err
-                                                                }
-                                                            )
-                                                            res.json(errores);
-                                                        }else{
-                                                            
-                                                            var historialActividad = {						
-                                                                "estado":'Partida Nueva',
-                                                                "actividades_id_actividad":id_actividad
-                                                            }
-                                                            User.posthistorialActividad(historialActividad,(err,data)=>{
-                                                                if(err){ res.status(204).json(err);}
-                                                                else{
-                                                                    res.json(data)
-                                                                }
-                                                            })
+                                                        historialActividad.push(
+                                                            ['Partida Nueva',tempidactividad]
+                                                        )
+                                                        tempidactividad++
+                                                    }                                                    
+                                                 
+                                                    User.posthistorialActividad(historialActividad,(err,data)=>{
+                                                        if(err){ res.status(204).json(err);}
+                                                        else{
+                                                            res.json(data)
                                                         }
                                                     })
                     

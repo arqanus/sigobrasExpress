@@ -285,7 +285,7 @@ userModel.posthistorialActividad = (data,callback)=>{
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
         else{
-            conn.query('insert into historialActividades set ?',data,(err,res)=>{ 
+            conn.query('insert into historialActividades(estado,actividades_id_actividad)values ?',[data],(err,res)=>{ 
                 if(err){
                     console.log(err);
                     callback(err.code);
