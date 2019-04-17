@@ -144,59 +144,7 @@ userModel.getPartidasPorObra = (id_ficha,callback)=>{
         }                
     })
 }
-userModel.getPartidasPorObra = (id_ficha,callback)=>{
-    
-    pool.getConnection(function(err ,conn){
-        if(err){                        
-            callback(err);
-        }
-        else{                       
-            conn.query("SELECT partidas.item, actividades.id_actividad, actividades.parcial / partidas.metrado porcentaje_metrado FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE componentes.fichas_id_ficha = ? AND (actividades.parcial > 0 or actividades.parcial is null) ",id_ficha,(error,res)=>{
-                if(error){
-                    console.log(error);                    
-                    callback(error.code);
-                }else{
-                    var partidas = []
-                    var partida={}
-                    var item = -1
-                    for (let i = 0; i < res.length; i++) {
-                        const fila = res[i];
-                        if(fila.item != item){
-                            if(i>0){
-                                partidas.push(partida)
-                                partida = {}
-                            }
-                            partida.item = fila.item
-                            partida.actividades=[
-                                {
-                                    "id_actividad":fila.id_actividad,
-                                    "porcentaje_metrado":fila.porcentaje_metrado
-                                }
-                            ]
-                            
-                        }else{
-                            partida.actividades.push({
-                                "id_actividad":fila.id_actividad,
-                                "porcentaje_metrado":fila.porcentaje_metrado
-                            })
 
-                        }
-                        item = fila.item
-
-                        
-                    }
-                    partidas.push(partida)
-
-                    
-                    callback(null,partidas);
-                    conn.destroy()
-                }
-                
-                
-            })
-        }                
-    })
-}
 
 
 module.exports = userModel;
