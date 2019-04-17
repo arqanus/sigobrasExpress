@@ -268,7 +268,7 @@ module.exports = function(app){
                                                 }else{                                           
                                                     var historialActividad = []
                                                     var tempidactividad = id_actividad
-                                                    for (let i = 0; i < data.length; i++) {
+                                                    for (let i = 0; i < actividades.length; i++) {
                                                         historialActividad.push(
                                                             ['Partida Nueva',tempidactividad]
                                                         )
