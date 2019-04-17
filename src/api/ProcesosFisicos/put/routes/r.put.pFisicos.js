@@ -32,7 +32,7 @@ module.exports = function(app){
 	app.put('/putPrioridad',(req,res)=>{	
     console.log(req.body);
     		
-		User.putPrioridad(req.body.id_partida,req.body.prioridad,(err,data)=>{							
+		User.putPrioridad(req.body.id_partida,req.body.id_prioridad,(err,data)=>{							
 			if(err){ res.status(204).json(err);}
 			else{
         User.getPrioridad(req.body.id_partida,(err,prioridad)=>{							
@@ -43,6 +43,21 @@ module.exports = function(app){
         })
 			}
 		})
-})
+  })
+  app.put('/putIconocategoria',(req,res)=>{	
+    console.log(req.body);
+    		
+		User.putIconocategoria(req.body.id_partida,req.body.id_iconoCategoria,(err,data)=>{							
+			if(err){ res.status(204).json(err);}
+			else{
+        User.getIconocategoria(req.body.id_partida,(err,prioridad)=>{							
+          if(err){ res.status(204).json(err);}
+          else{
+            res.json(prioridad)
+          }
+        })
+			}
+		})
+  })
   
 }
