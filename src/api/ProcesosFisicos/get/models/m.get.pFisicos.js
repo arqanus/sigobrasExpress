@@ -179,229 +179,7 @@ function regresionLineal(data){
   
 }
 
-userModel.getPartidasCompletas = (id_ficha,callback)=>{
-    
-    pool.getConnection(function(err ,conn){
-        if(err){ callback(err);}
-        else{
-            conn.query("SELECT componentes.id_componente, componentes.numero, componentes.nombre, partida.id_partida, partida.tipo, partida.item, partida.descripcion, TRIM(BOTH '/DIA' FROM partida.unidad_medida)unidad_medida, partida.metrado, partida.costo_unitario, partida.parcial, (COALESCE(parcial_negativo / parcial_positivo, 0) + 1)*COALESCE(partida.avance_metrado ,0) avance_metrado, (COALESCE(parcial_negativo / parcial_positivo, 0) + 1)*COALESCE(partida.avance_costo ,0) avance_costo, partida.metrado - (partida.avance_metrado*(COALESCE(parcial_negativo / parcial_positivo, 0) + 1)) metrados_saldo, partida.parcial - (partida.avance_metrado * partida.costo_unitario*(COALESCE(parcial_negativo / parcial_positivo, 0) + 1)) metrados_costo_saldo, COALESCE(partida.porcentaje ,0)*(COALESCE(parcial_negativo / parcial_positivo, 0) + 1) porcentaje, actividad.id_actividad, actividad.tipo actividad_tipo, actividad.estado actividad_estado, actividad.nombre actividad_nombre, actividad.veces, actividad.largo, actividad.ancho, actividad.alto, actividad.metrado_actividad, partida.costo_unitario, actividad.metrado_actividad * partida.costo_unitario parcial_actividad, actividad.actividad_avance_metrado, actividad.actividad_avance_metrado * partida.costo_unitario actividad_avance_costo, actividad.metrado_actividad - actividad.actividad_avance_metrado actividad_metrados_saldo, (actividad.metrado_actividad - actividad.actividad_avance_metrado) * partida.costo_unitario actividad_metrados_costo_saldo, (actividad.actividad_avance_metrado / actividad.metrado_actividad) * 100 actividad_porcentaje, (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) porcentaje_negatividad_ajustado FROM componentes INNER JOIN (SELECT partidas.Componentes_id_componente, partidas.id_partida, partidas.tipo, partidas.item, partidas.descripcion, partidas.unidad_medida, partidas.metrado, partidas.costo_unitario, partidas.metrado * partidas.costo_unitario parcial, IF(SUM(avanceactividades.valor) IS NULL, 0, SUM(avanceactividades.valor)) avance_metrado, SUM(avanceactividades.valor) * partidas.costo_unitario avance_costo, (SUM(avanceactividades.valor) / partidas.metrado) * 100 porcentaje FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad GROUP BY partidas.id_partida) partida ON partida.componentes_id_componente = componentes.id_componente LEFT JOIN (SELECT historialpartidas.estado, historialpartidas.partidas_id_partida FROM (SELECT MAX(id_historialPartida) id_historialPartida FROM historialpartidas GROUP BY historialpartidas.partidas_id_partida) maximoHistorial LEFT JOIN historialpartidas ON historialpartidas.id_historialPartida = maximoHistorial.id_historialPartida) historialPartida ON historialPartida.partidas_id_partida = partida.id_partida LEFT JOIN (SELECT Partidas_id_partida, id_actividad, tipo, historialactividades.estado, nombre, veces, largo, ancho, alto, parcial metrado_actividad, IF(SUM(avanceactividades.valor) IS NULL, 0, SUM(avanceactividades.valor)) actividad_avance_metrado FROM actividades LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad GROUP BY actividades.id_actividad) actividad ON actividad.Partidas_id_partida = partida.id_partida LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_positivo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE actividades.parcial > 0 GROUP BY partidas.id_partida)parcial_positivo on parcial_positivo.id_partida = partida.id_partida left join (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_negativo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE actividades.parcial < 0 GROUP BY partidas.id_partida)parcial_negativo on parcial_negativo.id_partida = partida.id_partida WHERE componentes.Fichas_id_ficha = ? AND historialPartida.estado IS NULL AND componentes.id_componente IS NOT NULL ORDER BY componentes.id_componente , partida.id_partida , actividad.id_actividad",id_ficha,(error,res)=>{
-                if(error){
-                    callback(error);
-                }else if(res.length == 0){
-                    console.log("vacio");                    
-                    callback(null,"vacio");
-                }else{
-                    var componentes=[]
-                    var componente = {}
-                    var lastIdComponente = -1
-                    var lastIdPartida = -1
-                    for (let i = 0; i < res.length; i++) {
-                        const fila = res[i];
-                        if(fila.id_componente != lastIdComponente){
-                            if(i != 0){
-                                componentes.push(componente)
-                                componente = {}
-                            }
-                            
 
-                            componente.id_componente = fila.id_componente
-                            componente.numero = fila.numero
-                            componente.nombre = fila.nombre
-                            componente.partidas = [
-                                {
-                                   "id_partida": fila.id_partida,
-                                    "tipo":fila.tipo,
-                                    "estado":null,
-                                    "item":fila.item,
-                                    "descripcion": fila.descripcion,
-                                    "unidad_medida": fila.unidad_medida,
-                                    "metrado": fila.metrado,
-                                    "costo_unitario": fila.costo_unitario,
-                                    "parcial": fila.parcial,
-                                    "avance_metrado": fila.avance_metrado,
-                                    "avance_costo": fila.avance_costo,
-                                    "metrados_saldo": fila.metrados_saldo,
-                                    "metrados_costo_saldo": fila.metrados_costo_saldo,
-                                    "porcentaje": fila.porcentaje,
-                                    "actividades":[
-                                        {
-                                            "id_actividad":fila.id_actividad,
-                                            "actividad_tipo":fila.actividad_tipo,
-                                            "actividad_estado":fila.actividad_estado,
-                                            "nombre_actividad":fila.actividad_nombre,
-                                            "veces_actividad":fila.veces,
-                                            "largo_actividad":fila.largo,
-                                            "ancho_actividad":fila.ancho,
-                                            "alto_actividad":fila.alto,
-                                            "metrado_actividad":fila.metrado_actividad,
-                                            "costo_unitario":fila.costo_unitario,
-                                            "parcial_actividad":fila.parcial_actividad,
-                                            "actividad_avance_metrado": fila.actividad_avance_metrado,
-                                            "actividad_avance_costo": fila.actividad_avance_costo,
-                                            "actividad_metrados_saldo": fila.actividad_metrados_saldo,
-                                            "actividad_metrados_costo_saldo": fila.actividad_metrados_costo_saldo,
-                                            "actividad_porcentaje": fila.actividad_porcentaje,
-                                            "unidad_medida": fila.unidad_medida,
-                                        }
-                                    ]
-                                }                               
-                                
-                            ]                           
-
-                        }else{
-                            if(fila.id_partida != lastIdPartida){
-                                //nueva partida
-                                var partida = {
-                                    "id_partida": fila.id_partida,
-                                    "tipo":fila.tipo,
-                                    "estado":null,
-                                    "item":fila.item,
-                                    "descripcion": fila.descripcion,
-                                    "unidad_medida": fila.unidad_medida,
-                                    "metrado": fila.metrado,
-                                    "costo_unitario": fila.costo_unitario,
-                                    "parcial": fila.parcial,
-                                    "avance_metrado": fila.avance_metrado,
-                                    "avance_costo": fila.avance_costo,
-                                    "metrados_saldo": fila.metrados_saldo,
-                                    "metrados_costo_saldo": fila.metrados_costo_saldo,
-                                    "porcentaje": fila.porcentaje,
-                                    "actividades":[
-                                        {
-                                            "id_actividad":fila.id_actividad,
-                                            "actividad_tipo":fila.actividad_tipo,
-                                            "actividad_estado":fila.actividad_estado,
-                                            "nombre_actividad":fila.actividad_nombre,
-                                            "veces_actividad":fila.veces,
-                                            "largo_actividad":fila.largo,
-                                            "ancho_actividad":fila.ancho,
-                                            "alto_actividad":fila.alto,
-                                            "metrado_actividad":fila.metrado_actividad,
-                                            "costo_unitario":fila.costo_unitario,
-                                            "parcial_actividad":fila.parcial_actividad,
-                                            "actividad_avance_metrado": fila.actividad_avance_metrado,
-                                            "actividad_avance_costo": fila.actividad_avance_costo,
-                                            "actividad_metrados_saldo": fila.actividad_metrados_saldo,
-                                            "actividad_metrados_costo_saldo": fila.actividad_metrados_costo_saldo,
-                                            "actividad_porcentaje": fila.actividad_porcentaje,
-                                            "unidad_medida": fila.unidad_medida,
-                                        }
-                                    ]
-                                }
-                                componente.partidas.push(partida)
-                            }else{
-                                //si es la misma partida
-                                var actividad=
-                                {
-                                    "id_actividad":fila.id_actividad,
-                                    "actividad_tipo":fila.actividad_tipo,
-                                    "actividad_estado":fila.actividad_estado,
-                                    "nombre_actividad":fila.actividad_nombre,
-                                    "veces_actividad":fila.veces,
-                                    "largo_actividad":fila.largo,
-                                    "ancho_actividad":fila.ancho,
-                                    "alto_actividad":fila.alto,
-                                    "metrado_actividad":fila.metrado_actividad,
-                                    "costo_unitario":fila.costo_unitario,
-                                    "parcial_actividad":fila.parcial_actividad,
-                                    "actividad_avance_metrado": fila.actividad_avance_metrado,
-                                    "actividad_avance_costo": fila.actividad_avance_costo,
-                                    "actividad_metrados_saldo": fila.actividad_metrados_saldo,
-                                    "actividad_metrados_costo_saldo": fila.actividad_metrados_costo_saldo,
-                                    "actividad_porcentaje": fila.actividad_porcentaje,
-                                    "unidad_medida": fila.unidad_medida,
-                                }
-                                componente.partidas[componente.partidas.length-1].actividades.push(actividad)
-
-                                
-
-                            }
-
-                        }
-                        lastIdComponente = fila.id_componente
-                        lastIdPartida = fila.id_partida
-
-                        
-                    }
-                    componentes.push(componente)
-                    //
-                    for (let i = 0; i < componentes.length; i++) {
-                        const partidas = componentes[i].partidas;
-                        for (let j = 0; j < partidas.length; j++) {
-                            const partida = partidas[j];
-                            if(partida.tipo == "partida"){
-                                partida.metrado = formato(partida.metrado)
-                                partida.costo_unitario = formato(partida.costo_unitario)
-                                partida.parcial = formato(partida.parcial)
-                                partida.avance_metrado = formato(partida.avance_metrado)
-                                partida.avance_costo = formato(partida.avance_costo)
-                                partida.metrados_saldo = formato(partida.metrados_saldo)
-                                partida.metrados_costo_saldo = formato(partida.metrados_costo_saldo)
-                                
-
-                            }
-                            else{
-                                partida.metrado = null
-                                partida.costo_unitario = null
-                                partida.parcial = null
-                                partida.avance_metrado = null
-                                partida.avance_costo = null
-                                partida.metrados_saldo = null
-                                partida.metrados_costo_saldo = null
-                                partida.porcentaje = null
-
-                            }
-                        
-                            const actividades = partida.actividades
-                            for (let k = 0; k < actividades.length; k++) {
-                                const actividad = actividades[k];
-                                if(actividad.actividad_tipo == "subtitulo"){
-                                    actividad.metrado_actividad = formato(actividad.metrado_actividad)
-                                    actividad.costo_unitario = formato(actividad.costo_unitario)
-                                    actividad.parcial_actividad = formato(actividad.parcial_actividad)
-                                    actividad.actividad_avance_metrado = formato(actividad.actividad_avance_metrado)
-                                    actividad.actividad_avance_costo = formato(actividad.actividad_avance_costo)
-                                    actividad.actividad_metrados_saldo = formato(actividad.actividad_metrados_saldo)
-                                    actividad.actividad_metrados_costo_saldo = formato(actividad.actividad_metrados_costo_saldo)
-                                    actividad.actividad_porcentaje = formato(actividad.actividad_porcentaje)
-    
-                                    //asignando estado de mayor metrado a partidda
-                                    if(actividad.actividad_estado =="Mayor Metrado"){
-                                        partida.estado = "Mayor Metrado"
-                                    }
-
-                                }
-                                else{
-                                    actividad.metrado_actividad = null
-                                    actividad.costo_unitario = null
-                                    actividad.parcial_actividad = null
-                                    actividad.actividad_avance_metrado = null
-                                    actividad.actividad_avance_costo = null
-                                    actividad.actividad_metrados_saldo = null
-                                    actividad.actividad_metrados_costo_saldo = null
-                                    actividad.actividad_porcentaje = null
-                                    actividad.unidad_medida = null
-    
-                                }
-                               
-                            }                                                   
-                        }
-                        
-                                                
-                    }
-
-                    
-                    callback(null,componentes);
-                    conn.destroy()
-                }
-                
-                
-            })
-        }
-        
-                
-    })
-}
 userModel.getComponentes = (id_ficha,callback)=>{
     
     pool.getConnection(function(err ,conn){
@@ -435,7 +213,7 @@ userModel.getPartidas = (id_componente,callback)=>{
                     callback(error);
                 }else if(res.length == 0){
                     console.log("vacio");                    
-                    callback(null,"vacio");
+                    callback("vacio");
                     conn.destroy()
                 }else{      
                     for (let i = 0; i < res.length; i++) {
@@ -614,7 +392,53 @@ userModel.getPartidasPNuevas = (id_componente,callback)=>{
                     console.log("vacio");                    
                     callback(null,"vacio");
                     conn.destroy()
-                }else{      
+                }else{    
+                    for (let i = 0; i < res.length; i++) {
+                        const fila = res[i];
+                        // fila.iconocategoria_nombre = "MdMonetizationOn"
+                        if(fila.tipo=="titulo"){
+                            fila.unidad_medida = ""
+                            fila.metrado = ""
+                            fila.costo_unitario = ""
+                            fila.parcial = ""
+                            fila.avance_metrado = ""
+                            fila.avance_costo = ""
+                            fila.metrados_saldo = ""
+                            fila.metrados_costo_saldo = ""
+                            fila.porcentaje = ""
+                            fila.porcentaje_negatividad = ""
+                            
+                        }else{
+                            fila.metrado = formato(fila.metrado)
+                            fila.costo_unitario = formato(fila.costo_unitario)
+                            fila.parcial = formato(fila.parcial)
+                            fila.avance_metrado = formato(fila.avance_metrado)
+                            fila.avance_costo = formato(fila.avance_costo)
+                            fila.metrados_saldo = formato(fila.metrados_saldo)
+                            fila.metrados_costo_saldo = formato(fila.metrados_costo_saldo)
+                            fila.porcentaje = Number(formato(fila.porcentaje))
+                            
+                        }
+
+                        if(fila.partida_duracion!=""){
+                            fila.partida_duracion = fila.partida_duracion*480
+                            if(fila.partida_duracion < 60){
+                                fila.partida_duracion = Math.round(fila.partida_duracion) + "m"
+                            }else if(fila.partida_duracion < 480){
+                                var horas = Math.trunc(fila.partida_duracion/60)+"h"
+                                var minutos = Math.round(fila.partida_duracion%60)+"m"
+                                fila.partida_duracion = horas + " "+minutos
+                            }else {
+                                var dias = Math.trunc(fila.partida_duracion/480)+"d"
+                                var residuo_dias = Math.trunc(fila.partida_duracion%480)
+                                var horas =  Math.trunc(residuo_dias/60)+"h"
+                                var minutos = Math.round(residuo_dias%60)+"m"
+                                fila.partida_duracion = dias+" "+horas + " "+minutos
+                            }   
+                        }
+                    }
+                    callback(null,res);
+                    conn.destroy()  
 
                     
                     callback(null,res);
@@ -640,8 +464,48 @@ userModel.getActividadesPNuevas = (id_partida,callback)=>{
                     console.log("vacio");                    
                     callback(null,"vacio");
                     conn.destroy()
-                }else{      
-                    
+                }else{  
+                    for (let i = 0; i < res.length; i++) {
+
+                        const fila = res[i];
+                        if(fila.actividad_tipo =="titulo"){
+                            fila.veces_actividad = ""
+                            fila.largo_actividad = ""
+                            fila.ancho_actividad = ""
+                            fila.alto_actividad = ""
+                            fila.metrado_actividad = ""
+                            fila.costo_unitario = ""
+                            fila.parcial_actividad = ""
+                            fila.actividad_avance_metrado = ""
+                            fila.actividad_avance_costo = ""
+                            fila.actividad_metrados_saldo = ""
+                            fila.actividad_metrados_costo_saldo = ""
+                            fila.actividad_porcentaje = ""
+                            fila.unidad_medida = ""
+                        }else if(fila.parcial_actividad <0){
+                            fila.parcial_actividad = 0
+                            fila.actividad_avance_metrado = 0
+                            fila.actividad_avance_costo = 0
+                            fila.actividad_metrados_saldo = 0
+                            fila.actividad_metrados_costo_saldo = 0
+                            fila.actividad_porcentaje = 0
+                            fila.unidad_medida = 0
+                        }else{
+                            fila.veces_actividad = formato(fila.veces_actividad)
+                            fila.largo_actividad = formato(fila.largo_actividad)
+                            fila.ancho_actividad = formato(fila.ancho_actividad)
+                            fila.alto_actividad = formato(fila.alto_actividad)
+                            fila.metrado_actividad = formato(fila.metrado_actividad )
+                            fila.costo_unitario = formato(fila.costo_unitario )                            
+                            fila.parcial_actividad = formatoAvance(fila.parcial_actividad )
+                            fila.actividad_avance_metrado = formato(fila.actividad_avance_metrado )
+                            fila.actividad_avance_costo = formatoAvance(fila.actividad_avance_costo )
+                            fila.actividad_metrados_saldo = formato(fila.actividad_metrados_saldo )
+                            fila.actividad_metrados_costo_saldo = formato(fila.actividad_metrados_costo_saldo )
+                            fila.actividad_porcentaje = formato(fila.actividad_porcentaje )
+                        }
+                                                
+                    }                    
                     callback(null,res);
                     conn.destroy()
                 }
