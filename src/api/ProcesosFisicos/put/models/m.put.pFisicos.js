@@ -26,18 +26,18 @@ function formato(data){
 }
 let userModel = {};
 //avanceactividad para saber el estado de obra
-userModel.putPrioridad = (id_partida,prioridad,callback)=>{
+userModel.putPrioridad = (id_partida,id_prioridad,callback)=>{
     
     pool.getConnection(function(err ,conn){
         if(err){ 
             callback(err);
         }else{        
-            conn.query('update partidas set partidas.prioridad = ? where partidas.id_partida = ?',[prioridad,id_partida],(error,res)=>{
+            conn.query('update partidas set partidas.prioridades_id_prioridad = ? where partidas.id_partida = ?',[id_prioridad,id_partida],(error,res)=>{
                 if(error){
                     callback(error);
                 }else{                
                     console.log("res",res); 
-                    callback(null,res.last);
+                    callback(null,res);
                     conn.destroy()
                 }
             })
@@ -51,7 +51,46 @@ userModel.getPrioridad = (id_partida,callback)=>{
         if(err){ 
             callback(err);
         }else{
-            conn.query('select prioridad from partidas where partidas.id_partida = ?',[id_partida],(error,res)=>{
+            conn.query('SELECT prioridades.* FROM partidas LEFT JOIN prioridades ON prioridades.id_prioridad = partidas.prioridades_id_prioridad WHERE partidas.id_partida =?',[id_partida],(error,res)=>{
+                if(error){
+                    callback(error);
+                }else{                
+                    console.log("res",res); 
+                    callback(null,res[0]);
+                    conn.destroy()
+                }
+            })
+        }
+        
+                
+    })
+}
+userModel.putIconocategoria = (id_partida,id_prioridad,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){ 
+            callback(err);
+        }else{        
+            conn.query('update partidas set partidas.iconosCategorias_id_iconoCategoria = ? where partidas.id_partida = ?',[id_prioridad,id_partida],(error,res)=>{
+                if(error){
+                    callback(error);
+                }else{                
+                    console.log("res",res); 
+                    callback(null,res);
+                    conn.destroy()
+                }
+            })
+        }
+        
+                
+    })
+}
+userModel.getIconocategoria = (id_partida,callback)=>{
+    pool.getConnection(function(err ,conn){
+        if(err){ 
+            callback(err);
+        }else{
+            conn.query('SELECT iconoscategorias.* FROM partidas LEFT JOIN iconoscategorias ON iconoscategorias.id_iconoCategoria = partidas.iconosCategorias_id_iconoCategoria WHERE partidas.id_partida =?',[id_partida],(error,res)=>{
                 if(error){
                     callback(error);
                 }else{                
