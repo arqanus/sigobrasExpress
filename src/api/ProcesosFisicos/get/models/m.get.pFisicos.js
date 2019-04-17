@@ -440,6 +440,7 @@ userModel.getPartidas = (id_componente,callback)=>{
                 }else{      
                     for (let i = 0; i < res.length; i++) {
                         const fila = res[i];
+                        fila.iconocategoria_nombre = "<MdMonetizationOn/>"
                         if(fila.tipo=="titulo"){
                             fila.unidad_medida = ""
                             fila.metrado = ""
@@ -2581,6 +2582,57 @@ userModel.getGanttPartidas  = (id_componente,fecha,callback)=>{
                 }
                 
                 
+            })
+        }
+        
+                
+    })
+}
+
+userModel.getPrioridades  = (callback)=>{    
+    pool.getConnection(function(err ,conn){
+        if(err){ 
+            callback(err);
+            conn.destroy()
+        }        
+        else{
+            conn.query("select * from prioridades",(err,res)=>{ 
+                if(err){
+                    console.log(err);                    
+                    callback(err.code);                 
+                }
+                else if(res.length == 0){
+                    callback(null,"vacio");    
+                    conn.destroy()    
+                }else{   
+                    callback(null,res);
+                    conn.destroy()
+                }
+            })
+        }
+        
+                
+    })
+}
+userModel.getIconoscategorias  = (callback)=>{    
+    pool.getConnection(function(err ,conn){
+        if(err){ 
+            callback(err);
+            conn.destroy()
+        }        
+        else{
+            conn.query("select * from iconoscategorias",(err,res)=>{ 
+                if(err){
+                    console.log(err);                    
+                    callback(err.code);                 
+                }
+                else if(res.length == 0){
+                    callback(null,"vacio");    
+                    conn.destroy()    
+                }else{   
+                    callback(null,res);
+                    conn.destroy()
+                }
             })
         }
         
