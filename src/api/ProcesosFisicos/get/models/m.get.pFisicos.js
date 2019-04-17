@@ -185,7 +185,7 @@ userModel.getComponentes = (id_ficha,callback)=>{
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
         else{
-            conn.query("SELECT id_componente,numero,nombre from componentes where componentes.fichas_id_ficha=?",id_ficha,(error,res)=>{ if(error){
+            conn.query("SELECT componentes.* FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado is null AND componentes.fichas_id_ficha = ? GROUP BY componentes.id_componente",id_ficha,(error,res)=>{ if(error){
                     callback(error);
                 }else if(res.length == 0){
                     console.log("vacio");                    
