@@ -95,7 +95,7 @@ userModel.postPartidas = (data,callback)=>{
          pool.getConnection(function(err,conn){
         if(err){ callback(err);}
         else{     
-            conn.query('INSERT INTO partidas (tipo,item,descripcion,unidad_medida,metrado,costo_unitario,equipo,rendimiento,Componentes_id_componente) VALUES ?',[data],(error,res)=>{
+            conn.query('INSERT INTO partidas (tipo,item,descripcion,unidad_medida,metrado,costo_unitario,equipo,rendimiento,Componentes_id_componente,prioridades_id_prioridad,iconosCategorias_id_iconoCategoria) VALUES ?',[data],(error,res)=>{
                 if(error){
                     console.log(error);                    
                     callback(error.code);
@@ -316,6 +316,55 @@ userModel.postAvanceActividadPorObra = (data,callback)=>{
                 }
                 
                 
+            })
+        }
+        
+                
+    })
+}
+userModel.getPrioridad  = (callback)=>{    
+    pool.getConnection(function(err ,conn){
+        if(err){ 
+            callback(err);
+        }        
+        else{
+            conn.query("select * from prioridades limit 1",(err,res)=>{ 
+                if(err){
+                    console.log(err);                    
+                    callback(err.code);                 
+                }
+                else if(res.length == 0){
+                    callback(null,"vacio");    
+                    conn.destroy()    
+                }else{   
+                    callback(null,res[0]);
+                    conn.destroy()
+                }
+            })
+        }
+        
+                
+    })
+}
+userModel.getIconocategoria  = (callback)=>{    
+    pool.getConnection(function(err ,conn){
+        if(err){ 
+            callback(err);
+            conn.destroy()
+        }        
+        else{
+            conn.query("select * from iconoscategorias limit 1",(err,res)=>{ 
+                if(err){
+                    console.log(err);                    
+                    callback(err.code);                 
+                }
+                else if(res.length == 0){
+                    callback(null,"vacio");    
+                    conn.destroy()    
+                }else{   
+                    callback(null,res[0]);
+                    conn.destroy()
+                }
             })
         }
         
