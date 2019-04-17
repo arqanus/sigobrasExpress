@@ -1,18 +1,6 @@
 const User = require('../models/m.get.pFisicos');
 
 module.exports = function(app){
-    app.post('/getPartidasCompletas',(req,res)=>{
-		if (req.body.id_ficha == null ||req.body.id_ficha == "null"||req.body.id_ficha == "") {
-			res.json("null");
-		} else {
-			User.getPartidasCompletas(req.body.id_ficha,(err,data)=>{
-				if(err){ res.status(204).json(err);}
-				else{
-                    res.json(data)
-				}
-			})
-		}
-    })
     app.post('/getComponentes',(req,res)=>{
 		if (req.body.id_ficha == null ||req.body.id_ficha == "null"||req.body.id_ficha == "") {
 			res.json("null");
