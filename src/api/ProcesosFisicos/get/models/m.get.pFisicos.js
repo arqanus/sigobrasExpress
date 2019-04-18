@@ -219,6 +219,7 @@ userModel.getPartidas = (id_componente,callback)=>{
                     for (let i = 0; i < res.length; i++) {
                         const fila = res[i];
                         // fila.iconocategoria_nombre = "MdMonetizationOn"
+                        fila.key = i
                         if(fila.tipo=="titulo"){
                             fila.unidad_medida = ""
                             fila.metrado = ""
