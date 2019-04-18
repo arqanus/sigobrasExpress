@@ -1742,6 +1742,11 @@ userModel.getValGeneralTodosComponentes = (id_ficha,fecha_inicial,fecha_final,ca
                     
                     for (let i = 0; i < res.length; i++) {
                         const fila = res[i];
+                        valor_anterior = Number(valor_anterior.toFixed(2))
+                        valor_actual = Number(valor_actual.toFixed(2))
+                        valor_total = Number(valor_total.toFixed(2))
+                        valor_saldo = Number(valor_saldo.toFixed(2))
+                        
                         valor_anterior +=  fila.valor_anterior 
                         valor_actual += fila.valor_actual 
                         valor_total += fila.valor_total 
@@ -1754,10 +1759,7 @@ userModel.getValGeneralTodosComponentes = (id_ficha,fecha_inicial,fecha_final,ca
 
                         precio_parcial += fila.precio_parcial
 
-                        valor_anterior = Number(valor_anterior.toFixed(2))
-                        valor_actual = Number(valor_actual.toFixed(2))
-                        valor_total = Number(valor_total.toFixed(2))
-                        valor_saldo = Number(valor_saldo.toFixed(2))
+                        
                     //    console.log(" fila.valor_actual %s valor_actual %s",fila.valor_actual,valor_actual );
                         
 
