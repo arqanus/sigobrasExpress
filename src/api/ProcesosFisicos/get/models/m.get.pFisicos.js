@@ -1581,10 +1581,10 @@ userModel.getValGeneralResumenPeriodo = (id_ficha,fecha_inicial,fecha_final,call
                             "valor_actual":formato(valor_actual),
                             "valor_total":formato( valor_total),
                             "valor_saldo":formato(valor_saldo),
-                            "porcentaje_anterior":formato(valor_anterior/presupuesto),
-                            "porcentaje_actual":formato(valor_actual/presupuesto),
-                            "porcentaje_total":formato(valor_total/presupuesto),
-                            "porcentaje_saldo":formato(valor_saldo/presupuesto),
+                            "porcentaje_anterior":formato(valor_anterior/presupuesto*100),
+                            "porcentaje_actual":formato(valor_actual/presupuesto*100),
+                            "porcentaje_total":formato(valor_total/presupuesto*100),
+                            "porcentaje_saldo":formato(valor_saldo/presupuesto*100),
                             "componentes":res
                         }
                         );
