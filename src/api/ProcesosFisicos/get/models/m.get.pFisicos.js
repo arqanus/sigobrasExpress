@@ -185,7 +185,7 @@ userModel.getComponentes = (id_ficha,callback)=>{
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
         else{
-            conn.query("SELECT componentes.* FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida left JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE  partidas.tipo != 'titulo' AND historialactividades.estado IS NULL AND componentes.fichas_id_ficha = ? GROUP BY componentes.id_componente",id_ficha,(error,res)=>{ if(error){
+            conn.query("SELECT componentes.*,10 porcentaje_avance,0 saldo  FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida left JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE  partidas.tipo != 'titulo' AND historialactividades.estado IS NULL AND componentes.fichas_id_ficha = ? GROUP BY componentes.id_componente",id_ficha,(error,res)=>{ if(error){
                     callback(error);
                 }else if(res.length == 0){
                     console.log("vacio");                    
@@ -1746,7 +1746,7 @@ userModel.getValGeneralTodosComponentes = (id_ficha,fecha_inicial,fecha_final,ca
                         valor_actual = Number(valor_actual.toFixed(2))
                         valor_total = Number(valor_total.toFixed(2))
                         valor_saldo = Number(valor_saldo.toFixed(2))
-                        
+
                         valor_anterior +=  fila.valor_anterior 
                         valor_actual += fila.valor_actual 
                         valor_total += fila.valor_total 
