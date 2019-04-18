@@ -200,45 +200,7 @@ module.exports = function(app){
     
     })
 
-    //old apis
-    app.post('/getValGeneral',(req,res)=>{
-        if (req.body.id_ficha == null) {
-            res.json("null")
-        } else {
-            User.getValGeneral(req.body.id_ficha,(err,data)=>{
-                if(err){ res.status(204).json(err);}
-                else{
-                    res.json(data);	
-                }
-            })
-        }
-    })
-    app.post('/getValGeneralPartidasNuevas',(req,res)=>{
-        if (req.body.id_ficha == null) {
-            res.json("null")
-        } else {
-            User.getValGeneralExtras(req.body.id_ficha,"Partida Nueva",(err,data)=>{
-                if(err){ res.status(204).json(err);}
-                else{
-                    res.json(data);	
-                }
-            })
-        }			
-        
-    })
-    app.post('/getValGeneralMayorMetrado',(req,res)=>{
-        if (req.body.id_ficha == null) {
-            res.json("null")
-        } else {
-            User.getValGeneralExtras(req.body.id_ficha,"Mayor Metrado",(err,data)=>{
-                if(err){ res.status(204).json(err);}
-                else{
-                    res.json(data);	
-                }
-            })
-        }			
-        
-    })  
+
     // valorizacionesgenerales
     app.post('/getValGeneralAnyos',(req,res)=>{
         if (req.body.id_ficha == null) {
@@ -351,15 +313,16 @@ module.exports = function(app){
         } else {
             User.getValGeneraMayoresMetradoslAnyos(req.body.id_ficha,'Mayor Metrado',(err,anyos)=>{
                 if(err){ res.status(204).json(err);}
-                else{
-                    // res.json(anyos)
+                else if(anyos == "vacio"){
+                    res.json("vacio")
+                }
+                else{                 
                     User.getValGeneralMayoresMetradosPeriodos(req.body.id_ficha,anyos[0].anyo,'Mayor Metrado',(err,periodos)=>{
                         if(err){ res.status(204).json(err);}
-                        else{
+                        else{                            
                             User.getValGeneralMayoresMetradosResumenPeriodo(req.body.id_ficha,periodos[0].fecha_inicial,periodos[0].fecha_final,'Mayor Metrado',(err,resumen)=>{
                                 if(err){ res.status(204).json(err);}
-                                else{
-                                    
+                                else{                                    
                                     User.getValGeneralMayoresMetradosComponentes(periodos[0].fecha_inicial,periodos[0].fecha_final,req.body.id_ficha,'Mayor Metrado',(err,componentes)=>{
                                         // res.json(periodos)
                                         if(err){ res.status(204).json(err);}
