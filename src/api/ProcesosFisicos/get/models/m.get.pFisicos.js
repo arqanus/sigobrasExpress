@@ -1560,12 +1560,7 @@ userModel.getValGeneralResumenPeriodo = (id_ficha,fecha_inicial,fecha_final,call
                         valor_anterior += fila.valor_anterior
                         valor_actual += fila.valor_actual
                         valor_total += fila.valor_total
-                        valor_saldo += fila.valor_saldo
-
-                        porcentaje_anterior += fila.porcentaje_anterior
-                        porcentaje_actual += fila.porcentaje_actual
-                        porcentaje_total += fila.porcentaje_total
-                        porcentaje_saldo += fila.porcentaje_saldo
+                        valor_saldo += fila.valor_saldo                       
                         
                         fila.presupuesto = formato(fila.presupuesto)
                         fila.valor_anterior = formato(fila.valor_anterior)
@@ -1586,10 +1581,10 @@ userModel.getValGeneralResumenPeriodo = (id_ficha,fecha_inicial,fecha_final,call
                             "valor_actual":formato(valor_actual),
                             "valor_total":formato( valor_total),
                             "valor_saldo":formato(valor_saldo),
-                            "porcentaje_anterior":formato(porcentaje_anterior),
-                            "porcentaje_actual":formato(porcentaje_actual),
-                            "porcentaje_total":formato(porcentaje_total),
-                            "porcentaje_saldo":formato(porcentaje_saldo),
+                            "porcentaje_anterior":formato(valor_anterior/presupuesto),
+                            "porcentaje_actual":formato(valor_actual/presupuesto),
+                            "porcentaje_total":formato(valor_total/presupuesto),
+                            "porcentaje_saldo":formato(valor_saldo/presupuesto),
                             "componentes":res
                         }
                         );
