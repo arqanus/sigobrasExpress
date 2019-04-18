@@ -1566,7 +1566,6 @@ userModel.getValGeneralResumenPeriodo = (id_ficha,fecha_inicial,fecha_final,call
                         fila.porcentaje_total = formato(fila.porcentaje_total)
                         fila.valor_saldo = formato(fila.valor_saldo)
                         fila.porcentaje_saldo = formato(fila.porcentaje_saldo)
-                        
                     }
           
                     callback(null,
@@ -1582,7 +1581,7 @@ userModel.getValGeneralResumenPeriodo = (id_ficha,fecha_inicial,fecha_final,call
                             "porcentaje_saldo":formato(valor_saldo/presupuesto*100),
                             "componentes":res
                         }
-                        );
+                    );
                     conn.destroy()
                 }
                 
@@ -1789,24 +1788,21 @@ userModel.getValGeneralTodosComponentes = (id_ficha,fecha_inicial,fecha_final,ca
 //Mayores metrados
 userModel.getValGeneraMayoresMetradoslAnyos  = (id_ficha,tipo,callback)=>{    
     pool.getConnection(function(err ,conn){
-        // console.log("connection",id_ficha,tipo);
         if(err){ 
-            // console.log("err1");
             callback(err);
         }        
         else{
             conn.query("SELECT YEAR(historialactividades.fecha) anyo FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida inner JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado = ? AND componentes.fichas_id_ficha = ? GROUP BY YEAR(historialactividades.fecha) ORDER BY historialactividades.fecha",[tipo,id_ficha],(err,res)=>{ 
                 if(err){
-                    // console.log("err");
                     console.log(err);                    
                     callback(err.code);                 
                 }
                 else if(res.length == 0){
-                    // console.log("vacio");
+                    console.log("vacio");
                     callback(null,"vacio");    
                     conn.destroy()    
                 }else{   
-                    // console.log("res");
+                    console.log("res");
                     
                     callback(null,res);
                     conn.destroy()
@@ -1825,7 +1821,7 @@ userModel.getValGeneralMayoresMetradosPeriodos  = (id_ficha,anyo,tipo,callback)=
             callback(err);
         }        
         else{
-            conn.query("/********** Consulta de periodos de una obra***************/SELECT * FROM ((SELECT fichas.id_ficha, estados.codigo, MIN(avanceactividades.fecha) fecha_inicial, DATE_FORMAT(MAX(avanceactividades.fecha), ' %Y') anyo, DATE_FORMAT(MAX(avanceactividades.fecha), ' %b') mes FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.id_historialEstado = avanceactividades.historialestados_id_historialEstado LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado = ? AND estados.nombre = 'Ejecucion' GROUP BY DATE_FORMAT(avanceactividades.fecha, ' %Y %b') , avanceactividades.historialEstados_id_historialEstado) UNION (SELECT fichas.id_ficha, estados.codigo, MIN(avanceactividades.fecha) fecha_inicial, DATE_FORMAT(MAX(avanceactividades.fecha), ' %Y') anyo, DATE_FORMAT(MAX(avanceactividades.fecha), ' %b') mes FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.id_historialEstado = avanceactividades.historialestados_id_historialEstado LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado = ? AND estados.nombre = 'Corte' GROUP BY avanceactividades.historialEstados_id_historialEstado)) periodos_obra WHERE periodos_obra.id_ficha = ? AND YEAR(periodos_obra.fecha_inicial) = ? ORDER BY periodos_obra.fecha_inicial",[tipo,tipo,id_ficha,anyo],(err,res)=>{ 
+            conn.query("SELECT fichas.id_ficha, estados.codigo, MIN(avanceactividades.fecha) fecha_inicial, DATE_FORMAT(MAX(avanceactividades.fecha), ' %Y') anyo, DATE_FORMAT(MAX(avanceactividades.fecha), ' %b') mes FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.Fichas_id_ficha = fichas.id_ficha AND historialestados.fecha_inicial <= avanceactividades.fecha AND avanceactividades.fecha < historialestados.fecha_final LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado = ? AND fichas.id_ficha = ? AND YEAR(avanceactividades.fecha) = ? GROUP BY historialestados.id_historialEstado , DATE_FORMAT(avanceactividades.fecha, '%Y-%b') ORDER BY avanceactividades.fecha",[tipo,id_ficha,anyo],(err,res)=>{ 
                 if(err){
                     console.log(err);                    
                     callback(err.code);                 
@@ -1840,6 +1836,7 @@ userModel.getValGeneralMayoresMetradosPeriodos  = (id_ficha,anyo,tipo,callback)=
                         if(fila.codigo=="E"){
                             fila.codigo = fila.mes+" "+rome(cont)+fila.anyo
                             cont++
+                            
                         }else{
                             cont= 1
                         }
@@ -1852,7 +1849,12 @@ userModel.getValGeneralMayoresMetradosPeriodos  = (id_ficha,anyo,tipo,callback)=
                         }else{
                             fila.fecha_final = new Date().toLocaleString();
                         }
-                    }           
+                        
+                        
+                    }              
+            
+                  
+                       
                     callback(null,res);
                     conn.destroy()
                 }
