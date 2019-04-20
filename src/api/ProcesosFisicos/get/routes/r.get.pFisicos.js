@@ -8,7 +8,7 @@ module.exports = function(app){
 			User.getComponentes(req.body.id_ficha,(err,componentes)=>{
 				if(err){ res.status(204).json(err);}
 				else{
-                    User.getPartidas(componentes[0].id_componente,(err,partidas)=>{
+                    User.getPartidas(componentes[0].id_componente,null,(err,partidas)=>{
                         if(err){ res.status(204).json(err);}
                         else{
                             componentes[0].partidas = partidas
@@ -24,7 +24,7 @@ module.exports = function(app){
 		if (req.body.id_componente == null ||req.body.id_componente == "null"||req.body.id_componente == "") {
 			res.json("null");
 		} else {
-			User.getPartidas(req.body.id_componente,(err,data)=>{
+			User.getPartidas(req.body.id_componente,null,(err,data)=>{
 				if(err){ res.status(204).json(err);}
 				else{
 					res.json(data);	
