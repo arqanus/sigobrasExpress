@@ -224,22 +224,22 @@ module.exports = function(app){
               if(err){ res.status(204).json(err);}
               else{
                 
-                User.getPartidasbyIdActividad(avanceActividad.Actividades_id_actividad,(err,partida)=>{
-                    if(err){ res.status(204).json(err);}
-                    else{
-                      
-                      User.getActividadesbyIdActividad(partida[0].id_partida,(err,actividades)=>{
-                        if(err){ res.status(204).json(err);}
-                        else{
-                            res.json(
-                              {
-                                "partida":partida[0],
-                                "actividades":actividades
-                              }                                        
-                            );	
-                        }
-                      })
-                    }
+                User2.getPartidas(null,avanceActividad.Actividades_id_actividad,(err,partida)=>{
+                  if(err){ res.status(204).json(err);}
+                  else{
+                    
+                    User2.getActividades(partida[0].id_partida,(err,actividades)=>{
+                      if(err){ res.status(204).json(err);}
+                      else{
+                          res.json(
+                            {
+                              "partida":partida[0],
+                              "actividades":actividades
+                            }                                        
+                          );	
+                      }
+                    })
+                  }
                 })
               }
             })
