@@ -119,28 +119,7 @@ function formatoValorizaciones(data){
 function shortDate(fecha){
     return (fecha.getFullYear()+"-"+('0' + (fecha.getMonth()+1)).slice(-2) + '-'+('0' + fecha.getDate()).slice(-2))
 }
-// function getDaysInMonth( dia_final) {
-//     var dia= 1
-//     var days = []
-//     var yarray = []
-//      while (dia <= dia_final) {
-//         days.push(dia);
-        
-        
-        
-//         if(dia <= (new Date()).getDate()){
-//             yarray.push(0)
-//         }
-//         dia++
-        
-//      }
-//      return (
-//          {
-//             "xarray":days,
-//             "yarray":yarray
-//          }
-//      );
-// }
+
 function regresionLineal(data){
         var
         xarray = data.xarray,
@@ -282,7 +261,16 @@ userModel.getPartidasMayorMetradoAvance= (id_partida,callback)=>{
                     console.log(err);
                     callback(err.code);
                 }else {      
-                    res = res||{}
+                    res = res||[]
+                    for (let i = 0; i < res.length; i++) {
+                        const fila = res[i];
+                        fila.avance_metrado = formato(fila.avance_metrado)
+                        fila.avance_costo = formato(fila.avance_costo)
+                        fila.metrados_saldo = formato(fila.metrados_saldo)
+                        fila.metrados_costo_saldo = formato(fila.metrados_costo_saldo)
+                        fila.porcentaje = formato(fila.porcentaje)
+                        
+                    }
                     callback(null,res[0]);
                     conn.destroy()
                 }
