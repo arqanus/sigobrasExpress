@@ -75,121 +75,121 @@ userModel.postAvanceActividad = (data,callback)=>{
                 
     })
 }
-userModel.getPartidasbyIdActividad = (id_actividad,callback)=>{
-    console.log("getPartidasbyIdActividad");
+// userModel.getPartidasbyIdActividad = (id_actividad,callback)=>{
+//     console.log("getPartidasbyIdActividad");
     
-    pool.getConnection(function(err ,conn){
-        if(err){ callback(err);}
-        else{
-            conn.query("/*COALESCE(parcial_negativo / parcial_positivo, 0) + 1 porcentaje_negatividad_ajustado*/SELECT partidas.id_partida, partidas.prioridad, partidas.tipo, partidas.item, partidas.descripcion, TRIM(BOTH '/DIA' FROM partidas.unidad_medida) unidad_medida, partidas.metrado, partidas.costo_unitario, partidas.metrado * partidas.costo_unitario parcial, COALESCE(SUM(avanceactividades.valor),0) * (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) avance_metrado, COALESCE(SUM(avanceactividades.valor * partidas.costo_unitario),0) * (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) avance_costo, partidas.metrado - COALESCE(SUM(avanceactividades.valor), 0) * (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) metrados_saldo, (partidas.metrado * partidas.costo_unitario) - (COALESCE(SUM(avanceactividades.valor * partidas.costo_unitario), 0) * (COALESCE(parcial_negativo / parcial_positivo, 0) + 1)) metrados_costo_saldo, COALESCE(SUM(avanceactividades.valor),0) / partidas.metrado * 100 * (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) porcentaje, (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) porcentaje_negatividad, COALESCE(partidas.metrado / partidas.rendimiento, '') partida_duracion FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_positivo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE actividades.parcial > 0 AND historialactividades.estado IS NULL GROUP BY partidas.id_partida) p1 ON p1.id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_negativo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE actividades.parcial < 0 AND historialactividades.estado IS NULL GROUP BY partidas.id_partida) p2 ON p2.id_partida = partidas.id_partida LEFT JOIN (SELECT historialpartidas.estado, historialpartidas.partidas_id_partida FROM (SELECT MAX(id_historialPartida) id_historialPartida FROM historialpartidas GROUP BY historialpartidas.partidas_id_partida) maximoHistorial LEFT JOIN historialpartidas ON historialpartidas.id_historialPartida = maximoHistorial.id_historialPartida) historialPartida ON historialPartida.partidas_id_partida = partidas.id_partida WHERE historialactividades.estado IS NULL and partidas.id_partida = (SELECT actividades.Partidas_id_partida FROM actividades WHERE actividades.id_actividad = ? LIMIT 1) GROUP BY partidas.id_partida",id_actividad,(error,res)=>{ 
-                if(error){
-                    callback(error);
-                }else if(res.length == 0){
-                    console.log("vacio");                    
-                    callback(null,"vacio");
-                    conn.destroy()
-                }else{      
-                    for (let i = 0; i < res.length; i++) {
-                        const fila = res[i];
-                        if(fila.tipo=="titulo"){
-                            fila.unidad_medida = ""
-                            fila.metrado = ""
-                            fila.costo_unitario = ""
-                            fila.parcial = ""
-                            fila.avance_metrado = ""
-                            fila.avance_costo = ""
-                            fila.metrados_saldo = ""
-                            fila.metrados_costo_saldo = ""
-                            fila.porcentaje = ""
-                        }else{
-                            fila.metrado = formato(fila.metrado)
-                            fila.costo_unitario = formato(fila.costo_unitario)
-                            fila.parcial = formato(fila.parcial)
-                            fila.avance_metrado = formato(fila.avance_metrado)
-                            fila.avance_costo = formato(fila.avance_costo)
-                            fila.metrados_saldo = formato(fila.metrados_saldo)
-                            fila.metrados_costo_saldo = formato(fila.metrados_costo_saldo)
-                            fila.porcentaje = formato(fila.porcentaje)
-                        }
+//     pool.getConnection(function(err ,conn){
+//         if(err){ callback(err);}
+//         else{
+//             conn.query("/*COALESCE(parcial_negativo / parcial_positivo, 0) + 1 porcentaje_negatividad_ajustado*/SELECT partidas.id_partida, partidas.prioridad, partidas.tipo, partidas.item, partidas.descripcion, TRIM(BOTH '/DIA' FROM partidas.unidad_medida) unidad_medida, partidas.metrado, partidas.costo_unitario, partidas.metrado * partidas.costo_unitario parcial, COALESCE(SUM(avanceactividades.valor),0) * (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) avance_metrado, COALESCE(SUM(avanceactividades.valor * partidas.costo_unitario),0) * (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) avance_costo, partidas.metrado - COALESCE(SUM(avanceactividades.valor), 0) * (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) metrados_saldo, (partidas.metrado * partidas.costo_unitario) - (COALESCE(SUM(avanceactividades.valor * partidas.costo_unitario), 0) * (COALESCE(parcial_negativo / parcial_positivo, 0) + 1)) metrados_costo_saldo, COALESCE(SUM(avanceactividades.valor),0) / partidas.metrado * 100 * (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) porcentaje, (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) porcentaje_negatividad, COALESCE(partidas.metrado / partidas.rendimiento, '') partida_duracion FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_positivo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE actividades.parcial > 0 AND historialactividades.estado IS NULL GROUP BY partidas.id_partida) p1 ON p1.id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_negativo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE actividades.parcial < 0 AND historialactividades.estado IS NULL GROUP BY partidas.id_partida) p2 ON p2.id_partida = partidas.id_partida LEFT JOIN (SELECT historialpartidas.estado, historialpartidas.partidas_id_partida FROM (SELECT MAX(id_historialPartida) id_historialPartida FROM historialpartidas GROUP BY historialpartidas.partidas_id_partida) maximoHistorial LEFT JOIN historialpartidas ON historialpartidas.id_historialPartida = maximoHistorial.id_historialPartida) historialPartida ON historialPartida.partidas_id_partida = partidas.id_partida WHERE historialactividades.estado IS NULL and partidas.id_partida = (SELECT actividades.Partidas_id_partida FROM actividades WHERE actividades.id_actividad = ? LIMIT 1) GROUP BY partidas.id_partida",id_actividad,(error,res)=>{ 
+//                 if(error){
+//                     callback(error);
+//                 }else if(res.length == 0){
+//                     console.log("vacio");                    
+//                     callback(null,"vacio");
+//                     conn.destroy()
+//                 }else{      
+//                     for (let i = 0; i < res.length; i++) {
+//                         const fila = res[i];
+//                         if(fila.tipo=="titulo"){
+//                             fila.unidad_medida = ""
+//                             fila.metrado = ""
+//                             fila.costo_unitario = ""
+//                             fila.parcial = ""
+//                             fila.avance_metrado = ""
+//                             fila.avance_costo = ""
+//                             fila.metrados_saldo = ""
+//                             fila.metrados_costo_saldo = ""
+//                             fila.porcentaje = ""
+//                         }else{
+//                             fila.metrado = formato(fila.metrado)
+//                             fila.costo_unitario = formato(fila.costo_unitario)
+//                             fila.parcial = formato(fila.parcial)
+//                             fila.avance_metrado = formato(fila.avance_metrado)
+//                             fila.avance_costo = formato(fila.avance_costo)
+//                             fila.metrados_saldo = formato(fila.metrados_saldo)
+//                             fila.metrados_costo_saldo = formato(fila.metrados_costo_saldo)
+//                             fila.porcentaje = formato(fila.porcentaje)
+//                         }
                         
                         
-                    }
+//                     }
 
                     
-                    callback(null,res);
-                    conn.destroy()
-                }
+//                     callback(null,res);
+//                     conn.destroy()
+//                 }
                 
                 
-            })
-        }
+//             })
+//         }
         
                 
-    })
-}
-userModel.getActividadesbyIdActividad = (id_partida,callback)=>{
-    console.log("getActividadesbyIdActividad");
-    pool.getConnection(function(err ,conn){
-        if(err){ callback(err);}
-        else{
-            conn.query("/*COALESCE(parcial_negativo / parcial_positivo, 0) + 1 porcentaje_negatividad_ajustado*/ SELECT partida.id_partida, actividades.id_actividad, actividades.tipo actividad_tipo, historialactividades.estado actividad_estado, actividades.nombre nombre_actividad, actividades.veces veces_actividad, actividades.largo largo_actividad, actividades.ancho ancho_actividad, actividades.alto alto_actividad, actividades.parcial metrado_actividad, partida.costo_unitario, actividades.parcial * partida.costo_unitario parcial_actividad, COALESCE(SUM(avanceactividades.valor), 0) actividad_avance_metrado, COALESCE(SUM(avanceactividades.valor *partida.costo_unitario), 0) actividad_avance_costo, actividades.parcial - COALESCE(SUM(avanceactividades.valor), 0) actividad_metrados_saldo, actividades.parcial * partida.costo_unitario- COALESCE(SUM(avanceactividades.valor*partida.costo_unitario), 0)  actividad_metrados_costo_saldo, COALESCE(SUM(avanceactividades.valor), 0) / actividades.parcial * 100 actividad_porcentaje, TRIM(TRAILING '/DIA' FROM partida.unidad_medida) unidad_medida FROM (SELECT partidas.Componentes_id_componente, partidas.id_partida, partidas.tipo, partidas.item, partidas.descripcion, partidas.unidad_medida, partidas.metrado, partidas.costo_unitario, partidas.metrado * partidas.costo_unitario parcial, SUM(avanceactividades.valor) avance_metrado, SUM(avanceactividades.valor * partidas.costo_unitario) avance_costo, SUM(avanceactividades.valor * partidas.costo_unitario) / partidas.metrado * 100 porcentaje, SUM(actividades.parcial) parcial_positivo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE actividades.parcial > 0 OR partidas.tipo = 'titulo' GROUP BY partidas.id_partida) partida LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_negativo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE actividades.parcial < 0 GROUP BY partidas.id_partida) p2 ON p2.id_partida = partida.id_partida INNER JOIN actividades ON actividades.Partidas_id_partida = partida.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE partida.id_partida = ? GROUP BY actividades.id_actividad",id_partida,(error,res)=>{ if(error){
-                    callback(error);
-                }else if(res.length == 0){
-                    console.log("vacio");                    
-                    callback(null,"vacio");
-                    conn.destroy()
-                }else{      
-                    for (let i = 0; i < res.length; i++) {
+//     })
+// }
+// userModel.getActividadesbyIdActividad = (id_partida,callback)=>{
+//     console.log("getActividadesbyIdActividad");
+//     pool.getConnection(function(err ,conn){
+//         if(err){ callback(err);}
+//         else{
+//             conn.query("/*COALESCE(parcial_negativo / parcial_positivo, 0) + 1 porcentaje_negatividad_ajustado*/ SELECT partida.id_partida, actividades.id_actividad, actividades.tipo actividad_tipo, historialactividades.estado actividad_estado, actividades.nombre nombre_actividad, actividades.veces veces_actividad, actividades.largo largo_actividad, actividades.ancho ancho_actividad, actividades.alto alto_actividad, actividades.parcial metrado_actividad, partida.costo_unitario, actividades.parcial * partida.costo_unitario parcial_actividad, COALESCE(SUM(avanceactividades.valor), 0) actividad_avance_metrado, COALESCE(SUM(avanceactividades.valor *partida.costo_unitario), 0) actividad_avance_costo, actividades.parcial - COALESCE(SUM(avanceactividades.valor), 0) actividad_metrados_saldo, actividades.parcial * partida.costo_unitario- COALESCE(SUM(avanceactividades.valor*partida.costo_unitario), 0)  actividad_metrados_costo_saldo, COALESCE(SUM(avanceactividades.valor), 0) / actividades.parcial * 100 actividad_porcentaje, TRIM(TRAILING '/DIA' FROM partida.unidad_medida) unidad_medida FROM (SELECT partidas.Componentes_id_componente, partidas.id_partida, partidas.tipo, partidas.item, partidas.descripcion, partidas.unidad_medida, partidas.metrado, partidas.costo_unitario, partidas.metrado * partidas.costo_unitario parcial, SUM(avanceactividades.valor) avance_metrado, SUM(avanceactividades.valor * partidas.costo_unitario) avance_costo, SUM(avanceactividades.valor * partidas.costo_unitario) / partidas.metrado * 100 porcentaje, SUM(actividades.parcial) parcial_positivo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE actividades.parcial > 0 OR partidas.tipo = 'titulo' GROUP BY partidas.id_partida) partida LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_negativo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE actividades.parcial < 0 GROUP BY partidas.id_partida) p2 ON p2.id_partida = partida.id_partida INNER JOIN actividades ON actividades.Partidas_id_partida = partida.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE partida.id_partida = ? GROUP BY actividades.id_actividad",id_partida,(error,res)=>{ if(error){
+//                     callback(error);
+//                 }else if(res.length == 0){
+//                     console.log("vacio");                    
+//                     callback(null,"vacio");
+//                     conn.destroy()
+//                 }else{      
+//                     for (let i = 0; i < res.length; i++) {
 
-                        const fila = res[i];
-                        if(fila.actividad_tipo =="titulo"){
-                            fila.veces_actividad = ""
-                            fila.largo_actividad = ""
-                            fila.ancho_actividad = ""
-                            fila.alto_actividad = ""
-                            fila.metrado_actividad = ""
-                            fila.costo_unitario = ""
-                            fila.parcial_actividad = ""
-                            fila.actividad_avance_metrado = ""
-                            fila.actividad_avance_costo = ""
-                            fila.actividad_metrados_saldo = ""
-                            fila.actividad_metrados_costo_saldo = ""
-                            fila.actividad_porcentaje = ""
-                            fila.unidad_medida = ""
-                        }else if(fila.parcial_actividad <0){
-                            fila.parcial_actividad = 0
-                            fila.actividad_avance_metrado = 0
-                            fila.actividad_avance_costo = 0
-                            fila.actividad_metrados_saldo = 0
-                            fila.actividad_metrados_costo_saldo = 0
-                            fila.actividad_porcentaje = 0
-                            fila.unidad_medida = 0
-                        }else{
-                            fila.veces_actividad = formato(fila.veces_actividad)
-                            fila.largo_actividad = formato(fila.largo_actividad)
-                            fila.ancho_actividad = formato(fila.ancho_actividad)
-                            fila.alto_actividad = formato(fila.alto_actividad)
-                            fila.metrado_actividad = formato(fila.metrado_actividad )
-                            fila.costo_unitario = formato(fila.costo_unitario )                            
-                            fila.parcial_actividad = formato(fila.parcial_actividad )
-                            fila.actividad_avance_metrado = formato(fila.actividad_avance_metrado )
-                            fila.actividad_avance_costo = formato(fila.actividad_avance_costo )
-                            fila.actividad_metrados_saldo = formato(fila.actividad_metrados_saldo )
-                            fila.actividad_metrados_costo_saldo = formato(fila.actividad_metrados_costo_saldo )
-                            fila.actividad_porcentaje = formato(fila.actividad_porcentaje )
-                        }
+//                         const fila = res[i];
+//                         if(fila.actividad_tipo =="titulo"){
+//                             fila.veces_actividad = ""
+//                             fila.largo_actividad = ""
+//                             fila.ancho_actividad = ""
+//                             fila.alto_actividad = ""
+//                             fila.metrado_actividad = ""
+//                             fila.costo_unitario = ""
+//                             fila.parcial_actividad = ""
+//                             fila.actividad_avance_metrado = ""
+//                             fila.actividad_avance_costo = ""
+//                             fila.actividad_metrados_saldo = ""
+//                             fila.actividad_metrados_costo_saldo = ""
+//                             fila.actividad_porcentaje = ""
+//                             fila.unidad_medida = ""
+//                         }else if(fila.parcial_actividad <0){
+//                             fila.parcial_actividad = 0
+//                             fila.actividad_avance_metrado = 0
+//                             fila.actividad_avance_costo = 0
+//                             fila.actividad_metrados_saldo = 0
+//                             fila.actividad_metrados_costo_saldo = 0
+//                             fila.actividad_porcentaje = 0
+//                             fila.unidad_medida = 0
+//                         }else{
+//                             fila.veces_actividad = formato(fila.veces_actividad)
+//                             fila.largo_actividad = formato(fila.largo_actividad)
+//                             fila.ancho_actividad = formato(fila.ancho_actividad)
+//                             fila.alto_actividad = formato(fila.alto_actividad)
+//                             fila.metrado_actividad = formato(fila.metrado_actividad )
+//                             fila.costo_unitario = formato(fila.costo_unitario )                            
+//                             fila.parcial_actividad = formato(fila.parcial_actividad )
+//                             fila.actividad_avance_metrado = formato(fila.actividad_avance_metrado )
+//                             fila.actividad_avance_costo = formato(fila.actividad_avance_costo )
+//                             fila.actividad_metrados_saldo = formato(fila.actividad_metrados_saldo )
+//                             fila.actividad_metrados_costo_saldo = formato(fila.actividad_metrados_costo_saldo )
+//                             fila.actividad_porcentaje = formato(fila.actividad_porcentaje )
+//                         }
                                                 
-                    }                    
-                    callback(null,res);
-                    conn.destroy()
-                }                
+//                     }                    
+//                     callback(null,res);
+//                     conn.destroy()
+//                 }                
                 
-            })
-        }
+//             })
+//         }
         
                 
-    })
-}
+//     })
+// }
 userModel.postActividad = (data,callback)=>{
     
     pool.getConnection(function(err ,conn){
