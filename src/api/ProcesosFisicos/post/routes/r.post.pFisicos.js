@@ -1,4 +1,5 @@
 const User = require('../models/m.post.pFisicos');
+const User2 = require('../../get/models/m.get.pFisicos');
 var formidable = require('formidable');    
 // var util = require('util');
 var fs = require('fs');
@@ -189,7 +190,7 @@ module.exports = function(app){
                 if(err){ res.status(204).json(err);}
                 else{
                   
-                  User.getPartidasbyIdActividad(avanceActividad.Actividades_id_actividad,(err,partida)=>{
+                  User2.getPartidas(null,avanceActividad.Actividades_id_actividad,(err,partida)=>{
                       if(err){ res.status(204).json(err);}
                       else{
                         
