@@ -36,33 +36,24 @@ module.exports = function(app){
 		} else {
 			User.postActividad(req.body,(err,id_actividad)=>{
 				if(err){ res.status(204).json(err);}
-				else{
-					var historialActividad = {						
-						"estado":"Mayor Metrado",
-						"actividades_id_actividad":id_actividad
-					}
-					User.posthistorialActividades(historialActividad,(err,data)=>{
-						if(err){ res.status(204).json(err);}
-						else{
+				else{				
+					User2.getPartidas(null,id_actividad,(err,partida)=>{
+            if(err){ res.status(204).json(err);}
+            else{
               
-              User.getPartidasbyIdActividad(id_actividad,(err,partida)=>{
-                  if(err){ res.status(204).json(err);}
-                  else{
-                    User.getActividadesbyIdActividad(partida[0].id_partida,(err,actividades)=>{
-                      if(err){ res.status(204).json(err);}
-                      else{
-                          res.json(
-                            {
-                              "partida":partida[0],
-                              "actividades":actividades
-                            }                                        
-                          );	
-                      }
-                  })
+              User2.getActividades(partida[0].id_partida,(err,actividades)=>{
+                if(err){ res.status(204).json(err);}
+                else{
+                  res.json(
+                    {
+                      "partida":partida[0],
+                      "actividades":actividades
+                    }                                        
+                  );	
                 }
               })
-						}
-					})
+            }
+          })
 				}
 			})
 		}			
@@ -307,22 +298,22 @@ module.exports = function(app){
             if(err){ res.status(204).json(err);}
             else{
               
-              User.getPartidasbyIdActividad(avanceActividad.Actividades_id_actividad,(err,partida)=>{
-                  if(err){ res.status(204).json(err);}
-                  else{
-                    
-                    User.getActividadesbyIdActividad(partida[0].id_partida,(err,actividades)=>{
-                      if(err){ res.status(204).json(err);}
-                      else{
-                          res.json(
-                            {
-                              "partida":partida[0],
-                              "actividades":actividades
-                            }                                        
-                          );	
-                      }
-                    })
-                  }
+              User2.getPartidas(null,avanceActividad.Actividades_id_actividad,(err,partida)=>{
+                if(err){ res.status(204).json(err);}
+                else{
+                  
+                  User2.getActividades(partida[0].id_partida,(err,actividades)=>{
+                    if(err){ res.status(204).json(err);}
+                    else{
+                        res.json(
+                          {
+                            "partida":partida[0],
+                            "actividades":actividades
+                          }                                        
+                        );	
+                    }
+                  })
+                }
               })
             }
           })
@@ -341,22 +332,22 @@ module.exports = function(app){
           if(err){ res.status(204).json(err);}
           else{
             
-            User.getPartidasbyIdActividad(avanceActividad.Actividades_id_actividad,(err,partida)=>{
-                if(err){ res.status(204).json(err);}
-                else{
-                  
-                  User.getActividadesbyIdActividad(partida[0].id_partida,(err,actividades)=>{
-                    if(err){ res.status(204).json(err);}
-                    else{
-                        res.json(
-                          {
-                            "partida":partida[0],
-                            "actividades":actividades
-                          }                                        
-                        );	
-                    }
-                  })
-                }
+            User2.getPartidas(null,avanceActividad.Actividades_id_actividad,(err,partida)=>{
+              if(err){ res.status(204).json(err);}
+              else{
+                
+                User2.getActividades(partida[0].id_partida,(err,actividades)=>{
+                  if(err){ res.status(204).json(err);}
+                  else{
+                      res.json(
+                        {
+                          "partida":partida[0],
+                          "actividades":actividades
+                        }                                        
+                      );	
+                  }
+                })
+              }
             })
           }
         })
@@ -423,22 +414,22 @@ module.exports = function(app){
             if(err){ res.status(204).json(err);}
             else{
               
-              User.getPartidasbyIdActividad(avanceActividad.Actividades_id_actividad,(err,partida)=>{
-                  if(err){ res.status(204).json(err);}
-                  else{
-                    
-                    User.getActividadesbyIdActividad(partida[0].id_partida,(err,actividades)=>{
-                      if(err){ res.status(204).json(err);}
-                      else{
-                          res.json(
-                            {
-                              "partida":partida[0],
-                              "actividades":actividades
-                            }                                        
-                          );	
-                      }
-                    })
-                  }
+              User2.getPartidas(null,avanceActividad.Actividades_id_actividad,(err,partida)=>{
+                if(err){ res.status(204).json(err);}
+                else{
+                  
+                  User2.getActividades(partida[0].id_partida,(err,actividades)=>{
+                    if(err){ res.status(204).json(err);}
+                    else{
+                        res.json(
+                          {
+                            "partida":partida[0],
+                            "actividades":actividades
+                          }                                        
+                        );	
+                    }
+                  })
+                }
               })
             }
           })
@@ -458,22 +449,22 @@ module.exports = function(app){
           if(err){ res.status(204).json(err);}
           else{
             
-            User.getPartidasbyIdActividad(avanceActividad.Actividades_id_actividad,(err,partida)=>{
-                if(err){ res.status(204).json(err);}
-                else{
-                  
-                  User.getActividadesbyIdActividad(partida[0].id_partida,(err,actividades)=>{
-                    if(err){ res.status(204).json(err);}
-                    else{
-                        res.json(
-                          {
-                            "partida":partida[0],
-                            "actividades":actividades
-                          }                                        
-                        );	
-                    }
-                  })
-                }
+            User2.getPartidas(null,avanceActividad.Actividades_id_actividad,(err,partida)=>{
+              if(err){ res.status(204).json(err);}
+              else{
+                
+                User2.getActividades(partida[0].id_partida,(err,actividades)=>{
+                  if(err){ res.status(204).json(err);}
+                  else{
+                      res.json(
+                        {
+                          "partida":partida[0],
+                          "actividades":actividades
+                        }                                        
+                      );	
+                  }
+                })
+              }
             })
           }
         })
