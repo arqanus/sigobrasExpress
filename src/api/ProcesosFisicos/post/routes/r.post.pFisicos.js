@@ -194,7 +194,7 @@ module.exports = function(app){
                       if(err){ res.status(204).json(err);}
                       else{
                         
-                        User.getActividadesbyIdActividad(partida[0].id_partida,(err,actividades)=>{
+                        User2.getActividades(partida[0].id_partida,(err,actividades)=>{
                           if(err){ res.status(204).json(err);}
                           else{
                               res.json(
