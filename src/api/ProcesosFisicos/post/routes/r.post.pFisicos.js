@@ -100,7 +100,7 @@ module.exports = function(app){
         
       form.parse(req, function(err, fields, files) {
           
-        if(fields.valor<1){
+        if(fields.valor<=0){
           res.json("valor no permitido")
         }else
         {
