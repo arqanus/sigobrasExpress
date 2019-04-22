@@ -35,6 +35,10 @@ module.exports = function(app){
 		User.postcronogramamensual(req.body,(err,data)=>{							
 			if(err){ res.status(204).json(err);}
 			else{
+				var temp = req.body[0][0]
+				req.body  = {
+					id_ficha:temp
+				}
 				User2.getUltimoCorte(req.body.id_ficha,(err,corte)=>{
 					if(err){
 						res.json(err);	
