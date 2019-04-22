@@ -92,4 +92,26 @@ userModel.posthistorialActividades = (data,callback)=>{
                 
     })
 }
+userModel.postavancePartidaImagen = (data,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){ callback(err);}
+        else{
+            conn.query('INSERT INTO partidasImagenes set ?',data,(error,res)=>{
+                if(error){
+                    callback(error);
+                    conn.destroy()
+                }else{
+                    console.log("affectedRows",res); 
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }
+        
+                
+    })
+}
 module.exports = userModel;

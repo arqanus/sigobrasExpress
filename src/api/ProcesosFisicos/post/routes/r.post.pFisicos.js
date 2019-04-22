@@ -518,6 +518,121 @@ module.exports = function(app){
                     
           
   })
+  app.post('/avanceActividadImagen', (req, res)=>{    
+       
+    
+ 
+    //ruta de la carpeta public de imagenes
+    var dir = __dirname+'/../../../../public/'
+    //crear ruta si no existe
+    if (!fs.existsSync(dir)){
+      fs.mkdirSync(dir);
+    }
+      
+    var form = new formidable.IncomingForm();
+    //se configura la ruta de guardar
+    form.uploadDir = dir;
+      
+    form.parse(req, function(err, fields, files) {
+      console.log("accesos_id_acceso :",fields.accesos_id_acceso);
+      console.log("codigo_obra :",fields.codigo_obra);
+      console.log("Actividades_id_actividad :",fields.Actividades_id_actividad);
+      console.log("foto :",fields.foto);
+      console.log("observacion :",fields.observacion);
+      console.log("descripcion :",fields.descripcion); 
 
+      if (err){
+        res.json(err)
+      }
+      //folder de la obra
+      var obraFolder = dir+"/"+fields.codigo_obra
+      
+      if (!fs.existsSync(obraFolder)){
+        fs.mkdirSync(obraFolder);
+      }  // TODO: make sure my_file and project_id exist  
+      var ruta = "/"+fields.accesos_id_acceso+"_"+fields.Actividades_id_actividad+"_"+datetime()+".jpg"
+      //files foto
+      if(files.foto){
+        fs.rename(files.foto.path,obraFolder+ruta , function(err) {
+          if (err){
+            res.json(err)
+          }
+          var avanceActividad = {
+        
+            "Actividades_id_actividad":fields.Actividades_id_actividad,
+            "imagen":"/static/"+fields.codigo_obra+ruta,
+            "imagenAlt":fields.codigo_obra,
+            "descripcion":fields.descripcion,
+            "observacion":fields.observacion,
+            "accesos_id_acceso":fields.accesos_id_acceso
+          }
+          User.postAvanceActividad(avanceActividad,(err,data)=>{
+            if(err){ res.status(204).json(err);}
+            else{
+              res.json("exito")              
+            }
+          })
+        }); 
+      }else{
+        res.json("vacio")
+      }
+            
+    });
+  })
+  app.post('/avancePartidaImagen', (req, res)=>{    
+    //ruta de la carpeta public de imagenes
+    var dir = __dirname+'/../../../../public/'
+    //crear ruta si no existe
+    if (!fs.existsSync(dir)){
+      fs.mkdirSync(dir);
+    }
+      
+    var form = new formidable.IncomingForm();
+    //se configura la ruta de guardar
+    form.uploadDir = dir;
+      
+  form.parse(req, function(err, fields, files) {
+    console.log("accesos_id_acceso :",fields.accesos_id_acceso);
+    console.log("codigo_obra :",fields.codigo_obra);
+    console.log("Partidas_id_partida :",fields.Partidas_id_partida);
+    console.log("descripcionObservacion :",fields.descripcionObservacion);
+    console.log("foto :",fields.foto);
+    if (err){
+      res.json(err)
+    }
+    //folder de la obra
+    var obraFolder = dir+"/"+fields.codigo_obra
+    if (!fs.existsSync(obraFolder)){
+      fs.mkdirSync(obraFolder);
+    }  // TODO: make sure my_file and project_id exist  
+    
+    
+    var ruta = "/"+fields.accesos_id_acceso+"_"+"P"+fields.Partidas_id_partida+"_"+datetime()+".jpg"
+    //files foto
+    if(files.foto){
+      fs.rename(files.foto.path,obraFolder+ruta , function(err) {
+        if (err){
+          res.json(err)
+        }
+        var avancePartida = {
+      
+          "Partidas_id_partida":fields.Partidas_id_partida,
+          "imagen":"/static/"+fields.codigo_obra+ruta,
+          "imagenAlt":fields.codigo_obra,
+          "descripcionObservacion":fields.descripcionObservacion,
+          "accesos_id_acceso":fields.accesos_id_acceso
+        }
+          User.postavancePartidaImagen(avancePartida,(err,data)=>{
+            if(err){ res.status(204).json(err);}
+            else{
+              res.json("exito")              
+            }
+          })
+        }); 
+      }else{
+        res.json("vacio")
+      }        
+    });
 
+  })
 }
