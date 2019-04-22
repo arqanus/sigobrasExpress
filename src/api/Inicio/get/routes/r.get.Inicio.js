@@ -137,7 +137,10 @@ module.exports = function(app){
 						if(err){
 							res.json(err);
 						}else{
+							corte.programado_monto = avance.valor_total||0
+							corte.programado_porcentaje = avance.porcentaje||0
 							corte.fisico_monto = avance.valor_total||0
+							corte.fisico_porcentaje = avance.porcentaje||0
 							var avance_Acumulado = 0
 							if(corte.codigo == "C"){
 								avance_Acumulado = corte.fisico_monto
