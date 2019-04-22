@@ -2170,22 +2170,19 @@ userModel.getImagenesPartidas = (id_componente,callback)=>{
                 
     })
 }
-userModel.getImagenesListaPorPartida = (id_componente,callback)=>{
+userModel.getImagenesListaPorPartida = (id_partida,callback)=>{
     
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
         else{
-            conn.query("SELECT avanceactividades.fecha, avanceactividades.valor, avanceactividades.imagen, avanceactividades.imagenAlt, avanceactividades.descripcion FROM actividades LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.imagen IS NOT NULL and actividades.Partidas_id_partida = ?",id_componente,(error,res)=>{ 
+            conn.query("SELECT avanceactividades.fecha, avanceactividades.valor, avanceactividades.imagen, avanceactividades.imagenAlt, avanceactividades.descripcion FROM actividades LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.imagen IS NOT NULL and actividades.Partidas_id_partida = ?",id_partida,(error,res)=>{ 
                 if(error){
                     callback(error);
                 }else if(res.length == 0){
                     console.log("vacio");                    
                     callback(null,"vacio");
                     conn.destroy()
-                }else{      
-                   
-
-                    
+                }else{     
                     callback(null,res);
                     conn.destroy()
                 }
@@ -2197,6 +2194,31 @@ userModel.getImagenesListaPorPartida = (id_componente,callback)=>{
                 
     })
 }
+userModel.getPartidasImagenes = (id_partida,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){ callback(err);}
+        else{
+            conn.query("SELECT partidasimagenes.fecha, partidasimagenes.imagen, partidasimagenes.imagenAlt, partidasimagenes.descripcionObservacion FROM partidasimagenes WHERE partidasimagenes.imagen IS NOT NULL AND partidasimagenes.Partidas_id_partida = ?",id_partida,(error,res)=>{ 
+                if(error){
+                    callback(error);
+                }else if(res.length == 0){
+                    console.log("vacio");                    
+                    callback(null,"vacio");
+                    conn.destroy()
+                }else{     
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }
+        
+                
+    })
+}
+//materiales
 userModel.getmaterialescomponentes = (id_ficha,callback)=>{
     
     pool.getConnection(function(err ,conn){

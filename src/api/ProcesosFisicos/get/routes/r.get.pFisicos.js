@@ -571,6 +571,19 @@ module.exports = function(app){
 			})
 		}
     })
+    app.post('/getPartidasImagenes',(req,res)=>{
+		if (req.body.id_partida == null) {
+			res.json("null");
+		} else {
+			User.getPartidasImagenes(req.body.id_partida,(err,data)=>{
+				if(err){ res.status(204).json(err);}
+				else{
+					res.json(data);	
+				}
+			})
+		}
+    })
+
     app.post('/getImagenesPrimeraImagenPartida',(req,res)=>{
 		if (req.body.id_partida == null) {
 			res.json("null");
