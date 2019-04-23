@@ -2219,6 +2219,29 @@ userModel.getPartidasImagenes = (id_partida,callback)=>{
     })
 }
 //materiales
+userModel.getmaterialesResumen = (id_ficha,tipo,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){ callback(err);}
+        else{
+            conn.query("SELECT recursos.descripcion, recursos.unidad, SUM(cantidad) cantidad_total, SUM(precio) precio_total, SUM(recursos.parcial) parcial_total FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente INNER JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN recursos ON recursos.partidas_id_partida = partidas.id_partida WHERE componentes.fichas_id_ficha = ? AND recursos.tipo = ? GROUP BY recursos.descripcion ",[id_ficha,tipo],(error,res)=>{ 
+                if(error){ callback(error);
+                }else if(res.length == 0){
+                    console.log("vacio");                    
+                    callback(null,"vacio");
+                    conn.destroy()
+                }else{      
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }
+        
+                
+    })
+}
 userModel.getmaterialescomponentes = (id_ficha,callback)=>{
     
     pool.getConnection(function(err ,conn){
@@ -2270,12 +2293,12 @@ userModel.getmaterialespartidacomponente = (id_componente,callback)=>{
                 
     })
 }
-userModel.getmaterialespartida = (id_partida,callback)=>{
+userModel.getmaterialespartidaTipos = (id_partida,callback)=>{
     
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
         else{
-            conn.query("/*********Consulta de recursos por partida***********/ SELECT recursos.tipo, recursos.codigo, recursos.descripcion, recursos.unidad, recursos.cuadrilla, recursos.cantidad, recursos.precio, recursos.parcial FROM recursos WHERE recursos.Partidas_id_partida = ?",id_partida,(error,res)=>{ if(error){
+            conn.query("SELECT recursos.tipo FROM recursos WHERE recursos.Partidas_id_partida = ? GROUP BY recursos.tipo",id_partida,(error,res)=>{ if(error){
                     callback(error);
                 }else if(res.length == 0){
                     console.log("vacio");                    
@@ -2293,7 +2316,29 @@ userModel.getmaterialespartida = (id_partida,callback)=>{
                 
     })
 }
-
+userModel.getmaterialespartidaTiposLista = (id_partida,tipo,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){ callback(err);}
+        else{
+            conn.query("SELECT descripcion, unidad, cantidad, precio, parcial FROM recursos WHERE recursos.Partidas_id_partida = ? AND recursos.tipo = ?",[id_partida,tipo],(error,res)=>{ if(error){
+                    callback(error);
+                }else if(res.length == 0){
+                    console.log("vacio");                    
+                    callback(null,"vacio");
+                    conn.destroy()
+                }else{      
+                    callback(null,res);
+                    conn.destroy()
+                }
+                
+                
+            })
+        }
+        
+                
+    })
+}
 userModel.getGanttAnyos  = (id_ficha,callback)=>{    
     pool.getConnection(function(err ,conn){
         if(err){ 

@@ -640,11 +640,59 @@ module.exports = function(app){
 		}
     })
 
-    app.post('/getmaterialespartida',(req,res)=>{
+    app.post('/getmaterialespartidaTipos',(req,res)=>{
 		if (req.body.id_partida== null) {
 			res.json("null");
 		} else {
-			User.getmaterialespartida (req.body.id_partida,(err,data)=>{
+			User.getmaterialespartidaTipos (req.body.id_partida,(err,data)=>{
+				if(err){ res.status(204).json(err);}
+				else{
+					res.json(data);	
+				}
+			})
+		}
+    })
+    app.post('/getmaterialespartidaTiposLista',(req,res)=>{
+		if (req.body.id_partida== null) {
+			res.json("null");
+		} else {
+			User.getmaterialespartidaTiposLista (req.body.id_partida,req.body.tipo,(err,data)=>{
+				if(err){ res.status(204).json(err);}
+				else{
+					res.json(data);	
+				}
+			})
+		}
+    })
+    app.post('/getmaterialesResumenManoDeObra',(req,res)=>{
+		if (req.body.id_ficha== null) {
+			res.json("null");
+		} else {
+			User.getmaterialesResumen(req.body.id_ficha,'Mano de Obra',(err,data)=>{
+				if(err){ res.status(204).json(err);}
+				else{
+					res.json(data);	
+				}
+			})
+		}
+    })
+    app.post('/getmaterialesResumenMateriales',(req,res)=>{
+		if (req.body.id_ficha== null) {
+			res.json("null");
+		} else {
+			User.getmaterialesResumen(req.body.id_ficha,'Materiales',(err,data)=>{
+				if(err){ res.status(204).json(err);}
+				else{
+					res.json(data);	
+				}
+			})
+		}
+    })
+    app.post('/getmaterialesResumenEquipos',(req,res)=>{
+		if (req.body.id_ficha== null) {
+			res.json("null");
+		} else {
+			User.getmaterialesResumen(req.body.id_ficha,'Equipos',(err,data)=>{
 				if(err){ res.status(204).json(err);}
 				else{
 					res.json(data);	
