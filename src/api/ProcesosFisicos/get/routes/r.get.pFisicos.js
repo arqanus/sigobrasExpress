@@ -559,11 +559,11 @@ module.exports = function(app){
 			})
 		}
     })
-    app.post('/getImagenesListaPorPartida',(req,res)=>{
+    app.post('/getImagenesHistorialActividades',(req,res)=>{
 		if (req.body.id_partida == null) {
 			res.json("null");
 		} else {
-			User.getImagenesListaPorPartida(req.body.id_partida,(err,data)=>{
+			User.getImagenesHistorialActividades(req.body.id_partida,(err,data)=>{
 				if(err){ res.status(204).json(err);}
 				else{
 					res.json(data);	
@@ -571,11 +571,11 @@ module.exports = function(app){
 			})
 		}
     })
-    app.post('/getPartidasImagenes',(req,res)=>{
+    app.post('/getImagenesHistorialPartidas',(req,res)=>{
 		if (req.body.id_partida == null) {
 			res.json("null");
 		} else {
-			User.getPartidasImagenes(req.body.id_partida,(err,data)=>{
+			User.getImagenesHistorialPartidas(req.body.id_partida,(err,data)=>{
 				if(err){ res.status(204).json(err);}
 				else{
 					res.json(data);	
