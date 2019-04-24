@@ -1,4 +1,5 @@
 const User = require('../models/m.get.reportes');
+const User2 = require('../../../ProcesosFisicos/get/models/m.get.pFisicos');
 var path = require('path');
 module.exports = function(app){
 	
@@ -62,17 +63,26 @@ module.exports = function(app){
 		
 	})
 	//6.2 VAORIZACION PRINCIPALDELAOBRA-PRESUPUESTO-BASE
-	app.post('/valorizacionPrincipal',(req,res)=>{
+	app.post('/valorizacionPrincipal',async (req,res)=>{
 		if(req.body.id_ficha == null){
 			res.json("null");		
 		}else{
-			User.valorizacionPrincipal(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha_final,(err,data)=>{							
-				if(err){ res.status(204).json(err);}
-				else{
-					res.json(data);	
-				}
-
-			})
+			var componentes = await User2.getValGeneralComponentes(req.body.id_ficha)
+			for (let i = 0; i < componentes.length; i++) {
+				const componente = componentes[i];
+				var partidas = await User2.getValGeneralPartidas(componente.id_componente,req.body.fecha_inicial,req.body.fecha_final)			
+				componente.valor_anterior = partidas.valor_anterior
+				componente.valor_actual = partidas.valor_actual
+				componente.valor_total = partidas.valor_total
+				componente.valor_saldo = partidas.valor_saldo
+				componente.presupuesto = partidas.precio_parcial
+				componente.porcentaje_anterior = partidas.porcentaje_anterior
+				componente.porcentaje_actual = partidas.porcentaje_actual
+				componente.porcentaje_total = partidas.porcentaje_total
+				componente.porcentaje_saldo = partidas.porcentaje_saldo
+				componente.partidas = partidas.partidas
+			}
+			res.json(componentes)
 		}
 		
 	})
