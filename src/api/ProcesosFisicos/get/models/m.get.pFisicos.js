@@ -1429,23 +1429,23 @@ userModel.getValGeneralTodosComponentes = (id_ficha,fecha_inicial,fecha_final,ca
 
                         }
                         
-                        fila.valor_anterior = Number(fila.valor_anterior).toFixed(2)
-                        fila.valor_actual = Number(fila.valor_actual).toFixed(2)
-                        fila.valor_total = Number(fila.valor_total).toFixed(2)
-                        fila.valor_saldo = Number(fila.valor_saldo).toFixed(2)
+                        // fila.valor_anterior = Number(fila.valor_anterior).toFixed(2)
+                        // fila.valor_actual = Number(fila.valor_actual).toFixed(2)
+                        // fila.valor_total = Number(fila.valor_total).toFixed(2)
+                        // fila.valor_saldo = Number(fila.valor_saldo).toFixed(2)
                     }
           
                     callback(null,
                         {
-                            "valor_anterior":formatoValorizaciones(valor_anterior),
-                            "valor_actual":formatoValorizaciones(valor_actual ),
-                            "valor_total":formatoValorizaciones(valor_total ),
-                            "valor_saldo":formatoValorizaciones(valor_saldo ),
-                            "precio_parcial":formatoValorizaciones(precio_parcial),
-                            "porcentaje_anterior":formato(porcentaje_anterior),
-                            "porcentaje_actual":formato(porcentaje_actual),
-                            "porcentaje_total":formato(porcentaje_total),
-                            "porcentaje_saldo":formato(porcentaje_saldo),
+                            "valor_anterior":(valor_anterior),
+                            "valor_actual":(valor_actual ),
+                            "valor_total":(valor_total ),
+                            "valor_saldo":(valor_saldo ),
+                            "precio_parcial":(precio_parcial),
+                            "porcentaje_anterior":(porcentaje_anterior),
+                            "porcentaje_actual":(porcentaje_actual),
+                            "porcentaje_total":(porcentaje_total),
+                            "porcentaje_saldo":(porcentaje_saldo),
                             "partidas":res
                         }
                     );

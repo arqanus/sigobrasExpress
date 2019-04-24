@@ -538,8 +538,8 @@ module.exports = function(app){
       console.log("codigo_obra :",fields.codigo_obra);
       console.log("Actividades_id_actividad :",fields.Actividades_id_actividad);
       console.log("foto :",fields.foto);
-      console.log("observacion :",fields.observacion);
-      console.log("descripcion :",fields.descripcion); 
+      console.log("observacion :",fields.descripcionObservacion);
+      console.log("descripcion :",fields.descripcionObservacion); 
 
       if (err){
         res.json(err)
@@ -562,8 +562,7 @@ module.exports = function(app){
             "Actividades_id_actividad":fields.Actividades_id_actividad,
             "imagen":"/static/"+fields.codigo_obra+ruta,
             "imagenAlt":fields.codigo_obra,
-            "descripcion":fields.descripcion,
-            "observacion":fields.observacion,
+            "descripcion":fields.descripcionObservacion,
             "accesos_id_acceso":fields.accesos_id_acceso
           }
           User.postAvanceActividad(avanceActividad,(err,data)=>{
