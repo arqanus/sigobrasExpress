@@ -139,18 +139,17 @@ module.exports = function(app){
                     User.getValGeneralPeriodos(req.body.id_ficha,anyos[0].anyo,(err,periodos)=>{
                         if(err){ res.status(204).json(err);}
                         else{
-                            User.getValGeneralResumenPeriodo(req.body.id_ficha,periodos[0].fecha_inicial,periodos[0].fecha_final,(err,resumen)=>{
+                            User.getValGeneralResumenPeriodo(req.body.id_ficha,periodos[0].fecha_inicial,periodos[0].fecha_final,async (err,resumen)=>{
                                 if(err){ res.status(204).json(err);}
                                 else{
-                                    User.getValGeneralComponentes(req.body.id_ficha,(err,componentes)=>{
-                                        if(err){ res.status(204).json(err);}
-                                        else{
-                                            periodos[0].resumen = resumen
-                                            periodos[0].componentes = componentes
-                                            anyos[0].periodos = periodos
-                                            res.json(anyos);	
-                                        }
-                                    })
+                                    var componentes  = await User.getValGeneralComponentes(req.body.id_ficha)
+                                    
+                                    periodos[0].resumen = resumen
+                                    periodos[0].componentes = componentes
+                                    anyos[0].periodos = periodos
+                                    res.json(anyos);	
+                                        
+                                    
                                 }
                             })
                            
