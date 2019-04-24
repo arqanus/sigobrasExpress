@@ -1195,31 +1195,21 @@ userModel.getValGeneralPeriodos  = (id_ficha,anyo,callback)=>{
                 
     })
 }
-userModel.getValGeneralComponentes = (id_ficha,callback)=>{
-    
-    pool.getConnection(function(err ,conn){
-        if(err){ callback(err);}
-        else{
-            conn.query("SELECT componentes.id_componente, componentes.numero, componentes.nombre, componentes.presupuesto FROM componentes left join historialcomponentes on historialcomponentes.componentes_id_componente = componentes.id_componente WHERE historialcomponentes.componentes_id_componente is null and componentes.fichas_id_ficha = ?",[id_ficha],(error,res)=>{ 
-                if(error){
-                    callback(error);
-                }else if(res.length == 0){
-                    console.log("vacio");
-                    
-                    callback(null,"vacio");
-                    conn.destroy()
-                
-                }else{    
-                    callback(null,res);
-                    conn.destroy()
-                }
-                
-                
-            })
-        }
-        
-                
-    })
+userModel.getValGeneralComponentes = (id_ficha)=>{
+    return new Promise((resolve, reject) => {
+        // reject and resolve are functions provided by the Promise
+        // implementation. Call only one of them.
+        pool.query("SELECT componentes.id_componente, componentes.numero, componentes.nombre, componentes.presupuesto FROM componentes left join historialcomponentes on historialcomponentes.componentes_id_componente = componentes.id_componente WHERE historialcomponentes.componentes_id_componente is null and componentes.fichas_id_ficha = ?",[id_ficha],(err,res)=>{
+            // PS. Fail fast! Handle errors first, then move to the
+            // important stuff (that's a good practice at least)
+            if (err) {
+                // Reject the Promise with an error
+                return reject(err)
+            }
+            // Resolve (or fulfill) the promise with data
+            return resolve(res)
+        })
+    })    
 }
 userModel.getValGeneralResumenPeriodo = (id_ficha,fecha_inicial,fecha_final,callback)=>{
     
@@ -1286,106 +1276,96 @@ userModel.getValGeneralResumenPeriodo = (id_ficha,fecha_inicial,fecha_final,call
                 
     })
 }
-userModel.getValGeneralPartidas = (id_componente,fecha_inicial,fecha_final,callback)=>{
-    
-    pool.getConnection(function(err ,conn){
-        if(err){ callback(err);}
-        else{
-            conn.query("SELECT partidas.tipo, partidas.item, partidas.descripcion, partidas.metrado, partidas.costo_unitario, partidas.metrado * partidas.costo_unitario precio_parcial, periodo_anterior.metrado metrado_anterior, periodo_anterior.valor valor_anterior, periodo_anterior.porcentaje porcentaje_anterior, periodo_actual.metrado metrado_actual, periodo_actual.valor valor_actual, periodo_actual.porcentaje porcentaje_actual, COALESCE(periodo_anterior.metrado, 0) + COALESCE(periodo_actual.metrado, 0) metrado_total, COALESCE(periodo_anterior.valor, 0) + COALESCE(periodo_actual.valor, 0) valor_total, (COALESCE(periodo_anterior.metrado, 0) + COALESCE(periodo_actual.metrado, 0)) porcentaje_total, partidas.metrado - (COALESCE(periodo_anterior.metrado, 0) + COALESCE(periodo_actual.metrado, 0)) metrado_saldo, partidas.metrado * costo_unitario - COALESCE(periodo_anterior.valor, 0) - COALESCE(periodo_actual.valor, 0) valor_saldo, 100 - COALESCE(periodo_anterior.porcentaje, 0) - COALESCE(periodo_actual.porcentaje, 0) porcentaje_saldo FROM partidas LEFT JOIN (SELECT partidas.id_partida, CAST(SUM(avanceactividades.valor) AS DECIMAL (10 , 2 )) metrado, CAST(SUM(avanceactividades.valor) AS DECIMAL (10 , 2 )) * costo_unitario valor, CAST(SUM(avanceactividades.valor) AS DECIMAL (10 , 2 )) / metrado * 100 porcentaje FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.fecha < ? AND historialactividades.estado IS NULL GROUP BY partidas.id_partida) periodo_anterior ON periodo_anterior.id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, CAST(SUM(avanceactividades.valor) AS DECIMAL (10 , 2 )) metrado, CAST(SUM(avanceactividades.valor) AS DECIMAL (10 , 2 )) * costo_unitario valor, CAST(SUM(avanceactividades.valor) AS DECIMAL (10 , 2 )) / metrado * 100 porcentaje FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.fecha >= ? AND avanceactividades.fecha < ? AND historialactividades.estado IS NULL GROUP BY partidas.id_partida) periodo_actual ON periodo_actual.id_partida = partidas.id_partida WHERE partidas.componentes_id_componente = ? ORDER BY partidas.id_partida",[fecha_inicial,fecha_inicial,fecha_final,id_componente],(error,res)=>{ 
-                if(error){
-                    callback(error);
-                }else if(res.length == 0){
-                    console.log("vacio");
-                    
-                    callback(null,"vacio");
-                    conn.destroy()
+userModel.getValGeneralPartidas = (id_componente,fecha_inicial,fecha_final)=>{
+    return new Promise((resolve, reject) => {
+        pool.query("SELECT partidas.tipo, partidas.item, partidas.descripcion, partidas.metrado, partidas.costo_unitario, partidas.metrado * partidas.costo_unitario precio_parcial, periodo_anterior.metrado metrado_anterior, periodo_anterior.valor valor_anterior, periodo_anterior.porcentaje porcentaje_anterior, periodo_actual.metrado metrado_actual, periodo_actual.valor valor_actual, periodo_actual.porcentaje porcentaje_actual, COALESCE(periodo_anterior.metrado, 0) + COALESCE(periodo_actual.metrado, 0) metrado_total, COALESCE(periodo_anterior.valor, 0) + COALESCE(periodo_actual.valor, 0) valor_total, (COALESCE(periodo_anterior.metrado, 0) + COALESCE(periodo_actual.metrado, 0)) porcentaje_total, partidas.metrado - (COALESCE(periodo_anterior.metrado, 0) + COALESCE(periodo_actual.metrado, 0)) metrado_saldo, partidas.metrado * costo_unitario - COALESCE(periodo_anterior.valor, 0) - COALESCE(periodo_actual.valor, 0) valor_saldo, 100 - COALESCE(periodo_anterior.porcentaje, 0) - COALESCE(periodo_actual.porcentaje, 0) porcentaje_saldo FROM partidas LEFT JOIN (SELECT partidas.id_partida, CAST(SUM(avanceactividades.valor) AS DECIMAL (10 , 2 )) metrado, CAST(SUM(avanceactividades.valor) AS DECIMAL (10 , 2 )) * costo_unitario valor, CAST(SUM(avanceactividades.valor) AS DECIMAL (10 , 2 )) / metrado * 100 porcentaje FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.fecha < ? AND historialactividades.estado IS NULL GROUP BY partidas.id_partida) periodo_anterior ON periodo_anterior.id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, CAST(SUM(avanceactividades.valor) AS DECIMAL (10 , 2 )) metrado, CAST(SUM(avanceactividades.valor) AS DECIMAL (10 , 2 )) * costo_unitario valor, CAST(SUM(avanceactividades.valor) AS DECIMAL (10 , 2 )) / metrado * 100 porcentaje FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.fecha >= ? AND avanceactividades.fecha < ? AND historialactividades.estado IS NULL GROUP BY partidas.id_partida) periodo_actual ON periodo_actual.id_partida = partidas.id_partida WHERE partidas.componentes_id_componente = ? ORDER BY partidas.id_partida",[fecha_inicial,fecha_inicial,fecha_final,id_componente],(err,res)=>{ 
+            if(err){
+                return reject(err)
+            }else if(res.length == 0){
+                console.log("vacio");
                 
-                }else{
-                    var valor_anterior  = 0                    
-                    var valor_actual  = 0                    
-                    var valor_total = 0                    
-                    var valor_saldo  = 0
+                return resolve(res)
+            
+            }else{
+                var valor_anterior  = 0                    
+                var valor_actual  = 0                    
+                var valor_total = 0                    
+                var valor_saldo  = 0
 
-                    var porcentaje_anterior = 0
-                    var porcentaje_actual = 0
-                    var porcentaje_total = 0
-                    var porcentaje_saldo = 0
+                var porcentaje_anterior = 0
+                var porcentaje_actual = 0
+                var porcentaje_total = 0
+                var porcentaje_saldo = 0
 
-                    var precio_parcial = 0
-                    
-                    for (let i = 0; i < res.length; i++) {
-                        const fila = res[i];
-                        valor_anterior +=  fila.valor_anterior 
-                        valor_actual += fila.valor_actual 
-                        valor_total += fila.valor_total 
-                        valor_saldo += fila.valor_saldo 
+                var precio_parcial = 0
+                
+                for (let i = 0; i < res.length; i++) {
+                    const fila = res[i];
+                    valor_anterior +=  fila.valor_anterior 
+                    valor_actual += fila.valor_actual 
+                    valor_total += fila.valor_total 
+                    valor_saldo += fila.valor_saldo 
 
-                        porcentaje_anterior +=  fila.porcentaje_anterior 
-                        porcentaje_actual += fila.porcentaje_actual 
-                        porcentaje_total += fila.porcentaje_total 
-                        porcentaje_saldo += fila.porcentaje_saldo 
+                    porcentaje_anterior +=  fila.porcentaje_anterior 
+                    porcentaje_actual += fila.porcentaje_actual 
+                    porcentaje_total += fila.porcentaje_total 
+                    porcentaje_saldo += fila.porcentaje_saldo 
 
-                        precio_parcial += fila.precio_parcial
+                    precio_parcial += fila.precio_parcial
 
-                        if(fila.tipo == "titulo"){
-                            fila.metrado  = ""
-                            fila.costo_unitario  = ""
-                            fila.precio_parcial  = ""
-                            fila.metrado_anterior  = ""
-                            fila.valor_anterior  = ""
-                            fila.porcentaje_anterior  = ""
-                            fila.metrado_actual  = ""
-                            fila.valor_actual  = ""
-                            fila.porcentaje_actual  = ""
-                            fila.metrado_total = ""
-                            fila.valor_total = ""
-                            fila.porcentaje_total = ""
-                            fila.metrado_saldo  = ""
-                            fila.valor_saldo  = ""
-                            fila.porcentaje_saldo = ""
+                    if(fila.tipo == "titulo"){
+                        fila.metrado  = ""
+                        fila.costo_unitario  = ""
+                        fila.precio_parcial  = ""
+                        fila.metrado_anterior  = ""
+                        fila.valor_anterior  = ""
+                        fila.porcentaje_anterior  = ""
+                        fila.metrado_actual  = ""
+                        fila.valor_actual  = ""
+                        fila.porcentaje_actual  = ""
+                        fila.metrado_total = ""
+                        fila.valor_total = ""
+                        fila.porcentaje_total = ""
+                        fila.metrado_saldo  = ""
+                        fila.valor_saldo  = ""
+                        fila.porcentaje_saldo = ""
 
-                        }else {
-                            fila.metrado  = formatoValorizaciones( fila.metrado )
-                            fila.costo_unitario  = formatoValorizaciones( fila.costo_unitario )
-                            fila.precio_parcial  = formatoValorizaciones( fila.precio_parcial )
-                            fila.metrado_anterior  = formatoValorizaciones( fila.metrado_anterior )
-                            fila.valor_anterior  = formatoValorizaciones( fila.valor_anterior )
-                            fila.porcentaje_anterior  = formatoValorizaciones( fila.porcentaje_anterior )
-                            fila.metrado_actual  = formatoValorizaciones( fila.metrado_actual )
-                            fila.valor_actual  = formatoValorizaciones( fila.valor_actual )
-                            fila.porcentaje_actual  = formatoValorizaciones( fila.porcentaje_actual )
-                            fila.metrado_total = formatoValorizaciones( fila.metrado_total)
-                            fila.valor_total = formatoValorizaciones( fila.valor_total)
-                            fila.porcentaje_total = formatoValorizaciones( fila.porcentaje_total)
-                            fila.metrado_saldo  = formato( fila.metrado_saldo )
-                            fila.valor_saldo  = formato( fila.valor_saldo )
-                            fila.porcentaje_saldo = formato( fila.porcentaje_saldo)
-                        }
-                        
+                    }else {
+                        fila.metrado  = formatoValorizaciones( fila.metrado )
+                        fila.costo_unitario  = formatoValorizaciones( fila.costo_unitario )
+                        fila.precio_parcial  = formatoValorizaciones( fila.precio_parcial )
+                        fila.metrado_anterior  = formatoValorizaciones( fila.metrado_anterior )
+                        fila.valor_anterior  = formatoValorizaciones( fila.valor_anterior )
+                        fila.porcentaje_anterior  = formatoValorizaciones( fila.porcentaje_anterior )
+                        fila.metrado_actual  = formatoValorizaciones( fila.metrado_actual )
+                        fila.valor_actual  = formatoValorizaciones( fila.valor_actual )
+                        fila.porcentaje_actual  = formatoValorizaciones( fila.porcentaje_actual )
+                        fila.metrado_total = formatoValorizaciones( fila.metrado_total)
+                        fila.valor_total = formatoValorizaciones( fila.valor_total)
+                        fila.porcentaje_total = formatoValorizaciones( fila.porcentaje_total)
+                        fila.metrado_saldo  = formato( fila.metrado_saldo )
+                        fila.valor_saldo  = formato( fila.valor_saldo )
+                        fila.porcentaje_saldo = formato( fila.porcentaje_saldo)
                     }
-          
-                    callback(null,
-                        {
-                            "valor_anterior":formatoValorizaciones(valor_anterior),
-                            "valor_actual":formatoValorizaciones(valor_actual ),
-                            "valor_total":formatoValorizaciones(valor_total ),
-                            "valor_saldo":formatoValorizaciones(valor_saldo ),
-                            "precio_parcial":formatoValorizaciones(precio_parcial),
-                            "porcentaje_anterior":formato(porcentaje_anterior),
-                            "porcentaje_actual":formato(porcentaje_actual),
-                            "porcentaje_total":formato(porcentaje_total),
-                            "porcentaje_saldo":formato(porcentaje_saldo),
-                            "partidas":res
-                        }
-                        );
-                    conn.destroy()
+                    
                 }
-                
-                
-            })
-        }
         
-                
+                return resolve(                    
+                    {
+                        "valor_anterior":formatoValorizaciones(valor_anterior),
+                        "valor_actual":formatoValorizaciones(valor_actual ),
+                        "valor_total":formatoValorizaciones(valor_total ),
+                        "valor_saldo":formatoValorizaciones(valor_saldo ),
+                        "precio_parcial":formatoValorizaciones(precio_parcial),
+                        "porcentaje_anterior":formato(porcentaje_anterior),
+                        "porcentaje_actual":formato(porcentaje_actual),
+                        "porcentaje_total":formato(porcentaje_total),
+                        "porcentaje_saldo":formato(porcentaje_saldo),
+                        "partidas":res
+                    }
+                );
+            }                              
+        })                   
     })
 }
 userModel.getValGeneralTodosComponentes = (id_ficha,fecha_inicial,fecha_final,callback)=>{
