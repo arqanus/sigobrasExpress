@@ -176,18 +176,13 @@ module.exports = function(app){
         }            
         
     })
-    app.post('/getValGeneralComponentes',(req,res)=>{
+    app.post('/getValGeneralComponentes',async (req,res)=>{
         if (req.body.id_ficha == null) {
             res.json("null")
         } else {
-            User.getValGeneralComponentes(req.body.id_ficha,(err,data)=>{
-                if(err){ res.status(204).json(err);}
-                else{
-                    res.json(data);	
-                }
-            })
-        }
-            
+			var componentes = await User.getValGeneralComponentes(req.body.id_ficha)
+            res.json(componentes)
+        }           
         
     })
     app.post('/getValGeneralResumenPeriodo',(req,res)=>{
@@ -204,16 +199,13 @@ module.exports = function(app){
             
         
     })
-    app.post('/getValGeneralPartidas',(req,res)=>{
+    app.post('/getValGeneralPartidas',async (req,res)=>{
         if (req.body.id_componente == null) {
             res.json("null")
         } else {
-            User.getValGeneralPartidas(req.body.id_componente,req.body.fecha_inicial,req.body.fecha_final,(err,data)=>{
-                if(err){ res.status(204).json(err);}
-                else{
-                    res.json(data);	
-                }
-            })
+            var partidas = await User.getValGeneralPartidas(req.body.id_componente,req.body.fecha_inicial,req.body.fecha_final)
+            res.json(partidas)
+          
         }
             
         
