@@ -1881,7 +1881,7 @@ userModel.getImagenesHistorialActividades = (id_partida,callback)=>{
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
         else{
-            conn.query("SELECT avanceactividades.fecha, avanceactividades.valor, avanceactividades.imagen, avanceactividades.imagenAlt, avanceactividades.descripcion FROM actividades LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.imagen IS NOT NULL and actividades.Partidas_id_partida = ?",id_partida,(error,res)=>{ 
+            conn.query("SELECT avanceactividades.fecha, avanceactividades.imagen, avanceactividades.imagenAlt, avanceactividades.descripcion FROM actividades LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.imagen IS NOT NULL and actividades.Partidas_id_partida = ?",id_partida,(error,res)=>{ 
                 if(error){
                     callback(error);
                 }else if(res.length == 0){
@@ -1905,7 +1905,7 @@ userModel.getImagenesHistorialPartidas = (id_partida,callback)=>{
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
         else{
-            conn.query("SELECT partidasimagenes.fecha, partidasimagenes.imagen, partidasimagenes.imagenAlt, partidasimagenes.descripcionObservacion FROM partidasimagenes WHERE partidasimagenes.imagen IS NOT NULL AND partidasimagenes.Partidas_id_partida = ?",id_partida,(error,res)=>{ 
+            conn.query("SELECT partidasimagenes.fecha, partidasimagenes.imagen, partidasimagenes.imagenAlt, partidasimagenes.descripcionObservacion descripcion FROM partidasimagenes WHERE partidasimagenes.imagen IS NOT NULL AND partidasimagenes.Partidas_id_partida = ?",id_partida,(error,res)=>{ 
                 if(error){
                     callback(error);
                 }else if(res.length == 0){
