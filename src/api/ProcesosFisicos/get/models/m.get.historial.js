@@ -59,7 +59,7 @@ userModel.getHistorialResumen = (id_ficha,fecha,callback)=>{
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
         else{
-            conn.query("SELECT concat('C-',componentes.numero) nombre, day(avanceactividades.fecha) dia, SUM(avanceactividades.valor) valor FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.Fichas_id_ficha = fichas.id_ficha AND historialestados.fecha_inicial <= avanceactividades.fecha AND avanceactividades.fecha < historialestados.fecha_final LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND fichas.id_ficha = ? AND DATE_FORMAT(avanceactividades.fecha, '%Y-%m-01') = DATE_FORMAT(?, '%Y-%m-01') GROUP BY componentes.id_componente , DATE_FORMAT(avanceactividades.fecha, '%Y-%m-%d') ",[id_ficha,fecha],(err,res)=>{ 
+            conn.query("SELECT concat('C-',componentes.numero) nombre, day(avanceactividades.fecha) dia, SUM(avanceactividades.valor*partidas.costo_unitario) valor FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.Fichas_id_ficha = fichas.id_ficha AND historialestados.fecha_inicial <= avanceactividades.fecha AND avanceactividades.fecha < historialestados.fecha_final LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND fichas.id_ficha = ? AND DATE_FORMAT(avanceactividades.fecha, '%Y-%m-01') = DATE_FORMAT(?, '%Y-%m-01') GROUP BY componentes.id_componente , DATE_FORMAT(avanceactividades.fecha, '%Y-%m-%d') order by day(avanceactividades.fecha)",[id_ficha,fecha],(err,res)=>{ 
                 if(err){ console.log(err);
                     callback(err.code);
                 }else if(res.length==0){
@@ -88,38 +88,36 @@ userModel.getHistorialResumen = (id_ficha,fecha,callback)=>{
                         }
                         
                     }
+                    //llenando de ceros
+                    var categories = []
                     for (let i = 1; i <= lastDate; i++) {
-                        // for (let j = 0; j < res.length; j++) {
-                        //     const avance = res[j];
-                            // console.log(avance);
+                        categories.push(i)
                         for (let j = 0; j < series.length; j++) {
                             const componente = series[j];
-
-
+                            componente.data.push(0)
                         }
-                          
-                            
-                        // }
+                    }
+
+                    //llenando datos de avance
+                    
+                    for (let i = 0; i < res.length; i++) {                       
+                       const avance = res[i]
+                       for (let j = 0; j < series.length; j++) {
+                           const componente = series[j];
+                           console.log("avance",avance.nombre,componente.name);
+                           
+                           if(avance.nombre == componente.name){
+                                componente.data[avance.dia-1] = Number(avance.valor.toFixed(2))
+                                break;
+                           }
+                       }
                     }
                     
-                    
-                    // callback(null,res);
-                    callback(null,[{
-                        name: 'Asia',
-                        data: [502, 635, 809, 947, 1402, 3634, 5268]
-                      }, {
-                        name: 'Africa',
-                        data: [106, 107, 111, 133, 221, 767, 1766]
-                      }, {
-                        name: 'Europe',
-                        data: [163, 203, 276, 408, 547, 729, 628]
-                      }, {
-                        name: 'America',
-                        data: [18, 31, 54, 156, 339, 818, 1201]
-                      }, {
-                        name: 'Oceania',
-                        data: [2, 2, 2, 6, 13, 30, 46]
-                      }]);
+                    callback(null,{
+                        categories,
+                        series
+
+                    });                    
                     
                     conn.destroy()
                 }
@@ -212,8 +210,7 @@ userModel.getHistorialRegresionLineal = (id_ficha,callback)=>{
     
     pool.getConnection(function(err ,conn){
         if(err){ callback(err);}
-        else{
-            
+        else{     
 
             conn.query("/*********avance por dia***************/ SELECT id_ficha, date_format(avanceactividades.fecha,'%Y-%m-%d') fecha, SUM(valor * costo_unitario) avance FROM fichas left join componentes on componentes.fichas_id_ficha= fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida inner JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE month(avanceactividades.fecha) = month(now()) and fichas.id_ficha = ? GROUP BY fichas.id_ficha, date_format(avanceactividades.fecha,'%Y-%m-%d') ",id_ficha,(err,res)=>{
                  if(err){
