@@ -6,10 +6,30 @@ module.exports = function(app){
         if (req.body.id_ficha == null) {
             res.json("null")
         } else {			
-            User.getHistorialAnyos(req.body.id_ficha,(err,data)=>{
+            User.getHistorialAnyos(req.body.id_ficha,(err,anyos)=>{
                 if(err){ res.status(204).json(err);}
                 else{
-                    res.json(data);	
+                    User.getHistorialMeses(req.body.id_ficha,anyos[anyos.length-1].anyo,(err,meses)=>{
+                        if(err){ res.status(204).json(err);}
+                        else{
+                            User.getHistorialResumen(req.body.id_ficha,meses[meses.length-1].fecha,(err,resumen)=>{
+                                if(err){ res.status(204).json(err);}
+                                else{
+                                    User.getHistorialComponentes(req.body.id_ficha,meses[meses.length-1].fecha,(err,componentes)=>{
+                                        if(err){ res.status(204).json(err);}
+                                        else{
+                                            meses[meses.length-1].componentes = componentes
+                                            meses[meses.length-1].resumen = resumen
+                                            anyos[anyos.length-1].meses = meses
+                                            res.json(anyos);	
+                                        }
+                                    })
+                                    		
+                                }
+                            })
+                            
+                        }
+                    })
                 }
             })
         }
