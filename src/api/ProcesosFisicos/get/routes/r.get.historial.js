@@ -9,7 +9,7 @@ module.exports = function(app){
             User.getHistorialAnyos(req.body.id_ficha,(err,anyos)=>{
                 if(err){ res.status(204).json(err);}
                 else{
-                    User.getHistorialMeses(req.body.id_ficha,anyos[anyos.length-1].anyo,(err,meses)=>{
+                    User.getHistorialMeses(req.body.id_ficha,anyos[0].anyo,(err,meses)=>{
                         if(err){ res.status(204).json(err);}
                         else{
                             User.getHistorialResumen(req.body.id_ficha,meses[meses.length-1].fecha,(err,resumen)=>{
@@ -20,7 +20,8 @@ module.exports = function(app){
                                         else{
                                             meses[meses.length-1].componentes = componentes
                                             meses[meses.length-1].resumen = resumen
-                                            anyos[anyos.length-1].meses = meses
+                                            // anyos[anyos.length-1].meses = meses
+                                            anyos[0].meses = meses
                                             res.json(anyos);	
                                         }
                                     })
