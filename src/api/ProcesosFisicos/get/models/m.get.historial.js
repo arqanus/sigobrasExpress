@@ -168,21 +168,17 @@ userModel.getHistorialComponentes = (id_ficha,fecha,callback)=>{
                 }else if(res.length==0){
                     console.log("vacio");
                     callback(null,"vacio");
+                    conn.destroy()
                 }else{    
                     for (let i = 0; i < res.length; i++) {
                         const componente = res[i];
                         componente.componente_total_soles = formato(componente.componente_total_soles)
                         componente.componente_total_porcentaje = formato(componente.componente_total_porcentaje)
                         
-                    }                
-                    
-                    
-                    
+                    }  
                     callback(null,res);
                     conn.destroy()
                 }
-                
-                
             })
         }
         

@@ -23,6 +23,16 @@ month[8] = "Setiembre";
 month[9] = "Octubre";
 month[10] = "Noviembre";
 month[11] = "Diciembre";
+
+var weekDay = new Array();
+weekDay[0] = "Do";
+weekDay[1] = "Lu";
+weekDay[2] = "Ma";
+weekDay[3] = "Mi";
+weekDay[4] = "Ju";
+weekDay[5] = "Vi";
+weekDay[6] = "Sa";
+
 function formato(data){
     
     
@@ -2121,6 +2131,52 @@ userModel.getGanttPartidas  = (id_componente,fecha,callback)=>{
                     console.log("mes",year,month);
                     var lastDay = new Date(year, month, 0).getDate();
                     console.log("lastDay",lastDay);
+                    var dias = []
+                    var partidas = []
+                    var listaItems = []
+                    for (let i = 0; i < res.length; i++) {
+                        const avance = res[i];
+                        if (listaItems.indexOf(avance.id_partida) === -1){
+                            partidas.push(
+                                {
+                                    id_partida:avance.id_partida,
+                                    item:avance.item,
+                                    descripcion:avance.descripcion,
+                                    metrado:avance.metrado,
+                                    rendimiento:avance.rendimiento,
+                                    duracion_dia:avance.duracion_dia,
+                                    dia:avance.dia,
+                                    avance_metrado:avance.avance_metrado,
+                                    avance_dinero:avance.avance_dinero,
+                                    saldo:avance.saldo
+                                }
+                            );
+                            listaItems.push(avance.id_partida)
+                        }
+                        
+                    }
+                    for (let i = 1; i <= lastDay; i++) {
+                        var tempDate = new Date(year,month-1,i)
+                        console.log(tempDate);
+                        var tempDate = weekDay[tempDate.getDay()]
+                        console.log(tempDate);
+                        dias.push(tempDate+" - "+i)
+                        for (let j = 0; j < res.length; j++) {
+                            const partida = res[j];
+                            if(i==1){
+                            partida.gantt=[]
+                            }
+                            partida.gantt.push(
+                                {
+                                    "IndicadorRango": 0,
+                                    "ejecutado": 7,
+                                    "perdidas": 8,
+                                    "ganancias": true
+                                }
+                            )                            
+                        }
+                    }
+                 
                     // callback(null,{  
                     //     dias:["L - 1", "M - 2", "M - 3", "J - 4", "V - 5", "S - 6", "D - 7", "L - 8", "M - 9", "M - 10", "J - 11", "V - 12", "S - 13", "D - 14", "L - 15", "M - 16", "M - 17", "J - 18", "V - 19", "S - 20", "D - 21"],
                     //     partidas:[
@@ -2143,8 +2199,8 @@ userModel.getGanttPartidas  = (id_componente,fecha,callback)=>{
                     //     ]
                     // });
                     callback(null,{
-                        dias:["L - 1", "M - 2", "M - 3", "J - 4", "V - 5", "S - 6", "D - 7", "L - 8", "M - 9", "M - 10", "J - 11", "V - 12", "S - 13", "D - 14", "L - 15", "M - 16", "M - 17", "J - 18", "V - 19", "S - 20", "D - 21"],
-                        partidas:res                        
+                        dias,
+                        partidas                      
                     })
                     conn.destroy()
                 }
