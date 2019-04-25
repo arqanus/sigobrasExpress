@@ -1,6 +1,34 @@
 const pool = require('../../../../db/connection');
 let userModel = {};
+function formato(data){
+    
+    
+    if(data == null){
+        return 0
+    }
+  
+    data = Number(data)
+    if(isNaN(data)){
+        
+        data=0
+    }
+    if(data == 0){
+        return 0
+    }
+    else if(data < 1){
+        data = data.toLocaleString('es-PE', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          })
+    }else{
+        data = data.toLocaleString('es-PE', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          })
+    } 
 
+    return data
+}
 
 userModel.getHistorialAnyos  = (id_ficha,callback)=>{    
     pool.getConnection(function(err ,conn){
@@ -34,7 +62,7 @@ userModel.getHistorialMeses  = (id_ficha,anyo,callback)=>{
             callback(err);
         }        
         else{
-            conn.query("SELECT DATE_FORMAT(avanceactividades.fecha, '%Y-%m-01') fecha, MONTHNAME(avanceactividades.fecha) mes FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.Fichas_id_ficha = fichas.id_ficha AND historialestados.fecha_inicial <= avanceactividades.fecha AND avanceactividades.fecha < historialestados.fecha_final LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND fichas.id_ficha = ? and year(avanceactividades.fecha)= ? GROUP BY DATE_FORMAT(avanceactividades.fecha, '%Y-%b')",[id_ficha,anyo],(err,res)=>{ 
+            conn.query("SELECT DATE_FORMAT(avanceactividades.fecha, '%Y-%m-01') fecha, MONTHNAME(avanceactividades.fecha) mes FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.Fichas_id_ficha = fichas.id_ficha AND historialestados.fecha_inicial <= avanceactividades.fecha AND avanceactividades.fecha < historialestados.fecha_final LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND fichas.id_ficha = ? and year(avanceactividades.fecha)= ? GROUP BY DATE_FORMAT(avanceactividades.fecha, '%Y-%b') order by DATE_FORMAT(avanceactividades.fecha, '%Y-%m-01')",[id_ficha,anyo],(err,res)=>{ 
                 if(err){
                     console.log(err);                    
                     callback(err.code);                 
@@ -140,7 +168,13 @@ userModel.getHistorialComponentes = (id_ficha,fecha,callback)=>{
                 }else if(res.length==0){
                     console.log("vacio");
                     callback(null,"vacio");
-                }else{                    
+                }else{    
+                    for (let i = 0; i < res.length; i++) {
+                        const componente = res[i];
+                        componente.componente_total_soles = formato(componente.componente_total_soles)
+                        componente.componente_total_porcentaje = formato(componente.componente_total_porcentaje)
+                        
+                    }                
                     
                     
                     
@@ -168,6 +202,12 @@ userModel.getHistorialFechas = (id_componente,fecha,callback)=>{
                     console.log("vacio");
                     callback(null,"vacio");
                 }else{                
+                    for (let i = 0; i < res.length; i++) {
+                        const fecha = res[i];
+                        fecha.fecha_total_soles = formato(fecha.fecha_total_soles)
+                        fecha.fecha_total_porcentaje = formato(fecha.fecha_total_porcentaje)
+                        
+                    }
                     callback(null,res);
                     conn.destroy()
                 }
@@ -191,7 +231,13 @@ userModel.getHistorialDias = (id_componente,fecha,callback)=>{
                 }else if(res.length==0){
                     console.log("vacio");
                     callback(null,"vacio");
-                }else{                    
+                }else{               
+                    for (let i = 0; i < res.length; i++) {
+                        const dia = res[i];
+                        dia.valor = formato(dia.valor)
+                        dia.parcial =  formato(dia.parcial)
+                        
+                    }     
                                     
                     callback(null,res);
                     conn.destroy()
