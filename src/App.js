@@ -40,6 +40,8 @@ require('./api/Admin/get/routes/r.get.obras')(app);
 require('./api/Admin/get/routes/r.get.users')(app);
 require('./api/Admin/post/routes/r.post.obras')(app);
 require('./api/Admin/post/routes/r.post.users')(app);
+require('./api/Admin/put/routes/r.put.users')(app);
+
 
 require('./api/Interfaz/post/routes/r.post.interfaz')(app);
 require('./api/Interfaz/get/routes/r.get.interfaz')(app);
@@ -60,12 +62,8 @@ require('./api/ProcesosFinancieros/get/routes/r.get.Pfinancieros')(app);
 require('./api/Reportes/get/routes/r.get.reportes')(app);
 require('./api/Reportes/post/routes/r.post.reportes')(app);
 
-// require('./routes/rutasProcesosIniciales')(app);
-// require('./routes/rutasProcesosGerenciales')(app);
-// require('./routes/rutasProcesosFisicos')(app);
-// require('./routes/rutasProcesosInformes')(app);
-// require('./routes/rutasImagenes')(app);
-// require('./routes/rutasProcesosFinancieros')(app);
+require('./api/GestionTareas/get/routes/r.get.GT')(app);
+require('./api/GestionTareas/post/routes/r.post.GT')(app);
 
 
 
