@@ -106,6 +106,20 @@ module.exports = function(app){
 
 
     })
+    app.post('/getHistorialComponenteChart',(req,res)=>{
+        if (req.body.id_componente == null) {
+            res.json("null")
+        } else {			
+            User.getHistorialComponenteChart(req.body.id_componente,req.body.fecha,(err,data)=>{
+                if(err){ res.status(204).json(err);}
+                else{
+                    res.json(data);	
+                }
+            })
+        }
+
+
+    })
     
 
     app.post('/getHistorialRegresionLineal',(req,res)=>{
@@ -122,5 +136,6 @@ module.exports = function(app){
 
 
     })
+    
 }
 

@@ -204,6 +204,81 @@ userModel.getHistorialDias = (id_componente,fecha,callback)=>{
                 
     })
 }
+userModel.getHistorialComponenteChart = (id_componente,fecha,callback)=>{
+    
+    pool.getConnection(function(err ,conn){
+        if(err){ callback(err);}
+        else{
+            conn.query("SELECT CONCAT('C-', componentes.numero) nombre, DAY(avanceactividades.fecha) dia, SUM(avanceactividades.valor * partidas.costo_unitario) valor FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.Fichas_id_ficha = fichas.id_ficha AND historialestados.fecha_inicial <= avanceactividades.fecha AND avanceactividades.fecha < historialestados.fecha_final LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND componentes.id_componente = ? AND DATE_FORMAT(avanceactividades.fecha, '%Y-%m-01') = DATE_FORMAT(?, '%Y-%m-01') GROUP BY componentes.id_componente , DATE_FORMAT(avanceactividades.fecha, '%Y-%m-%d') ORDER BY DAY(avanceactividades.fecha)",[id_componente,fecha],(err,res)=>{ 
+                if(err){ console.log(err);
+                    callback(err.code);
+                }else if(res.length==0){
+                    console.log("vacio");
+                    callback(null,"vacio");
+                }else{ 
+                    //calculando ultimo dia  
+                    var fecha_array = fecha.split("-")
+                    var month = fecha_array[1]-1;
+                    var year = fecha_array[0];
+                    var lastDate = (new Date(year, month + 1, 0)).getDate();
+
+                    //creando data inicial
+                    var series = []
+                    var listaItems = []
+                    for (let i = 0; i < res.length; i++) {
+                        const avance = res[i];
+                        if (listaItems.indexOf(avance.nombre) === -1){
+                            series.push(
+                                {
+                                    name:avance.nombre,
+                                    data:[]
+                                }
+                            );
+                            listaItems.push(avance.nombre)
+                        }
+                        
+                    }
+                    //llenando de ceros
+                    var categories = []
+                    for (let i = 1; i <= lastDate; i++) {
+                        categories.push(i)
+                        for (let j = 0; j < series.length; j++) {
+                            const componente = series[j];
+                            componente.data.push(0)
+                        }
+                    }
+
+                    //llenando datos de avance
+                    
+                    for (let i = 0; i < res.length; i++) {                       
+                       const avance = res[i]
+                       for (let j = 0; j < series.length; j++) {
+                           const componente = series[j];
+                           console.log("avance",avance.nombre,componente.name);
+                           
+                           if(avance.nombre == componente.name){
+                                componente.data[avance.dia-1] = Number(avance.valor.toFixed(2))
+                                break;
+                           }
+                       }
+                    }
+                    
+                    callback(null,{
+                        categories,
+                        series
+
+                    });                    
+                    
+                    conn.destroy()
+                }
+                
+                
+            })
+        }
+        
+                
+    })
+}
 
 
 userModel.getHistorialRegresionLineal = (id_ficha,callback)=>{
