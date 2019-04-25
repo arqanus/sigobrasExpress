@@ -134,7 +134,7 @@ userModel.getHistorialResumen = (id_ficha,fecha,callback)=>{
                            const componente = series[j];
                            console.log("avance",avance.nombre,componente.name);
                            
-                           if(avance.nombre == componente.name){
+                           if(avance.nombre == componente.name && avance.valor != null){
                                 componente.data[avance.dia-1] = Number(avance.valor.toFixed(2))
                                 break;
                            }
