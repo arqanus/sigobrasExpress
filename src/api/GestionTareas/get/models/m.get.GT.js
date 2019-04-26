@@ -66,4 +66,16 @@ userModel.getTareaIdTarea = (id_tarea)=>{
          
 }
 
+userModel.getTareaEmisor = (receptor,inicio,fin)=>{
+    return new Promise((resolve, reject) => { 
+        pool.query('SELECT tareas.id_tarea,proyectos.nombre,tareas.asunto,tareas.avance FROM tareas left join proyectos on proyectos.id_proyecto = tareas.proyectos_id_proyecto WHERE emisor = ? AND ? <= avance and avance <= ?',[receptor,inicio,fin],(err,res)=>{
+            if (err) {
+                return reject(err)
+            }
+            return resolve(res)            
+        })   
+    })
+         
+}
+
 module.exports = userModel;

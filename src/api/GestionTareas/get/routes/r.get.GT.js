@@ -46,6 +46,18 @@ module.exports = function(app){
 		var tareas = await User.getTareaReceptor(req.body.id_acceso,100,100)
 		res.json(tareas)
 	})
+	app.post('/getTareaEmisorPendientes',async (req,res)=>{		
+		var tareas = await User.getTareaReceptor(req.body.id_acceso,0,0)
+		res.json(tareas)
+	})
+	app.post('/getTareaEmisorProgreso',async (req,res)=>{		
+		var tareas = await User.getTareaReceptor(req.body.id_acceso,1,99)
+		res.json(tareas)
+	})
+	app.post('/getTareaEmisorTerminadas',async (req,res)=>{		
+		var tareas = await User.getTareaReceptor(req.body.id_acceso,100,100)
+		res.json(tareas)
+	})
 	app.post('/getTareaIdTarea',async (req,res)=>{				
 		var tareas = await User.getTareaIdTarea(req.body.id_tarea,100,100)
 		var diasTotal  = daysdifference(tareas.fecha_inicial,tareas.fecha_final)
