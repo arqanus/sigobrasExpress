@@ -18,11 +18,16 @@ module.exports = function(app){
 		res.json(proyectos)
 	})
 	app.get('/getTareaCargos',async (req,res)=>{
-		var nivel = await User.getTareaAccesoCargo(req.body.id_acceso)
-		nivel = nivel.nivel
-		console.log("nivel",nivel);		
-		var cargos = await User.getTareaCargos(req.body.id_acceso,nivel)
-		res.json(cargos)
+		try {
+			var nivel = await User.getTareaAccesoCargo(req.body.id_acceso)
+			console.log("nivel",nivel);	
+			nivel = nivel.nivel
+			var cargos = await User.getTareaCargos(req.body.id_acceso,nivel)
+			res.json(cargos)
+		} catch (error) {
+			res.status(204).json(error)
+		}
+		
 
 	})
 	app.get('/getTareaUsuariosPorCargo',async (req,res)=>{		
