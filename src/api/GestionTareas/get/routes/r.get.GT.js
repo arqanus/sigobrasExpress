@@ -19,6 +19,7 @@ module.exports = function(app){
 	})
 	app.get('/getTareaCargos',async (req,res)=>{
 		try {
+			console.log("id_acceso",id_acceso);			
 			var nivel = await User.getTareaAccesoCargo(req.body.id_acceso)
 			console.log("nivel",nivel);	
 			nivel = nivel.nivel
