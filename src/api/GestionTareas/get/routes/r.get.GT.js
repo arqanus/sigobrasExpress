@@ -18,7 +18,7 @@ module.exports = function(app){
 		res.json(proyectos)
 	})
 	app.get('/getTareaCargos',async (req,res)=>{
-		console.log("id_acceso",req.body.id_acceso);
+		console.log("id_acceso",req);
 		try {
 			var nivel = await User.getTareaAccesoCargo(req.body.id_acceso)
 			console.log("nivel",nivel);	
@@ -26,6 +26,11 @@ module.exports = function(app){
 			var cargos = await User.getTareaCargos(req.body.id_acceso,nivel)
 			res.json(cargos)
 		} catch (error) {
+			if (req.boyd.id_acceso == null) {
+				res.status(200).json(error)				
+			} else {
+				
+			}
 			res.status(204).json(error)
 		}
 		
