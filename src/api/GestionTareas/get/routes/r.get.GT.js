@@ -13,7 +13,7 @@ function daysdifference(date1, date2) {
 }
 
 module.exports = function(app){
-  	app.post('/getTareaProyectos',async (req,res)=>{
+  	app.get('/getTareaProyectos',async (req,res)=>{
 		var proyectos = await User.getTareaProyectos()
 		res.json(proyectos)
 	})
