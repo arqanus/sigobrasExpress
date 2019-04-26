@@ -41,7 +41,6 @@ module.exports = (app)=>{
 		  console.log("descripcion :",fields.descripcion)
 		  console.log("fecha_inicial :",fields.fecha_inicial)
 		  console.log("fecha_final :",fields.fecha_final)
-		  console.log("fecha_final :",fields.fecha_final)
 		  console.log("proyectos_id_proyecto :",fields.proyectos_id_proyecto)
 		  console.log("emisor :",fields.emisor)
 		  console.log("receptor :",fields.receptor)
