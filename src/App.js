@@ -52,6 +52,9 @@ require('./api/Inicio/delete/routes/r.del.Inicio')(app);
 
 require('./api/ProcesosFisicos/get/routes/r.get.pFisicos')(app);
 require('./api/ProcesosFisicos/get/routes/r.get.historial')(app);
+require('./api/ProcesosFisicos/get/routes/r.get.valGeneral')(app);
+
+
 require('./api/ProcesosFisicos/post/routes/r.post.pFisicos')(app);
 require('./api/ProcesosFisicos/put/routes/r.put.pFisicos')(app);
 

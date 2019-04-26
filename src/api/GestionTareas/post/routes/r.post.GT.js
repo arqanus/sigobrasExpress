@@ -1,13 +1,16 @@
 const User = require('../models/m.post.GT');
 const User2 = require('../../get/models/m.get.GT')
+
 var formidable = require('formidable');    
 var fs = require('fs');
+
 function datetime(){
 	var today = new Date();
 	var date = today.getDate()+'-'+(today.getMonth()+1)+'-'+today.getFullYear();
 	var time = today.getHours() + "-" + today.getMinutes() + "-" + today.getSeconds();
 	return date+'_'+time;
-  }
+}
+
 module.exports = (app)=>{
 	app.post('/postProyecto',(req,res)=>{
 		User.postProyecto(req.body,(err,data)=>{
