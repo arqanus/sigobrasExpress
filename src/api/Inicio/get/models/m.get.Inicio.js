@@ -435,101 +435,92 @@ userModel.getAvanceGestionAnterior = (id_ficha,fecha_final,callback)=>{
         })
 }
 userModel.getcronogramaInicio = (corte,id_ficha,fecha_inicial,callback)=>{
-        console.log("fecha_inicial",fecha_inicial);        
-        pool.getConnection(function(err ,conn){
-        if(err){ callback(err);}
-        else{conn.query("SELECT 'E' codigo, DATE_FORMAT(cronogramamensual.mes, '%Y-%m-%d') fecha, DATE_FORMAT(cronogramamensual.mes, '%b.') mes, DATE_FORMAT(cronogramamensual.mes, '%Y') anyo, programado programado_monto, programado / tb_presupuesto.presupuesto * 100 programado_porcentaje, COALESCE(tb_fisico.fisico_monto, 0) fisico_monto, COALESCE(tb_fisico.fisico_monto, 0) / tb_presupuesto.presupuesto * 100 fisico_porcentaje, COALESCE(financieroEjecutado, 0) financiero_monto, COALESCE(financieroEjecutado, 0) / tb_presupuesto.presupuesto * 100 financiero_porcentaje FROM cronogramamensual LEFT JOIN (SELECT componentes.fichas_id_ficha, avanceactividades.fecha, DATE_FORMAT(avanceactividades.fecha, '%m ') mes, DATE_FORMAT(avanceactividades.fecha, '%Y ') anyo, SUM(avanceactividades.valor*partidas.costo_unitario) fisico_monto FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND avanceactividades.fecha >= ? GROUP BY componentes.fichas_id_ficha , DATE_FORMAT(avanceactividades.fecha, '%m %Y') ORDER BY avanceactividades.fecha) tb_fisico ON tb_fisico.fichas_id_ficha = cronogramamensual.fichas_id_ficha AND DATE_FORMAT(tb_fisico.fecha, '%m %Y') = DATE_FORMAT(cronogramamensual.mes, '%m %Y') LEFT JOIN (SELECT componentes.fichas_id_ficha, SUM(componentes.presupuesto) presupuesto FROM componentes GROUP BY componentes.fichas_id_ficha) tb_presupuesto ON tb_presupuesto.fichas_id_ficha = cronogramamensual.fichas_id_ficha WHERE cronogramamensual.fichas_id_ficha = ? AND DATE_FORMAT(cronogramamensual.mes, '%Y-%m-01') >= DATE_FORMAT(?, '%Y-%m-01') ",[fecha_inicial,id_ficha,fecha_inicial],(error,res)=>{ 
-        if(error){
-                callback(error);
-        }else if(res.length == 0){
-                console.log("vacio");
-                
-                callback(null,"vacio");
-                conn.destroy()
-                
-        }else{
+  
+        pool.query("SELECT 'E' codigo, DATE_FORMAT(cronogramamensual.mes, '%Y-%m-%d') fecha, DATE_FORMAT(cronogramamensual.mes, '%b.') mes, DATE_FORMAT(cronogramamensual.mes, '%Y') anyo, programado programado_monto, programado / tb_presupuesto.presupuesto * 100 programado_porcentaje, COALESCE(tb_fisico.fisico_monto, 0) fisico_monto, COALESCE(tb_fisico.fisico_monto, 0) / tb_presupuesto.presupuesto * 100 fisico_porcentaje, COALESCE(financieroEjecutado, 0) financiero_monto, COALESCE(financieroEjecutado, 0) / tb_presupuesto.presupuesto * 100 financiero_porcentaje FROM cronogramamensual LEFT JOIN (SELECT componentes.fichas_id_ficha, avanceactividades.fecha, DATE_FORMAT(avanceactividades.fecha, '%m ') mes, DATE_FORMAT(avanceactividades.fecha, '%Y ') anyo, SUM(avanceactividades.valor*partidas.costo_unitario) fisico_monto FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND avanceactividades.fecha >= ? GROUP BY componentes.fichas_id_ficha , DATE_FORMAT(avanceactividades.fecha, '%m %Y') ORDER BY avanceactividades.fecha) tb_fisico ON tb_fisico.fichas_id_ficha = cronogramamensual.fichas_id_ficha AND DATE_FORMAT(tb_fisico.fecha, '%m %Y') = DATE_FORMAT(cronogramamensual.mes, '%m %Y') LEFT JOIN (SELECT componentes.fichas_id_ficha, SUM(componentes.presupuesto) presupuesto FROM componentes GROUP BY componentes.fichas_id_ficha) tb_presupuesto ON tb_presupuesto.fichas_id_ficha = cronogramamensual.fichas_id_ficha WHERE cronogramamensual.fichas_id_ficha = ? AND DATE_FORMAT(cronogramamensual.mes, '%Y-%m-01') >= DATE_FORMAT(?, '%Y-%m-01') and cronogramamensual.programado != 0",[fecha_inicial,id_ficha,fecha_inicial],(error,res)=>{ 
+                if(error){
+                        callback(error);
+                }else if(res.length == 0){
+                        console.log("vacio");
+                        callback(null,"vacio");
+                }else{
+                                
+                        if(corte!="vacio"&&corte.codigo!="I"){
+                                delete corte.fecha_inicial
+                                delete corte.fecha_final
+                                res.unshift(corte)
+                        }
                         
-                if(corte!="vacio"&&corte.codigo!="I"){
-                        delete corte.fecha_inicial
-                        delete corte.fecha_final
-                        res.unshift(corte)
+                        // callback(null,res)
+                        var programado_acumulado = 0
+                        var fisico_acumulado = 0
+                        var financiero_acumulado = 0
+
+                        var programado_monto = 0
+                        var fisico_monto = 0
+                        var financiero_monto = 0
+
+                        var grafico_programado = []
+                        var grafico_fisico = []
+                        var grafico_financiero = []
+                        var periodos = []
+
+                        for (let i = 0; i < res.length; i++) {
+                                const fila = res[i];
+
+                                programado_acumulado+= fila.programado_porcentaje
+                                fisico_acumulado+= fila.fisico_porcentaje
+                                financiero_acumulado+= fila.financiero_porcentaje
+                                programado_monto+= fila.programado_monto
+                                fisico_monto+= fila.fisico_monto
+                                financiero_monto+= fila.financiero_monto
+
+                                fila.programado_acumulado = programado_acumulado
+                                fila.fisico_acumulado = fisico_acumulado
+                                fila.financiero_acumulado = financiero_acumulado
+
+                                
+                                fila.periodo = fila.mes+" "+fila.anyo
+                                // delete fila.codigo
+                                delete fila.mes
+                                delete fila.anyo
+
+                                grafico_programado.push(Number(formato(programado_acumulado)))
+                                grafico_fisico.push(Number(formato(fisico_acumulado)))
+                                grafico_financiero.push(Number(formato(financiero_acumulado)))
+                                periodos.push(fila.periodo)
+
+                                //format
+                                fila.programado_monto = formato(fila.programado_monto)
+                                fila.programado_porcentaje = formato(fila.programado_porcentaje)
+                                fila.fisico_monto = formato(fila.fisico_monto)
+                                fila.fisico_porcentaje = formato(fila.fisico_porcentaje)
+                                fila.financiero_monto = formato(fila.financiero_monto)
+                                fila.financiero_porcentaje = formato(fila.financiero_porcentaje)
+                                fila.programado_acumulado = formato(fila.programado_acumulado)
+                                fila.fisico_acumulado = formato(fila.fisico_acumulado)
+                                fila.financiero_acumulado = formato(fila.financiero_acumulado)
+                                
+                        }
+
+                        callback(null,{
+                                
+                                "programado_monto_total":formato(programado_monto),
+                                "programado_porcentaje_total":formato(programado_acumulado),
+                                "fisico_monto_total":formato(fisico_monto),
+                                "fisico_porcentaje_total":formato(fisico_acumulado),
+                                "financiero_monto_total":formato(financiero_monto),
+                                "financiero_porcentaje_total":formato(financiero_acumulado),
+                                "grafico_programado":grafico_programado,
+                                "grafico_fisico":grafico_fisico,
+                                "grafico_financiero":grafico_financiero,
+                                "grafico_periodos":periodos,
+                                "data":res
+                        });
                 }
-                
-                // callback(null,res)
-                var programado_acumulado = 0
-                var fisico_acumulado = 0
-                var financiero_acumulado = 0
-
-                var programado_monto = 0
-                var fisico_monto = 0
-                var financiero_monto = 0
-
-                var grafico_programado = []
-                var grafico_fisico = []
-                var grafico_financiero = []
-                var periodos = []
-
-                for (let i = 0; i < res.length; i++) {
-                        const fila = res[i];
-
-                        programado_acumulado+= fila.programado_porcentaje
-                        fisico_acumulado+= fila.fisico_porcentaje
-                        financiero_acumulado+= fila.financiero_porcentaje
-                        programado_monto+= fila.programado_monto
-                        fisico_monto+= fila.fisico_monto
-                        financiero_monto+= fila.financiero_monto
-
-                        fila.programado_acumulado = programado_acumulado
-                        fila.fisico_acumulado = fisico_acumulado
-                        fila.financiero_acumulado = financiero_acumulado
-
                         
-                        fila.periodo = fila.mes+" "+fila.anyo
-                        // delete fila.codigo
-                        delete fila.mes
-                        delete fila.anyo
-
-                        grafico_programado.push(Number(formato(programado_acumulado)))
-                        grafico_fisico.push(Number(formato(fisico_acumulado)))
-                        grafico_financiero.push(Number(formato(financiero_acumulado)))
-                        periodos.push(fila.periodo)
-
-                        //format
-                        fila.programado_monto = formato(fila.programado_monto)
-                        fila.programado_porcentaje = formato(fila.programado_porcentaje)
-                        fila.fisico_monto = formato(fila.fisico_monto)
-                        fila.fisico_porcentaje = formato(fila.fisico_porcentaje)
-                        fila.financiero_monto = formato(fila.financiero_monto)
-                        fila.financiero_porcentaje = formato(fila.financiero_porcentaje)
-                        fila.programado_acumulado = formato(fila.programado_acumulado)
-                        fila.fisico_acumulado = formato(fila.fisico_acumulado)
-                        fila.financiero_acumulado = formato(fila.financiero_acumulado)
                         
-                }
-
-                callback(null,{
-                        
-                        "programado_monto_total":formato(programado_monto),
-                        "programado_porcentaje_total":formato(programado_acumulado),
-                        "fisico_monto_total":formato(fisico_monto),
-                        "fisico_porcentaje_total":formato(fisico_acumulado),
-                        "financiero_monto_total":formato(financiero_monto),
-                        "financiero_porcentaje_total":formato(financiero_acumulado),
-                        "grafico_programado":grafico_programado,
-                        "grafico_fisico":grafico_fisico,
-                        "grafico_financiero":grafico_financiero,
-                        "grafico_periodos":periodos,
-                        "data":res
-                });
-                conn.destroy()
-                }
-                
-                
-        })
-        }
-
-                
-        })
+        })               
+        
 }
 
 
