@@ -50,8 +50,10 @@ require('./api/Inicio/get/routes/r.get.Inicio')(app);
 require('./api/Inicio/post/routes/r.post.Inicio')(app);
 require('./api/Inicio/delete/routes/r.del.Inicio')(app);
 
-require('./api/ProcesosFisicos/get/routes/r.get.pFisicos')(app);
 require('./api/ProcesosFisicos/get/routes/r.get.historial')(app);
+require('./api/ProcesosFisicos/get/routes/r.get.historialImagenes')(app);
+require('./api/ProcesosFisicos/get/routes/r.get.materiales')(app);
+require('./api/ProcesosFisicos/get/routes/r.get.pFisicos')(app);
 require('./api/ProcesosFisicos/get/routes/r.get.valGeneral')(app);
 
 
