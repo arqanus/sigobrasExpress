@@ -5,7 +5,7 @@ let userModel = {};
 
 //imagenes
 userModel.getImagenesComponentes = (id_ficha, callback) => {
-    pool.query("SELECT id_componente,numero,componentes.nombre from componentes left join partidas on partidas.componentes_id_componente = componentes.id_componente left join actividades on actividades.Partidas_id_partida = partidas.id_partida left join avanceactividades on avanceactividades.Actividades_id_actividad = actividades.id_actividad where avanceactividades.imagen is not null and componentes.fichas_id_ficha= ? group by componentes.id_componente", id_ficha, (error, res) => {
+    pool.query("SELECT * FROM ((SELECT componentes.fichas_id_ficha, id_componente, numero, componentes.nombre FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.imagen IS NOT NULL) UNION (SELECT componentes.fichas_id_ficha, id_componente, numero, componentes.nombre FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente INNER JOIN partidasimagenes ON partidasimagenes.partidas_id_partida = partidas.id_partida)) historialImagenes where fichas_id_ficha = ? order by numero", id_ficha, (error, res) => {
         if (error) {
             callback(error);
         }
