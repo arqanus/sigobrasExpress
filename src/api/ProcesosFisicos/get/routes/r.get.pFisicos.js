@@ -125,7 +125,7 @@ module.exports = function(app){
 				}
 			})
 		}
-		})
+    })
     app.post('/getValGeneralTodosComponentes',(req,res)=>{
         if (req.body.id_ficha == null) {
                 res.json("null")
