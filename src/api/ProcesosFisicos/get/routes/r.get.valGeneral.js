@@ -105,7 +105,7 @@ module.exports = (app)=>{
         } 
     })
     //valorizaciones partidaNUEVA 
-    app.post('/getValGeneraPartidaNuevalAnyos',async (req,res)=>{
+    app.post('/getValGeneraPartidaNuevaAnyos',async (req,res)=>{
         try {
             var anyos  = await User.getValGeneraMayoresMetradoslAnyos(req.body.id_ficha,'Partida Nueva')
             var periodos  = await User.getValGeneralMayoresMetradosPeriodos(req.body.id_ficha,anyos[anyos.length-1].anyo,'Partida Nueva')
