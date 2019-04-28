@@ -45,7 +45,7 @@ userModel.getTareaUsuariosPorCargo = (id_acceso,id_cargo)=>{
 }
 userModel.getTareaReceptor = (receptor,inicio,fin)=>{
     return new Promise((resolve, reject) => { 
-        pool.query('SELECT tareas.id_tarea,proyectos.nombre,tareas.asunto,tareas.avance FROM tareas left join proyectos on proyectos.id_proyecto = tareas.proyectos_id_proyecto WHERE receptor = ? AND ? <= avance and avance <= ?',[receptor,inicio,fin],(err,res)=>{
+        pool.query('SELECT tareas.id_tarea, proyectos.nombre, tareas.asunto, tareas.avance, subtareas.numero FROM tareas LEFT JOIN proyectos ON proyectos.id_proyecto = tareas.proyectos_id_proyecto LEFT JOIN (SELECT tareas.id_tarea, COUNT(subtareas.id_subTarea) numero FROM tareas LEFT JOIN subtareas ON subtareas.tareas_id_tarea = tareas.id_tarea GROUP BY tareas.id_tarea) subtareas ON subtareas.id_tarea = tareas.id_tarea WHERE receptor = ? AND ? <= avance and avance <= ?',[receptor,inicio,fin],(err,res)=>{
             if (err) {
                 return reject(err)
             }
@@ -56,7 +56,7 @@ userModel.getTareaReceptor = (receptor,inicio,fin)=>{
 }
 userModel.getTareaIdTarea = (id_tarea)=>{
     return new Promise((resolve, reject) => { 
-        pool.query('SELECT * from tareas where id_tarea = ? ',[id_tarea],(err,res)=>{
+        pool.query('SELECT tareas.*,subtareas.numero from tareas LEFT JOIN (SELECT tareas.id_tarea, COUNT(subtareas.id_subTarea) numero FROM tareas LEFT JOIN subtareas ON subtareas.tareas_id_tarea = tareas.id_tarea GROUP BY tareas.id_tarea) subtareas ON subtareas.id_tarea = tareas.id_tarea where tareas.id_tarea = ? ',[id_tarea],(err,res)=>{
             if (err) {
                 return reject(err)
             }
@@ -68,14 +68,43 @@ userModel.getTareaIdTarea = (id_tarea)=>{
 
 userModel.getTareaEmisor = (receptor,inicio,fin)=>{
     return new Promise((resolve, reject) => { 
-        pool.query('SELECT tareas.id_tarea,proyectos.nombre,tareas.asunto,tareas.avance FROM tareas left join proyectos on proyectos.id_proyecto = tareas.proyectos_id_proyecto WHERE emisor = ? AND ? <= avance and avance <= ?',[receptor,inicio,fin],(err,res)=>{
+        pool.query('SELECT tareas.id_tarea, proyectos.nombre, tareas.asunto, tareas.avance, subtareas.numero FROM tareas LEFT JOIN proyectos ON proyectos.id_proyecto = tareas.proyectos_id_proyecto LEFT JOIN (SELECT tareas.id_tarea, COUNT(subtareas.id_subTarea) numero FROM tareas LEFT JOIN subtareas ON subtareas.tareas_id_tarea = tareas.id_tarea GROUP BY tareas.id_tarea) subtareas ON subtareas.id_tarea = tareas.id_tarea WHERE emisor = ? AND ? <= avance and avance <= ?',[receptor,inicio,fin],(err,res)=>{
             if (err) {
                 return reject(err)
             }
             return resolve(res)            
         })   
     })
-         
+}
+userModel.getSubTareaIdSubTarea = (id_subtarea)=>{
+    return new Promise((resolve, reject) => { 
+        pool.query('SELECT * from subtareas where id_subtarea = ? ',[id_subtarea],(err,res)=>{
+            if (err) {
+                return reject(err)
+            }
+            return resolve(res)            
+        })   
+    })
+}
+userModel.getTareaPorcentajeAvance = (id_tarea)=>{
+    return new Promise((resolve, reject) => { 
+        pool.query('SELECT COALESCE(avance / Ntareas * 100, 0) porcentajeAvance FROM (SELECT tareas_id_tarea, COUNT(subtareas.id_subTarea) Ntareas FROM subtareas WHERE tareas_id_tarea = ? GROUP BY tareas_id_tarea) tareas LEFT JOIN (SELECT tareas_id_tarea, COUNT(subtareas.id_subTarea) avance FROM subtareas WHERE tareas_id_tarea = ? AND subtareas.terminado = TRUE GROUP BY tareas_id_tarea) avanceTareas ON avanceTareas.tareas_id_tarea = tareas.tareas_id_tarea',[id_tarea,id_tarea],(err,res)=>{
+            if (err) {
+                return reject(err)
+            }
+            return resolve(res[0])            
+        })   
+    })
+}
+userModel.getSubTareas = (id_tarea,terminado)=>{
+    return new Promise((resolve, reject) => { 
+        pool.query('select * from subtareas where subtareas.tareas_id_tarea = ? and subtareas.terminado = ?',[id_tarea,terminado],(err,res)=>{
+            if (err) {
+                return reject(err)
+            }
+            return resolve(res)            
+        })   
+    })
 }
 
 module.exports = userModel;
