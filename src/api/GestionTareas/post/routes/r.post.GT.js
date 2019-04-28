@@ -22,9 +22,6 @@ module.exports = (app)=>{
 		})
 	})
 	app.post('/postTarea', (req, res)=>{    
-       
-    
- 
 		//ruta de la carpeta public de imagenes
 		var dir = __dirname+'/../../../../public/'
 		//crear ruta si no existe
@@ -116,7 +113,6 @@ module.exports = (app)=>{
 			var avance = await User2.getTareaIdTarea(req.body.id_tarea)
 			var estadoTarea = ""
 			avance = avance.avance
-
 			if(avance == 0){
 				estadoTarea = "pendiente"
 			}else if(0 < avance && avance < 100 ){
@@ -132,6 +128,15 @@ module.exports = (app)=>{
 			)
 		}
 	})
-
+	app.post('/postSubTarea',async(req,res)=>{
+		try {
+			var id_subtarea = await User.postSubTarea(req.body)
+			console.log("id_subtarea",id_subtarea);
+			var subtarea = await User2.getSubTareaIdSubTarea(id_subtarea)
+			res.json(subtarea)				
+		} catch (error) {
+			res.status(204).json(error)
+		}
+	})
 	
 }

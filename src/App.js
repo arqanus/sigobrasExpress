@@ -69,6 +69,7 @@ require('./api/Reportes/post/routes/r.post.reportes')(app);
 
 require('./api/GestionTareas/get/routes/r.get.GT')(app);
 require('./api/GestionTareas/post/routes/r.post.GT')(app);
+require('./api/GestionTareas/put/routes/r.put.GT')(app);
 
 
 

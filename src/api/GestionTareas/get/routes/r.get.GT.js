@@ -63,7 +63,6 @@ module.exports = function(app){
 		var diasTotal  = daysdifference(tareas.fecha_inicial,tareas.fecha_final)
 		var diasTranscurridos  = daysdifference(tareas.fecha_inicial,new Date())
 		var descripcion = tareas.descripcion
-	
 		res.json(
 			{
 				descripcion,
@@ -71,5 +70,21 @@ module.exports = function(app){
 				diasTranscurridos
 			}
 		)
+	})
+	app.post('/getSubTareasPendientes',async (req,res)=>{
+		try {
+			var subtareas = await User.getSubTareas(req.body.id_tarea,0)
+			res.json(subtareas)
+		} catch (error) {
+			res.status(204).json(error)
+		}			
+	})
+	app.post('/getSubTareasTerminadas',async (req,res)=>{
+		try {
+			var subtareas = await User.getSubTareas(req.body.id_tarea,1)
+			res.json(subtareas)
+		} catch (error) {
+			res.status(204).json(error)
+		}			
 	})
 }
