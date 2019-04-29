@@ -45,7 +45,7 @@ userModel.getTareaUsuariosPorCargo = (id_acceso,id_cargo)=>{
 }
 userModel.getTareaReceptor = (receptor,inicio,fin)=>{
     return new Promise((resolve, reject) => { 
-        pool.query('SELECT tareas.id_tarea, proyectos.nombre, tareas.asunto, tareas.avance, subtareas.numero numero_subtareas FROM tareas LEFT JOIN proyectos ON proyectos.id_proyecto = tareas.proyectos_id_proyecto LEFT JOIN (SELECT tareas.id_tarea, COUNT(subtareas.id_subTarea) numero FROM tareas LEFT JOIN subtareas ON subtareas.tareas_id_tarea = tareas.id_tarea GROUP BY tareas.id_tarea) subtareas ON subtareas.id_tarea = tareas.id_tarea WHERE receptor = ? AND ? <= avance and avance <= ?',[receptor,inicio,fin],(err,res)=>{
+        pool.query('SELECT tareas.id_tarea, proyectos.nombre proyecto_nombre, tareas.asunto, tareas.avance, subtareas.numero numero_subtareas FROM tareas LEFT JOIN proyectos ON proyectos.id_proyecto = tareas.proyectos_id_proyecto LEFT JOIN (SELECT tareas.id_tarea, COUNT(subtareas.id_subTarea) numero FROM tareas LEFT JOIN subtareas ON subtareas.tareas_id_tarea = tareas.id_tarea GROUP BY tareas.id_tarea) subtareas ON subtareas.id_tarea = tareas.id_tarea WHERE receptor = ? AND ? <= avance and avance <= ?',[receptor,inicio,fin],(err,res)=>{
             if (err) {
                 return reject(err)
             }
@@ -68,7 +68,7 @@ userModel.getTareaIdTarea = (id_tarea)=>{
 
 userModel.getTareaEmisor = (receptor,inicio,fin)=>{
     return new Promise((resolve, reject) => { 
-        pool.query('SELECT tareas.id_tarea, proyectos.nombre, tareas.asunto, tareas.avance, subtareas.numero numero_subtareas FROM tareas LEFT JOIN proyectos ON proyectos.id_proyecto = tareas.proyectos_id_proyecto LEFT JOIN (SELECT tareas.id_tarea, COUNT(subtareas.id_subTarea) numero FROM tareas LEFT JOIN subtareas ON subtareas.tareas_id_tarea = tareas.id_tarea GROUP BY tareas.id_tarea) subtareas ON subtareas.id_tarea = tareas.id_tarea WHERE emisor = ? AND ? <= avance and avance <= ?',[receptor,inicio,fin],(err,res)=>{
+        pool.query('SELECT tareas.id_tarea, proyectos.nombre proyecto_nombre, tareas.asunto, tareas.avance, subtareas.numero numero_subtareas FROM tareas LEFT JOIN proyectos ON proyectos.id_proyecto = tareas.proyectos_id_proyecto LEFT JOIN (SELECT tareas.id_tarea, COUNT(subtareas.id_subTarea) numero FROM tareas LEFT JOIN subtareas ON subtareas.tareas_id_tarea = tareas.id_tarea GROUP BY tareas.id_tarea) subtareas ON subtareas.id_tarea = tareas.id_tarea WHERE emisor = ? AND ? <= avance and avance <= ?',[receptor,inicio,fin],(err,res)=>{
             if (err) {
                 return reject(err)
             }
