@@ -61,7 +61,7 @@ userModel.getMenu = (data,callback)=>{
             callback(err);
         }
         else{            
-            conn.query("SELECT fichas.id_ficha, id_acceso, data, estado.estado_nombre,estado.id_historialEstado FROM fichas LEFT JOIN fichas_has_accesos ON fichas_has_accesos.Fichas_id_ficha = fichas.id_ficha LEFT JOIN accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso LEFT JOIN menus ON menus.accesos_id_acceso = accesos.id_acceso LEFT JOIN (SELECT fichas.id_ficha, estados.nombre estado_nombre,historialestados.id_historialEstado FROM fichas LEFT JOIN historialestados ON historialestados.Fichas_id_ficha = fichas.id_ficha LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado ) estado ON estado.id_ficha = fichas.id_ficha WHERE fichas.id_ficha = ? AND id_acceso = ? order by estado.id_historialEstado desc limit 1 ",[data.id_ficha,data.id_acceso],(error,res)=>{ 
+            conn.query("SELECT fichas.id_ficha, id_acceso, data, estado.estado_nombre,estado.id_historialEstado, cargos.nombre cargo_nombre FROM fichas LEFT JOIN fichas_has_accesos ON fichas_has_accesos.Fichas_id_ficha = fichas.id_ficha LEFT JOIN accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso LEFT JOIN menus ON menus.accesos_id_acceso = accesos.id_acceso LEFT JOIN (SELECT fichas.id_ficha, estados.nombre estado_nombre,historialestados.id_historialEstado FROM fichas LEFT JOIN historialestados ON historialestados.Fichas_id_ficha = fichas.id_ficha LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado ) estado ON estado.id_ficha = fichas.id_ficha  LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo WHERE fichas.id_ficha = ? AND id_acceso = ? order by estado.id_historialEstado desc limit 1 ",[data.id_ficha,data.id_acceso],(error,res)=>{ 
                 if(error){
                     console.log(error);                    
                     callback(error.code);
@@ -69,25 +69,43 @@ userModel.getMenu = (data,callback)=>{
                     console.log("vacio");                    
                     callback("vacio");
                 }else{
+                    console.log("res",res);
+                    
                     var json = JSON.parse(res[0].data)
                     var estado = res[0].estado_nombre
-                    console.log("estado",estado);
+                    var cargo = res[0].cargo_nombre
                     
 
                     for (let i = 0; i < json.length; i++) {
                         const element = json[i];
-                        console.log("nombremenu",element.nombreMenu);
-                        if(element.nombreMenu=="PROCESOS FISICOS"){
-                            if(estado == "Ejecucion"||estado == "Corte"||estado == "Actualizacion"){
-                                element.submenus.splice(0,0,
-                                    {
-                                        "ruta": "/MDdiario",
-                                        "nombreMenu": "Metrados diarios",
-                                        "nombrecomponente":"MDdiario"
-                                    }
-                                )
-                            
-                            }else if(estado == "Paralizado"){
+                        if(element.nombreMenu=="PROCESOS FISICOS" ){
+                            if(cargo == "residente"||cargo == "asistente técnico"){
+                                if(estado == "Ejecucion"||estado == "Corte"||estado == "Actualizacion"){
+                                    element.submenus.splice(0,0,
+                                        {
+                                            "ruta": "/MDdiario",
+                                            "nombreMenu": "Metrados diarios",
+                                            "nombrecomponente":"MDdiario"
+                                        }
+                                    )
+                                }else if(estado == "Paralizado"){
+                                    element.submenus.splice(0,0,
+                                        {
+                                            "nombreMenu": "Paralizado ",
+                                            "ruta": "/ParalizacionObra",
+                                            "nombrecomponente":"ParalizacionObra"
+                                        }
+                                    )
+                                }else if(estado == "Compatibilidad"){
+                                    element.submenus.splice(0,0,
+                                        {
+                                            "nombreMenu": "Compatibilidad",
+                                            "ruta": "/CompatibilidadObra",
+                                            "nombrecomponente":"CompatibilidadObra"
+                                        }
+                                    )
+                                }
+                            }else{
                                 element.submenus.splice(0,0,
                                     {
                                         "nombreMenu": "Paralizado ",
@@ -95,16 +113,12 @@ userModel.getMenu = (data,callback)=>{
                                         "nombrecomponente":"ParalizacionObra"
                                     }
                                 )
-                            }else if(estado == "Compatibilidad"){
-                                element.submenus.splice(0,0,
-                                    {
-                                        "nombreMenu": "Compatibilidad",
-                                        "ruta": "/CompatibilidadObra",
-                                        "nombrecomponente":"CompatibilidadObra"
-                                    }
-                                )
+
                             }
                             
+                            
+
+                        }else{
 
                         }
                          
