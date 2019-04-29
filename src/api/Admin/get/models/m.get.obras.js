@@ -98,7 +98,7 @@ userModel.getPartidasPorObra = (id_ficha,callback)=>{
             callback(err);
         }
         else{                       
-            conn.query("select partidas.item,actividades.id_actividad,actividades.parcial/partidas.metrado porcentaje_metrado from componentes left join partidas on partidas.componentes_id_componente = componentes.id_componente left join actividades on actividades.Partidas_id_partida = partidas.id_partida where     componentes.fichas_id_ficha = ? AND ((actividades.parcial IS NOT NULL AND actividades.parcial > 0) OR partidas.tipo = 'titulo')",id_ficha,(error,res)=>{
+            conn.query("select partidas.item,partidas.tipo,actividades.id_actividad,actividades.parcial/partidas.metrado porcentaje_metrado from componentes left join partidas on partidas.componentes_id_componente = componentes.id_componente left join actividades on actividades.Partidas_id_partida = partidas.id_partida where     componentes.fichas_id_ficha = ? AND ((actividades.parcial IS NOT NULL AND actividades.parcial > 0) OR partidas.tipo = 'titulo')",id_ficha,(error,res)=>{
                 if(error){
                     console.log(error);                    
                     callback(error.code);
@@ -114,6 +114,7 @@ userModel.getPartidasPorObra = (id_ficha,callback)=>{
                                 partida = {}
                             }
                             partida.item = fila.item
+                            partida.tipo = fila.tipo
                             partida.actividades=[
                                 {
                                     "id_actividad":fila.id_actividad,
