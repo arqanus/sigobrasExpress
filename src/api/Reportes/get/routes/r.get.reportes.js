@@ -1,5 +1,5 @@
 const User = require('../models/m.get.reportes');
-const User2 = require('../../../ProcesosFisicos/get/models/m.get.pFisicos');
+const User2 = require('../../../ProcesosFisicos/get/models/m.get.valGeneral');
 var path = require('path');
 module.exports = function(app){
 	
