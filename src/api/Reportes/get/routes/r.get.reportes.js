@@ -14,10 +14,8 @@ module.exports = function(app){
 				else{
 					res.json(data);	
 				}
-
 			})
 		}
-		
 	})
 	app.post('/getPeriodsByAnyo',(req,res)=>{
 		if(req.body.anyo == null){
