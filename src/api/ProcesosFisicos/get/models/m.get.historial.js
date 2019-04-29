@@ -77,12 +77,16 @@ userModel.getHistorialResumen = (id_ficha,fecha,callback)=>{
         }else if(res.length==0){
             callback(null,"vacio");
         }else{ 
-            callback(null,res)
+            // callback(null,res)
             //calculando ultimo dia  
             var fecha_array = fecha.split("-")
             var month = fecha_array[1]-1;
             var year = fecha_array[0];
             var lastDate = (new Date(year, month + 1, 0)).getDate();
+            var dia_inicial = res[0].dia
+            var dia_final = res[res.length-1].dia
+            // console.log("rango de dias",dia_inicial,dia_final);
+            
 
             //creando data inicial
             var series = []
@@ -102,7 +106,7 @@ userModel.getHistorialResumen = (id_ficha,fecha,callback)=>{
             }
             //llenando de ceros
             var categories = []
-            for (let i = 1; i <= lastDate; i++) {
+            for (let i = dia_inicial; i <= dia_final; i++) {
                 categories.push(i)
                 for (let j = 0; j < series.length; j++) {
                     const componente = series[j];
@@ -116,19 +120,19 @@ userModel.getHistorialResumen = (id_ficha,fecha,callback)=>{
                 const avance = res[i]
                 for (let j = 0; j < series.length; j++) {
                     const componente = series[j];
-                    console.log("avance",avance.nombre,componente.name);
+                    // console.log("avance",avance.nombre,componente.name,avance.dia);
                     
                     if(avance.nombre == componente.name && avance.valor != null){
-                        componente.data[avance.dia-1] = Number(avance.valor.toFixed(2))
+                        componente.data[avance.dia-dia_inicial] = Number(avance.valor.toFixed(2))
                         break;
                     }
                 }
             }
             
-            // callback(null,{
-            //     categories,
-            //     series
-            // });                    
+            callback(null,{
+                categories,
+                series
+            });                    
         }
     })
 }
