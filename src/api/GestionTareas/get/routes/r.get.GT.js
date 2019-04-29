@@ -47,15 +47,15 @@ module.exports = function(app){
 		res.json(tareas)
 	})
 	app.post('/getTareaEmisorPendientes',async (req,res)=>{		
-		var tareas = await User.getTareaReceptor(req.body.id_acceso,0,0)
+		var tareas = await User.getTareaEmisor(req.body.id_acceso,0,0)
 		res.json(tareas)
 	})
 	app.post('/getTareaEmisorProgreso',async (req,res)=>{		
-		var tareas = await User.getTareaReceptor(req.body.id_acceso,1,99)
+		var tareas = await User.getTareaEmisor(req.body.id_acceso,1,99)
 		res.json(tareas)
 	})
 	app.post('/getTareaEmisorTerminadas',async (req,res)=>{		
-		var tareas = await User.getTareaReceptor(req.body.id_acceso,100,100)
+		var tareas = await User.getTareaEmisor(req.body.id_acceso,100,100)
 		res.json(tareas)
 	})
 	app.post('/getTareaIdTarea',async (req,res)=>{				
@@ -83,6 +83,48 @@ module.exports = function(app){
 		try {
 			var subtareas = await User.getSubTareas(req.body.id_tarea,1)
 			res.json(subtareas)
+		} catch (error) {
+			res.status(204).json(error)
+		}			
+	})
+	app.post('/getTareasReceptorCantidades',async (req,res)=>{
+		try {
+			var pendientes = await User.getTareaReceptor(req.body.id_acceso,0,0)
+			var progreso = await User.getTareaReceptor(req.body.id_acceso,1,99)
+			var terminadas = await User.getTareaReceptor(req.body.id_acceso,100,100)
+				
+			pendientes = pendientes.length
+			progreso = progreso.length
+			terminadas = terminadas.length
+			
+			res.json(
+				{
+					pendientes,
+					progreso,
+					terminadas
+				}
+			)
+		} catch (error) {
+			res.status(204).json(error)
+		}			
+	})
+	app.post('/getTareasEmisorCantidades',async (req,res)=>{
+		try {
+			var pendientes = await User.getTareaEmisor(req.body.id_acceso,0,0)
+			var progreso = await User.getTareaEmisor(req.body.id_acceso,1,99)
+			var terminadas = await User.getTareaEmisor(req.body.id_acceso,100,100)
+				
+			pendientes = pendientes.length
+			progreso = progreso.length
+			terminadas = terminadas.length
+			
+			res.json(
+				{
+					pendientes,
+					progreso,
+					terminadas
+				}
+			)
 		} catch (error) {
 			res.status(204).json(error)
 		}			
