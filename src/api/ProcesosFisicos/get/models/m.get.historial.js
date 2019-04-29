@@ -1,4 +1,5 @@
 const pool = require('../../../../db/connection');
+const tools = require('../../../../tools/format')
 let userModel = {};
 function formato(data){
     
@@ -46,6 +47,67 @@ userModel.getHistorialAnyos  = (id_ficha,callback)=>{
         }
         
         
+    })
+}
+userModel.getHistorialAnyosResumen = (id_ficha,anyo,callback)=>{    
+    console.log("todos",id_ficha,anyo);
+    pool.query("SELECT CONCAT('C-', componentes.numero) nombre, month(avanceactividades.fecha) dia, SUM(avanceactividades.valor * partidas.costo_unitario) valor FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.Fichas_id_ficha = fichas.id_ficha AND historialestados.fecha_inicial <= avanceactividades.fecha AND avanceactividades.fecha < historialestados.fecha_final LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND COALESCE(avanceactividades.valor, 0) != 0 AND fichas.id_ficha = ? AND YEAR(avanceactividades.fecha) = ? GROUP BY componentes.id_componente , DATE_FORMAT(avanceactividades.fecha, '%Y-%m') ORDER BY month(avanceactividades.fecha)",[id_ficha,anyo],(err,res)=>{ 
+        if(err){ 
+            callback(err.code);
+        }else if(res.length==0){
+            callback(null,"vacio");
+        }else{ 
+            // callback(null,res)
+            //calculando ultimo dia  
+            var dia_inicial = res[0].dia
+            var dia_final = res[res.length-1].dia
+            // console.log("rango de dias",dia_inicial,dia_final);
+            //creando data inicial
+            var series = []
+            var listaItems = []
+            for (let i = 0; i < res.length; i++) {
+                const avance = res[i];
+                if (listaItems.indexOf(avance.nombre) === -1){
+                    series.push(
+                        {
+                            name:avance.nombre,
+                            data:[]
+                        }
+                    );
+                    listaItems.push(avance.nombre)
+                }
+                
+            }
+            //llenando de ceros
+            var categories = []
+            for (let i = dia_inicial; i <= dia_final; i++) {
+                categories.push(tools.monthNames[i-1])
+                for (let j = 0; j < series.length; j++) {
+                    const componente = series[j];
+                    componente.data.push(0)
+                }
+            }
+
+            //llenando datos de avance
+            
+            for (let i = 0; i < res.length; i++) {                       
+                const avance = res[i]
+                for (let j = 0; j < series.length; j++) {
+                    const componente = series[j];
+                    // console.log("avance",avance.nombre,componente.name,avance.dia);
+                    
+                    if(avance.nombre == componente.name && avance.valor != null){
+                        componente.data[avance.dia-dia_inicial] = Number(avance.valor.toFixed(2))
+                        break;
+                    }
+                }
+            }
+            
+            callback(null,{
+                categories,
+                series
+            });                    
+        }
     })
 }
 userModel.getHistorialMeses  = (id_ficha,anyo,callback)=>{    
