@@ -37,6 +37,18 @@ module.exports = function(app){
 
 
     })
+    app.post('/getHistorialAnyosResumen',(req,res)=>{
+        if (req.body.id_ficha == null) {
+            res.json("null")
+        } else {			
+            User.getHistorialAnyosResumen(req.body.id_ficha,req.body.anyo,(err,data)=>{
+                if(err){ res.status(204).json(err);}
+                else{
+                    res.json(data);	
+                }
+            })
+        }
+    })
     app.post('/getHistorialMeses',(req,res)=>{
         if (req.body.id_ficha == null) {
             res.json("null")

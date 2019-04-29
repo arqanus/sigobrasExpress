@@ -30,4 +30,7 @@ userModel.rome = function rome(N,s,b,a,o,t){
         s='IVXLCDM'.charAt(o>2?b+N-(N&=~1)+(o=1):b)+s;
     return Array(t+1).join('M')+s;
 }
+userModel.monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+"Julio", "Agosto", "Setiembre", "Octubre", "Noviembre", "Diciembre"
+];
 module.exports = userModel;
