@@ -33,14 +33,16 @@ module.exports = (app)=>{
 		//se configura la ruta de guardar
 		form.uploadDir = dir;
 		  
-		form.parse(req, (err, fields, files) =>{
+		form.parse(req, async(err, fields, files) =>{
 		  console.log("asunto :",fields.asunto)
 		  console.log("descripcion :",fields.descripcion)
 		  console.log("fecha_inicial :",fields.fecha_inicial)
 		  console.log("fecha_final :",fields.fecha_final)
 		  console.log("proyectos_id_proyecto :",fields.proyectos_id_proyecto)
 		  console.log("emisor :",fields.emisor)
-		  console.log("receptor :",fields.receptor)
+		  console.log("receptor :",(fields.receptor))
+			var receptores = fields.receptor.split(",")
+		  console.log("receptor :",receptores)
 		  console.log("extension :",fields.extension)
 		  console.log("codigo_obra :",fields.codigo_obra)
 	
@@ -64,45 +66,59 @@ module.exports = (app)=>{
 		  var ruta = "/"+fields.receptor+"_"+fields.emisor+"_"+datetime()+fields.extension
 		  //files foto
 		  if(files.archivo){
-			fs.rename(files.archivo.path,obraFolder+ruta,(err)=>{
-			  if (err){
-				res.json(err)
-			  }
-			  var tarea = {		
-				"asunto":fields.asunto,
-				"descripcion":fields.descripcion,
-				"fecha_inicial":fields.fecha_inicial,
-				"fecha_final":fields.fecha_final,
-				"proyectos_id_proyecto":fields.proyectos_id_proyecto,
-				"emisor":fields.emisor,
-				"receptor":fields.receptor,
-				"archivo":"/static/"+fields.codigo_obra+"/tareas"+ruta
-			  }
-			  User.postTarea(tarea,(err,data)=>{
-				if(err){ res.status(204).json(err);}
-				else{
-				  res.json("exito")              
-				}
-			  })
-			}); 
+				fs.rename(files.archivo.path,obraFolder+ruta,async(err)=>{
+					if (err){
+					res.json(err)
+					}
+					var tarea = {		
+					"asunto":fields.asunto,
+					"descripcion":fields.descripcion,
+					"fecha_inicial":fields.fecha_inicial,
+					"fecha_final":fields.fecha_final,
+					"proyectos_id_proyecto":fields.proyectos_id_proyecto,
+					"emisor":fields.emisor,
+					"receptor":fields.receptor,
+					"archivo":"/static/"+fields.codigo_obra+"/tareas"+ruta
+					}
+					var id_tarea = await User.postTarea(tarea)
+					var TareaReceptores = []
+					for (let i = 0; i < receptores.length; i++) {
+						const receptor = receptores[i];
+						TareaReceptores.push(
+							[id_tarea,Number(receptor)]
+						)
+					}
+					var affectedRows = await User.postTareaReceptores(TareaReceptores)
+					if(affectedRows>0){
+						res.json("exito")
+					}else{
+						res.json("error")
+					}
+				}); 
 		  }else{
-			var tarea = {		
-				"asunto":fields.asunto,
-				"descripcion":fields.descripcion,
-				"fecha_inicial":fields.fecha_inicial,
-				"fecha_final":fields.fecha_final,
-				"proyectos_id_proyecto":fields.proyectos_id_proyecto,
-				"emisor":fields.emisor,
-				"receptor":fields.receptor
-			}
-			User.postTarea(tarea,(err,data)=>{
-				if(err){ res.status(204).json(err);}
-				else{
-					res.json("exito")              
+				var tarea = {		
+					"asunto":fields.asunto,
+					"descripcion":fields.descripcion,
+					"fecha_inicial":fields.fecha_inicial,
+					"fecha_final":fields.fecha_final,
+					"proyectos_id_proyecto":fields.proyectos_id_proyecto,
+					"emisor":fields.emisor
 				}
-			})
+				var id_tarea = await User.postTarea(tarea)
+				var TareaReceptores = []
+				for (let i = 0; i < receptores.length; i++) {
+					const receptor = receptores[i];
+					TareaReceptores.push(
+						[id_tarea,Number(receptor)]
+					)
+				}
+				var affectedRows = await User.postTareaReceptores(TareaReceptores)
+				if(affectedRows>0){
+					res.json("exito")
+				}else{
+					res.json("error")
+				}
 		  }
-				
 		});
 	})
 	app.post('/postTareaAvance',async (req,res)=>{
