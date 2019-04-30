@@ -145,7 +145,23 @@ userModel.getPartidasPorObra = (id_ficha,callback)=>{
         }                
     })
 }
-
-
+userModel.getHistorialEstados = (id_ficha,callback)=>{
+    pool.query("select id_historialEstado,Fichas_id_ficha, DATE_FORMAT(fecha_inicial, '%Y-%m-%d') fecha_inicial, DATE_FORMAT(fecha_final, '%Y-%m-%d') fecha_final, Estados_id_Estado from historialestados where Fichas_id_ficha = ?",id_ficha,(error,res)=>{
+        if(error){
+            console.log(error);                    
+            callback(error.code);
+        }else{
+            var Data=[]
+            for (let i = 0; i < res.length; i++) {
+                const historial = res[i];
+                console.log("hola historial",historial.id_historialEstado);
+                Data.push(
+                          [historial.id_historialEstado,historial.Fichas_id_ficha,historial.fecha_inicial,historial.fecha_final,historial.Estados_id_Estado]
+                )
+            }
+            callback(null,Data)
+        }
+    })
+}
 
 module.exports = userModel;

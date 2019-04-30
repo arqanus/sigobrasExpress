@@ -8,18 +8,18 @@ var connection = mysql.createConnection(
 var pool = mysql.createPool({
    
     //**** config en red trabajo */
-    // host: '192.168.0.4',
-    // user: 'mish',
-    // password: 'mish',    
-    // database: 'SIGOBRAS_DB',
-    // connectTimeout: 1000
-
-    /**********config laptop run* */
-    host: '190.117.94.80',
-    user: 'myuser',
-    password: 'mypass',    
+    host: '192.168.0.4',
+    user: 'mish',
+    password: 'mish',    
     database: 'SIGOBRAS_DB',
     connectTimeout: 1000
+
+    /**********config laptop run* */
+    // host: '192.168.0.4',
+    // user: 'kaido',
+    // password: 'kaido',    
+    // database: 'SIGOBRAS_DB',
+    // connectTimeout: 1000
 
     // host: 'localhost',
     // user: 'root',
