@@ -54,7 +54,7 @@ userModel.getTareaReceptor = (receptor,inicio,fin)=>{
 }
 userModel.getTareaIdTarea = (id_tarea)=>{
     return new Promise((resolve, reject) => { 
-        pool.query('SELECT tareas.*,subtareas.numero from tareas LEFT JOIN (SELECT tareas.id_tarea, COUNT(subtareas.id_subTarea) numero FROM tareas LEFT JOIN subtareas ON subtareas.tareas_id_tarea = tareas.id_tarea GROUP BY tareas.id_tarea) subtareas ON subtareas.id_tarea = tareas.id_tarea where tareas.id_tarea = ? ',[id_tarea],(err,res)=>{
+        pool.query("SELECT tareas.descripcion,tareas.fecha_inicial,tareas.fecha_final,tareas.id_tarea, proyectos.nombre proyecto_nombre, tareas.asunto, tareas.avance porcentaje_avance, subtareas.numero numero_subtareas FROM tareas LEFT JOIN proyectos ON proyectos.id_proyecto = tareas.proyectos_id_proyecto LEFT JOIN (SELECT tareas.id_tarea, COUNT(subtareas.id_subTarea) numero FROM tareas LEFT JOIN subtareas ON subtareas.tareas_id_tarea = tareas.id_tarea GROUP BY tareas.id_tarea) subtareas ON subtareas.id_tarea = tareas.id_tarea WHERE tareas.id_tarea = ?",[id_tarea],(err,res)=>{
             if (err) {
                 return reject(err)
             }
