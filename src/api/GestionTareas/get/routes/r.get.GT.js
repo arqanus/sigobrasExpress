@@ -63,11 +63,13 @@ module.exports = function(app){
 		var diasTotal  = daysdifference(tareas.fecha_inicial,tareas.fecha_final)
 		var diasTranscurridos  = daysdifference(tareas.fecha_inicial,new Date())
 		var descripcion = tareas.descripcion
+		var tipo_archivo = tareas.archivo
 		res.json(
 			{
 				descripcion,
 				diasTotal,
-				diasTranscurridos
+				diasTranscurridos,
+				tipo_archivo
 			}
 		)
 	})
