@@ -122,63 +122,44 @@ module.exports = function(app){
 		}
 		
 	})
-	app.post('/getcronogramaInicio',(req,res)=>{
-		if(req.body.id_ficha == null){
-			res.json("null");		
-		}else{			
-			User.getUltimoCorte(req.body.id_ficha,(err,corte)=>{
-				if(err){
-					res.json(err);	
-				}else{
-					console.log(req.body.id_ficha,corte.fecha_final);
-					var fecha_inicial = fechaLargaCorta(new Date(corte.fecha_inicial))
-					var fecha_final = fechaLargaCorta(new Date(corte.fecha_final))								
-					User.getAvanceGestionAnterior(req.body.id_ficha,corte.fecha_final,(err,avance)=>{
-						if(err){
-							res.json(err);
-						}else{
-							corte.programado_monto = avance.valor_total||0
-							corte.programado_porcentaje = avance.porcentaje||0
-							corte.fisico_monto = avance.valor_total||0
-							corte.fisico_porcentaje = avance.porcentaje||0
-							corte.financiero_porcentaje = (corte.financiero_monto/avance.costo_directo*100)
-							var avance_Acumulado = 0
-							if(corte.codigo == "C"){
-								avance_Acumulado = corte.fisico_monto
-							}
-							User.getcronogramaInicio(corte,req.body.id_ficha,corte.fecha_final,(err,data)=>{
-								if(err){
-									res.json(err);
-								}else{
-									if(data=="vacio"){
-										data = {}
-										data.programado_monto_total
-										data.programado_porcentaje_total
-										data.fisico_monto_total
-										data.fisico_porcentaje_total
-										data.financiero_monto_total
-										data.financiero_porcentaje_total
-										data.grafico_programado=[]
-										data.grafico_fisico=[]
-										data.grafico_financiero=[]
-										data.grafico_periodos=[]
-										data.data=[]								
-									}
-									data.fecha_inicial = fecha_inicial
-									data.fecha_final = fecha_final
-									data.avance_Acumulado = avance_Acumulado
-									data.fechaActual = fechaActual()
-									res.json(data)
-								}
-							})
-						}	
-					
-					})
-				}	
-			
-			})
+	app.post('/getcronogramaInicio',async(req,res)=>{
+		try {
+			var corte = await User.getUltimoCorte(req.body.id_ficha)
+			var fecha_inicial = fechaLargaCorta(new Date(corte.fecha_inicial))
+			var fecha_final = fechaLargaCorta(new Date(corte.fecha_final))								
+			var avance = await User.getAvanceGestionAnterior(req.body.id_ficha,corte.fecha_final)
+			console.log("avance",avance);
+			corte.programado_monto = avance.valor_total||0
+			corte.programado_porcentaje = avance.porcentaje||0
+			corte.fisico_monto = avance.valor_total||0
+			corte.fisico_porcentaje = avance.porcentaje||0
+			corte.financiero_porcentaje = (corte.financiero_monto/avance.g_total_presu*100)
+			var avance_Acumulado = 0
+			if(corte.codigo == "C"){
+				avance_Acumulado = corte.fisico_monto
+			}
+			var cronograma = await User.getcronogramaInicio(corte,req.body.id_ficha,corte.fecha_final)
+			if(cronograma=="vacio"){
+				cronograma = {}
+				cronograma.programado_monto_total
+				cronograma.programado_porcentaje_total
+				cronograma.fisico_monto_total
+				cronograma.fisico_porcentaje_total
+				cronograma.financiero_monto_total
+				cronograma.financiero_porcentaje_total
+				cronograma.grafico_programado=[]
+				cronograma.grafico_fisico=[]
+				cronograma.grafico_financiero=[]
+				cronograma.grafico_periodos=[]
+				cronograma.data=[]								
+			}
+			cronograma.fecha_inicial = fecha_inicial
+			cronograma.fecha_final = fecha_final
+			cronograma.avance_Acumulado = avance_Acumulado
+			cronograma.fechaActual = fechaActual()
+			res.json(cronograma)
+		} catch (error) {
+			res.status(204).json(error)
 		}
-		
 	})
-
 }
