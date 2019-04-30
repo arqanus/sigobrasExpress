@@ -91,7 +91,11 @@ userModel.getSubTareaIdSubTarea = (id_subtarea)=>{
             if (err) {
                 return reject(err)
             }
-            return resolve(res)            
+            for (let i = 0; i < res.length; i++) {
+                const subtarea = res[i];
+                subtarea.color = tools.ColoresRandom()
+            }
+            return resolve(res[0])            
         })   
     })
 }
