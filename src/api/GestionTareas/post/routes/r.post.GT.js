@@ -88,8 +88,18 @@ module.exports = (app)=>{
 						)
 					}
 					var affectedRows = await User.postTareaReceptores(TareaReceptores)
+					var tarea = await User2.getTareaIdTarea(id_tarea)
+
 					if(affectedRows>0){
-						res.json("exito")
+						res.json(
+							{
+								"id_tarea": tarea.id_tarea,
+								"proyecto_nombre": tarea.proyecto_nombre,
+								"asunto": tarea.asunto,
+								"porcentaje_avance": tarea.porcentaje_avance,
+								"numero_subtareas": tarea.numero_subtareas
+							}
+						)
 					}else{
 						res.json("error")
 					}
@@ -112,8 +122,18 @@ module.exports = (app)=>{
 					)
 				}
 				var affectedRows = await User.postTareaReceptores(TareaReceptores)
+				var tarea = await User2.getTareaIdTarea(id_tarea)
+
 				if(affectedRows>0){
-					res.json("exito")
+					res.json(
+						{
+							"id_tarea": tarea.id_tarea,
+							"proyecto_nombre": tarea.proyecto_nombre,
+							"asunto": tarea.asunto,
+							"porcentaje_avance": tarea.porcentaje_avance,
+							"numero_subtareas": tarea.numero_subtareas
+						}
+					)
 				}else{
 					res.json("error")
 				}
