@@ -53,4 +53,25 @@ userModel.ColoresRandom =function ColoresRandom() {
     return "linear-gradient(" + angle + "deg, " + newColor1 + ", " + newColor2 + ")";
     
 }
+userModel.ColoresRandomRGB =function ColoresRandom() {
+
+    function populate(a) {
+      
+      
+      for ( var i = 0; i < 6; i++ ) {
+        var x = Math.round( Math.random() * 14 );
+        var y = hexValues[x];
+        a += y;
+      }
+      a+=')'
+      return a;
+    }
+    
+    var newColor1 = populate('rgb(');
+    var newColor2 = populate('rgb(');
+    var angle = Math.round( Math.random() * 360 );
+    
+    return "linear-gradient(" + angle + "deg, " + newColor1 + ", " + newColor2 + ")";
+    
+}
 module.exports = userModel;

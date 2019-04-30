@@ -111,7 +111,7 @@ userModel.getTareaPorcentajeAvance = (id_tarea)=>{
 }
 userModel.getSubTareas = (id_tarea,terminado)=>{
     return new Promise((resolve, reject) => { 
-        pool.query('select * from subtareas where subtareas.tareas_id_tarea = ? and subtareas.terminado = ?',[id_tarea,terminado],(err,res)=>{
+        pool.query('select * from subtareas where subtareas.tareas_id_tarea = ? and subtareas.terminado = ? order by subtareas.id_subtarea desc',[id_tarea,terminado],(err,res)=>{
             if (err) {
                 return reject(err)
             }
