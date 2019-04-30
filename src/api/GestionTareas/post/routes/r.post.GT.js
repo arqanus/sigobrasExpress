@@ -77,7 +77,6 @@ module.exports = (app)=>{
 					"fecha_final":fields.fecha_final,
 					"proyectos_id_proyecto":fields.proyectos_id_proyecto,
 					"emisor":fields.emisor,
-					"receptor":fields.receptor,
 					"archivo":"/static/"+fields.codigo_obra+"/tareas"+ruta
 					}
 					var id_tarea = await User.postTarea(tarea)
