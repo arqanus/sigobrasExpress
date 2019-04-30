@@ -1,4 +1,5 @@
 const pool = require('../../../../db/connection');
+const tools = require('../../../../tools/format')
 let userModel = {};
 
 userModel.getTareaProyectos = ()=>{
@@ -109,6 +110,10 @@ userModel.getSubTareas = (id_tarea,terminado)=>{
         pool.query('select * from subtareas where subtareas.tareas_id_tarea = ? and subtareas.terminado = ?',[id_tarea,terminado],(err,res)=>{
             if (err) {
                 return reject(err)
+            }
+            for (let i = 0; i < res.length; i++) {
+                const subtarea = res[i];
+                subtarea.color = tools.ColoresRandom()
             }
             return resolve(res)            
         })   
