@@ -51,7 +51,6 @@ userModel.getTareaReceptor = (receptor,inicio,fin)=>{
             return resolve(res)            
         })   
     })
-         
 }
 userModel.getTareaIdTarea = (id_tarea)=>{
     return new Promise((resolve, reject) => { 

@@ -10,13 +10,27 @@ userModel.postProyecto = (data, callback) => {
         }
     })
 }
-userModel.postTarea = (data, callback) => {
-    pool.query('INSERT INTO tareas SET ?', data, (err, res) => {
-        if (err) {
-            callback(err);
-        } else {
-            callback(null, res.insertId);
-        }
+userModel.postTarea = (data) => {
+    return new Promise((resolve, reject) => { 
+        pool.query('INSERT INTO tareas SET ?', data, (err, res) => {
+            if (err) {
+                reject(err);
+            } else {
+                console.log(res);
+                resolve(res.insertId);
+            }
+        })
+    })
+}
+userModel.postTareaReceptores = (data) => {
+    return new Promise((resolve, reject) => { 
+        pool.query('INSERT INTO tareas_has_accesos (tareas_id_tarea,accesos_id_acceso) values ?', [data], (err, res) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(res.affectedRows);
+            }
+        })
     })
 }
 userModel.postTareaAvance = (avance, id_tarea, ) => {

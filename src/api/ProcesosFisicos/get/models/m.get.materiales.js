@@ -100,7 +100,7 @@ userModel.getmaterialespartidaTiposLista = (id_partida, tipo, callback) => {
             callback(err);
         }
         else {
-            conn.query("SELECT descripcion, unidad, cantidad, precio, parcial FROM recursos WHERE recursos.Partidas_id_partida = ? AND recursos.tipo = ?", [id_partida, tipo], (error, res) => {
+            conn.query("SELECT * FROM recursos WHERE recursos.Partidas_id_partida = ? AND recursos.tipo = ?", [id_partida, tipo], (error, res) => {
                 if (error) {
                     callback(error);
                 }
