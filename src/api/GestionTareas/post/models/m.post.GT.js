@@ -1,13 +1,15 @@
 const pool = require('../../../../db/connection');
 let userModel = {};
 
-userModel.postProyecto = (data, callback) => {
-    pool.query('INSERT INTO proyectos SET ?', data, (err, res) => {
-        if (err) {
-            callback(err);
-        } else {
-            callback(null, res.insertId);
-        }
+userModel.postProyecto = (data) => {
+    return new Promise((resolve, reject) => { 
+        pool.query('INSERT INTO proyectos SET ?', [data], (err, res) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(res.insertId);
+            }
+        })
     })
 }
 userModel.postTarea = (data) => {

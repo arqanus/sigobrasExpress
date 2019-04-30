@@ -12,14 +12,15 @@ function datetime(){
 }
 
 module.exports = (app)=>{
-	app.post('/postProyecto',(req,res)=>{
-		User.postProyecto(req.body,(err,data)=>{
-			if(err) {
-				res.status(204).json(err)
-			}else{
-				res.json(data);
-			}		
-		})
+	app.post('/postProyecto',async(req,res)=>{
+		try {
+			var id_proyecto = await User.postProyecto(req.body)
+			var proyecto = await User2.getTareaProyecto(id_proyecto)
+			res.json(proyecto)
+		} catch (error) {
+			res.status(204).json(proyecto)
+		}
+		
 	})
 	app.post('/postTarea', (req, res)=>{    
 		//ruta de la carpeta public de imagenes
