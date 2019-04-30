@@ -11,6 +11,16 @@ userModel.getTareaProyectos = ()=>{
         })  
     })      
 }
+userModel.getTareaProyecto = (id_proyecto)=>{
+    return new Promise((resolve, reject) => {
+        pool.query('select *from proyectos where id_proyecto = ?',id_proyecto, (err,res)=>{
+            if (err) {
+                return reject(err)
+            }
+            return resolve(res[0])               
+        })  
+    })      
+}
 userModel.getTareaAccesoCargo = (id_acceso)=>{
     return new Promise((resolve, reject) => {
         pool.query('select cargos.nivel from accesos left join cargos on cargos.id_Cargo = accesos.Cargos_id_Cargo where accesos.id_acceso =?',[id_acceso],(err,res)=>{
