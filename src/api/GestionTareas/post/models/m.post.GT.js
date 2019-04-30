@@ -24,7 +24,7 @@ userModel.postTarea = (data) => {
 }
 userModel.postTareaReceptores = (data) => {
     return new Promise((resolve, reject) => { 
-        pool.query('INSERT INTO tareas_has_accesos (tareas_id_tarea,accesos_id_acceso) values ?', [data], (err, res) => {
+        pool.query('INSERT INTO tareas_has_accesos (tareas_id_tarea,receptor) values ?', [data], (err, res) => {
             if (err) {
                 reject(err);
             } else {
