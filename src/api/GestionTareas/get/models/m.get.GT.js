@@ -117,7 +117,7 @@ userModel.getSubTareas = (id_tarea,terminado)=>{
             }
             for (let i = 0; i < res.length; i++) {
                 const subtarea = res[i];
-                subtarea.color = tools.ColoresRandom()
+                subtarea.color = tools.ColoresRandomRGB()
             }
             return resolve(res)            
         })   
