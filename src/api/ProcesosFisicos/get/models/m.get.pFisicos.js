@@ -489,35 +489,35 @@ userModel.getValGeneralTodosComponentes = (id_ficha,fecha_inicial,fecha_final,ca
                             fila.porcentaje_saldo = ""
 
                         }else {
-                            fila.metrado  = ( fila.metrado ).toFixed(5)
-                            fila.costo_unitario  = ( fila.costo_unitario ).toFixed(5)
-                            fila.precio_parcial  = ( fila.precio_parcial ).toFixed(5)
-                            fila.metrado_anterior  = ( fila.metrado_anterior ).toFixed(5)
-                            fila.valor_anterior  = ( fila.valor_anterior ).toFixed(5)
-                            fila.porcentaje_anterior  = ( fila.porcentaje_anterior ).toFixed(5)
-                            fila.metrado_actual  = ( fila.metrado_actual ).toFixed(5)
-                            fila.valor_actual  = ( fila.valor_actual ).toFixed(5)
-                            fila.porcentaje_actual  = ( fila.porcentaje_actual ).toFixed(5)
-                            fila.metrado_total = ( fila.metrado_total).toFixed(5)
-                            fila.valor_total = ( fila.valor_total).toFixed(5)
-                            fila.porcentaje_total = ( fila.porcentaje_total).toFixed(5)
-                            fila.metrado_saldo  = ( fila.metrado_saldo ).toFixed(5)
-                            fila.valor_saldo  = ( fila.valor_saldo ).toFixed(5)
-                            fila.porcentaje_saldo = ( fila.porcentaje_saldo).toFixed(5)
+                            fila.metrado  = tools.formatoSolesPresicion( fila.metrado )
+                            fila.costo_unitario  = tools.formatoSolesPresicion( fila.costo_unitario )
+                            fila.precio_parcial  = tools.formatoSolesPresicion( fila.precio_parcial )
+                            fila.metrado_anterior  = tools.formatoSolesPresicion( fila.metrado_anterior )
+                            fila.valor_anterior  = tools.formatoSolesPresicion( fila.valor_anterior )
+                            fila.porcentaje_anterior  = tools.formatoSolesPresicion( fila.porcentaje_anterior )
+                            fila.metrado_actual  = tools.formatoSolesPresicion( fila.metrado_actual )
+                            fila.valor_actual  = tools.formatoSolesPresicion( fila.valor_actual )
+                            fila.porcentaje_actual  = tools.formatoSolesPresicion( fila.porcentaje_actual )
+                            fila.metrado_total = tools.formatoSolesPresicion( fila.metrado_total)
+                            fila.valor_total = tools.formatoSolesPresicion( fila.valor_total)
+                            fila.porcentaje_total = tools.formatoSolesPresicion( fila.porcentaje_total)
+                            fila.metrado_saldo  = tools.formatoSolesPresicion( fila.metrado_saldo )
+                            fila.valor_saldo  = tools.formatoSolesPresicion( fila.valor_saldo )
+                            fila.porcentaje_saldo = tools.formatoSolesPresicion( fila.porcentaje_saldo)
                         }
                     }
           
                     callback(null,
                         {
-                            "valor_anterior":(valor_anterior).toFixed(5),
-                            "valor_actual":(valor_actual ).toFixed(5),
-                            "valor_total":(valor_total ).toFixed(5),
-                            "valor_saldo":(valor_saldo ).toFixed(5),
-                            "precio_parcial":(precio_parcial).toFixed(5),
-                            "porcentaje_anterior":(valor_anterior/precio_parcial*100).toFixed(5),
-                            "porcentaje_actual":(valor_actual/precio_parcial*100).toFixed(5),
-                            "porcentaje_total":(valor_total/precio_parcial*100).toFixed(5),
-                            "porcentaje_saldo":(valor_saldo/precio_parcial*100).toFixed(5),
+                            "valor_anterior":tools.formatoSolesPresicion(valor_anterior),
+                            "valor_actual":tools.formatoSolesPresicion(valor_actual ),
+                            "valor_total":tools.formatoSolesPresicion(valor_total ),
+                            "valor_saldo":tools.formatoSolesPresicion(valor_saldo ),
+                            "precio_parcial":tools.formatoSolesPresicion(precio_parcial),
+                            "porcentaje_anterior":tools.formatoSolesPresicion(valor_anterior/precio_parcial*100),
+                            "porcentaje_actual":tools.formatoSolesPresicion(valor_actual/precio_parcial*100),
+                            "porcentaje_total":tools.formatoSolesPresicion(valor_total/precio_parcial*100),
+                            "porcentaje_saldo":tools.formatoSolesPresicion(valor_saldo/precio_parcial*100),
                             "partidas":res
                         }
                     );
