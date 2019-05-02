@@ -1,4 +1,6 @@
 const pool = require('../../../../db/connection');
+const tools = require('../../../../tools/format')
+
 let userModel = {};
 function isNumber(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
@@ -456,11 +458,6 @@ userModel.getValGeneralTodosComponentes = (id_ficha,fecha_inicial,fecha_final,ca
                     var valor_total = 0                    
                     var valor_saldo  = 0
 
-                    var porcentaje_anterior = 0
-                    var porcentaje_actual = 0
-                    var porcentaje_total = 0
-                    var porcentaje_saldo = 0
-
                     var precio_parcial = 0
                     
                     for (let i = 0; i < res.length; i++) {
@@ -496,24 +493,19 @@ userModel.getValGeneralTodosComponentes = (id_ficha,fecha_inicial,fecha_final,ca
                             fila.porcentaje_saldo = ""
 
                         }
-                        
-                        // fila.valor_anterior = Number(fila.valor_anterior).toFixed(2)
-                        // fila.valor_actual = Number(fila.valor_actual).toFixed(2)
-                        // fila.valor_total = Number(fila.valor_total).toFixed(2)
-                        // fila.valor_saldo = Number(fila.valor_saldo).toFixed(2)
                     }
           
                     callback(null,
                         {
-                            "valor_anterior":(valor_anterior).toFixed(3),
-                            "valor_actual":(valor_actual ).toFixed(3),
-                            "valor_total":(valor_total ).toFixed(3),
-                            "valor_saldo":(valor_saldo ).toFixed(3),
-                            "precio_parcial":(precio_parcial).toFixed(3),
-                            "porcentaje_anterior":(porcentaje_anterior).toFixed(3),
-                            "porcentaje_actual":(porcentaje_actual).toFixed(3),
-                            "porcentaje_total":(porcentaje_total).toFixed(3),
-                            "porcentaje_saldo":(porcentaje_saldo).toFixed(3),
+                            "valor_anterior":tools.formatoSoles(valor_anterior),
+                            "valor_actual":tools.formatoSoles(valor_actual ),
+                            "valor_total":tools.formatoSoles(valor_total ),
+                            "valor_saldo":tools.formatoSoles(valor_saldo ),
+                            "precio_parcial":tools.formatoSoles(precio_parcial),
+                            "porcentaje_anterior":tools.formatoSoles(valor_anterior/precio_parcial*100),
+                            "porcentaje_actual":tools.formatoSoles(valor_actual/precio_parcial*100),
+                            "porcentaje_total":tools.formatoSoles(valor_total/precio_parcial*100),
+                            "porcentaje_saldo":tools.formatoSoles(valor_saldo/precio_parcial*100),
                             "partidas":res
                         }
                     );
