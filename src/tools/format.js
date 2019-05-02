@@ -23,6 +23,22 @@ userModel.formatoSoles = function formatoSoles(data){
     
     return data
 }
+userModel.formatoSolesPresicion = function formatoSoles(data){
+    // console.log("formatoSoles",data);
+    
+    data = Number(data)
+    if(isNaN(data)||data ==0){
+        data = "-"
+    }else{
+        data = data.toLocaleString('es-PE', {
+            minimumFractionDigits: 3,
+            maximumFractionDigits: 6
+            }
+        )
+    }
+       
+    return data
+}
 userModel.rome = function rome(N,s,b,a,o,t){
     t=N/1e3|0;N%=1e3;
     for(s=b='',a=5;N;b++,a^=7)
