@@ -133,7 +133,7 @@ userModel.getHistorialMeses  = (id_ficha,anyo,callback)=>{
   
 }
 userModel.getHistorialResumen = (id_ficha,fecha,callback)=>{    
-    pool.query("SELECT concat('C-',componentes.numero) nombre, day(avanceactividades.fecha) dia, SUM(avanceactividades.valor*partidas.costo_unitario) valor FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.Fichas_id_ficha = fichas.id_ficha AND historialestados.fecha_inicial <= avanceactividades.fecha AND avanceactividades.fecha < historialestados.fecha_final LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND COALESCE(avanceactividades.valor, 0) != 0 AND fichas.id_ficha = ? AND DATE_FORMAT(avanceactividades.fecha, '%Y-%m-01') = DATE_FORMAT(?, '%Y-%m-01') GROUP BY componentes.id_componente , DATE_FORMAT(avanceactividades.fecha, '%Y-%m-%d') order by day(avanceactividades.fecha)",[id_ficha,fecha],(err,res)=>{ 
+    pool.query("SELECT CONCAT('C-', componentes.numero) nombre, componentes.nombre componente_nombre, componentes.presupuesto, DAY(avanceactividades.fecha) dia, SUM(avanceactividades.valor * partidas.costo_unitario) valor, SUM(avanceactividades.valor * partidas.costo_unitario) / componentes.presupuesto * 100 porcentaje FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.Fichas_id_ficha = fichas.id_ficha AND historialestados.fecha_inicial <= avanceactividades.fecha AND avanceactividades.fecha < historialestados.fecha_final LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND COALESCE(avanceactividades.valor, 0) != 0 AND fichas.id_ficha = ? AND DATE_FORMAT(avanceactividades.fecha, '%Y-%m-01') = DATE_FORMAT(?, '%Y-%m-01') GROUP BY componentes.id_componente , DATE_FORMAT(avanceactividades.fecha, '%Y-%m-%d') order by day(avanceactividades.fecha)",[id_ficha,fecha],(err,res)=>{ 
         if(err){ 
             callback(err.code);
         }else if(res.length==0){
@@ -153,6 +153,7 @@ userModel.getHistorialResumen = (id_ficha,fecha,callback)=>{
             //creando data inicial
             var series = []
             var listaItems = []
+            var leyenda = []
             for (let i = 0; i < res.length; i++) {
                 const avance = res[i];
                 if (listaItems.indexOf(avance.nombre) === -1){
@@ -162,7 +163,25 @@ userModel.getHistorialResumen = (id_ficha,fecha,callback)=>{
                             data:[]
                         }
                     );
+                    leyenda.push(
+                        {
+                            numero:avance.nombre,
+                            componente_nombre:avance.componente_nombre,
+                            presupuesto:avance.presupuesto,
+                            valor:avance.valor,
+                            porcentaje:avance.porcentaje
+                        }
+                    )
                     listaItems.push(avance.nombre)
+                }else{
+                    for (let j = 0; j < leyenda.length; j++) {
+                        const comp = leyenda[j];
+                        if(comp.numero == avance.nombre){
+                            comp.valor+= avance.valor
+                            comp.porcentaje+= avance.porcentaje
+                            break
+                        }
+                    }
                 }
                 
             }
@@ -190,10 +209,17 @@ userModel.getHistorialResumen = (id_ficha,fecha,callback)=>{
                     }
                 }
             }
-            
+            //formateando leyenda
+            for (let i = 0; i < leyenda.length; i++) {
+                const comp = leyenda[i];
+                comp.presupuesto = tools.formatoSoles(comp.presupuesto)
+                comp.valor = tools.formatoSoles(comp.valor)
+                comp.porcentaje = tools.formatoSoles(comp.porcentaje)
+            }
             callback(null,{
                 categories,
-                series
+                series,
+                leyenda
             });                    
         }
     })
