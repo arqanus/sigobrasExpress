@@ -468,10 +468,6 @@ userModel.getValGeneralTodosComponentes = (id_ficha,fecha_inicial,fecha_final,ca
                         valor_total += fila.valor_total 
                         valor_saldo += fila.valor_saldo 
                         
-                        porcentaje_anterior +=  fila.porcentaje_anterior 
-                        porcentaje_actual += fila.porcentaje_actual 
-                        porcentaje_total += fila.porcentaje_total 
-                        porcentaje_saldo += fila.porcentaje_saldo 
 
                         precio_parcial += fila.precio_parcial
 
@@ -497,15 +493,15 @@ userModel.getValGeneralTodosComponentes = (id_ficha,fecha_inicial,fecha_final,ca
           
                     callback(null,
                         {
-                            "valor_anterior":tools.formatoSoles(valor_anterior),
-                            "valor_actual":tools.formatoSoles(valor_actual ),
-                            "valor_total":tools.formatoSoles(valor_total ),
-                            "valor_saldo":tools.formatoSoles(valor_saldo ),
-                            "precio_parcial":tools.formatoSoles(precio_parcial),
-                            "porcentaje_anterior":tools.formatoSoles(valor_anterior/precio_parcial*100),
-                            "porcentaje_actual":tools.formatoSoles(valor_actual/precio_parcial*100),
-                            "porcentaje_total":tools.formatoSoles(valor_total/precio_parcial*100),
-                            "porcentaje_saldo":tools.formatoSoles(valor_saldo/precio_parcial*100),
+                            "valor_anterior":(valor_anterior).toFixed(5),
+                            "valor_actual":(valor_actual ).toFixed(5),
+                            "valor_total":(valor_total ).toFixed(5),
+                            "valor_saldo":(valor_saldo ).toFixed(5),
+                            "precio_parcial":(precio_parcial).toFixed(5),
+                            "porcentaje_anterior":(valor_anterior/precio_parcial*100).toFixed(5),
+                            "porcentaje_actual":(valor_actual/precio_parcial*100).toFixed(5),
+                            "porcentaje_total":(valor_total/precio_parcial*100).toFixed(5),
+                            "porcentaje_saldo":(valor_saldo/precio_parcial*100).toFixed(5),
                             "partidas":res
                         }
                     );
