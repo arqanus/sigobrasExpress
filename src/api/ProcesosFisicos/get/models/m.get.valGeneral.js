@@ -113,7 +113,7 @@ userModel.getValGeneralResumenPeriodo = (id_ficha,fecha_inicial,fecha_final)=>{
 }
 userModel.getValGeneralPartidas = (id_componente,fecha_inicial,fecha_final)=>{
     return new Promise((resolve, reject) => {
-        pool.query("SELECT partidas.tipo, partidas.item, partidas.descripcion, partidas.metrado, partidas.costo_unitario, partidas.metrado * partidas.costo_unitario precio_parcial, periodo_anterior.metrado metrado_anterior, periodo_anterior.valor valor_anterior, periodo_anterior.porcentaje porcentaje_anterior, periodo_actual.metrado metrado_actual, periodo_actual.valor valor_actual, periodo_actual.porcentaje porcentaje_actual, COALESCE(periodo_anterior.metrado, 0) + COALESCE(periodo_actual.metrado, 0) metrado_total, COALESCE(periodo_anterior.valor, 0) + COALESCE(periodo_actual.valor, 0) valor_total, (COALESCE(periodo_anterior.metrado, 0) + COALESCE(periodo_actual.metrado, 0)) porcentaje_total, partidas.metrado - (COALESCE(periodo_anterior.metrado, 0) + COALESCE(periodo_actual.metrado, 0)) metrado_saldo, partidas.metrado * costo_unitario - COALESCE(periodo_anterior.valor, 0) - COALESCE(periodo_actual.valor, 0) valor_saldo, 100 - COALESCE(periodo_anterior.porcentaje, 0) - COALESCE(periodo_actual.porcentaje, 0) porcentaje_saldo FROM partidas LEFT JOIN (SELECT partidas.id_partida, CAST(SUM(avanceactividades.valor) AS DECIMAL (10 , 2 )) metrado, CAST(SUM(avanceactividades.valor) AS DECIMAL (10 , 2 )) * costo_unitario valor, CAST(SUM(avanceactividades.valor) AS DECIMAL (10 , 2 )) / metrado * 100 porcentaje FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.fecha < ? AND historialactividades.estado IS NULL GROUP BY partidas.id_partida) periodo_anterior ON periodo_anterior.id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, CAST(SUM(avanceactividades.valor) AS DECIMAL (10 , 2 )) metrado, CAST(SUM(avanceactividades.valor) AS DECIMAL (10 , 2 )) * costo_unitario valor, CAST(SUM(avanceactividades.valor) AS DECIMAL (10 , 2 )) / metrado * 100 porcentaje FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.fecha >= ? AND avanceactividades.fecha < ? AND historialactividades.estado IS NULL GROUP BY partidas.id_partida) periodo_actual ON periodo_actual.id_partida = partidas.id_partida WHERE partidas.componentes_id_componente = ? ORDER BY partidas.id_partida",[fecha_inicial,fecha_inicial,fecha_final,id_componente],(err,res)=>{ 
+        pool.query("SELECT partidas.tipo, partidas.item, partidas.descripcion, partidas.metrado, partidas.costo_unitario, partidas.metrado * partidas.costo_unitario precio_parcial, periodo_anterior.metrado metrado_anterior, periodo_anterior.valor valor_anterior, periodo_anterior.porcentaje porcentaje_anterior, periodo_actual.metrado metrado_actual, periodo_actual.valor valor_actual, periodo_actual.porcentaje porcentaje_actual, COALESCE(periodo_anterior.metrado, 0) + COALESCE(periodo_actual.metrado, 0) metrado_total, COALESCE(periodo_anterior.valor, 0) + COALESCE(periodo_actual.valor, 0) valor_total, (COALESCE(periodo_anterior.metrado, 0) + COALESCE(periodo_actual.metrado, 0)) porcentaje_total, partidas.metrado - (COALESCE(periodo_anterior.metrado, 0) + COALESCE(periodo_actual.metrado, 0)) metrado_saldo, partidas.metrado * costo_unitario - COALESCE(periodo_anterior.valor, 0) - COALESCE(periodo_actual.valor, 0) valor_saldo, 100 - COALESCE(periodo_anterior.porcentaje, 0) - COALESCE(periodo_actual.porcentaje, 0) porcentaje_saldo FROM partidas LEFT JOIN (SELECT partidas.id_partida, SUM(avanceactividades.valor) metrado, CAST(SUM(avanceactividades.valor) AS DECIMAL (15 , 3 )) * costo_unitario valor, SUM(avanceactividades.valor) / metrado * 100 porcentaje FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.fecha < ? AND historialactividades.estado IS NULL GROUP BY partidas.id_partida) periodo_anterior ON periodo_anterior.id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, SUM(avanceactividades.valor) metrado, CAST(SUM(avanceactividades.valor) AS DECIMAL (15 , 3 )) * costo_unitario valor, SUM(avanceactividades.valor) / metrado * 100 porcentaje FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.fecha >= ? AND avanceactividades.fecha < ? AND historialactividades.estado IS NULL GROUP BY partidas.id_partida) periodo_actual ON periodo_actual.id_partida = partidas.id_partida WHERE partidas.componentes_id_componente = ? ORDER BY partidas.id_partida",[fecha_inicial,fecha_inicial,fecha_final,id_componente],(err,res)=>{ 
             if(err){
                 return reject(err)
             }else if(res.length == 0){
@@ -124,11 +124,6 @@ userModel.getValGeneralPartidas = (id_componente,fecha_inicial,fecha_final)=>{
                 var valor_total = 0                    
                 var valor_saldo  = 0
 
-                var porcentaje_anterior = 0
-                var porcentaje_actual = 0
-                var porcentaje_total = 0
-                var porcentaje_saldo = 0
-
                 var precio_parcial = 0
                 
                 for (let i = 0; i < res.length; i++) {
@@ -137,11 +132,6 @@ userModel.getValGeneralPartidas = (id_componente,fecha_inicial,fecha_final)=>{
                     valor_actual += fila.valor_actual 
                     valor_total += fila.valor_total 
                     valor_saldo += fila.valor_saldo 
-
-                    porcentaje_anterior +=  fila.porcentaje_anterior 
-                    porcentaje_actual += fila.porcentaje_actual 
-                    porcentaje_total += fila.porcentaje_total 
-                    porcentaje_saldo += fila.porcentaje_saldo 
 
                     precio_parcial += fila.precio_parcial
 
@@ -187,10 +177,10 @@ userModel.getValGeneralPartidas = (id_componente,fecha_inicial,fecha_final)=>{
                         "valor_total":tools.formatoSoles(valor_total ),
                         "valor_saldo":tools.formatoSoles(valor_saldo ),
                         "precio_parcial":tools.formatoSoles(precio_parcial),
-                        "porcentaje_anterior":tools.formatoSoles(porcentaje_anterior),
-                        "porcentaje_actual":tools.formatoSoles(porcentaje_actual),
-                        "porcentaje_total":tools.formatoSoles(porcentaje_total),
-                        "porcentaje_saldo":tools.formatoSoles(porcentaje_saldo),
+                        "porcentaje_anterior":tools.formatoSoles(valor_anterior/precio_parcial*100),
+                        "porcentaje_actual":tools.formatoSoles(valor_actual/precio_parcial*100),
+                        "porcentaje_total":tools.formatoSoles(valor_total/precio_parcial*100),
+                        "porcentaje_saldo":tools.formatoSoles(valor_saldo/precio_parcial*100),
                         "partidas":res
                     }
                 );
