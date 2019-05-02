@@ -488,6 +488,22 @@ userModel.getValGeneralTodosComponentes = (id_ficha,fecha_inicial,fecha_final,ca
                             fila.valor_saldo  = ""
                             fila.porcentaje_saldo = ""
 
+                        }else {
+                            fila.metrado  = ( fila.metrado ).toFixed(5)
+                            fila.costo_unitario  = ( fila.costo_unitario ).toFixed(5)
+                            fila.precio_parcial  = ( fila.precio_parcial ).toFixed(5)
+                            fila.metrado_anterior  = ( fila.metrado_anterior ).toFixed(5)
+                            fila.valor_anterior  = ( fila.valor_anterior ).toFixed(5)
+                            fila.porcentaje_anterior  = ( fila.porcentaje_anterior ).toFixed(5)
+                            fila.metrado_actual  = ( fila.metrado_actual ).toFixed(5)
+                            fila.valor_actual  = ( fila.valor_actual ).toFixed(5)
+                            fila.porcentaje_actual  = ( fila.porcentaje_actual ).toFixed(5)
+                            fila.metrado_total = ( fila.metrado_total).toFixed(5)
+                            fila.valor_total = ( fila.valor_total).toFixed(5)
+                            fila.porcentaje_total = ( fila.porcentaje_total).toFixed(5)
+                            fila.metrado_saldo  = ( fila.metrado_saldo ).toFixed(5)
+                            fila.valor_saldo  = ( fila.valor_saldo ).toFixed(5)
+                            fila.porcentaje_saldo = ( fila.porcentaje_saldo).toFixed(5)
                         }
                     }
           
