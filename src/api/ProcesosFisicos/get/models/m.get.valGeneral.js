@@ -38,7 +38,7 @@ userModel.getValGeneralPeriodos  = (id_ficha,anyo)=>{
                     if(i< res.length-1){
                         fila.fecha_final = res[i+1].fecha_inicial.toLocaleString()
                     }else{
-                        fila.fecha_final = new Date(anyo, 11, 31)
+                        fila.fecha_final = (new Date(anyo, 11, 31)).toLocaleString()
                     }
                 }   
                 return resolve(res)
