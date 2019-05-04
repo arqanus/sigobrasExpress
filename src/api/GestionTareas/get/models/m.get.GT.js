@@ -44,7 +44,7 @@ userModel.getTareaCargos = (id_acceso,nivel)=>{
 }
 userModel.getTareaUsuariosPorCargo = (id_acceso,id_cargo)=>{
     return new Promise((resolve, reject) => { 
-        pool.query('SELECT usuarios.dni,usuarios.nombre,accesos.id_acceso FROM fichas_has_accesos a LEFT JOIN fichas ON fichas.id_ficha = a.Fichas_id_ficha LEFT JOIN fichas_has_accesos b ON b.Fichas_id_ficha = fichas.id_ficha LEFT JOIN accesos ON accesos.id_acceso = b.accesos_id_acceso LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo LEFT JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario WHERE a.accesos_id_acceso = ? and cargos.id_Cargo = ?',[id_acceso,id_cargo],(err,res)=>{
+        pool.query('SELECT usuarios.dni,usuarios.nombre,accesos.id_acceso FROM fichas_has_accesos a LEFT JOIN fichas ON fichas.id_ficha = a.Fichas_id_ficha LEFT JOIN fichas_has_accesos b ON b.Fichas_id_ficha = fichas.id_ficha LEFT JOIN accesos ON accesos.id_acceso = b.accesos_id_acceso LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo LEFT JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario WHERE a.accesos_id_acceso = ? and cargos.id_Cargo = ? group by usuarios.id_usuario',[id_acceso,id_cargo],(err,res)=>{
             if (err) {
                 return reject(err)
             }
