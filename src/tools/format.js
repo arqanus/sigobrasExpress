@@ -49,6 +49,7 @@ userModel.rome = function rome(N,s,b,a,o,t){
 userModel.monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
 "Julio", "Agosto", "Setiembre", "Octubre", "Noviembre", "Diciembre"
 ];
+userModel.weekDay = ["Do","Lu","Ma","Mi","Ju","Vi","Sa"]
 userModel.ColoresRandom =function ColoresRandom() {
 
     function populate(a) {

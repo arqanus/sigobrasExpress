@@ -19,15 +19,6 @@ month[9] = "Octubre";
 month[10] = "Noviembre";
 month[11] = "Diciembre";
 
-var weekDay = new Array();
-weekDay[0] = "Do";
-weekDay[1] = "Lu";
-weekDay[2] = "Ma";
-weekDay[3] = "Mi";
-weekDay[4] = "Ju";
-weekDay[5] = "Vi";
-weekDay[6] = "Sa";
-
 function formato(data){
     
     
