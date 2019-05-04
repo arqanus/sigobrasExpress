@@ -41,9 +41,6 @@ module.exports = (app)=>{
 		  console.log("fecha_final :",fields.fecha_final)
 		  console.log("proyectos_id_proyecto :",fields.proyectos_id_proyecto)
 		  console.log("emisor :",fields.emisor)
-		  console.log("receptor :",(fields.receptor))
-			var receptores = fields.receptor.split(",")
-		  console.log("receptor :",receptores)
 		  console.log("extension :",fields.extension)
 		  console.log("codigo_obra :",fields.codigo_obra)
 	
@@ -72,38 +69,23 @@ module.exports = (app)=>{
 					res.json(err)
 					}
 					var tarea = {		
-					"asunto":fields.asunto,
-					"descripcion":fields.descripcion,
-					"fecha_inicial":fields.fecha_inicial,
-					"fecha_final":fields.fecha_final,
-					"proyectos_id_proyecto":fields.proyectos_id_proyecto,
-					"emisor":fields.emisor,
-					"archivo":"/static/"+fields.codigo_obra+"/tareas"+ruta
+						"asunto":fields.asunto,
+						"descripcion":fields.descripcion,
+						"fecha_inicial":fields.fecha_inicial,
+						"fecha_final":fields.fecha_final,
+						"proyectos_id_proyecto":fields.proyectos_id_proyecto,
+						"emisor":fields.emisor
 					}
 					var id_tarea = await User.postTarea(tarea)
-					var TareaReceptores = []
-					for (let i = 0; i < receptores.length; i++) {
-						const receptor = receptores[i];
-						TareaReceptores.push(
-							[id_tarea,Number(receptor)]
-						)
-					}
-					var affectedRows = await User.postTareaReceptores(TareaReceptores)
 					var tarea = await User2.getTareaIdTarea(id_tarea)
-
-					if(affectedRows>0){
-						res.json(
-							{
-								"id_tarea": tarea.id_tarea,
-								"proyecto_nombre": tarea.proyecto_nombre,
-								"asunto": tarea.asunto,
-								"porcentaje_avance": tarea.porcentaje_avance,
-								"numero_subtareas": tarea.numero_subtareas
-							}
-						)
-					}else{
-						res.json("error")
-					}
+					res.json(
+						{
+							"id_tarea": tarea.id_tarea,
+							"proyecto_nombre": tarea.proyecto_nombre,
+							"asunto": tarea.asunto,
+							"porcentaje_avance": tarea.porcentaje_avance
+						}
+					)
 				}); 
 		  }else{
 				var tarea = {		
@@ -115,29 +97,15 @@ module.exports = (app)=>{
 					"emisor":fields.emisor
 				}
 				var id_tarea = await User.postTarea(tarea)
-				var TareaReceptores = []
-				for (let i = 0; i < receptores.length; i++) {
-					const receptor = receptores[i];
-					TareaReceptores.push(
-						[id_tarea,Number(receptor)]
-					)
-				}
-				var affectedRows = await User.postTareaReceptores(TareaReceptores)
 				var tarea = await User2.getTareaIdTarea(id_tarea)
-
-				if(affectedRows>0){
-					res.json(
-						{
-							"id_tarea": tarea.id_tarea,
-							"proyecto_nombre": tarea.proyecto_nombre,
-							"asunto": tarea.asunto,
-							"porcentaje_avance": tarea.porcentaje_avance,
-							"numero_subtareas": tarea.numero_subtareas
-						}
-					)
-				}else{
-					res.json("error")
-				}
+				res.json(
+					{
+						"id_tarea": tarea.id_tarea,
+						"proyecto_nombre": tarea.proyecto_nombre,
+						"asunto": tarea.asunto,
+						"porcentaje_avance": tarea.porcentaje_avance
+					}
+				)
 		  }
 		});
 	})

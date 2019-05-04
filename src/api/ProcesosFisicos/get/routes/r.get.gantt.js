@@ -37,16 +37,14 @@ module.exports = function(app){
 			})
 		}
     })
-    app.post('/getGanttPartidas',(req,res)=>{
-		if (req.body.fecha== null) {
-			res.json("null");
-		} else {
-			User.getGanttPartidas (req.body.id_componente,req.body.fecha,(err,data)=>{
-				if(err){ res.status(204).json(err);}
-				else{
-					res.json(data);	
+    app.post('/getGanttPartidas',async(req,res)=>{
+			var dias = await User.getGanttPartidasDias(req.body.fecha)
+			var partidas = await User.getGanttPartidas(req.body.id_componente,req.body.fecha)
+			res.json(
+				{
+					dias,
+					partidas
 				}
-			})
-		}
+			)
     })
 }
