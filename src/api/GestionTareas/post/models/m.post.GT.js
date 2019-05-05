@@ -26,9 +26,9 @@ userModel.postTarea = (data) => {
 }
 userModel.postTareaReceptores = (data) => {
     return new Promise((resolve, reject) => { 
-        pool.query('INSERT INTO tareas_has_accesos (tareas_id_tarea,receptor) values ?', [data], (err, res) => {
+        pool.query('INSERT INTO tareas_has_accesos (tareas_id_tarea,receptor) values ? ON DUPLICATE key UPDATE receptor = VALUES(receptor)', [data], (err, res) => {
             if (err) {
-                reject(err);
+                reject(err.code);
             } else {
                 resolve(res.affectedRows);
             }

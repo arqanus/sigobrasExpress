@@ -18,15 +18,12 @@ module.exports = function(app){
 		res.json(proyectos)
 	})
 	app.post('/getTareaCargos',async (req,res)=>{
-		console.log("dataaaaaaaaaaaaaaaaaaaaaaaaaaa",req.body);
 		try {
 			var nivel = await User.getTareaAccesoCargo(req.body.id_acceso)
-			console.log("nivel",nivel);	
 			nivel = nivel.nivel
 			var cargos = await User.getTareaCargos(req.body.id_acceso,nivel)
 			res.json(cargos)
 		} catch (error) {
-			
 			res.status(204).json(error)
 		}
 	})
@@ -34,30 +31,23 @@ module.exports = function(app){
 		var cargos = await User.getTareaUsuariosPorCargo(req.body.id_acceso,req.body.id_Cargo)
 		res.json(cargos)
 	})
-	app.post('/getTareaReceptorPendientes',async (req,res)=>{		
-		var tareas = await User.getTareaReceptor(req.body.id_acceso,0,0)
+	app.post('/getTareasReceptorProyectos',async (req,res)=>{		
+		var tareas = await User.getTareasProyectos('receptor',req.body.id_acceso,req.body.inicio,req.body.fin)
 		res.json(tareas)
 	})
-	app.post('/getTareaReceptorProgreso',async (req,res)=>{		
-		var tareas = await User.getTareaReceptor(req.body.id_acceso,1,99)
+	app.post('/getTareasEmisorProyectos',async (req,res)=>{		
+		var tareas = await User.getTareasProyectos('emisor',req.body.id_acceso,req.body.inicio,req.body.fin)
 		res.json(tareas)
 	})
-	app.post('/getTareaReceptorTerminadas',async (req,res)=>{		
-		var tareas = await User.getTareaReceptor(req.body.id_acceso,100,100)
+	app.post('/getTareasReceptor',async (req,res)=>{		
+		var tareas = await User.getTareas('receptor',req.body.id_acceso,req.body.inicio,req.body.fin,req.body.id_proyecto)
 		res.json(tareas)
 	})
-	app.post('/getTareaEmisorPendientes',async (req,res)=>{		
-		var tareas = await User.getTareaEmisor(req.body.id_acceso,0,0)
+	app.post('/getTareasEmisor',async (req,res)=>{		
+		var tareas = await User.getTareas('emisor',req.body.id_acceso,req.body.inicio,req.body.fin,req.body.id_proyecto)
 		res.json(tareas)
 	})
-	app.post('/getTareaEmisorProgreso',async (req,res)=>{		
-		var tareas = await User.getTareaEmisor(req.body.id_acceso,1,99)
-		res.json(tareas)
-	})
-	app.post('/getTareaEmisorTerminadas',async (req,res)=>{		
-		var tareas = await User.getTareaEmisor(req.body.id_acceso,100,100)
-		res.json(tareas)
-	})
+
 	app.post('/getTareaIdTarea',async (req,res)=>{				
 		var tareas = await User.getTareaIdTarea(req.body.id_tarea)
 		var diasTotal  = daysdifference(tareas.fecha_inicial,tareas.fecha_final)
@@ -73,62 +63,20 @@ module.exports = function(app){
 			}
 		)
 	})
-	app.post('/getSubTareasPendientes',async (req,res)=>{
+	app.post('/getTareaSubordinados',async (req,res)=>{
 		try {
-			var subtareas = await User.getSubTareas(req.body.id_tarea,0)
-			res.json(subtareas)
+			var nivel = await User.getTareaAccesoCargo(req.body.id_acceso)
+			nivel = nivel.nivel
+			var subordinados = await User.getTareaSubordinados(req.body.id_acceso,nivel)
+			for (let i = 0; i < subordinados.length; i++) {
+				const id_acceso = subordinados[i].id_acceso;
+				var subordinadosTareas = await User.getTareaSubordinadosTareas(id_acceso)
+				subordinados[i].subordinadosTareas = subordinadosTareas
+			}
+			res.json(subordinados)
 		} catch (error) {
 			res.status(204).json(error)
-		}			
+		}
 	})
-	app.post('/getSubTareasTerminadas',async (req,res)=>{
-		try {
-			var subtareas = await User.getSubTareas(req.body.id_tarea,1)
-			res.json(subtareas)
-		} catch (error) {
-			res.status(204).json(error)
-		}			
-	})
-	app.post('/getTareasReceptorCantidades',async (req,res)=>{
-		try {
-			var pendientes = await User.getTareaReceptor(req.body.id_acceso,0,0)
-			var progreso = await User.getTareaReceptor(req.body.id_acceso,1,99)
-			var terminadas = await User.getTareaReceptor(req.body.id_acceso,100,100)
-				
-			pendientes = pendientes.length
-			progreso = progreso.length
-			terminadas = terminadas.length
-			
-			res.json(
-				{
-					pendientes,
-					progreso,
-					terminadas
-				}
-			)
-		} catch (error) {
-			res.status(204).json(error)
-		}			
-	})
-	app.post('/getTareasEmisorCantidades',async (req,res)=>{
-		try {
-			var pendientes = await User.getTareaEmisor(req.body.id_acceso,0,0)
-			var progreso = await User.getTareaEmisor(req.body.id_acceso,1,99)
-			var terminadas = await User.getTareaEmisor(req.body.id_acceso,100,100)
-				
-			pendientes = pendientes.length
-			progreso = progreso.length
-			terminadas = terminadas.length
-			
-			res.json(
-				{
-					pendientes,
-					progreso,
-					terminadas
-				}
-			)
-		} catch (error) {
-			res.status(204).json(error)
-		}			
-	})
+
 }
