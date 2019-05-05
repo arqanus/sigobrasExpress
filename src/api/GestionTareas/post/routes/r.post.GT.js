@@ -61,20 +61,24 @@ module.exports = (app)=>{
 			fs.mkdirSync(obraFolder);
 		  }  // TODO: make sure my_file and project_id exist  
 		  
-		  var ruta = "/"+fields.receptor+"_"+fields.emisor+"_"+datetime()+fields.extension
+		  var ruta = "/"+fields.emisor+"_"+datetime()+fields.extension
 		  //files foto
 		  if(files.archivo){
 				fs.rename(files.archivo.path,obraFolder+ruta,async(err)=>{
 					if (err){
 					res.json(err)
 					}
+					console.log("ruta",ruta);
+					
 					var tarea = {		
 						"asunto":fields.asunto,
 						"descripcion":fields.descripcion,
 						"fecha_inicial":fields.fecha_inicial,
 						"fecha_final":fields.fecha_final,
 						"proyectos_id_proyecto":fields.proyectos_id_proyecto,
-						"emisor":fields.emisor
+						"emisor":fields.emisor,
+						"tareas_id_tarea":fields.tareas_id_tarea||null,
+						"archivo":fields.codigo_obra+"/tareas"+ruta
 					}
 					var id_tarea = await User.postTarea(tarea)
 					var tarea = await User2.getTareaIdTarea(id_tarea)
@@ -94,8 +98,10 @@ module.exports = (app)=>{
 					"fecha_inicial":fields.fecha_inicial,
 					"fecha_final":fields.fecha_final,
 					"proyectos_id_proyecto":fields.proyectos_id_proyecto,
-					"emisor":fields.emisor
+					"emisor":fields.emisor,
+					"tareas_id_tarea":fields.tareas_id_tarea||null
 				}
+				console.log(tarea);				
 				var id_tarea = await User.postTarea(tarea)
 				var tarea = await User2.getTareaIdTarea(id_tarea)
 				res.json(
