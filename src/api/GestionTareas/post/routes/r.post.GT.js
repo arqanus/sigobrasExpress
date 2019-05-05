@@ -142,5 +142,14 @@ module.exports = (app)=>{
 			res.status(204).json(error)
 		}
 	})
-	
+	app.post('/postTareaReceptores',async(req,res)=>{
+		try {
+			var affectedRows = await User.postTareaReceptores(req.body)
+			var id_acceso = req.body[0][1]
+			var subordinadosTareas = await User2.getTareaSubordinadosTareas(id_acceso)
+			res.json(subordinadosTareas)			
+		} catch (error) {
+			res.status(200).json(error)
+		}
+	})
 }

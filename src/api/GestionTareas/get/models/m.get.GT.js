@@ -53,9 +53,9 @@ userModel.getTareaUsuariosPorCargo = (id_acceso,id_cargo)=>{
     })
          
 }
-userModel.getTareaReceptor = (receptor,inicio,fin)=>{
+userModel.getTareasProyectos = (emireceptor,id_acceso,inicio,fin)=>{
     return new Promise((resolve, reject) => { 
-        pool.query('SELECT tareas.id_tarea, proyectos.nombre proyecto_nombre, tareas.asunto, tareas.avance porcentaje_avance, subtareas.numero numero_subtareas FROM tareas LEFT JOIN proyectos ON proyectos.id_proyecto = tareas.proyectos_id_proyecto LEFT JOIN (SELECT tareas.id_tarea, COUNT(subtareas.id_subTarea) numero FROM tareas LEFT JOIN subtareas ON subtareas.tareas_id_tarea = tareas.id_tarea GROUP BY tareas.id_tarea) subtareas ON subtareas.id_tarea = tareas.id_tarea left join tareas_has_accesos on tareas_has_accesos.tareas_id_tarea = tareas.id_tarea WHERE receptor = ? AND ? <= avance AND avance <= ?',[receptor,inicio,fin],(err,res)=>{
+        pool.query('select proyectos.* FROM tareas LEFT JOIN proyectos ON proyectos.id_proyecto = tareas.proyectos_id_proyecto left JOIN tareas_has_accesos ON tareas_has_accesos.tareas_id_tarea = tareas.id_tarea WHERE '+emireceptor+' = ? AND ? <= avance AND avance <= ? group by proyectos.id_proyecto order by tareas.fecha_final desc',[id_acceso,inicio,fin],(err,res)=>{
             if (err) {
                 return reject(err)
             }
@@ -63,6 +63,17 @@ userModel.getTareaReceptor = (receptor,inicio,fin)=>{
         })   
     })
 }
+userModel.getTareas = (emireceptor,id_acceso,inicio,fin,id_proyecto)=>{
+    return new Promise((resolve, reject) => { 
+        pool.query('SELECT tareas.id_tarea, proyectos.nombre proyecto_nombre, tareas.asunto, tareas.avance porcentaje_avance FROM tareas LEFT JOIN proyectos ON proyectos.id_proyecto = tareas.proyectos_id_proyecto LEFT JOIN tareas_has_accesos ON tareas_has_accesos.tareas_id_tarea = tareas.id_tarea WHERE '+emireceptor+' = ? AND ? <= avance AND avance <= ? and proyectos.id_proyecto = ?',[id_acceso,inicio,fin,id_proyecto],(err,res)=>{
+            if (err) {
+                return reject(err)
+            }
+            return resolve(res)            
+        })   
+    })
+}
+
 userModel.getTareaIdTarea = (id_tarea)=>{
     return new Promise((resolve, reject) => { 
         pool.query("SELECT tareas.id_tarea, tareas.descripcion, tareas.fecha_inicial, tareas.fecha_final, proyectos.nombre proyecto_nombre, tareas.asunto, tareas.avance porcentaje_avance, tareas.archivo FROM tareas LEFT JOIN proyectos ON proyectos.id_proyecto = tareas.proyectos_id_proyecto WHERE tareas.id_tarea = ?",[id_tarea],(err,res)=>{
@@ -74,7 +85,6 @@ userModel.getTareaIdTarea = (id_tarea)=>{
     })
          
 }
-
 userModel.getTareaEmisor = (receptor,inicio,fin)=>{
     return new Promise((resolve, reject) => { 
         pool.query('SELECT tareas.id_tarea, proyectos.nombre proyecto_nombre, tareas.asunto, tareas.avance porcentaje_avance, subtareas.numero numero_subtareas FROM tareas LEFT JOIN proyectos ON proyectos.id_proyecto = tareas.proyectos_id_proyecto LEFT JOIN (SELECT tareas.id_tarea, COUNT(subtareas.id_subTarea) numero FROM tareas LEFT JOIN subtareas ON subtareas.tareas_id_tarea = tareas.id_tarea GROUP BY tareas.id_tarea) subtareas ON subtareas.id_tarea = tareas.id_tarea WHERE emisor = ? AND ? <= avance and avance <= ?',[receptor,inicio,fin],(err,res)=>{
@@ -123,5 +133,34 @@ userModel.getSubTareas = (id_tarea,terminado)=>{
         })   
     })
 }
+userModel.getTareaSubordinados = (id_acceso,nivel)=>{
+    return new Promise((resolve, reject) => { 
+        pool.query('SELECT usuarios.nombre usuario_nombre,usuarios.apellido_paterno,cargos.nombre cargo_nombre,cargos.nivel cargo_nivel,accesos.id_acceso FROM fichas_has_accesos a LEFT JOIN fichas ON fichas.id_ficha = a.Fichas_id_ficha LEFT JOIN fichas_has_accesos b ON b.Fichas_id_ficha = fichas.id_ficha LEFT JOIN accesos ON accesos.id_acceso = b.accesos_id_acceso LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo LEFT JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario WHERE a.accesos_id_acceso = ? AND cargos.nivel > ? GROUP BY cargos.id_Cargo',[id_acceso,nivel],(err,res)=>{
+            if (err) {
+                return reject(err)
+            }
+            
+            return resolve(res)            
+        })   
+    })
+}
+userModel.getTareaSubordinadosTareas = (id_acceso)=>{
+    return new Promise((resolve, reject) => { 
+        pool.query('select * from tareas_has_accesos where receptor = ?',[id_acceso],(err,res)=>{
+            if (err) {
+                return reject(err)
+            }            
+            var tareas = []
+            for (let i = 0; i < res.length; i++) {
+                const tarea = res[i];
+                tareas.push(
+                    [tarea.tareas_id_tarea,tarea.receptor]
+                )
+            }
+            return resolve(tareas)            
+        })   
+    })
+}
+
 
 module.exports = userModel;
