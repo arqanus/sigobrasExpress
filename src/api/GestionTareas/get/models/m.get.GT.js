@@ -73,7 +73,6 @@ userModel.getTareas = (emireceptor,id_acceso,inicio,fin,id_proyecto)=>{
         })   
     })
 }
-
 userModel.getTareaIdTarea = (id_tarea)=>{
     return new Promise((resolve, reject) => { 
         pool.query("SELECT tareas.id_tarea, tareas.descripcion, tareas.fecha_inicial, tareas.fecha_final, proyectos.nombre proyecto_nombre, tareas.asunto, tareas.avance porcentaje_avance, tareas.archivo FROM tareas LEFT JOIN proyectos ON proyectos.id_proyecto = tareas.proyectos_id_proyecto WHERE tareas.id_tarea = ?",[id_tarea],(err,res)=>{
