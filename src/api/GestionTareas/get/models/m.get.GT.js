@@ -92,7 +92,7 @@ userModel.getTareas = (emireceptor,id_acceso,inicio,fin,id_proyecto)=>{
         })   
     })
 }
-userModel.getTareasProyectos = (emireceptor,id_acceso,inicio,fin)=>{
+userModel.getTareasProyectosVencidas = (emireceptor,id_acceso,inicio,fin)=>{
     return new Promise((resolve, reject) => { 
         pool.query('select proyectos.* FROM tareas LEFT JOIN proyectos ON proyectos.id_proyecto = tareas.proyectos_id_proyecto left JOIN tareas_has_accesos ON tareas_has_accesos.tareas_id_tarea = tareas.id_tarea WHERE '+emireceptor+' = ? AND ? <= avance AND avance <= ? AND tareas.fecha_final >= now() group by proyectos.id_proyecto order by tareas.fecha_final desc',[id_acceso,inicio,fin],(err,res)=>{
             if (err) {
@@ -193,21 +193,19 @@ userModel.getTareaSubordinados = (id_acceso,nivel)=>{
 }
 userModel.getTareaSubordinadosTareas = (id_acceso)=>{
     return new Promise((resolve, reject) => { 
-        pool.query('select * from tareas_has_accesos where receptor = ?',[id_acceso],(err,res)=>{
+        pool.query('SELECT id_proyecto,proyectos.color prioridad_color FROM tareas_has_accesos left join tareas on tareas.id_tarea = tareas_has_accesos.tareas_id_tarea left join proyectos on proyectos.id_proyecto = tareas.proyectos_id_proyecto WHERE receptor = ?',[id_acceso],(err,res)=>{
             if (err) {
                 return reject(err)
             }            
             var tareas = []
-            for (let i = 0; i < res.length; i++) {
-                const tarea = res[i];
-                tareas.push(
-                    [tarea.tareas_id_tarea,tarea.receptor]
-                )
-            }
-            return resolve(tareas)            
+            // for (let i = 0; i < res.length; i++) {
+            //     const tarea = res[i];
+            //     tareas.push(
+            //         [tarea.tareas_id_tarea,tarea.receptor]
+            //     )
+            // }
+            return resolve(res)            
         })   
     })
 }
-
-
 module.exports = userModel;
