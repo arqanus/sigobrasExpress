@@ -69,6 +69,15 @@ userModel.getTareas = (emireceptor,id_acceso,inicio,fin,id_proyecto)=>{
             if (err) {
                 return reject(err)
             }
+            for (let i = 0; i < res.length; i++) {
+                const tarea = res[i];
+                tarea.imagen_subordinado = [
+                    {
+                        "imagen":"/static/C003/20_00000030603_26-4-2019_18-41-45.jpg",
+                        "imagen_alt":"test"
+                    }
+                ]
+            }
             return resolve(res)            
         })   
     })
