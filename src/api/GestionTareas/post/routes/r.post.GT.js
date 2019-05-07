@@ -138,16 +138,6 @@ module.exports = (app)=>{
 			)
 		}
 	})
-	app.post('/postSubTarea',async(req,res)=>{
-		try {
-			var id_subtarea = await User.postSubTarea(req.body)
-			console.log("id_subtarea",id_subtarea);
-			var subtarea = await User2.getSubTareaIdSubTarea(id_subtarea)
-			res.json(subtarea)				
-		} catch (error) {
-			res.status(204).json(error)
-		}
-	})
 	app.post('/postTareaReceptores',async(req,res)=>{
 		try {
 			var affectedRows = await User.postTareaReceptores(req.body)

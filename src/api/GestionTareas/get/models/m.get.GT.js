@@ -92,6 +92,35 @@ userModel.getTareas = (emireceptor,id_acceso,inicio,fin,id_proyecto)=>{
         })   
     })
 }
+userModel.getTareaEmisor = (emireceptor,id_acceso,inicio,fin)=>{
+    return new Promise((resolve, reject) => { 
+        pool.query('SELECT tareas.id_tarea, proyectos.nombre proyecto_nombre, tareas.asunto, tareas.avance porcentaje_avance, DATEDIFF(tareas.fecha_final,now()) prioridad_color FROM tareas LEFT JOIN proyectos ON proyectos.id_proyecto = tareas.proyectos_id_proyecto LEFT JOIN tareas_has_accesos ON tareas_has_accesos.tareas_id_tarea = tareas.id_tarea WHERE '+emireceptor+' = ? AND ? <= avance AND avance <= ? and tareas.fecha_final >= now()',[id_acceso,inicio,fin],(err,res)=>{
+            if (err) {
+                return reject(err)
+            }
+            function prioridad_color(valor){
+                if(valor<2){
+                    return "#ff8969"
+                }else if(valor < 5){
+                    return "#fef768"
+                }else if(valor<10){
+                    return "#abd56e"
+                }
+            }
+            for (let i = 0; i < res.length; i++) {
+                const tarea = res[i];
+                tarea.imagen_subordinado = [
+                    {
+                        "imagen":"/static/C003/20_00000030603_26-4-2019_18-41-45.jpg",
+                        "imagen_alt":"test"
+                    }
+                ]
+                tarea.prioridad_color = prioridad_color(tarea.prioridad_color)
+            }
+            return resolve(res)            
+        })   
+    })
+}
 userModel.getTareasProyectosVencidas = (emireceptor,id_acceso,inicio,fin)=>{
     return new Promise((resolve, reject) => { 
         pool.query('select proyectos.* FROM tareas LEFT JOIN proyectos ON proyectos.id_proyecto = tareas.proyectos_id_proyecto left JOIN tareas_has_accesos ON tareas_has_accesos.tareas_id_tarea = tareas.id_tarea WHERE '+emireceptor+' = ? AND ? <= avance AND avance <= ? AND tareas.fecha_final >= now() group by proyectos.id_proyecto order by tareas.fecha_final desc',[id_acceso,inicio,fin],(err,res)=>{
@@ -132,16 +161,7 @@ userModel.getTareaIdTarea = (id_tarea)=>{
     })
          
 }
-userModel.getTareaEmisor = (receptor,inicio,fin)=>{
-    return new Promise((resolve, reject) => { 
-        pool.query('SELECT tareas.id_tarea, proyectos.nombre proyecto_nombre, tareas.asunto, tareas.avance porcentaje_avance, subtareas.numero numero_subtareas FROM tareas LEFT JOIN proyectos ON proyectos.id_proyecto = tareas.proyectos_id_proyecto LEFT JOIN (SELECT tareas.id_tarea, COUNT(subtareas.id_subTarea) numero FROM tareas LEFT JOIN subtareas ON subtareas.tareas_id_tarea = tareas.id_tarea GROUP BY tareas.id_tarea) subtareas ON subtareas.id_tarea = tareas.id_tarea WHERE emisor = ? AND ? <= avance and avance <= ?',[receptor,inicio,fin],(err,res)=>{
-            if (err) {
-                return reject(err)
-            }
-            return resolve(res)            
-        })   
-    })
-}
+
 userModel.getSubTareaIdSubTarea = (id_subtarea)=>{
     return new Promise((resolve, reject) => { 
         pool.query('SELECT * from subtareas where id_subtarea = ? ',[id_subtarea],(err,res)=>{
@@ -182,9 +202,14 @@ userModel.getSubTareas = (id_tarea,terminado)=>{
 }
 userModel.getTareaSubordinados = (id_acceso,nivel)=>{
     return new Promise((resolve, reject) => { 
-        pool.query('SELECT usuarios.nombre usuario_nombre,usuarios.apellido_paterno,cargos.nombre cargo_nombre,cargos.nivel cargo_nivel,accesos.id_acceso FROM fichas_has_accesos a LEFT JOIN fichas ON fichas.id_ficha = a.Fichas_id_ficha LEFT JOIN fichas_has_accesos b ON b.Fichas_id_ficha = fichas.id_ficha LEFT JOIN accesos ON accesos.id_acceso = b.accesos_id_acceso LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo LEFT JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario WHERE a.accesos_id_acceso = ? AND cargos.nivel > ? GROUP BY cargos.id_Cargo',[id_acceso,nivel],(err,res)=>{
+        pool.query('SELECT usuarios.nombre usuario_nombre,usuarios.apellido_paterno,cargos.nombre cargo_nombre,cargos.nivel cargo_nivel,accesos.id_acceso, usuarios.imagen subordinado_imagen, usuarios.imagenAlt subordinado_imagenAlt FROM fichas_has_accesos a LEFT JOIN fichas ON fichas.id_ficha = a.Fichas_id_ficha LEFT JOIN fichas_has_accesos b ON b.Fichas_id_ficha = fichas.id_ficha LEFT JOIN accesos ON accesos.id_acceso = b.accesos_id_acceso LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo LEFT JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario WHERE a.accesos_id_acceso = ? AND cargos.nivel > ? GROUP BY cargos.id_Cargo',[id_acceso,nivel],(err,res)=>{
             if (err) {
                 return reject(err)
+            }
+            for (let i = 0; i < res.length; i++) {
+                const subordinado = res[i];
+                subordinado.subordinado_imagen= subordinado.subordinado_imagen||"/static/C003/20_00000030603_26-4-2019_18-41-45.jpg"
+                subordinado.subordinado_imagenAlt= subordinado.subordinado_imagenAlt||"test"
             }
             
             return resolve(res)            
@@ -197,13 +222,6 @@ userModel.getTareaSubordinadosTareas = (id_acceso)=>{
             if (err) {
                 return reject(err)
             }            
-            var tareas = []
-            // for (let i = 0; i < res.length; i++) {
-            //     const tarea = res[i];
-            //     tareas.push(
-            //         [tarea.tareas_id_tarea,tarea.receptor]
-            //     )
-            // }
             return resolve(res)            
         })   
     })
