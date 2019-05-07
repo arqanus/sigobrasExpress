@@ -261,6 +261,14 @@ userModel.getTareaSubordinadosTareas = (id_acceso)=>{
             if (err) {
                 return reject(err)
             }            
+            while(res.length < 8){
+                res.push({
+                    "id_proyecto": null,
+                    "prioridad_color": "",
+                    "tareas_id_tarea": ""
+                }
+                )
+            }
             return resolve(res)            
         })   
     })
