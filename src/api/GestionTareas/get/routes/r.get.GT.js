@@ -6,7 +6,7 @@ function daysdifference(date1, date2) {
 	var date1_ms = date1.getTime();
 	var date2_ms = date2.getTime();
 	// Calculate the difference in milliseconds
-	var difference_ms = Math.abs(date1_ms - date2_ms);
+	var difference_ms = (date1_ms - date2_ms);
 
 	// Convert back to days and return
 	return Math.round(difference_ms/ONEDAY);
@@ -72,8 +72,8 @@ module.exports = function(app){
 	})
 	app.post('/getTareaIdTarea',async (req,res)=>{				
 		var tarea = await User.getTareaIdTarea(req.body.id_tarea)
-		var diasTotal  = daysdifference(tarea.fecha_inicial,tarea.fecha_final)
-		var diasTranscurridos  = daysdifference(tarea.fecha_inicial,new Date())
+		var diasTotal  = daysdifference(tarea.fecha_final,tarea.fecha_inicial)
+		var diasTranscurridos  = daysdifference(new Date(),tarea.fecha_inicial)
 		tarea.diasTotal = diasTotal
 		tarea.diasTranscurridos = diasTranscurridos
 		res.json(
