@@ -71,18 +71,13 @@ module.exports = function(app){
 		res.json(tareas)
 	})
 	app.post('/getTareaIdTarea',async (req,res)=>{				
-		var tareas = await User.getTareaIdTarea(req.body.id_tarea)
-		var diasTotal  = daysdifference(tareas.fecha_inicial,tareas.fecha_final)
-		var diasTranscurridos  = daysdifference(tareas.fecha_inicial,new Date())
-		var descripcion = tareas.descripcion
-		var tipo_archivo = tareas.archivo
+		var tarea = await User.getTareaIdTarea(req.body.id_tarea)
+		var diasTotal  = daysdifference(tarea.fecha_inicial,tarea.fecha_final)
+		var diasTranscurridos  = daysdifference(tarea.fecha_inicial,new Date())
+		tarea.diasTotal = diasTotal
+		tarea.diasTranscurridos = diasTranscurridos
 		res.json(
-			{
-				descripcion,
-				diasTotal,
-				diasTranscurridos,
-				tipo_archivo
-			}
+			tarea
 		)
 	})
 	
