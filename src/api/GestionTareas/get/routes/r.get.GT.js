@@ -35,16 +35,12 @@ module.exports = function(app){
 		var tareas = await User.getTareasProyectos('receptor',req.body.id_acceso,req.body.inicio,req.body.fin)
 		res.json(tareas)
 	})
-	app.post('/getTareasEmisorProyectos',async (req,res)=>{		
-		var tareas = await User.getTareasProyectos('emisor',req.body.id_acceso,req.body.inicio,req.body.fin)
-		res.json(tareas)
-	})
 	app.post('/getTareasReceptor',async (req,res)=>{		
 		var tareas = await User.getTareas('receptor',req.body.id_acceso,req.body.inicio,req.body.fin,req.body.id_proyecto)
 		res.json(tareas)
 	})
 	app.post('/getTareasEmisor',async (req,res)=>{		
-		var tareas = await User.getTareas('emisor',req.body.id_acceso,req.body.inicio,req.body.fin,req.body.id_proyecto)
+		var tareas = await User.getTareaEmisor('emisor',req.body.id_acceso,req.body.inicio,req.body.fin,req.body.id_proyecto)
 		res.json(tareas)
 	})
 	app.post('/getTareasVencidas',async (req,res)=>{		
