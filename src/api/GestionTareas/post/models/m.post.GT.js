@@ -18,7 +18,6 @@ userModel.postTarea = (data) => {
             if (err) {
                 reject(err);
             } else {
-                console.log(res);
                 resolve(res.insertId);
             }
         })
