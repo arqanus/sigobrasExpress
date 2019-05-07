@@ -1,4 +1,6 @@
 const User = require('../models/m.post.users');
+var formidable = require('formidable');    
+var fs = require('fs');
 
 module.exports = function(app){
 	app.post('/nuevoUsuario',(req,res)=>{
@@ -74,5 +76,29 @@ module.exports = function(app){
 		})
 
 	})	
+	app.post('/postUserImageDefault', async (req, res)=>{    
+		//ruta de la carpeta public de imagenes
+		var folder = "Sistema/"
+		var archivo_name = "user_image_default.jpg"
+		var dir = __dirname+'/../../../../public/'+folder
+		//crear ruta si no existe
+		if (!fs.existsSync(dir)){
+		  fs.mkdirSync(dir);
+		}
+		var form = new formidable.IncomingForm();
+		//se configura la ruta de guardar
+		form.uploadDir = dir;
+		var formFiles = await new Promise((resolve, reject)=>{
+			form.parse(req, (err, fields, files)=>{
+				if (err) {
+					return reject(err);
+				}
+				return resolve(files);
+			});
+		});
+		//se renombre el archivo
+		fs.rename(formFiles.User_imagen.path,dir+archivo_name,(err)=>{})
+		res.json("/static/"+folder+archivo_name)
+	})
 	
 }
