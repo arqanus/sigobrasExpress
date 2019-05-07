@@ -1,5 +1,6 @@
 const pool = require('../../../../db/connection');
 const tools = require('../../../../tools/format')
+const default_data = require('../../../../tools/default_data')
 let userModel = {};
 
 userModel.getTareaProyectos = ()=>{
@@ -82,7 +83,7 @@ userModel.getTareas = (emireceptor,id_acceso,inicio,fin,id_proyecto)=>{
                 const tarea = res[i];
                 tarea.imagen_subordinado = [
                     {
-                        "imagen":"/static/C003/20_00000030603_26-4-2019_18-41-45.jpg",
+                        "imagen":default_data.user_image_default,
                         "imagen_alt":"test"
                     }
                 ]
@@ -111,7 +112,7 @@ userModel.getTareaEmisor = (emireceptor,id_acceso,inicio,fin)=>{
                 const tarea = res[i];
                 tarea.imagen_subordinado = [
                     {
-                        "imagen":"/static/C003/20_00000030603_26-4-2019_18-41-45.jpg",
+                        "imagen":default_data.user_image_default,
                         "imagen_alt":"test"
                     }
                 ]
@@ -150,7 +151,7 @@ userModel.getTareasVencidas = (emireceptor,id_acceso,inicio,fin,id_proyecto)=>{
                 const tarea = res[i];
                 tarea.imagen_subordinado = [
                     {
-                        "imagen":"/static/C003/20_00000030603_26-4-2019_18-41-45.jpg",
+                        "imagen":default_data.user_image_default,
                         "imagen_alt":"test"
                     }
                 ]
@@ -179,7 +180,7 @@ userModel.getTareaEmisorVencidas = (emireceptor,id_acceso,inicio,fin)=>{
                 const tarea = res[i];
                 tarea.imagen_subordinado = [
                     {
-                        "imagen":"/static/C003/20_00000030603_26-4-2019_18-41-45.jpg",
+                        "imagen":default_data.user_image_default,
                         "imagen_alt":"test"
                     }
                 ]
@@ -246,7 +247,7 @@ userModel.getTareaSubordinados = (id_acceso,nivel)=>{
             }
             for (let i = 0; i < res.length; i++) {
                 const subordinado = res[i];
-                subordinado.subordinado_imagen= subordinado.subordinado_imagen||"/static/C003/20_00000030603_26-4-2019_18-41-45.jpg"
+                subordinado.subordinado_imagen= subordinado.subordinado_imagen||default_data.user_image_default
                 subordinado.subordinado_imagenAlt= subordinado.subordinado_imagenAlt||"test"
             }
             
