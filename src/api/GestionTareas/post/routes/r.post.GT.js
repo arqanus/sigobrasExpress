@@ -41,10 +41,13 @@ module.exports = (app)=>{
 		  console.log("fecha_final :",fields.fecha_final)
 		  console.log("proyectos_id_proyecto :",fields.proyectos_id_proyecto)
 		  console.log("emisor :",fields.emisor)
+		  var receptor = []
+		  if(fields.receptor){
+			receptor = fields.receptor.split(",")
+		  }
+		  console.log("receptor :",fields.receptor)
 		  console.log("extension :",fields.extension)
 		  console.log("codigo_obra :",fields.codigo_obra)
-	
-	
 		  if (err){
 			res.json(err)
 		  }
@@ -68,8 +71,6 @@ module.exports = (app)=>{
 					if (err){
 					res.json(err)
 					}
-					console.log("ruta",ruta);
-					
 					var tarea = {		
 						"asunto":fields.asunto,
 						"descripcion":fields.descripcion,
@@ -81,6 +82,17 @@ module.exports = (app)=>{
 						"archivo":fields.codigo_obra+"/tareas"+ruta
 					}
 					var id_tarea = await User.postTarea(tarea)
+
+					var receptores = []
+					for (let i = 0; i < receptor.length; i++) {
+						const element = receptor[i];
+						receptores.push(
+							[id_tarea,Number(element)]
+						)
+					}
+					if(receptor.length){
+						var affectedRows = await User.postTareaReceptores(receptores)
+					}
 					var tarea = await User2.getTareaIdTarea(id_tarea)
 					res.json(
 						{
@@ -101,8 +113,18 @@ module.exports = (app)=>{
 					"emisor":fields.emisor,
 					"tareas_id_tarea":fields.tareas_id_tarea||null
 				}
-				console.log(tarea);				
 				var id_tarea = await User.postTarea(tarea)
+
+				var receptores = []
+				for (let i = 0; i < receptor.length; i++) {
+					const element = receptor[i];
+					receptores.push(
+						[id_tarea,Number(element)]
+					)
+				}
+				if(receptor.length){
+					var affectedRows = await User.postTareaReceptores(receptores)
+				}
 				var tarea = await User2.getTareaIdTarea(id_tarea)
 				res.json(
 					{
