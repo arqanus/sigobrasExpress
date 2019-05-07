@@ -94,7 +94,7 @@ userModel.getTareas = (emireceptor,id_acceso,inicio,fin,id_proyecto)=>{
 }
 userModel.getTareaEmisor = (emireceptor,id_acceso,inicio,fin)=>{
     return new Promise((resolve, reject) => { 
-        pool.query('SELECT tareas.id_tarea, proyectos.nombre proyecto_nombre, tareas.asunto, tareas.avance porcentaje_avance, DATEDIFF(tareas.fecha_final,now()) prioridad_color FROM tareas LEFT JOIN proyectos ON proyectos.id_proyecto = tareas.proyectos_id_proyecto LEFT JOIN tareas_has_accesos ON tareas_has_accesos.tareas_id_tarea = tareas.id_tarea WHERE '+emireceptor+' = ? AND ? <= avance AND avance <= ? and tareas.fecha_final >= now()',[id_acceso,inicio,fin],(err,res)=>{
+        pool.query('SELECT tareas.id_tarea, proyectos.nombre proyecto_nombre, tareas.asunto, tareas.avance porcentaje_avance, DATEDIFF(tareas.fecha_final,now()) prioridad_color FROM tareas LEFT JOIN proyectos ON proyectos.id_proyecto = tareas.proyectos_id_proyecto LEFT JOIN tareas_has_accesos ON tareas_has_accesos.tareas_id_tarea = tareas.id_tarea WHERE '+emireceptor+' = ? AND ? <= avance AND avance <= ? and tareas.fecha_final >= now() and receptor is null',[id_acceso,inicio,fin],(err,res)=>{
             if (err) {
                 return reject(err)
             }
