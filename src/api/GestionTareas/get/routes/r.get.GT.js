@@ -31,6 +31,21 @@ module.exports = function(app){
 		var cargos = await User.getTareaUsuariosPorCargo(req.body.id_acceso,req.body.id_Cargo)
 		res.json(cargos)
 	})
+	app.post('/getTareaSubordinados',async (req,res)=>{
+		try {
+			var nivel = await User.getTareaAccesoCargo(req.body.id_acceso)
+			nivel = nivel.nivel
+			var subordinados = await User.getTareaSubordinados(req.body.id_acceso,nivel)
+			for (let i = 0; i < subordinados.length; i++) {
+				const id_acceso = subordinados[i].id_acceso;
+				var subordinadosTareas = await User.getTareaSubordinadosTareas(id_acceso)
+				subordinados[i].subordinadosTareas = subordinadosTareas
+			}
+			res.json(subordinados)
+		} catch (error) {
+			res.status(204).json(error)
+		}
+	})
 	app.post('/getTareasReceptorProyectos',async (req,res)=>{		
 		var tareas = await User.getTareasProyectos('receptor',req.body.id_acceso,req.body.inicio,req.body.fin)
 		res.json(tareas)
@@ -40,11 +55,19 @@ module.exports = function(app){
 		res.json(tareas)
 	})
 	app.post('/getTareasEmisor',async (req,res)=>{		
-		var tareas = await User.getTareaEmisor('emisor',req.body.id_acceso,req.body.inicio,req.body.fin,req.body.id_proyecto)
+		var tareas = await User.getTareaEmisor('emisor',req.body.id_acceso,req.body.inicio,req.body.fin)
 		res.json(tareas)
 	})
-	app.post('/getTareasVencidas',async (req,res)=>{		
-		var tareas = await User.getTareasVencidas('emisor',req.body.id_acceso,req.body.inicio,req.body.fin,req.body.id_proyecto)
+	app.post('/getTareasReceptorProyectosVencidas',async (req,res)=>{		
+		var tareas = await User.getTareasProyectosVencidas('receptor',req.body.id_acceso,req.body.inicio,req.body.fin)
+		res.json(tareas)
+	})
+	app.post('/getTareasReceptorVencidas',async (req,res)=>{		
+		var tareas = await User.getTareasVencidas('receptor',req.body.id_acceso,req.body.inicio,req.body.fin,req.body.id_proyecto)
+		res.json(tareas)
+	})
+	app.post('/getTareaEmisorVencidas',async (req,res)=>{		
+		var tareas = await User.getTareaEmisorVencidas('emisor',req.body.id_acceso,0,100)
 		res.json(tareas)
 	})
 	app.post('/getTareaIdTarea',async (req,res)=>{				
@@ -62,20 +85,6 @@ module.exports = function(app){
 			}
 		)
 	})
-	app.post('/getTareaSubordinados',async (req,res)=>{
-		try {
-			var nivel = await User.getTareaAccesoCargo(req.body.id_acceso)
-			nivel = nivel.nivel
-			var subordinados = await User.getTareaSubordinados(req.body.id_acceso,nivel)
-			for (let i = 0; i < subordinados.length; i++) {
-				const id_acceso = subordinados[i].id_acceso;
-				var subordinadosTareas = await User.getTareaSubordinadosTareas(id_acceso)
-				subordinados[i].subordinadosTareas = subordinadosTareas
-			}
-			res.json(subordinados)
-		} catch (error) {
-			res.status(204).json(error)
-		}
-	})
+	
 
 }
