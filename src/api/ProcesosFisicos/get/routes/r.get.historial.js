@@ -13,7 +13,7 @@ module.exports = function(app){
             anyos[anyos.length-1].meses = meses
             res.json(anyos);
         } catch (error) {
-            res.status(400).json(anyos);
+            res.status(400).json(error);
         }
     })
     app.post('/getHistorialAnyosResumen',(req,res)=>{
@@ -33,7 +33,7 @@ module.exports = function(app){
             var meses = await User.getHistorialMeses(req.body.id_ficha,anyos[anyos.length-1].anyo)
             res.json(meses);
         } catch (error) {
-            res.status(400).json(anyos);
+            res.status(400).json(error);
         }
     })
     app.post('/getHistorialResumen',async(req,res)=>{
@@ -41,7 +41,7 @@ module.exports = function(app){
             var resumen = await User.getHistorialResumen(req.body.id_ficha,meses[meses.length-1].fecha)
             res.json(resumen);
         } catch (error) {
-            res.status(400).json(anyos);
+            res.status(400).json(error);
         }
     })
     app.post('/getHistorialComponentes',async(req,res)=>{
@@ -49,23 +49,23 @@ module.exports = function(app){
             var componentes = await User.getHistorialComponentes(req.body.id_ficha,meses[meses.length-1].fecha)
             res.json(componentes);
         } catch (error) {
-            res.status(400).json(anyos);
+            res.status(400).json(error);
         }
     })
     app.post('/getHistorialFechas',async(req,res)=>{
         try {
-            var fechas = await User4.getHistorialFechas(comp.id_componente,req.body.fecha_inicial)
+            var fechas = await User.getHistorialFechas(comp.id_componente,req.body.fecha_inicial)
             res.json(fechas);
         } catch (error) {
-            res.status(400).json(anyos);
+            res.status(400).json(error);
         }
     })
     app.post('/getHistorialDias',async(req,res)=>{
         try {
-            var historial = await User4.getHistorialDias(comp.id_componente,fecha.fecha)
+            var historial = await User.getHistorialDias(comp.id_componente,fecha.fecha)
             res.json(historial);
         } catch (error) {
-            res.status(400).json(anyos);
+            res.status(400).json(error);
         }
     })
     app.post('/getHistorialComponenteChart',(req,res)=>{
