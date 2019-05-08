@@ -9,12 +9,12 @@ module.exports = function(app){
 				if(err){ res.status(204).json(err);}
 				else{
 					User.getmaterialespartidacomponente(componentes[0].id_componente,(err,partidas)=>{
-                        if(err){ res.status(204).json(err);}
-                        else{
-                            componentes[0].partidas = partidas
-                            res.json(componentes);
-                        }
-                    })	
+							if(err){ res.status(204).json(err);}
+							else{
+									componentes[0].partidas = partidas
+									res.json(componentes);
+							}
+					})	
 				}
 			})
 		}

@@ -23,12 +23,20 @@ module.exports = function(app){
 	app.post('/getInformeDataGeneral',async(req,res)=>{
 		try {
 			var InformeDataGeneral = await User.getInformeDataGeneral(req.body.id_ficha,req.body.fecha_inicial)
-			var costo_directo = await User3.getCostoDirecto(req.body.id_ficha)
+			var costo_directo = await User3.getCostoDirecto(req.body.id_ficha,true)
 			var avance_actual = await User3.getAvanceActual(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha_final)
+			var avance_acumulado = await User3.getAvanceActual(req.body.id_ficha,"2000-01-01 00:00:00",req.body.fecha_final)
+			var residente = await User3.getCargoPersonal(req.body.id_ficha,"residente")
+			var supervisor = await User3.getCargoPersonal(req.body.id_ficha,"supervisor")
 			InformeDataGeneral.costo_directo = costo_directo
 			InformeDataGeneral.avance_actual = avance_actual.metrado
 			InformeDataGeneral.avance_actual_valor = avance_actual.valor
 			InformeDataGeneral.porcentaje_avance_fisico = avance_actual.porcentaje
+			InformeDataGeneral.avance_acumulado = avance_acumulado.metrado
+			InformeDataGeneral.avance_acumulado_valor = avance_acumulado.valor
+			InformeDataGeneral.porcentaje_avance_acumulado = avance_acumulado.porcentaje
+			InformeDataGeneral.residente = residente
+			InformeDataGeneral.supervisor = supervisor
             res.json(InformeDataGeneral)
 
 		} catch (error) {

@@ -1,4 +1,6 @@
 const pool = require('../../../../db/connection');
+const tools = require('../../../../tools/format')
+
 let userModel = {};
 function formatoPorcentaje(data){
     
@@ -168,7 +170,7 @@ userModel.getDatosGenerales = (id_ficha,callback)=>{
         }                
     })
 }
-userModel.getCostoDirecto = (id_ficha)=>{
+userModel.getCostoDirecto = (id_ficha,formato = false)=>{
     return new Promise((resolve, reject) => { 
         pool.query("SELECT SUM(componentes.presupuesto) costo_directo FROM componentes WHERE fichas_id_ficha = ? GROUP BY componentes.fichas_id_ficha ",[id_ficha], (error,res)=>{
             if(error){
@@ -177,6 +179,9 @@ userModel.getCostoDirecto = (id_ficha)=>{
             else if(res.length ==0){
                 reject("vacio");
             }else{
+                if(formato){
+                    res[0].costo_directo = tools.formatoSoles(res[0].costo_directo)
+                }
                 resolve(res[0].costo_directo);
             }
         })
@@ -193,24 +198,29 @@ userModel.getAvanceActual = (id_ficha,fecha_inicial,fecha_final)=>{
             }else{
 			    var costo_directo = await userModel.getCostoDirecto(id_ficha)
                 res[0].porcentaje = res[0].valor/costo_directo*100
+                //formato soles
+                res[0].metrado = tools.formatoSoles( res[0].metrado)
+                res[0].valor = tools.formatoSoles( res[0].valor)
+                res[0].porcentaje = tools.formatoSoles( res[0].porcentaje)
                 resolve( res[0]);
             }
         })
     })
 }
-// userModel.getAvanceActual = (id_ficha,fecha_inicial,fecha_final)=>{
-//     return new Promise((resolve, reject) => { 
-//         pool.query("SELECT SUM(valor) metrado, SUM(valor * costo_unitario) valor FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE componentes.fichas_id_ficha = ? and historialactividades.estado IS NULL AND avanceactividades.fecha >= ? AND avanceactividades.fecha < ? ",[id_ficha,fecha_inicial,fecha_final], (error,res)=>{
-//             if(error){
-//                 reject(error.code);
-//             }
-//             else if(res.length ==0){
-//                 reject("vacio");
-//             }else{
-//                 resolve(res[0]);
-//             }
-//         })
-//     })
-// }
-
+userModel.getCargoPersonal = (id_ficha,cargo_nombre)=>{
+    return new Promise((resolve, reject) => { 
+        console.log(id_ficha,cargo_nombre);
+        
+        pool.query("SELECT CONCAT(usuarios.nombre, ' ', usuarios.apellido_paterno, ' ', usuarios.apellido_materno) usuario FROM fichas_has_accesos LEFT JOIN accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso LEFT JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo WHERE  fichas_has_accesos.Fichas_id_ficha = ? and cargos.nombre = ? ",[id_ficha,cargo_nombre], (error,res)=>{
+            if(error){
+                reject(error.code);
+            }
+            else{
+                res = res[0]||{}
+                res.usuario = res.usuario||""
+                resolve( res.usuario);
+            }
+        })
+    })
+}
 module.exports = userModel;
