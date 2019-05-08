@@ -3,7 +3,7 @@ let userModel = {};
 
 userModel.putMenusUsuarios = (data,callback)=>{
          
-    pool.query('update menus set menus.data = ?', data,(error,res)=>{
+    pool.query('update accesos set menu = ?', data,(error,res)=>{
         if(error) {
             callback(error);
         }else{
