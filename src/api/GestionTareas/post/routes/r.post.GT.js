@@ -50,6 +50,7 @@ module.exports = (app)=>{
 					console.log("receptor :",fields.receptor)
 					console.log("extension :",fields.extension)
 					console.log("codigo_obra :",fields.codigo_obra)
+					console.log("tareas_id_tarea :",fields.tareas_id_tarea)
 					if (err){
 						res.json(err)
 					}
@@ -85,8 +86,6 @@ module.exports = (app)=>{
 									"archivo":fields.codigo_obra+"/tareas"+ruta
 								}
 								var id_tarea = await User.postTarea(tarea)
-							
-								
 								var receptores = []
 								for (let i = 0; i < receptor.length; i++) {
 									const element = receptor[i];
@@ -121,8 +120,6 @@ module.exports = (app)=>{
 							"tareas_id_tarea":fields.tareas_id_tarea||null
 						}
 						var id_tarea = await User.postTarea(tarea)
-						console.log("idtareaaaaaaaaaaaaaaaaaaaaaaaa");
-							// console.log(id_tarea);
 						var receptores = []
 						for (let i = 0; i < receptor.length; i++) {
 							const element = receptor[i];
