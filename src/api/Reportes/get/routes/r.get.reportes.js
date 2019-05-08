@@ -1,6 +1,7 @@
 const User = require('../models/m.get.reportes');
 const User2 = require('../../../ProcesosFisicos/get/models/m.get.valGeneral');
 const User3 = require('../../../Interfaz/get/models/m.get.interfaz');
+const User4 = require('../../../ProcesosFisicos/get/models/m.get.historial');
 var path = require('path');
 module.exports = function(app){
 	//cabecera
@@ -38,7 +39,6 @@ module.exports = function(app){
 			InformeDataGeneral.residente = residente
 			InformeDataGeneral.supervisor = supervisor
             res.json(InformeDataGeneral)
-
 		} catch (error) {
             res.json(error)
 		}
@@ -46,19 +46,23 @@ module.exports = function(app){
 			
 	})
 	//6.1 cuadro demetradosEJECUTADOS
-	app.post('/CuadroMetradosEjecutados',(req,res)=>{
-		if(req.body.id_ficha == null){
-			res.json("null");		
-		}else{
-			User.CuadroMetradosEjecutados(req.body.id_ficha,req.body.fecha_final,(err,data)=>{							
-				if(err){ res.status(204).json(err);}
-				else{
-					res.json(data);	
+	app.post('/CuadroMetradosEjecutados',async(req,res)=>{
+		try {
+			var componentes = await User4.getHistorialComponentes(req.body.id_ficha,req.body.fecha_inicial)
+			for (let i = 0; i < componentes.length; i++) {
+				const comp = componentes[i];
+				var fechas = await User4.getHistorialFechas(comp.id_componente,req.body.fecha_inicial)
+				comp.fechas = fechas
+				for (let j = 0; j < comp.fechas.length; j++) {
+					const fecha = comp.fechas[j];
+					var historial = await User4.getHistorialDias(comp.id_componente,fecha.fecha)
+					fecha.historial = historial
 				}
-
-			})
+			}
+			res.json(componentes)
+		} catch (error) {
+			res.status(400).json(error)
 		}
-		
 	})
 	//6.2 VAORIZACION PRINCIPALDELAOBRA-PRESUPUESTO-BASE
 	app.post('/valorizacionPrincipal',async (req,res)=>{
