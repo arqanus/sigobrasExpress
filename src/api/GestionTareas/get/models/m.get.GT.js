@@ -241,7 +241,7 @@ userModel.getSubTareas = (id_tarea,terminado)=>{
 }
 userModel.getTareaSubordinados = (id_acceso,nivel)=>{
     return new Promise((resolve, reject) => { 
-        pool.query('SELECT usuarios.nombre usuario_nombre,usuarios.apellido_paterno,cargos.nombre cargo_nombre,cargos.nivel cargo_nivel,accesos.id_acceso, usuarios.imagen subordinado_imagen, usuarios.imagenAlt subordinado_imagenAlt FROM fichas_has_accesos a LEFT JOIN fichas ON fichas.id_ficha = a.Fichas_id_ficha LEFT JOIN fichas_has_accesos b ON b.Fichas_id_ficha = fichas.id_ficha LEFT JOIN accesos ON accesos.id_acceso = b.accesos_id_acceso LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo LEFT JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario WHERE a.accesos_id_acceso = ? AND cargos.nivel > ? GROUP BY cargos.id_Cargo',[id_acceso,nivel],(err,res)=>{
+        pool.query('SELECT usuarios.nombre usuario_nombre,usuarios.apellido_paterno,cargos.nombre cargo_nombre,cargos.nivel cargo_nivel,accesos.id_acceso, usuarios.imagen subordinado_imagen, usuarios.imagenAlt subordinado_imagenAlt FROM fichas_has_accesos a LEFT JOIN fichas ON fichas.id_ficha = a.Fichas_id_ficha LEFT JOIN fichas_has_accesos b ON b.Fichas_id_ficha = fichas.id_ficha LEFT JOIN accesos ON accesos.id_acceso = b.accesos_id_acceso LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo LEFT JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario WHERE a.accesos_id_acceso = ? AND cargos.nivel > ? GROUP BY accesos.id_acceso',[id_acceso,nivel],(err,res)=>{
             if (err) {
                 return reject(err)
             }
