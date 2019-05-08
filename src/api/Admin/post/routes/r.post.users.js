@@ -28,16 +28,14 @@ module.exports = function(app){
 
 	})
 	app.post('/nuevoAcceso',(req,res)=>{	
+		req.body.menu = "[{\"ruta\":\"\",\"submenus\":[{\"ruta\":\"/MDHistorial\",\"nombreMenu\":\"Historial de metrados\",\"nombrecomponente\":\"MDHistorial\"},{\"ruta\":\"/General\",\"nombreMenu\":\"Valorizaciones\",\"nombrecomponente\":\"General\"},{\"ruta\":\"/RecursosObra\",\"nombreMenu\":\"Recursos\",\"nombrecomponente\":\"RecursosObra\"},{\"ruta\":\"/HistorialImagenesObra\",\"nombreMenu\":\"Historial de imágenes\",\"nombrecomponente\":\"HistorialImagenesObra\"}],\"nombreMenu\":\"PROCESOS FISICOS\"},{\"ruta\":\"\",\"submenus\":[{\"ruta\":\"/Analitico\",\"nombreMenu\":\"Analitico\",\"nombrecomponente\":\"Analitico\"},{\"ruta\":\"/Otros\",\"nombreMenu\":\"Otos\",\"nombrecomponente\":\"Otros\"}],\"nombreMenu\":\"PROCESOS GERENCIALES\"}]"
 		User.postAcceso(req.body,(err,data)=>{
 			if(err) {
 				res.status(204).json(err);
 			}else{
 				res.json(data);	
 			}
-				
-			
 		})
-
 	})
 	app.post('/postMenu',(req,res)=>{
 		// req.body =JSON.stringify(req.body)
