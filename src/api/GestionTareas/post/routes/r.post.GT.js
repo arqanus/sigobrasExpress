@@ -83,7 +83,7 @@ module.exports = (app)=>{
 									"proyectos_id_proyecto":fields.proyectos_id_proyecto,
 									"emisor":fields.emisor,
 									"tareas_id_tarea":fields.tareas_id_tarea||null,
-									"archivo":fields.codigo_obra+"/tareas"+ruta
+									"archivo":"/static/"+fields.codigo_obra+"/tareas"+ruta
 								}
 								var id_tarea = await User.postTarea(tarea)
 								var receptores = []
