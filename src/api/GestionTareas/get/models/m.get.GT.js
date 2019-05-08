@@ -66,7 +66,7 @@ userModel.getTareasProyectos = (emireceptor,id_acceso,inicio,fin)=>{
 }
 userModel.getTareas = (emireceptor,id_acceso,inicio,fin,id_proyecto)=>{
     return new Promise((resolve, reject) => { 
-        pool.query('SELECT tareas.id_tarea,proyectos.color proyecto_color, proyectos.nombre proyecto_nombre, tareas.asunto, tareas.avance porcentaje_avance, DATEDIFF(tareas.fecha_final,now()) prioridad_color FROM tareas LEFT JOIN proyectos ON proyectos.id_proyecto = tareas.proyectos_id_proyecto LEFT JOIN tareas_has_accesos ON tareas_has_accesos.tareas_id_tarea = tareas.id_tarea WHERE '+emireceptor+' = ? AND ? <= avance AND avance <= ? and proyectos.id_proyecto = ? and tareas.fecha_final >= now()',[id_acceso,inicio,fin,id_proyecto],(err,res)=>{
+        pool.query('SELECT tareas.id_tarea, proyectos.color proyecto_color, proyectos.nombre proyecto_nombre, tareas.asunto, tareas.avance porcentaje_avance, DATEDIFF(tareas.fecha_final, NOW()) prioridad_color, usuarios.nombre emisor_nombre, cargos.nombre emisor_cargo FROM tareas LEFT JOIN proyectos ON proyectos.id_proyecto = tareas.proyectos_id_proyecto LEFT JOIN tareas_has_accesos ON tareas_has_accesos.tareas_id_tarea = tareas.id_tarea LEFT JOIN accesos ON accesos.id_acceso = tareas.emisor LEFT JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo WHERE '+emireceptor+' = ? AND ? <= avance AND avance <= ? and proyectos.id_proyecto = ? and tareas.fecha_final >= now()',[id_acceso,inicio,fin,id_proyecto],(err,res)=>{
             if (err) {  
                 return reject(err)
             }
@@ -192,7 +192,7 @@ userModel.getTareaEmisorVencidas = (emireceptor,id_acceso,inicio,fin)=>{
 }
 userModel.getTareaIdTarea = (id_tarea)=>{
     return new Promise((resolve, reject) => { 
-        pool.query("SELECT tareas.id_tarea, tareas.descripcion, tareas.fecha_inicial, tareas.fecha_final, proyectos.color proyecto_color,proyectos.nombre proyecto_nombre, tareas.asunto, tareas.avance porcentaje_avance, tareas.archivo tipo_archivo, usuarios.nombre emisor_nombre, cargos.nombre emisor_cargo FROM tareas LEFT JOIN proyectos ON proyectos.id_proyecto = tareas.proyectos_id_proyecto LEFT JOIN accesos ON accesos.id_acceso = tareas.emisor LEFT JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo WHERE tareas.id_tarea = ?",[id_tarea],(err,res)=>{
+        pool.query("SELECT tareas.id_tarea,tareas.avance, tareas.descripcion, tareas.fecha_inicial, tareas.fecha_final, proyectos.color proyecto_color,proyectos.nombre proyecto_nombre, tareas.asunto, tareas.avance porcentaje_avance, tareas.archivo tipo_archivo, usuarios.nombre emisor_nombre, cargos.nombre emisor_cargo FROM tareas LEFT JOIN proyectos ON proyectos.id_proyecto = tareas.proyectos_id_proyecto LEFT JOIN accesos ON accesos.id_acceso = tareas.emisor LEFT JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo WHERE tareas.id_tarea = ?",[id_tarea],(err,res)=>{
             if (err) {
                 return reject(err)
             }

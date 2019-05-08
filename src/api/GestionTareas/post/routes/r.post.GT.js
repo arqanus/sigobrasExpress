@@ -158,20 +158,19 @@ module.exports = (app)=>{
 		if(Ncambios == 0){
 			res.json("NO SE REALIZARON CAMBIOS")
 		}else{
-			var avance = await User2.getTareaIdTarea(req.body.id_tarea)
+			var tarea = await User2.getTareaIdTarea(req.body.id_tarea)
+			var avance = tarea.avance
 			var estadoTarea = ""
-			avance = avance.avance
 			if(avance == 0){
 				estadoTarea = "pendiente"
 			}else if(0 < avance && avance < 100 ){
 				estadoTarea = "progreso"
-			}else if(avance == 100 ){
+			}else if(avance > 100 ){
 				estadoTarea = "terminado"
 			}
 			res.json(
 				{
-					avance,
-					estadoTarea
+					avance,estadoTarea
 				}
 			)
 		}
