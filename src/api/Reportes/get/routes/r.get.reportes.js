@@ -1,49 +1,41 @@
 const User = require('../models/m.get.reportes');
 const User2 = require('../../../ProcesosFisicos/get/models/m.get.valGeneral');
+const User3 = require('../../../Interfaz/get/models/m.get.interfaz');
 var path = require('path');
 module.exports = function(app){
-	
-	
 	//cabecera
-	app.post('/getAnyoReportes',(req,res)=>{
-		if(req.body.id_ficha == null){
-			res.json("null");		
-		}else{
-			User.getAnyoReportes(req.body.id_ficha,(err,data)=>{							
-				if(err){ res.status(204).json(err);}
-				else{
-					res.json(data);	
-				}
-			})
-		}
+	app.post('/getAnyoReportes',async(req,res)=>{
+		try {
+            var anyos = await User2.getValGeneralAnyos(req.body.id_ficha)
+            res.json(anyos);
+        } catch (error) {
+            res.status(204).json(error)
+        }
 	})
-	app.post('/getPeriodsByAnyo',(req,res)=>{
-		if(req.body.anyo == null){
-			res.json("null");		
-		}else{
-			User.getPeriodsByAnyo(req.body.id_ficha,req.body.anyo,(err,data)=>{							
-				if(err){ res.status(204).json(err);}
-				else{
-					res.json(data);	
-				}
-			})
-		}
-		
+	app.post('/getPeriodsByAnyo',async(req,res)=>{
+		try {
+            var periodos = await User2.getValGeneralPeriodos(req.body.id_ficha,req.body.anyo)
+            res.json(periodos)
+        } catch (error) {
+            res.status(204).json(error)
+        }
 	})
-	app.post('/getInformeDataGeneral',(req,res)=>{
-		if(req.body.id_ficha == null){
-			res.json("null");		
-		}else{
+	app.post('/getInformeDataGeneral',async(req,res)=>{
+		try {
+			var InformeDataGeneral = await User.getInformeDataGeneral(req.body.id_ficha,req.body.fecha_inicial)
+			var costo_directo = await User3.getCostoDirecto(req.body.id_ficha)
+			var avance_actual = await User3.getAvanceActual(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha_final)
+			InformeDataGeneral.costo_directo = costo_directo
+			InformeDataGeneral.avance_actual = avance_actual.metrado
+			InformeDataGeneral.avance_actual_valor = avance_actual.valor
+			InformeDataGeneral.porcentaje_avance_fisico = avance_actual.porcentaje
+            res.json(InformeDataGeneral)
 
-			User.getInformeDataGeneral(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha_final,(err,data)=>{							
-				if(err){ res.status(204).json(err);}
-				else{
-					res.json(data);	
-				}
-
-			})
+		} catch (error) {
+            res.json(error)
 		}
-		
+
+			
 	})
 	//6.1 cuadro demetradosEJECUTADOS
 	app.post('/CuadroMetradosEjecutados',(req,res)=>{

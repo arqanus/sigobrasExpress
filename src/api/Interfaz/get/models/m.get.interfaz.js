@@ -24,8 +24,7 @@ function formatoPorcentaje(data){
 }
 //idacceso en login
 userModel.getId_acceso = (data,callback)=>{
-    console.log("postLogin");
-    console.log("data",data);
+    
     pool.getConnection(function(err,conn){
         if(err){ callback(err);}
         else{     
@@ -169,5 +168,49 @@ userModel.getDatosGenerales = (id_ficha,callback)=>{
         }                
     })
 }
+userModel.getCostoDirecto = (id_ficha)=>{
+    return new Promise((resolve, reject) => { 
+        pool.query("SELECT SUM(componentes.presupuesto) costo_directo FROM componentes WHERE fichas_id_ficha = ? GROUP BY componentes.fichas_id_ficha ",[id_ficha], (error,res)=>{
+            if(error){
+                reject(error.code);
+            }
+            else if(res.length ==0){
+                reject("vacio");
+            }else{
+                resolve(res[0].costo_directo);
+            }
+        })
+    })
+}
+userModel.getAvanceActual = (id_ficha,fecha_inicial,fecha_final)=>{
+    return new Promise((resolve, reject) => { 
+        pool.query("SELECT SUM(valor) metrado, SUM(valor * costo_unitario) valor FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE componentes.fichas_id_ficha = ? and historialactividades.estado IS NULL AND avanceactividades.fecha >= ? AND avanceactividades.fecha < ? ",[id_ficha,fecha_inicial,fecha_final], async(error,res)=>{
+            if(error){
+                reject(error.code);
+            }
+            else if(res.length ==0){
+                reject("vacio");
+            }else{
+			    var costo_directo = await userModel.getCostoDirecto(id_ficha)
+                res[0].porcentaje = res[0].valor/costo_directo*100
+                resolve( res[0]);
+            }
+        })
+    })
+}
+// userModel.getAvanceActual = (id_ficha,fecha_inicial,fecha_final)=>{
+//     return new Promise((resolve, reject) => { 
+//         pool.query("SELECT SUM(valor) metrado, SUM(valor * costo_unitario) valor FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE componentes.fichas_id_ficha = ? and historialactividades.estado IS NULL AND avanceactividades.fecha >= ? AND avanceactividades.fecha < ? ",[id_ficha,fecha_inicial,fecha_final], (error,res)=>{
+//             if(error){
+//                 reject(error.code);
+//             }
+//             else if(res.length ==0){
+//                 reject("vacio");
+//             }else{
+//                 resolve(res[0]);
+//             }
+//         })
+//     })
+// }
 
 module.exports = userModel;

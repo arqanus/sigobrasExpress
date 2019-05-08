@@ -105,122 +105,18 @@ function formatoNumero(data){
     return data
 }
 //data cabecera
-userModel.getAnyoReportes  = (id_ficha,callback)=>{    
-    pool.getConnection(function(err ,conn){
-        if(err){ 
-            callback(err);
-        }        
-        else{
-            conn.query("SELECT YEAR(avanceactividades.fecha) anyo FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.Fichas_id_ficha = fichas.id_ficha AND historialestados.fecha_inicial <= avanceactividades.fecha AND avanceactividades.fecha < historialestados.fecha_final LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND fichas.id_ficha = ? GROUP BY YEAR(avanceactividades.fecha)",id_ficha,(err,res)=>{ 
-                if(err){
-                    console.log(err);                    
-                    callback(err.code);                 
-                }
-                else if(res.length == 0){
-                    callback(null,"vacio");    
-                    conn.destroy()    
-                }else{     
-                   
-                       
-                    callback(null,res);
-                    conn.destroy()
-                }
-                
-                
-            })
-        }
-        
-                
-    })
-}
-userModel.getPeriodsByAnyo  = (id_ficha,anyo,callback)=>{    
-    pool.getConnection(function(err ,conn){
-        if(err){ 
-            callback(err);
-        }        
-        else{
-            conn.query("SELECT fichas.id_ficha, estados.codigo, MIN(avanceactividades.fecha) fecha_inicial, DATE_FORMAT(MAX(avanceactividades.fecha), ' %Y') anyo, DATE_FORMAT(MAX(avanceactividades.fecha), ' %M') mes FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.Fichas_id_ficha = fichas.id_ficha AND historialestados.fecha_inicial <= avanceactividades.fecha AND avanceactividades.fecha < historialestados.fecha_final LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND fichas.id_ficha = ? AND YEAR(avanceactividades.fecha) = ? GROUP BY historialestados.id_historialEstado , DATE_FORMAT(avanceactividades.fecha, '%Y-%b') ORDER BY avanceactividades.fecha",[id_ficha,anyo],(err,res)=>{ 
-                if(err){
-                    console.log(err);                    
-                    callback(err.code);                 
-                }
-                else if(res.length == 0){
-                    callback(null,"vacio");    
-                    conn.destroy()    
-                }else{  
-                    cont = 1
-                    for (let i = 0; i < res.length; i++) {
-                        const fila = res[i];
-                        if(fila.codigo=="E"){
-                            fila.codigo = fila.mes+" "+rome(cont)+fila.anyo
-                            cont++
-                            
-                        }else{
-                            cont= 1
-                        }
-                        // delete fila.mes
-                        // delete fila.anyo
-                        delete fila.id_ficha
-                        fila.fecha_inicial = fila.fecha_inicial.toLocaleString()
-                        if(i< res.length-1){
-                            fila.fecha_final = res[i+1].fecha_inicial.toLocaleString()
-                        }else{
-                            fila.fecha_final = new Date().toLocaleString();
-                        }
-                        
-                        
-                    }              
-            
-                  
-                       
-                    callback(null,res);
-                    conn.destroy()
-                }
-                
-                
-            })
-        }
-        
-                
-    })
-}
-userModel.getInformeDataGeneral  = (id_ficha,fecha_inicial,fecha_final,callback)=>{    
-    pool.getConnection(function(err ,conn){
-        if(err){ 
-            callback(err);
-        }        
-        else{
-            conn.query("SELECT fichas.id_ficha, UPPER(fichas.g_meta) g_meta, fichas.g_total_presu presupuesto_general, UPPER(MONTHNAME(?)) mes, UPPER(fichas.tiempo_ejec) plazo_de_ejecucion, presupuesto.presupuesto costo_directo, tb_avance_actual.metrado  avance_actual, tb_avance_actual.valor avance_actual_valor, tb_avance_actual.valor / presupuesto.presupuesto * 100 porcentaje_avance_fisico, avance_acumulado.metrado avance_acumulado, avance_acumulado.valor avance_acumulado_valor, avance_acumulado.valor / presupuesto.presupuesto * 100 porcentaje_avance_acumulado, UPPER(fichas.g_local_reg) region, UPPER(fichas.g_local_prov) provincia, UPPER(fichas.g_local_dist) distrito, UPPER(COALESCE(fichas.lugar, '')) lugar, UPPER(COALESCE(residente.usuario, '')) residente, UPPER(COALESCE(supervisor.usuario, '')) supervisor FROM fichas LEFT JOIN (SELECT id_ficha, SUM(valor) metrado, SUM(valor * costo_unitario) valor FROM fichas LEFT JOIN componentes ON componentes.Fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad left join historialactividades on historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado is null and  avanceactividades.fecha < ? GROUP BY fichas.id_ficha) avance_acumulado ON avance_acumulado.id_ficha = fichas.id_ficha LEFT JOIN (SELECT id_ficha, SUM(valor) metrado, SUM(valor * costo_unitario) valor FROM fichas LEFT JOIN componentes ON componentes.Fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad left join historialactividades on historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado is null and avanceactividades.fecha < ? and avanceactividades.fecha >= ? GROUP BY fichas.id_ficha) tb_avance_actual ON tb_avance_actual.id_ficha = fichas.id_ficha LEFT JOIN (SELECT componentes.fichas_id_ficha, SUM(componentes.presupuesto) presupuesto FROM componentes GROUP BY componentes.fichas_id_ficha) Presupuesto ON presupuesto.fichas_id_ficha = fichas.id_ficha LEFT JOIN (SELECT fichas_has_accesos.Fichas_id_ficha, CONCAT(usuarios.nombre, ' ', usuarios.apellido_paterno, ' ', usuarios.apellido_materno) usuario FROM fichas_has_accesos LEFT JOIN accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso LEFT JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo WHERE cargos.nombre = 'residente' GROUP BY fichas_has_accesos.Fichas_id_ficha) residente ON residente.Fichas_id_ficha = fichas.id_ficha LEFT JOIN (SELECT fichas_has_accesos.Fichas_id_ficha, CONCAT(usuarios.nombre, ' ', usuarios.apellido_paterno, ' ', usuarios.apellido_materno) usuario FROM fichas_has_accesos LEFT JOIN accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso LEFT JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo WHERE cargos.nombre = 'supervisor' GROUP BY fichas_has_accesos.Fichas_id_ficha) supervisor ON supervisor.Fichas_id_ficha = fichas.id_ficha WHERE fichas.id_ficha = ?",[fecha_inicial,fecha_final,fecha_final,fecha_inicial,id_ficha],(err,res)=>{ 
-                if(err){
-                    console.log(err);                    
-                    callback(err.code);                 
-                }
-                else if(res.length == 0){
-                    callback(null,"vacio");    
-                    conn.destroy()    
-                }else{     
-                    for (let i = 0; i < res.length; i++) {
-                        const fila = res[i];
-                        fila.costo_directo = formato(fila.costo_directo)
-                        fila.porcentaje_avance_fisico = formato(fila.porcentaje_avance_fisico)
-                        fila.porcentaje_avance_acumulado = formato(fila.porcentaje_avance_acumulado)
-                        fila.avance_actual = formato(fila.avance_actual)
-                        fila.avance_actual_valor = formato(fila.avance_actual_valor)
-                        fila.avance_acumulado = formato(fila.avance_acumulado)
-                        fila.avance_actual = formato(fila.avance_actual)
-                        fila.avance_acumulado_valor = formato(fila.avance_acumulado_valor)
-                        fila.presupuesto_general = formato(fila.presupuesto_general) 
-                    }
-                       
-                    callback(null,res[0]);
-                    conn.destroy()
-                }
-                
-                
-            })
-        }
-        
-                
+userModel.getInformeDataGeneral  = (id_ficha,fecha_inicial)=>{    
+    return new Promise((resolve, reject) => {
+        pool.query("SELECT fichas.id_ficha, UPPER(fichas.g_meta) g_meta, fichas.g_total_presu presupuesto_general, UPPER(MONTHNAME(?)) mes, UPPER(fichas.tiempo_ejec) plazo_de_ejecucion, UPPER(fichas.g_local_reg) region, UPPER(fichas.g_local_prov) provincia, UPPER(fichas.g_local_dist) distrito, UPPER(COALESCE(fichas.lugar, '')) lugar FROM fichas WHERE fichas.id_ficha = ?",[fecha_inicial,id_ficha],(err,res)=>{ 
+            if(err){
+                reject(err.code);                 
+            }
+            else if(res.length == 0){
+                resolve("vacio");    
+            }else{     
+                resolve(res[0]);
+            }
+        })
     })
 }
 //6.1 cuadro demetradosEJECUTADOS
