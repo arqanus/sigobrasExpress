@@ -54,7 +54,7 @@ userModel.getmaterialespartidacomponente = (id_componente, callback) => {
             callback(err);
         }
         else {
-            conn.query("/**********Consulta de materiales de partidas por componente**********/ SELECT id_partida, partidas.item, partidas.descripcion, partidas.metrado, partidas.costo_unitario, metrado * costo_unitario precio_parcial, partidas.tipo FROM partidas WHERE partidas.componentes_id_componente = ?", id_componente, (error, res) => {
+            conn.query("SELECT id_partida, partidas.item, partidas.descripcion, partidas.metrado, partidas.costo_unitario, metrado * costo_unitario precio_parcial, partidas.tipo, prioridades.valor prioridad_valor, prioridades.color prioridad_color, iconoscategorias.nombre iconocategoria_nombre FROM partidas LEFT JOIN prioridades ON prioridades.id_prioridad = partidas.prioridades_id_prioridad LEFT JOIN iconoscategorias ON iconoscategorias.id_iconoCategoria = partidas.iconosCategorias_id_iconoCategoria WHERE partidas.componentes_id_componente = ?", id_componente, (error, res) => {
                 if (error) {
                     callback(error);
                 }
