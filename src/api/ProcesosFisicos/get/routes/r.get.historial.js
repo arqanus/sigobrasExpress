@@ -54,7 +54,7 @@ module.exports = function(app){
     })
     app.post('/getHistorialFechas',async(req,res)=>{
         try {
-            var fechas = await User.getHistorialFechas(comp.id_componente,req.body.fecha_inicial)
+            var fechas = await User.getHistorialFechas(req.body.id_componente,req.body.fecha)
             res.json(fechas);
         } catch (error) {
             res.status(400).json(error);
@@ -62,7 +62,7 @@ module.exports = function(app){
     })
     app.post('/getHistorialDias',async(req,res)=>{
         try {
-            var historial = await User.getHistorialDias(comp.id_componente,fecha.fecha)
+            var historial = await User.getHistorialDias(req.body.id_componente,req.body.fecha)
             res.json(historial);
         } catch (error) {
             res.status(400).json(error);
