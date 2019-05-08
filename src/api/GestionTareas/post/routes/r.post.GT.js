@@ -36,42 +36,81 @@ module.exports = (app)=>{
 			form.uploadDir = dir;
 			
 			form.parse(req, async(err, fields, files) =>{
-				console.log("asunto :",fields.asunto)
-				console.log("descripcion :",fields.descripcion)
-				console.log("fecha_inicial :",fields.fecha_inicial)
-				console.log("fecha_final :",fields.fecha_final)
-				console.log("proyectos_id_proyecto :",fields.proyectos_id_proyecto)
-				console.log("emisor :",fields.emisor)
-				var receptor = []
-				if(fields.receptor){
-					receptor = fields.receptor.split(",")
-				}
-				console.log("receptor :",fields.receptor)
-				console.log("extension :",fields.extension)
-				console.log("codigo_obra :",fields.codigo_obra)
-				if (err){
-					res.json(err)
-				}
-				//folder de la obra
-				var obraFolder = dir+fields.codigo_obra
-				
-				if (!fs.existsSync(obraFolder)){
-					fs.mkdirSync(obraFolder);
-				}  // TODO: make sure my_file and project_id exist  
-
-				obraFolder = dir+fields.codigo_obra+"/tareas"
-				
-				if (!fs.existsSync(obraFolder)){
-					fs.mkdirSync(obraFolder);
-				}  // TODO: make sure my_file and project_id exist  
-				
-				var ruta = "/"+fields.emisor+"_"+datetime()+fields.extension
-				//files foto
-				if(files.archivo){
-					fs.rename(files.archivo.path,obraFolder+ruta,async(err)=>{
-						if (err){
+				try {
+					console.log("asunto :",fields.asunto)
+					console.log("descripcion :",fields.descripcion)
+					console.log("fecha_inicial :",fields.fecha_inicial)
+					console.log("fecha_final :",fields.fecha_final)
+					console.log("proyectos_id_proyecto :",fields.proyectos_id_proyecto)
+					console.log("emisor :",fields.emisor)
+					var receptor = []
+					if(fields.receptor){
+						receptor = fields.receptor.split(",")
+					}
+					console.log("receptor :",fields.receptor)
+					console.log("extension :",fields.extension)
+					console.log("codigo_obra :",fields.codigo_obra)
+					if (err){
 						res.json(err)
-						}
+					}
+					//folder de la obra
+					var obraFolder = dir+fields.codigo_obra
+					
+					if (!fs.existsSync(obraFolder)){
+						fs.mkdirSync(obraFolder);
+					}  // TODO: make sure my_file and project_id exist  
+
+					obraFolder = dir+fields.codigo_obra+"/tareas"
+					
+					if (!fs.existsSync(obraFolder)){
+						fs.mkdirSync(obraFolder);
+					}  // TODO: make sure my_file and project_id exist  
+					
+					var ruta = "/"+fields.emisor+"_"+datetime()+fields.extension
+					//files foto
+					if(files.archivo){
+						fs.rename(files.archivo.path,obraFolder+ruta,async(err)=>{
+							try {
+								if (err){
+								res.json(err)
+								}
+								var tarea = {		
+									"asunto":fields.asunto,
+									"descripcion":fields.descripcion,
+									"fecha_inicial":fields.fecha_inicial,
+									"fecha_final":fields.fecha_final,
+									"proyectos_id_proyecto":fields.proyectos_id_proyecto,
+									"emisor":fields.emisor,
+									"tareas_id_tarea":fields.tareas_id_tarea||null,
+									"archivo":fields.codigo_obra+"/tareas"+ruta
+								}
+								var id_tarea = await User.postTarea(tarea)
+							
+								
+								var receptores = []
+								for (let i = 0; i < receptor.length; i++) {
+									const element = receptor[i];
+									receptores.push(
+										[id_tarea,Number(element)]
+									)
+								}
+								if(receptor.length){
+									var affectedRows = await User.postTareaReceptores(receptores)
+								}
+								var tarea = await User2.getTareaIdTarea(id_tarea)
+								res.json(
+									{
+										"id_tarea": tarea.id_tarea,
+										"proyecto_nombre": tarea.proyecto_nombre,
+										"asunto": tarea.asunto,
+										"porcentaje_avance": tarea.porcentaje_avance
+									}
+								)
+							} catch (error) {
+								res.status(400).json(error)
+							}
+						}); 
+					}else{
 						var tarea = {		
 							"asunto":fields.asunto,
 							"descripcion":fields.descripcion,
@@ -79,11 +118,11 @@ module.exports = (app)=>{
 							"fecha_final":fields.fecha_final,
 							"proyectos_id_proyecto":fields.proyectos_id_proyecto,
 							"emisor":fields.emisor,
-							"tareas_id_tarea":fields.tareas_id_tarea||null,
-							"archivo":fields.codigo_obra+"/tareas"+ruta
+							"tareas_id_tarea":fields.tareas_id_tarea||null
 						}
 						var id_tarea = await User.postTarea(tarea)
-
+						console.log("idtareaaaaaaaaaaaaaaaaaaaaaaaa");
+							// console.log(id_tarea);
 						var receptores = []
 						for (let i = 0; i < receptor.length; i++) {
 							const element = receptor[i];
@@ -103,39 +142,11 @@ module.exports = (app)=>{
 								"porcentaje_avance": tarea.porcentaje_avance
 							}
 						)
-					}); 
-				}else{
-					var tarea = {		
-						"asunto":fields.asunto,
-						"descripcion":fields.descripcion,
-						"fecha_inicial":fields.fecha_inicial,
-						"fecha_final":fields.fecha_final,
-						"proyectos_id_proyecto":fields.proyectos_id_proyecto,
-						"emisor":fields.emisor,
-						"tareas_id_tarea":fields.tareas_id_tarea||null
 					}
-					var id_tarea = await User.postTarea(tarea)
-
-					var receptores = []
-					for (let i = 0; i < receptor.length; i++) {
-						const element = receptor[i];
-						receptores.push(
-							[id_tarea,Number(element)]
-						)
-					}
-					if(receptor.length){
-						var affectedRows = await User.postTareaReceptores(receptores)
-					}
-					var tarea = await User2.getTareaIdTarea(id_tarea)
-					res.json(
-						{
-							"id_tarea": tarea.id_tarea,
-							"proyecto_nombre": tarea.proyecto_nombre,
-							"asunto": tarea.asunto,
-							"porcentaje_avance": tarea.porcentaje_avance
-						}
-					)
+				} catch (error) {
+					res.status(400).json(error)
 				}
+				
 			});
 		} catch (error) {
 			res.json(error)

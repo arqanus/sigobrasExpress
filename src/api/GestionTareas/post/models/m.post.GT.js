@@ -16,7 +16,9 @@ userModel.postTarea = (data) => {
     return new Promise((resolve, reject) => { 
         pool.query('INSERT INTO tareas SET ?', data, (err, res) => {
             if (err) {
-                reject(err);
+                console.log("errrorrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr");
+                
+                reject(err.code);
             } else {
                 resolve(res.insertId);
             }
