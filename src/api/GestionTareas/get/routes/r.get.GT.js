@@ -70,15 +70,20 @@ module.exports = function(app){
 		var tareas = await User.getTareaEmisorVencidas('emisor',req.body.id_acceso,0,100)
 		res.json(tareas)
 	})
-	app.post('/getTareaIdTarea',async (req,res)=>{				
-		var tarea = await User.getTareaIdTarea(req.body.id_tarea)
-		var diasTotal  = daysdifference(tarea.fecha_final,tarea.fecha_inicial)
-		var diasTranscurridos  = daysdifference(new Date(),tarea.fecha_inicial)
-		tarea.diasTotal = diasTotal
-		tarea.diasTranscurridos = diasTranscurridos
-		res.json(
-			tarea
-		)
+	app.post('/getTareaIdTarea',async (req,res)=>{
+		try {
+			var tarea = await User.getTareaIdTarea(req.body.id_tarea)
+			var diasTotal  = daysdifference(tarea.fecha_final,tarea.fecha_inicial)
+			var diasTranscurridos  = daysdifference(new Date(),tarea.fecha_inicial)
+			tarea.diasTotal = diasTotal
+			tarea.diasTranscurridos = diasTranscurridos
+			res.json(
+				tarea
+			)
+		} catch (error) {
+			res.status(400).json(error)
+		}		
+		
 	})
 	
 
