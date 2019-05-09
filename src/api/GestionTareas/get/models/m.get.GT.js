@@ -192,14 +192,27 @@ userModel.getTareaEmisorVencidas = (emireceptor,id_acceso,inicio,fin)=>{
 }
 userModel.getTareaIdTarea = (id_tarea)=>{
     return new Promise((resolve, reject) => { 
-        pool.query("SELECT tareas.id_tarea,tareas.avance, tareas.descripcion, tareas.fecha_inicial, tareas.fecha_final, proyectos.color proyecto_color,proyectos.nombre proyecto_nombre, tareas.asunto, tareas.avance porcentaje_avance, tareas.archivo tipo_archivo, usuarios.nombre emisor_nombre, cargos.nombre emisor_cargo FROM tareas LEFT JOIN proyectos ON proyectos.id_proyecto = tareas.proyectos_id_proyecto LEFT JOIN accesos ON accesos.id_acceso = tareas.emisor LEFT JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo WHERE tareas.id_tarea = ?",[id_tarea],(err,res)=>{
+        pool.query("SELECT tareas.id_tarea,tareas.avance, tareas.descripcion, tareas.fecha_inicial, tareas.fecha_final, proyectos.color proyecto_color,proyectos.nombre proyecto_nombre, tareas.asunto, tareas.avance porcentaje_avance, tareas.archivo tipo_archivo, usuarios.nombre emisor_nombre, cargos.nombre emisor_cargo,usuarios.imagen usuario_imagen, usuarios.imagenAlt usuario_imagenAlt, DATEDIFF(tareas.fecha_final,now()) prioridad_color FROM tareas LEFT JOIN proyectos ON proyectos.id_proyecto = tareas.proyectos_id_proyecto LEFT JOIN accesos ON accesos.id_acceso = tareas.emisor LEFT JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo WHERE tareas.id_tarea = ?",[id_tarea],(err,res)=>{
             if (err) {
                 return reject(err)
             }
-            return resolve(res[0])            
+            res[0].usuario_imagen = res[0].usuario_imagen|| default_data.user_image_default
+            res[0].usuario_imagenAlt = res[0].usuario_imagenAlt|| "default"
+
+            function prioridad_color(valor){
+                if(valor<2){
+                    return "#ff8969"
+                }else if(valor < 5){
+                    return "#fef768"
+                }else if(valor<10){
+                    return "#abd56e"
+                }
+            }
+            
+            res[0].prioridad_color = prioridad_color(res[0].prioridad_color)
+            return resolve(res[0])     
         })   
     })
-         
 }
 userModel.getSubTareaIdSubTarea = (id_subtarea)=>{
     return new Promise((resolve, reject) => { 
