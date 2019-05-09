@@ -210,7 +210,7 @@ userModel.getTareaIdTarea = (id_tarea)=>{
             }
             
             res[0].prioridad_color = prioridad_color(res[0].prioridad_color)
-            return resolve(res[0])     
+            return resolve(res[0])  
         })   
     })
 }
