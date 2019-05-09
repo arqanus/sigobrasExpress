@@ -46,6 +46,7 @@ require('./api/Admin/delete/routes/r.delete.obras')(app);
 
 require('./api/Interfaz/post/routes/r.post.interfaz')(app);
 require('./api/Interfaz/get/routes/r.get.interfaz')(app);
+require('./api/Interfaz/put/routes/r.put.interfaz')(app);
 
 require('./api/Inicio/get/routes/r.get.Inicio')(app);
 require('./api/Inicio/post/routes/r.post.Inicio')(app);
