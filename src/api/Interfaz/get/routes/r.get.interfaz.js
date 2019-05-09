@@ -11,16 +11,13 @@ function soloLetras(req,res,next){
 }
 
 module.exports = function(app){
-  app.post('/login',soloLetras,(req,res)=>{		
-		User.getId_acceso(req.body,(err,data)=>{
-			
-			if(err){
-				res.status(204).json(err);
-			}else{
-				res.status(200).json(data);
-			}
-			
-		})
+  app.post('/login',soloLetras,async(req,res)=>{		
+	  try {
+		var data = await User.getId_acceso(req.body)
+		res.json(data);
+	  } catch (error) {
+		res.status(204).json(error);
+	  }
   })
   app.post('/getMenu',(req,res)=>{
 		if(req.body.id_ficha == null||req.body.id_acceso == null){
