@@ -38,7 +38,7 @@ module.exports = function(app){
     })
     app.post('/getHistorialResumen',async(req,res)=>{
         try {
-            var resumen = await User.getHistorialResumen(req.body.id_ficha,meses[meses.length-1].fecha)
+            var resumen = await User.getHistorialResumen(req.body.id_ficha,req.body.fecha)
             res.json(resumen);
         } catch (error) {
             res.status(400).json(error);
