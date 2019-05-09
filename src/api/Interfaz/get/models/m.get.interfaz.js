@@ -1,5 +1,7 @@
 const pool = require('../../../../db/connection');
 const tools = require('../../../../tools/format')
+const default_data = require('../../../../tools/default_data')
+
 
 let userModel = {};
 function formatoPorcentaje(data){
@@ -26,32 +28,19 @@ function formatoPorcentaje(data){
 }
 //idacceso en login
 userModel.getId_acceso = (data,callback)=>{
-    
-    pool.getConnection(function(err,conn){
-        if(err){ callback(err);}
-        else{     
-            var query = "SELECT accesos.id_acceso,accesos.usuario, cargos.nombre nombre_cargo, usuarios.nombre nombre_usuario,fichas.id_ficha FROM accesos LEFT JOIN cargos ON accesos.Cargos_id_Cargo = cargos.id_Cargo LEFT JOIN usuarios ON accesos.Usuarios_id_usuario = usuarios.id_usuario LEFT JOIN fichas_has_accesos ON fichas_has_accesos.Accesos_id_acceso = accesos.id_acceso LEFT JOIN fichas ON fichas.id_ficha = fichas_has_accesos.Fichas_id_ficha WHERE usuario ='"+data.usuario+"' AND password = '"+data.password+"' order by accesos.id_acceso desc limit 1"
-            
-            
-            conn.query(query,(error,res)=>{
-                if(error) {
-                    console.log(error);                    
-                    callback(error);
-                    conn.destroy()
-                }
-                else if(res.length == 0){
-                    console.log("vacio");                    
-                    callback("vacio");
-                    conn.destroy()
-                
-                }else{                    
-                    console.log("res",res); 
-                    callback(null,res[0]);
-                    conn.destroy()
-                }
-                
-            })  
-        }      
+    return new Promise((resolve, reject) => {
+        pool.query("SELECT accesos.id_acceso,accesos.usuario, cargos.nombre nombre_cargo, usuarios.nombre nombre_usuario,fichas.id_ficha,usuarios.imagen,usuarios.imagenAlt FROM accesos LEFT JOIN cargos ON accesos.Cargos_id_Cargo = cargos.id_Cargo LEFT JOIN usuarios ON accesos.Usuarios_id_usuario = usuarios.id_usuario LEFT JOIN fichas_has_accesos ON fichas_has_accesos.Accesos_id_acceso = accesos.id_acceso LEFT JOIN fichas ON fichas.id_ficha = fichas_has_accesos.Fichas_id_ficha WHERE usuario ='"+data.usuario+"' AND password = '"+data.password+"' order by accesos.id_acceso desc limit 1",(error,res)=>{
+        if(error) {
+            reject(error);
+        }
+        else if(res.length == 0){
+            reject("vacio");
+        }else{   
+            res[0].imagen = res[0].imagen||default_data.user_image_default
+            res[0].imagenAlt = res[0].imagenAlt||"default"
+            resolve(res[0]);
+        }
+        })  
     })
 }
 //revisar
