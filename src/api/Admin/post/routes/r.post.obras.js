@@ -10,10 +10,7 @@ module.exports = function(app){
 			}
 
 		})
-		
 	
-	
-		
 	})
 	app.post('/postUnidadEjecutora',(req,res)=>{
 		

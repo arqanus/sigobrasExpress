@@ -126,20 +126,7 @@ module.exports = function(app){
 			})
 		}
     })
-    app.post('/getValGeneralTodosComponentes',(req,res)=>{
-        if (req.body.id_ficha == null) {
-                res.json("null")
-        } else {
-                User.getValGeneralTodosComponentes(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha_final,(err,data)=>{
-                        if(err){ res.status(204).json(err);}
-                        else{
-                                res.json(data);	
-                        }
-                })
-        }
-                
-        
-    })
+    
     app.post('/getActividadesDuracion',(req,res)=>{
         if (req.body.id_ficha == null) {
             res.json("null")

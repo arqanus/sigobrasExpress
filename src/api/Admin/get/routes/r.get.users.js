@@ -1,36 +1,36 @@
 const User = require('../models/m.get.users');
 
 module.exports = function(app){
-  	app.get('/listaUsuarios',(req,res)=>{
-		User.getUsuarios((err,data)=>{
-			if(err) {res.status(204).json(err);}
-			else {res.json(data);	}
-		})
-
+  	app.get('/listaUsuarios',async(req,res)=>{
+		try {
+			var getUsuarios = await User.getUsuarios()
+        	res.json(getUsuarios);
+		} catch (error) {
+			res.status(400).json(error)
+		}
 	})
-	app.get('/listaCargos',(req,res)=>{
-		User.getCargos((err,data)=>{
-			if(err){ res.status(204).json(err);}
-			else{
-				res.json(data);	
-			}
-		})
+	app.get('/getUsuariosConAcceso',async(req,res)=>{
+		try {
+			var getUsuariosConAcceso = await User.getUsuariosConAcceso()
+        	res.json(getUsuariosConAcceso);
+		} catch (error) {
+			res.status(400).json(error)
+		}
 	})
-	app.get('/getUsuariosAcceso',(req,res)=>{
-		User.getUsuariosAcceso((err,data)=>{
-			if(err){ res.status(204).json(err);}
-			else{
-				res.json(data);	
-			}
-		})
+	app.get('/listaCargos',async(req,res)=>{
+		try {
+			var getCargos = await User.getCargos()
+        	res.json(getCargos);
+		} catch (error) {
+			res.status(400).json(error)
+		}
 	})
-	app.post('/convertirJson',(req,res)=>{
-		req.body =JSON.stringify(req.body)
-		
-		console.log("iniciand",req.body);
-		res.json(req.body)	
-		
-			
+	app.get('/getUsuariosAcceso',async(req,res)=>{
+		try {
+			var getUsuariosAcceso = await User.getUsuariosAcceso()
+        	res.json(getUsuariosAcceso);
+		} catch (error) {
+			res.status(400).json(error)
+		}
 	})
-
 }

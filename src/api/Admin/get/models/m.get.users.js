@@ -1,44 +1,47 @@
 const pool = require('../../../../db/connection');
 let userModel = {};
 
-userModel.getUsuarios = (callback)=>{
-    
-    pool.getConnection(function(err,conn){
-        if(err){ callback(err);}       
-        conn.query('select *from usuarios', (error,res)=>{
+userModel.getUsuarios = ()=>{
+    return new Promise((resolve, reject) => {
+        pool.query('SELECT usuarios.*, accesos.usuario FROM usuarios LEFT JOIN (SELECT MAX(id_acceso) id_acceso,accesos.Usuarios_id_usuario id_usuario FROM accesos GROUP BY accesos.Usuarios_id_usuario) acceso_max ON acceso_max.id_usuario = usuarios.id_usuario LEFT JOIN accesos ON accesos.id_acceso = acceso_max.id_acceso GROUP BY usuarios.id_usuario', (error,res)=>{
             if(error){
-                callback(error);
+                reject(error);
             }else{
-                callback(null,res);
-                conn.destroy()
+                resolve(res);
             }             
-            
+        })        
+    })
+}
+userModel.getUsuariosConAcceso = ()=>{
+    return new Promise((resolve, reject) => {
+        pool.query('SELECT usuarios.*, accesos.usuario,accesos.id_acceso FROM usuarios inner JOIN (SELECT MAX(id_acceso) id_acceso,accesos.Usuarios_id_usuario id_usuario FROM accesos GROUP BY accesos.Usuarios_id_usuario) acceso_max ON acceso_max.id_usuario = usuarios.id_usuario LEFT JOIN accesos ON accesos.id_acceso = acceso_max.id_acceso GROUP BY usuarios.id_usuario', (error,res)=>{
+            if(error){
+                reject(error);
+            }else{
+                resolve(res);
+            }             
         })        
     })
 }
 
-userModel.getCargos = (callback)=>{
-    pool.query('select *from cargos', (error,res)=>{
-        if(error){ callback(error);  }
-        else{
-            callback(null,res);
-        }
-    })        
-}
-userModel.getUsuariosAcceso = (callback)=>{
-    
-    pool.getConnection(function(err,conn){
-        if(err){ callback(err);}  
-        conn.query("SELECT usuarios.id_usuario, usuarios.nombre, usuarios.apellido_paterno, usuarios.apellido_materno, usuarios.dni, usuarios.direccion, usuarios.email, usuarios.celular, usuarios.cpt FROM usuarios INNER JOIN accesos ON accesos.Usuarios_id_usuario = usuarios.id_usuario", (error,res)=>{
-            if(error){ callback(error);  }
+userModel.getCargos = ()=>{
+    return new Promise((resolve, reject) => {
+        pool.query('select *from cargos', (error,res)=>{
+            if(error){ reject(error);  }
             else{
-                callback(null,res);
-                conn.destroy()
+                resolve(res);
             }
-            
+        }) 
+    })
+}
+userModel.getUsuariosAcceso = ()=>{
+    return new Promise((resolve, reject) => {
+        pool.query("SELECT usuarios.id_usuario, usuarios.nombre, usuarios.apellido_paterno, usuarios.apellido_materno, usuarios.dni, usuarios.direccion, usuarios.email, usuarios.celular, usuarios.cpt FROM usuarios INNER JOIN accesos ON accesos.Usuarios_id_usuario = usuarios.id_usuario", (error,res)=>{
+            if(error){ reject(error);  }
+            else{
+                resolve(res);
+            }
         })        
     })
 }
-
-
 module.exports = userModel;
