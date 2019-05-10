@@ -123,40 +123,27 @@ userModel.getMenu = (data,callback)=>{
         }                
     })
 }
-userModel.getDatosGenerales = (id_ficha,callback)=>{
-    
-    pool.getConnection(function(err ,conn){
-        if(err){ callback(err);}
-        else{
-            conn.query("SELECT fichas.codigo, fichas.g_meta, TIMESTAMPDIFF(DAY, fichas.fecha_inicial, CURDATE()) dias_ejecutados, TIMESTAMPDIFF(DAY, CURDATE(), plazoejecucion.fechaEjecucion) dias_saldo, estado.nombre estado, SUM(avanceactividades.valor * partidas.costo_unitario) avance_acumulado, SUM(avanceactividades.valor * partidas.costo_unitario) / tb_costo_directo.costo_directo * 100 porcentaje_acumulado, avance_actual.avance avance_actual, avance_actual.avance / tb_costo_directo.costo_directo * 100 porcentaje_actual, avance_ayer.avance avance_ayer, avance_ayer.avance / tb_costo_directo.costo_directo * 100 porcentaje_ayer, Avance_mes_actual.avance avance_mes_actual, Avance_mes_actual.avance / tb_costo_directo.costo_directo * 100 porcentaje_mes_actual FROM fichas LEFT JOIN (SELECT Fichas_id_ficha, nombre, codigo FROM historialestados INNER JOIN (SELECT MAX(id_historialEstado) id_historialEstado FROM historialestados GROUP BY fichas_id_ficha) historial ON historial.id_historialEstado = historialestados.id_historialEstado LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado) estado ON estado.Fichas_id_ficha = fichas.id_ficha LEFT JOIN componentes ON componentes.Fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad LEFT JOIN plazoejecucion ON plazoejecucion.fichas_id_ficha = fichas.id_ficha LEFT JOIN (SELECT fichas.id_ficha, SUM(avanceactividades.valor * partidas.costo_unitario) avance, avanceactividades.fecha FROM fichas LEFT JOIN componentes ON componentes.Fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE DATE(avanceactividades.fecha) = CURDATE() GROUP BY fichas.id_ficha) avance_actual ON avance_actual.id_ficha = fichas.id_ficha LEFT JOIN (SELECT fichas.id_ficha, SUM(avanceactividades.valor * partidas.costo_unitario) avance FROM fichas LEFT JOIN componentes ON componentes.Fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE DATE(avanceactividades.fecha) = SUBDATE(CURDATE(), 1) AND historialactividades.estado IS NULL GROUP BY fichas.id_ficha) avance_ayer ON avance_ayer.id_ficha = fichas.id_ficha LEFT JOIN (SELECT fichas.id_ficha, SUM(avanceactividades.valor * partidas.costo_unitario) avance FROM fichas LEFT JOIN componentes ON componentes.Fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE DATE_FORMAT(avanceactividades.fecha, '%Y %m') = DATE_FORMAT(NOW(), '%Y %m') AND historialactividades.estado IS NULL GROUP BY fichas.id_ficha) Avance_mes_actual ON avance_mes_actual.id_ficha = fichas.id_ficha LEFT JOIN (SELECT fichas_id_ficha, SUM(presupuesto) costo_directo FROM componentes GROUP BY componentes.fichas_id_ficha) tb_costo_directo ON tb_costo_directo.fichas_id_ficha = fichas.id_ficha WHERE historialactividades.estado IS NULL and fichas.id_ficha = ? GROUP BY fichas.id_ficha",[id_ficha], (error,res)=>{
-                if(error){
-                    console.log(error);                    
-                    callback(error.code);
-                }
-                else if(res.length ==0){
-                    callback("vacio");
-                }else{
-                    console.log("res",res); 
-                    
-                        const ficha = res[0];                        
-                        ficha.avance_acumulado = formatoPorcentaje(ficha.avance_acumulado)
-                        ficha.porcentaje_acumulado = formatoPorcentaje(ficha.porcentaje_acumulado)
-                        ficha.avance_actual = formatoPorcentaje(ficha.avance_actual)
-                        ficha.porcentaje_actual = formatoPorcentaje(ficha.porcentaje_actual)
-                        ficha.avance_ayer = formatoPorcentaje(ficha.avance_ayer)
-                        ficha.porcentaje_ayer = formatoPorcentaje(ficha.porcentaje_ayer)
-                        ficha.avance_mes_actual = formatoPorcentaje(ficha.avance_mes_actual)
-                        ficha.porcentaje_mes_actual = formatoPorcentaje(ficha.porcentaje_mes_actual)
-                        
-                    
-                 
-                    callback(null,res[0]);
-                    conn.destroy()
-                }
-                
-                
-            })
-        }                
+userModel.getDatosGenerales = (id_ficha)=>{
+    return new Promise((resolve, reject) => { 
+        pool.query("SELECT fichas.codigo, fichas.g_meta, TIMESTAMPDIFF(DAY, fichas.fecha_inicial, CURDATE()) dias_ejecutados, TIMESTAMPDIFF(DAY, CURDATE(), plazoejecucion.fechaEjecucion) dias_saldo, estado.nombre estado, SUM(avanceactividades.valor * partidas.costo_unitario) avance_acumulado, SUM(avanceactividades.valor * partidas.costo_unitario) / tb_costo_directo.costo_directo * 100 porcentaje_acumulado, avance_actual.avance avance_actual, avance_actual.avance / tb_costo_directo.costo_directo * 100 porcentaje_actual, avance_ayer.avance avance_ayer, avance_ayer.avance / tb_costo_directo.costo_directo * 100 porcentaje_ayer, Avance_mes_actual.avance avance_mes_actual, Avance_mes_actual.avance / tb_costo_directo.costo_directo * 100 porcentaje_mes_actual FROM fichas LEFT JOIN (SELECT Fichas_id_ficha, nombre, codigo FROM historialestados INNER JOIN (SELECT MAX(id_historialEstado) id_historialEstado FROM historialestados GROUP BY fichas_id_ficha) historial ON historial.id_historialEstado = historialestados.id_historialEstado LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado) estado ON estado.Fichas_id_ficha = fichas.id_ficha LEFT JOIN componentes ON componentes.Fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad LEFT JOIN plazoejecucion ON plazoejecucion.fichas_id_ficha = fichas.id_ficha LEFT JOIN (SELECT fichas.id_ficha, SUM(avanceactividades.valor * partidas.costo_unitario) avance, avanceactividades.fecha FROM fichas LEFT JOIN componentes ON componentes.Fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE DATE(avanceactividades.fecha) = CURDATE() GROUP BY fichas.id_ficha) avance_actual ON avance_actual.id_ficha = fichas.id_ficha LEFT JOIN (SELECT fichas.id_ficha, SUM(avanceactividades.valor * partidas.costo_unitario) avance FROM fichas LEFT JOIN componentes ON componentes.Fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE DATE(avanceactividades.fecha) = SUBDATE(CURDATE(), 1) AND historialactividades.estado IS NULL GROUP BY fichas.id_ficha) avance_ayer ON avance_ayer.id_ficha = fichas.id_ficha LEFT JOIN (SELECT fichas.id_ficha, SUM(avanceactividades.valor * partidas.costo_unitario) avance FROM fichas LEFT JOIN componentes ON componentes.Fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE DATE_FORMAT(avanceactividades.fecha, '%Y %m') = DATE_FORMAT(NOW(), '%Y %m') AND historialactividades.estado IS NULL GROUP BY fichas.id_ficha) Avance_mes_actual ON avance_mes_actual.id_ficha = fichas.id_ficha LEFT JOIN (SELECT fichas_id_ficha, SUM(presupuesto) costo_directo FROM componentes GROUP BY componentes.fichas_id_ficha) tb_costo_directo ON tb_costo_directo.fichas_id_ficha = fichas.id_ficha WHERE historialactividades.estado IS NULL and fichas.id_ficha = ? GROUP BY fichas.id_ficha",[id_ficha], (error,res)=>{
+            if(error){
+                reject(error.code);
+            }
+            else if(res.length ==0){
+                reject("vacio");
+            }else{
+                const ficha = res[0];                        
+                ficha.avance_acumulado = formatoPorcentaje(ficha.avance_acumulado)
+                ficha.porcentaje_acumulado = formatoPorcentaje(ficha.porcentaje_acumulado)
+                ficha.avance_actual = formatoPorcentaje(ficha.avance_actual)
+                ficha.porcentaje_actual = formatoPorcentaje(ficha.porcentaje_actual)
+                ficha.avance_ayer = formatoPorcentaje(ficha.avance_ayer)
+                ficha.porcentaje_ayer = formatoPorcentaje(ficha.porcentaje_ayer)
+                ficha.avance_mes_actual = formatoPorcentaje(ficha.avance_mes_actual)
+                ficha.porcentaje_mes_actual = formatoPorcentaje(ficha.porcentaje_mes_actual)
+                resolve(res[0]);
+            }
+        })
     })
 }
 userModel.getCostoDirecto = (id_ficha,formato = false)=>{

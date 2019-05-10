@@ -91,28 +91,4 @@ module.exports = function(app){
 			})
 		}
 		})
-		app.post('/getmaterialesResumenAvanceManoDeObra',async(req,res)=>{
-			try {
-				var materialesResumen = await User.getmaterialesResumenAvance(req.body.id_ficha,'Mano de Obra')	
-				res.json(materialesResumen)
-			} catch (error) {
-				res.status(400).json(error)
-			}
-		})
-		app.post('/getmaterialesResumenAvanceMateriales',async(req,res)=>{
-			try {
-				var materialesResumen = await User.getmaterialesResumenAvance(req.body.id_ficha,'Materiales')	
-				res.json(materialesResumen)
-			} catch (error) {
-				res.status(400).json(error)
-			}
-		})
-		app.post('/getmaterialesResumenAvanceEquipos',async(req,res)=>{
-			try {
-				var materialesResumen = await User.getmaterialesResumenAvance(req.body.id_ficha,'Equipos')	
-				res.json(materialesResumen)
-			} catch (error) {
-				res.status(400).json(error)
-			}
-		})
 }
