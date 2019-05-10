@@ -38,11 +38,9 @@ module.exports = function(app){
 					id_ficha:temp
 				}
 				var corte = await User2.getUltimoCorte(req.body.id_ficha)
-				
 				var fecha_inicial = fechaLargaCorta(new Date(corte.fecha_inicial))
 				var fecha_final = fechaLargaCorta(new Date(corte.fecha_final))								
 				var avance = await User2.getAvanceGestionAnterior(req.body.id_ficha,corte.fecha_final)
-					
 				corte.programado_monto = avance.valor_total||0
 				corte.programado_porcentaje = avance.porcentaje||0
 				corte.fisico_monto = avance.valor_total||0
