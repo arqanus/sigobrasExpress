@@ -1,8 +1,4 @@
 const pool = require('../../../../db/connection');
-function add_years(dt,n) 
- {
-        return new Date(dt.setFullYear(dt.getFullYear() + n));      
- }
 
 var month = new Array();
 month[0] = "Enero";
@@ -41,68 +37,6 @@ function formato(data){
         } 
     
         return data
-}
-function formatoPorcentaje(data){
-
-// data = parseFloat(data)
-data = Number(data)
-if(isNaN(data)){
-        
-        data=0
-}
-
-
-if(data ==100){
-        return data
-}else if(Math.floor(data)==99){
-        data = data.toLocaleString('es-PE', {
-        minimumFractionDigits: 4,
-        maximumFractionDigits: 4
-        })
-}
-else if(data < 1){
-        data = data.toLocaleString('es-PE', {
-        minimumFractionDigits: 4,
-        maximumFractionDigits: 4
-        })
-}else{
-        data = data.toLocaleString('es-PE', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-        })        
-} 
-
-return data
-}
-function formatoFecha(fecha){
-        var currentDate = new Date(fecha);
-
-        var date = currentDate.getDate();
-        var month = currentDate.getMonth(); //Be careful! January is 0 not 1
-        var year = currentDate.getFullYear();
-// return "2"
-        return date + "-" +(month + 1) + "-" + year;
-
-}
-function formatoNumero(data){
-
-// data = parseFloat(data)
-data = Number(data)
-if(isNaN(data)){
-        
-        data=0
-}    
-
-else if(data < 1){
-        data = data.toLocaleString('es-PE', {
-        minimumFractionDigits: 4,
-        maximumFractionDigits: 4
-        })
-}else{
-        data = data.toFixed(4)
-} 
-
-return data
 }
 let userModel = {};
 userModel.getObras = (id_acceso,callback)=>{    
@@ -355,9 +289,6 @@ pool.getConnection(function(err ,conn){
                 callback(error.code);
                 }else{
                 var listaMes = []
-                var programado_dinero = []
-                var financiero_dinero = []
-                var fisico_dinero = []
                 
                 ///ac tres arrays de la consulta
                 for (let i = 0; i < res.length; i++) {
@@ -381,7 +312,7 @@ userModel.getUltimoCorte = (id_ficha)=>{
     
         return new Promise((resolve, reject) => { 
             
-            pool.query("(SELECT 'C' codigo, DATE_FORMAT(historialestados.fecha_inicial, '%Y-%m-%d') fecha, DATE_FORMAT(historialestados.fecha_inicial, '%b.') mes, DATE_FORMAT(historialestados.fecha_inicial, '%Y') anyo, 0 programado_monto, 0 programado_porcentaje, 0 fisico_monto, 0 fisico_porcentaje, historialestados.monto financiero_monto, 0 financiero_porcentaje, historialestados.id_historialEstado, historialestados.fecha_inicial, historialestados.fecha_final FROM historialestados LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado WHERE estados.codigo = 'C' AND historialestados.Fichas_id_ficha = ? ORDER BY historialestados.id_historialEstado DESC LIMIT 1) UNION (SELECT 'I' codigo, 0 fecha, 0 mes, 0 anyo, 0 programado_monto, 0 programado_porcentaje, 0 fisico_monto, 0 fisico_porcentaje, 0 financiero_monto, 0 financiero_porcentaje, 0 id_historialEstado, fichas.fecha_inicial_real fecha_inicial, fichas.fecha_inicial_real fecha_final FROM fichas WHERE fichas.id_ficha = ?)",[id_ficha,id_ficha],(error,res)=>{ 
+            pool.query("(SELECT 'C' codigo, DATE_FORMAT(historialestados.fecha_inicial, '%Y-%m-%d') fecha, DATE_FORMAT(historialestados.fecha_inicial, '%b.') mes, DATE_FORMAT(historialestados.fecha_inicial, '%Y') anyo, 0 programado_monto, 0 programado_porcentaje, 0 fisico_monto, 0 fisico_porcentaje, historialestados.monto financiero_monto, 0 financiero_porcentaje, historialestados.id_historialEstado, historialestados.fecha_inicial, historialestados.fecha_final FROM historialestados LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado WHERE estados.codigo = 'C' AND historialestados.Fichas_id_ficha = 103 ORDER BY historialestados.id_historialEstado DESC LIMIT 1) UNION (SELECT 'I' codigo, 0 fecha, 0 mes, 0 anyo, 0 programado_monto, 0 programado_porcentaje, 0 fisico_monto, 0 fisico_porcentaje, 0 financiero_monto, 0 financiero_porcentaje, 0 id_historialEstado, fichas.fecha_inicial fecha_inicial, fichas.fecha_inicial fecha_final FROM fichas WHERE fichas.id_ficha = ?)",[id_ficha,id_ficha],(error,res)=>{ 
                     if(error){
                         reject(error);
                     }else if(res.length == 0){            
@@ -412,7 +343,7 @@ userModel.getAvanceGestionAnterior = (id_ficha,fecha_final)=>{
                 })
         })
 }
-userModel.getcronogramaInicio = (corte,id_ficha,fecha_inicial,callback)=>{
+userModel.getcronogramaInicio = (corte,id_ficha,fecha_inicial)=>{
         return new Promise((resolve, reject) => {
                 pool.query("SELECT 'E' codigo, DATE_FORMAT(cronogramamensual.mes, '%Y-%m-%d') fecha, DATE_FORMAT(cronogramamensual.mes, '%b.') mes, DATE_FORMAT(cronogramamensual.mes, '%Y') anyo, programado programado_monto, programado / tb_presupuesto.presupuesto * 100 programado_porcentaje, COALESCE(tb_fisico.fisico_monto, 0) fisico_monto, COALESCE(tb_fisico.fisico_monto, 0) / tb_presupuesto.presupuesto * 100 fisico_porcentaje, COALESCE(financieroEjecutado, 0) financiero_monto, COALESCE(financieroEjecutado, 0) / fichas.g_total_presu * 100 financiero_porcentaje FROM cronogramamensual LEFT JOIN (SELECT componentes.fichas_id_ficha, avanceactividades.fecha, DATE_FORMAT(avanceactividades.fecha, '%m ') mes, DATE_FORMAT(avanceactividades.fecha, '%Y ') anyo, SUM(avanceactividades.valor * partidas.costo_unitario) fisico_monto FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND avanceactividades.fecha >= ? GROUP BY componentes.fichas_id_ficha , DATE_FORMAT(avanceactividades.fecha, '%m %Y') ORDER BY avanceactividades.fecha) tb_fisico ON tb_fisico.fichas_id_ficha = cronogramamensual.fichas_id_ficha AND DATE_FORMAT(tb_fisico.fecha, '%m %Y') = DATE_FORMAT(cronogramamensual.mes, '%m %Y') LEFT JOIN (SELECT componentes.fichas_id_ficha, SUM(componentes.presupuesto) presupuesto FROM componentes GROUP BY componentes.fichas_id_ficha) tb_presupuesto ON tb_presupuesto.fichas_id_ficha = cronogramamensual.fichas_id_ficha left join fichas on fichas.id_ficha = cronogramamensual.fichas_id_ficha WHERE cronogramamensual.fichas_id_ficha = ? AND DATE_FORMAT(cronogramamensual.mes, '%Y-%m-01') >= DATE_FORMAT(?, '%Y-%m-01') AND cronogramamensual.programado != 0",[fecha_inicial,id_ficha,fecha_inicial],(error,res)=>{          if(error){
                                 reject(error);
