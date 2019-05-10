@@ -55,40 +55,12 @@ module.exports = function(app){
 			})
 		}
     })
-    app.post('/getmaterialesResumenManoDeObra',(req,res)=>{
-		if (req.body.id_ficha== null) {
-			res.json("null");
-		} else {
-			User.getmaterialesResumen(req.body.id_ficha,'Mano de Obra',(err,data)=>{
-				if(err){ res.status(204).json(err);}
-				else{
-					res.json(data);	
-				}
-			})
-		}
-    })
-    app.post('/getmaterialesResumenMateriales',(req,res)=>{
-		if (req.body.id_ficha== null) {
-			res.json("null");
-		} else {
-			User.getmaterialesResumen(req.body.id_ficha,'Materiales',(err,data)=>{
-				if(err){ res.status(204).json(err);}
-				else{
-					res.json(data);	
-				}
-			})
-		}
-    })
-    app.post('/getmaterialesResumenEquipos',(req,res)=>{
-		if (req.body.id_ficha== null) {
-			res.json("null");
-		} else {
-			User.getmaterialesResumen(req.body.id_ficha,'Equipos',(err,data)=>{
-				if(err){ res.status(204).json(err);}
-				else{
-					res.json(data);	
-				}
-			})
-		}
+    app.post('/getmaterialesResumen',async(req,res)=>{
+			try {
+				var getmaterialesResumen = await  User.getmaterialesResumen(req.body.id_ficha,req.body.tipo)
+				res.json(getmaterialesResumen)
+			} catch (error) {
+				res.status(400).json(error);	
+			}
 		})
 }
