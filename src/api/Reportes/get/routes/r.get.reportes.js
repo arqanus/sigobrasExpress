@@ -10,7 +10,7 @@ module.exports = function(app){
             var anyos = await User2.getValGeneralAnyos(req.body.id_ficha)
             res.json(anyos);
         } catch (error) {
-            res.status(204).json(error)
+            res.status(400).json(error)
         }
 	})
 	app.post('/getPeriodsByAnyo',async(req,res)=>{
@@ -18,7 +18,7 @@ module.exports = function(app){
             var periodos = await User2.getValGeneralPeriodos(req.body.id_ficha,req.body.anyo)
             res.json(periodos)
         } catch (error) {
-            res.status(204).json(error)
+            res.status(400).json(error)
         }
 	})
 	app.post('/getInformeDataGeneral',async(req,res)=>{
@@ -42,8 +42,6 @@ module.exports = function(app){
 		} catch (error) {
             res.json(error)
 		}
-
-			
 	})
 	//6.1 cuadro demetradosEJECUTADOS
 	app.post('/CuadroMetradosEjecutados',async(req,res)=>{
@@ -86,29 +84,16 @@ module.exports = function(app){
 			}
 			res.json(componentes)
 		}
-		
 	})
 	//6.3 resumen delavalorizacion principaldelaobrapresupuestobase
-	app.post('/resumenValorizacionPrincipal',(req,res)=>{
-		if(req.body.id_ficha == null){
-			res.json("null");		
-		}else{
-			User.getCostosIndirectos(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha_final,(err,costosIndirectos)=>{							
-					if(err){ res.status(204).json(err);}
-					else{
-						User.resumenValorizacionPrincipal(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha_final,costosIndirectos,(err,data)=>{							
-							if(err){ res.status(204).json(err);}
-							else{
-								res.json(data);	
-							}
-				
-						})	
-					}
-		
-				})
-			
-		}
-		
+	app.post('/resumenValorizacionPrincipal',async(req,res)=>{
+		try {
+			var costosIndirectos = await User.getCostosIndirectos(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha_final)
+			var resumen = await User.resumenValorizacionPrincipal(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha_final,costosIndirectos)
+            res.json(resumen)
+        } catch (error) {
+            res.status(400).json(error)
+        }
 	})
 	//6.4 vaorizacion pormayores metrados
 	app.post('/valorizacionMayoresMetrados',(req,res)=>{
@@ -116,15 +101,12 @@ module.exports = function(app){
 			res.json("null");		
 		}else{
 			User.getValGeneralExtras(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha_final,'Mayor Metrado',(err,data)=>{							
-					if(err){ res.status(204).json(err);}
-					else{
-						res.json(data)
-					}
-		
-				})
-			
+				if(err){ res.status(204).json(err);}
+				else{
+					res.json(data)
+				}
+			})
 		}
-		
 	})
 	//6.5 valorizacion de partidas nuevas
 	app.post('/valorizacionPartidasNuevas',(req,res)=>{
