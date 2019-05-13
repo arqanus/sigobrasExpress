@@ -30,7 +30,7 @@ module.exports = function(app){
     })
     app.post('/getHistorialMeses',async(req,res)=>{
         try {
-            var meses = await User.getHistorialMeses(req.body.id_ficha,anyos[anyos.length-1].anyo)
+            var meses = await User.getHistorialMeses(req.body.id_ficha,req.body.anyo)
             res.json(meses);
         } catch (error) {
             res.status(400).json(error);
@@ -46,7 +46,7 @@ module.exports = function(app){
     })
     app.post('/getHistorialComponentes',async(req,res)=>{
         try {
-            var componentes = await User.getHistorialComponentes(req.body.id_ficha,meses[meses.length-1].fecha)
+            var componentes = await User.getHistorialComponentes(req.body.id_ficha,req.body.fecha)
             res.json(componentes);
         } catch (error) {
             res.status(400).json(error);
