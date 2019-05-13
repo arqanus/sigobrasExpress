@@ -1,24 +1,64 @@
 const User = require('../models/m.get.materiales');
 
 module.exports = function(app){
-		app.post('/getmaterialesResumen',async(req,res)=>{
-			try {
-				var getmaterialesResumen = await  User.getmaterialesResumen(req.body.id_ficha,req.body.tipo)
-				res.json(getmaterialesResumen)
-			} catch (error) {
-				res.status(400).json(error);	
-			}
-		})
-		app.post('/getmaterialesResumenChart',async(req,res)=>{
-			try {
-				// var getmaterialesResumen = await  User.getmaterialesResumen(req.body.id_ficha,req.body.tipo)
-				res.json(
-					""
-				)
-			} catch (error) {
-				res.status(400).json(error);	
-			}
-		})
+	app.post('/getmaterialesResumen',async(req,res)=>{
+		try {
+			var getmaterialesResumen = await  User.getmaterialesResumen(req.body.id_ficha,req.body.tipo)
+			res.json(getmaterialesResumen)
+		} catch (error) {
+			res.status(400).json(error);	
+		}
+	})
+	app.post('/getmaterialesResumenChart',async(req,res)=>{
+		try {
+			// var getmaterialesResumen = await  User.getmaterialesResumen(req.body.id_ficha,req.body.tipo)
+			res.json(
+				{
+					"series": [
+						{
+						"type": "column",
+						"name": "Expediente",
+						"data": [20, 20,54 ]
+						}, {
+						"type": "column",
+						"name": "acumulado",
+						"data": [10, 30,14]
+						} ,{
+						"type": "spline",
+						"name": "Average",
+						"data": [10, -10,40]
+						}, 
+						{
+						"type": "pie",
+						"name": "Segun Expediente",
+						"data": [
+						{
+							"name": "Servicios",
+							"y": 20
+						},
+						{
+							"name": "Bienes",
+							"y": 30
+						},
+						{
+							"name": "Personal",
+							"y": 50
+						}
+						],
+						"center": [100, 80],
+						"size": 100,
+						"showInLegend": false,
+						"dataLabels": {
+							"enabled": false
+						}
+						}]
+					,categories: ['Personal', 'Bienes', 'Servicios']
+				}
+			)
+		} catch (error) {
+			res.status(400).json(error);	
+		}
+	})
     app.post('/getmaterialescomponentes',async(req,res)=>{
 			try {
 				var componentes = await  User.getmaterialescomponentes(req.body.id_ficha)
@@ -28,8 +68,57 @@ module.exports = function(app){
 			} catch (error) {
 				res.status(400).json(error);	
 			}
-		})
-		app.post('/getmaterialescomponentesResumen',async(req,res)=>{
+	})
+	app.post('/getmaterialescomponentesChart',async(req,res)=>{
+		try {
+			res.json(
+				{
+					"series": [
+						{
+						"type": "column",
+						"name": "Expediente",
+						"data": [20, 20,54 ]
+						}, {
+						"type": "column",
+						"name": "acumulado",
+						"data": [10, 30,14]
+						} ,{
+						"type": "spline",
+						"name": "Average",
+						"data": [10, -10,40]
+						}, 
+						{
+						"type": "pie",
+						"name": "Segun Expediente",
+						"data": [
+						{
+							"name": "Servicios",
+							"y": 20
+						},
+						{
+							"name": "Bienes",
+							"y": 30
+						},
+						{
+							"name": "Personal",
+							"y": 50
+						}
+						],
+						"center": [100, 80],
+						"size": 100,
+						"showInLegend": false,
+						"dataLabels": {
+							"enabled": false
+						}
+						}]
+					,categories: ['Personal', 'Bienes', 'Servicios']
+				}
+			)
+		} catch (error) {
+			res.status(400).json(error);	
+		}
+	})
+	app.post('/getmaterialescomponentesResumen',async(req,res)=>{
 			try {
 				var data = await  User.getmaterialescomponentesResumen(req.body.id_componente,req.body.tipo)
 				res.json(data);
@@ -44,8 +133,7 @@ module.exports = function(app){
 			} catch (error) {
 				res.status(400).json(error);	
 			}
-		})
-	
+	})
     app.post('/getmaterialespartidaTipos',async(req,res)=>{
 			try {
 				var data = await  User.getmaterialespartidaTipos(req.body.id_partida)
@@ -55,12 +143,12 @@ module.exports = function(app){
 			}
     })
     app.post('/getmaterialespartidaTiposLista',async(req,res)=>{
-			try {
-				var data = await User.getmaterialespartidaTiposLista (req.body.id_partida,req.body.tipo)
-				res.json(data);
-			} catch (error) {
-				res.status(400).json(error);	
-			}
-		})
+		try {
+			var data = await User.getmaterialespartidaTiposLista (req.body.id_partida,req.body.tipo)
+			res.json(data);
+		} catch (error) {
+			res.status(400).json(error);	
+		}
+	})
 		
 }
