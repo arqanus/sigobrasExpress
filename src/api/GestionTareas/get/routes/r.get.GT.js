@@ -77,6 +77,22 @@ module.exports = function(app){
 			var diasTranscurridos  = daysdifference(new Date(),tarea.fecha_inicial)
 			tarea.diasTotal = diasTotal
 			tarea.diasTranscurridos = diasTranscurridos
+			tarea.comentarios = [
+				{
+					"usuario":"german apaza",
+					"mensaje":"esta imagen esta mal de mal ",
+					"imagen":"/dfdfdkhfkd7/.jpg",
+					"hora":"06:69 pm",
+					"fecha":"08/09/2019"
+				},
+				{
+					"usuario":"german apaza",
+					"mensaje":"esta imagen esta mal de mal ",
+					"imagen":"/dfdfdkhfkd7/.jpg",
+					"hora":"06:69 pm",
+					"fecha":"08/09/2019"
+				}
+			]
 			res.json(
 				tarea
 			)
