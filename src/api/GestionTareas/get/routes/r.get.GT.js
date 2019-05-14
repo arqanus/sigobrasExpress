@@ -1,4 +1,5 @@
 const User = require('../models/m.get.GT');
+const default_data = require('../../../../tools/default_data')
 function daysdifference(date1, date2) {
 	// The number of milliseconds in one day
 	var ONEDAY = 1000 * 60 * 60 * 24;
@@ -77,22 +78,12 @@ module.exports = function(app){
 			var diasTranscurridos  = daysdifference(new Date(),tarea.fecha_inicial)
 			tarea.diasTotal = diasTotal
 			tarea.diasTranscurridos = diasTranscurridos
-			tarea.comentarios = [
-				{
-					"usuario":"german apaza",
-					"mensaje":"esta imagen esta mal de mal ",
-					"imagen":"/dfdfdkhfkd7/.jpg",
-					"hora":"06:69 pm",
-					"fecha":"08/09/2019"
-				},
-				{
-					"usuario":"german apaza",
-					"mensaje":"esta imagen esta mal de mal ",
-					"imagen":"/dfdfdkhfkd7/.jpg",
-					"hora":"06:69 pm",
-					"fecha":"08/09/2019"
-				}
-			]
+			var comentarios = await User.getTareaComentarios("",req.body.id_tarea)
+			for (let i = 0; i < comentarios.length; i++) {
+				const comentario = comentarios[i];
+				comentario.imagen = comentario.imagen || default_data.user_image_default
+			}
+			tarea.comentarios = comentarios
 			res.json(
 				tarea
 			)

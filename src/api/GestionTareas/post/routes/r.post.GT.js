@@ -1,5 +1,6 @@
 const User = require('../models/m.post.GT');
 const User2 = require('../../get/models/m.get.GT')
+const default_data = require('../../../../tools/default_data')
 
 var formidable = require('formidable');    
 var fs = require('fs');
@@ -181,5 +182,17 @@ module.exports = (app)=>{
 		} catch (error) {
 			res.status(200).json(error)
 		}
+	})
+	app.post('/postTareaComentario',async (req,res)=>{
+		try {
+			var id_comentario  = await User.postTareaComentario(req.body)
+			var comentario  = await User2.getTareaComentarios(id_comentario,"")
+		
+			comentario[0].imagen = comentario[0].imagen || default_data.user_image_default
+			res.json(comentario[0])
+		} catch (error) {
+			res.status(400).json(error)
+		}
+		
 	})
 }

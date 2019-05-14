@@ -16,8 +16,6 @@ userModel.postTarea = (data) => {
     return new Promise((resolve, reject) => { 
         pool.query('INSERT INTO tareas SET ?', data, (err, res) => {
             if (err) {
-                console.log("errrorrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr");
-                
                 reject(err.code);
             } else {
                 resolve(res.insertId);
@@ -46,9 +44,10 @@ userModel.postTareaAvance = (avance, id_tarea, ) => {
         })
     })
 }
-userModel.postSubTarea = (data) => {
+
+userModel.postTareaComentario = (data) => {
     return new Promise((resolve, reject) => {
-        pool.query('insert into subtareas set ?', [data], (err, res) => {
+        pool.query('insert into comentarios set ?', [data], (err, res) => {
             if (err) {
                 return reject(err)
             }
@@ -56,6 +55,5 @@ userModel.postSubTarea = (data) => {
         })
     })
 }
-
 
 module.exports = userModel;
