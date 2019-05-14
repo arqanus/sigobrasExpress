@@ -95,7 +95,7 @@ userModel.getTareas = (emireceptor,id_acceso,inicio,fin,id_proyecto)=>{
 }
 userModel.getTareaEmisor = (emireceptor,id_acceso,inicio,fin)=>{
     return new Promise((resolve, reject) => { 
-        pool.query('SELECT tareas.id_tarea,proyectos.color proyecto_color, proyectos.nombre proyecto_nombre, tareas.asunto, tareas.avance porcentaje_avance, DATEDIFF(tareas.fecha_final,now()) prioridad_color FROM tareas LEFT JOIN proyectos ON proyectos.id_proyecto = tareas.proyectos_id_proyecto LEFT JOIN tareas_has_accesos ON tareas_has_accesos.tareas_id_tarea = tareas.id_tarea WHERE '+emireceptor+' = ? AND ? <= avance AND avance <= ? and tareas.fecha_final >= now() and receptor is null',[id_acceso,inicio,fin],(err,res)=>{
+        pool.query('SELECT tareas.id_tarea,proyectos.color proyecto_color, proyectos.nombre proyecto_nombre, tareas.asunto, tareas.avance porcentaje_avance, DATEDIFF(tareas.fecha_final,now()) prioridad_color,if(proyectos.nombre = "RECORDATORIO","R","T") tipo_tarea FROM tareas LEFT JOIN proyectos ON proyectos.id_proyecto = tareas.proyectos_id_proyecto LEFT JOIN tareas_has_accesos ON tareas_has_accesos.tareas_id_tarea = tareas.id_tarea WHERE '+emireceptor+' = ? AND ? <= avance AND avance <= ? and tareas.fecha_final >= now() and receptor is null',[id_acceso,inicio,fin],(err,res)=>{
             if (err) {
                 return reject(err)
             }
@@ -270,7 +270,7 @@ userModel.getTareaSubordinados = (id_acceso,nivel)=>{
 }
 userModel.getTareaSubordinadosTareas = (id_acceso)=>{
     return new Promise((resolve, reject) => { 
-        pool.query('SELECT id_proyecto,proyectos.color prioridad_color,tareas_has_accesos.tareas_id_tarea FROM tareas_has_accesos left join tareas on tareas.id_tarea = tareas_has_accesos.tareas_id_tarea left join proyectos on proyectos.id_proyecto = tareas.proyectos_id_proyecto WHERE receptor = ?',[id_acceso],(err,res)=>{
+        pool.query('SELECT id_proyecto,proyectos.color prioridad_color,tareas_has_accesos.tareas_id_tarea FROM tareas_has_accesos left join tareas on tareas.id_tarea = tareas_has_accesos.tareas_id_tarea left join proyectos on proyectos.id_proyecto = tareas.proyectos_id_proyecto WHERE receptor = ? and tareas.avance < 100',[id_acceso],(err,res)=>{
             if (err) {
                 return reject(err)
             }            
