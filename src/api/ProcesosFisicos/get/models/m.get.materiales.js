@@ -159,7 +159,7 @@ userModel.getmaterialespartidacomponente = (id_componente,id_actividad) => {
                     fila.avance_costo = tools.formatoSoles(fila.avance_costo)
                     fila.metrados_saldo = tools.formatoSoles(fila.metrados_saldo)
                     fila.metrados_costo_saldo = tools.formatoSoles(fila.metrados_costo_saldo)
-                    fila.porcentaje = Number(tools.formatoSoles(fila.porcentaje))
+                    fila.porcentaje = tools.formatoPorcentaje(fila.porcentaje)
                 }
             }
             resolve(res);
