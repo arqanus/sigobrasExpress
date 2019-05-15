@@ -1,4 +1,6 @@
 const pool = require('../../../../db/connection');
+const tools = require('../../../../tools/format')
+
 let userModel = {};
 
 //materiales
@@ -34,16 +36,27 @@ userModel.getmaterialesResumenTipos = (id_ficha) => {
 };
 userModel.getmaterialesResumen = (id_ficha, tipo) => {
     return new Promise((resolve, reject) => { 
-        pool.query("/*COALESCE(parcial_negativo / parcial_positivo, 0) + 1 porcentaje_negatividad_ajustado*/ SELECT recursos.descripcion, recursos.unidad, SUM(cantidad) recurso_cantidad, recursos.precio recurso_precio, SUM(recursos.parcial) recurso_parcial, SUM(COALESCE(partidas_metrado.metrado, 0)  * recursos.cantidad) recurso_gasto_cantidad, SUM(COALESCE(partidas_metrado.metrado, 0) * (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) * recursos.parcial) recurso_gasto_parcial, 0 diferencia, 0 porcentaje FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN (SELECT partidas.id_partida, SUM(avanceactividades.valor) metrado FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL GROUP BY partidas.id_partida) partidas_metrado ON partidas_metrado.id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_positivo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE actividades.parcial > 0 GROUP BY partidas.id_partida) p1 ON p1.id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_negativo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE actividades.parcial < 0 GROUP BY partidas.id_partida) p2 ON p2.id_partida = partidas.id_partida INNER JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN recursos ON recursos.partidas_id_partida = partidas.id_partida WHERE componentes.fichas_id_ficha = ? AND recursos.tipo = ? GROUP BY recursos.descripcion ", [id_ficha, tipo], (error, res) => {
+        pool.query("/*COALESCE(parcial_negativo / parcial_positivo, 0) + 1 porcentaje_negatividad_ajustado*/ SELECT recursos.descripcion, recursos.unidad, SUM(cantidad * partidas.metrado) recurso_cantidad, recursos.precio recurso_precio, SUM(cantidad * partidas.metrado) * recursos.precio recurso_parcial, SUM(COALESCE(partidas_metrado.avance, 0) * recursos.cantidad) recurso_gasto_cantidad, SUM(COALESCE(partidas_metrado.avance, 0) * recursos.cantidad) * recursos.precio recurso_gasto_parcial, SUM(cantidad * partidas.metrado) * recursos.precio - (SUM(COALESCE(partidas_metrado.avance, 0) * recursos.cantidad) * recursos.precio) diferencia, (SUM(cantidad * partidas.metrado) * recursos.precio - (SUM(COALESCE(partidas_metrado.avance, 0) * recursos.cantidad) * recursos.precio)) / (SUM(cantidad * partidas.metrado) * recursos.precio) * 100 porcentaje FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente INNER JOIN recursos ON recursos.partidas_id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, SUM(avanceactividades.valor) avance FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL GROUP BY partidas.id_partida) partidas_metrado ON partidas_metrado.id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_positivo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE actividades.parcial > 0 GROUP BY partidas.id_partida) p1 ON p1.id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_negativo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE actividades.parcial < 0 GROUP BY partidas.id_partida) p2 ON p2.id_partida = partidas.id_partida INNER JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE componentes.fichas_id_ficha = ? AND recursos.tipo = ? GROUP BY recursos.descripcion", [id_ficha, tipo], (error, res) => {
             if (error) {
                 reject(error);
             }
             else if (res.length == 0) {
                 reject("vacio");
             }
-            else {
-                resolve(res);
+            for (let i = 0; i < res.length; i++) {
+                const recurso = res[i];
+                recurso.descripcion = tools.formatoSoles(recurso.descripcion)
+                recurso.unidad = tools.formatoSoles(recurso.unidad)
+                recurso.recurso_cantidad = tools.formatoSoles(recurso.recurso_cantidad)
+                recurso.recurso_precio = tools.formatoSoles(recurso.recurso_precio)
+                recurso.recurso_parcial = tools.formatoSoles(recurso.recurso_parcial)
+                recurso.recurso_gasto_cantidad = tools.formatoSoles(recurso.recurso_gasto_cantidad)
+                recurso.recurso_gasto_parcial = tools.formatoSoles(recurso.recurso_gasto_parcial)
+                recurso.diferencia = tools.formatoSoles(recurso.diferencia)
+                recurso.porcentaje = tools.formatoSoles(recurso.porcentaje)                
             }
+            resolve(res);
+            
         });
     })
 };
@@ -79,16 +92,26 @@ userModel.getmaterialescomponentesTipos = (id_componente) => {
 };
 userModel.getmaterialescomponentesResumen = (id_componente,tipo) => {
     return new Promise((resolve, reject) => {
-        pool.query("/*COALESCE(parcial_negativo / parcial_positivo, 0) + 1 porcentaje_negatividad_ajustado*/ SELECT recursos.descripcion, recursos.unidad, SUM(cantidad) recurso_cantidad, recursos.precio recurso_precio, SUM(recursos.parcial) recurso_parcial, SUM(COALESCE(partidas_metrado.metrado, 0) * recursos.cantidad) recurso_gasto_cantidad, SUM(COALESCE(partidas_metrado.metrado, 0) * (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) * recursos.parcial) recurso_gasto_parcial, 0 diferencia, 0 porcentaje FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN (SELECT partidas.id_partida, SUM(avanceactividades.valor) metrado FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL GROUP BY partidas.id_partida) partidas_metrado ON partidas_metrado.id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_positivo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE actividades.parcial > 0 GROUP BY partidas.id_partida) p1 ON p1.id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_negativo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE actividades.parcial < 0 GROUP BY partidas.id_partida) p2 ON p2.id_partida = partidas.id_partida INNER JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN recursos ON recursos.partidas_id_partida = partidas.id_partida WHERE componentes.id_componente = ? AND recursos.tipo = ? GROUP BY componentes.id_componente", [id_componente,tipo], (error, res) => {
+        pool.query("/*COALESCE(parcial_negativo / parcial_positivo, 0) + 1 porcentaje_negatividad_ajustado*/ SELECT recursos.descripcion, recursos.unidad, SUM(cantidad * partidas.metrado) recurso_cantidad, recursos.precio recurso_precio, SUM(cantidad * partidas.metrado) * recursos.precio recurso_parcial, SUM(COALESCE(partidas_metrado.avance, 0) * recursos.cantidad) recurso_gasto_cantidad, SUM(COALESCE(partidas_metrado.avance, 0) * recursos.cantidad) * recursos.precio recurso_gasto_parcial, SUM(cantidad * partidas.metrado) * recursos.precio - (SUM(COALESCE(partidas_metrado.avance, 0) * recursos.cantidad) * recursos.precio) diferencia, (SUM(cantidad * partidas.metrado) * recursos.precio - (SUM(COALESCE(partidas_metrado.avance, 0) * recursos.cantidad) * recursos.precio)) / (SUM(cantidad * partidas.metrado) * recursos.precio) * 100 porcentaje FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente INNER JOIN recursos ON recursos.partidas_id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, SUM(avanceactividades.valor) avance FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL GROUP BY partidas.id_partida) partidas_metrado ON partidas_metrado.id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_positivo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE actividades.parcial > 0 GROUP BY partidas.id_partida) p1 ON p1.id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_negativo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE actividades.parcial < 0 GROUP BY partidas.id_partida) p2 ON p2.id_partida = partidas.id_partida INNER JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE componentes.id_componente = ? AND recursos.tipo = ? GROUP BY componentes.id_componente", [id_componente,tipo], (error, res) => {
             if (error) {
                 reject(error);
             }
             else if (res.length == 0) {
                 reject("vacio");
             }
-            else {
-                resolve(res);
+            for (let i = 0; i < res.length; i++) {
+                const recurso = res[i];
+                recurso.descripcion = tools.formatoSoles(recurso.descripcion)
+                recurso.unidad = tools.formatoSoles(recurso.unidad)
+                recurso.recurso_cantidad = tools.formatoSoles(recurso.recurso_cantidad)
+                recurso.recurso_precio = tools.formatoSoles(recurso.recurso_precio)
+                recurso.recurso_parcial = tools.formatoSoles(recurso.recurso_parcial)
+                recurso.recurso_gasto_cantidad = tools.formatoSoles(recurso.recurso_gasto_cantidad)
+                recurso.recurso_gasto_parcial = tools.formatoSoles(recurso.recurso_gasto_parcial)
+                recurso.diferencia = tools.formatoSoles(recurso.diferencia)
+                recurso.porcentaje = tools.formatoSoles(recurso.porcentaje)                
             }
+            resolve(res);
         });
     })
 };
@@ -139,16 +162,26 @@ userModel.getmaterialespartidaTipos = (id_partida) => {
 };
 userModel.getmaterialespartidaTiposLista = (id_partida, tipo, callback) => {
     return new Promise((resolve, reject) => {
-        pool.query("/*COALESCE(parcial_negativo / parcial_positivo, 0) + 1 porcentaje_negatividad_ajustado*/ SELECT recursos.descripcion, recursos.unidad, SUM(cantidad) recurso_cantidad, recursos.precio recurso_precio, SUM(recursos.parcial) recurso_parcial, SUM(COALESCE(partidas_metrado.metrado, 0) * recursos.cantidad) recurso_gasto_cantidad, SUM(COALESCE(partidas_metrado.metrado, 0) * (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) * recursos.parcial) recurso_gasto_parcial, 0 diferencia, 0 porcentaje FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN (SELECT partidas.id_partida, SUM(avanceactividades.valor) metrado FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL GROUP BY partidas.id_partida) partidas_metrado ON partidas_metrado.id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_positivo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE actividades.parcial > 0 GROUP BY partidas.id_partida) p1 ON p1.id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_negativo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE actividades.parcial < 0 GROUP BY partidas.id_partida) p2 ON p2.id_partida = partidas.id_partida INNER JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN recursos ON recursos.partidas_id_partida = partidas.id_partida WHERE recursos.Partidas_id_partida = ? AND recursos.tipo = ? GROUP BY partidas.id_partida", [id_partida, tipo], (error, res) => {
+        pool.query("/*COALESCE(parcial_negativo / parcial_positivo, 0) + 1 porcentaje_negatividad_ajustado*/ SELECT recursos.descripcion, recursos.unidad, SUM(cantidad * partidas.metrado) recurso_cantidad, recursos.precio recurso_precio, SUM(cantidad * partidas.metrado) * recursos.precio recurso_parcial, SUM(COALESCE(partidas_metrado.avance, 0) * recursos.cantidad) recurso_gasto_cantidad, SUM(COALESCE(partidas_metrado.avance, 0) * recursos.cantidad) * recursos.precio recurso_gasto_parcial, SUM(cantidad * partidas.metrado) * recursos.precio - (SUM(COALESCE(partidas_metrado.avance, 0) * recursos.cantidad) * recursos.precio) diferencia, (SUM(cantidad * partidas.metrado) * recursos.precio - (SUM(COALESCE(partidas_metrado.avance, 0) * recursos.cantidad) * recursos.precio)) / (SUM(cantidad * partidas.metrado) * recursos.precio) * 100 porcentaje FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente INNER JOIN recursos ON recursos.partidas_id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, SUM(avanceactividades.valor) avance FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL GROUP BY partidas.id_partida) partidas_metrado ON partidas_metrado.id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_positivo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE actividades.parcial > 0 GROUP BY partidas.id_partida) p1 ON p1.id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_negativo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE actividades.parcial < 0 GROUP BY partidas.id_partida) p2 ON p2.id_partida = partidas.id_partida INNER JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE partidas.id_partida = ? AND recursos.tipo = ? GROUP BY partidas.id_partida", [id_partida, tipo], (error, res) => {
             if (error) {
                 reject(error);
             }
             else if (res.length == 0) {
                 reject( "vacio");
             }
-            else {
-                resolve( res);
+            for (let i = 0; i < res.length; i++) {
+                const recurso = res[i];
+                recurso.descripcion = tools.formatoSoles(recurso.descripcion)
+                recurso.unidad = tools.formatoSoles(recurso.unidad)
+                recurso.recurso_cantidad = tools.formatoSoles(recurso.recurso_cantidad)
+                recurso.recurso_precio = tools.formatoSoles(recurso.recurso_precio)
+                recurso.recurso_parcial = tools.formatoSoles(recurso.recurso_parcial)
+                recurso.recurso_gasto_cantidad = tools.formatoSoles(recurso.recurso_gasto_cantidad)
+                recurso.recurso_gasto_parcial = tools.formatoSoles(recurso.recurso_gasto_parcial)
+                recurso.diferencia = tools.formatoSoles(recurso.diferencia)
+                recurso.porcentaje = tools.formatoSoles(recurso.porcentaje)                
             }
+            resolve(res);
         });
     });
 };
