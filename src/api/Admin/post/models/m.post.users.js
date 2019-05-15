@@ -43,4 +43,22 @@ userModel.getIdAcceso = (data,callback)=>{
     })
 }
 
+userModel.postnuevoUsuario = (data)=>{
+    return new Promise((resolve, reject) => {
+        pool.query(' INSERT INTO usuarios SET ?', data,(error,res)=>{
+            if(error) reject(error.code);
+            resolve(res.insertId);
+        })  
+    })
+}
+
+userModel.putUsuarioImagen = (imagen,id_usuario)=>{
+    return new Promise((resolve, reject) => {
+        pool.query(' update usuarios set imagen=? where id_usuario= ?', [imagen,id_usuario],(error,res)=>{
+            if(error) reject(error);
+            resolve(res);
+        })  
+    })
+}
+
 module.exports = userModel;
