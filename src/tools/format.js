@@ -39,6 +39,18 @@ userModel.formatoSolesPresicion = function formatoSoles(data){
        
     return data
 }
+userModel.formatoPorcentaje = function formatoSoles(data){
+    // console.log("formatoSoles",data);
+    
+    data = Number(data)
+    if(isNaN(data)){
+        data = 0
+    }else{
+        data = data.toFixed(2)
+    }
+       
+    return Number(data)
+}
 userModel.rome = function rome(N,s,b,a,o,t){
     t=N/1e3|0;N%=1e3;
     for(s=b='',a=5;N;b++,a^=7)
