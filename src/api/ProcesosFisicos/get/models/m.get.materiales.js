@@ -25,16 +25,40 @@ userModel.getmaterialesResumenChart = (id_ficha, tipo) => {
                     "data": []
                 },
                 {
-                    "type": "column",
+                    "type": "spline",
                     "name": "Diferencia",
                     "data": []
+                },
+                {
+                "type": "pie",
+                "name": "Segun Expediente",
+                "data": [],
+                "center": [100, 80],
+                "size": 100,
+                "showInLegend": false,
+                "dataLabels": {
+                    "enabled": false
+                    }
                 }
             ]
+            var categories = []
             for (let i = 0; i < res.length; i++) {
                 const tipoRecurso = res[i];
-                series[0].data.push(tipoRecurso.recurso_parcial)
+                series[0].data.push(tools.formatoPorcentaje(tipoRecurso.recurso_parcial))
+                series[1].data.push(tools.formatoPorcentaje(tipoRecurso.recurso_gasto_parcial))
+                series[2].data.push(tools.formatoPorcentaje(tipoRecurso.diferencia))
+                series[3].data.push(
+                    {
+                        "name": tipoRecurso.tipo,
+                        "y": tools.formatoPorcentaje(tipoRecurso.recurso_gasto_parcial)
+                    }
+                )
+                categories.push(tipoRecurso.tipo)
             }
-            resolve(res);
+            resolve({
+                series,
+                categories
+            });
             
         });
     })
