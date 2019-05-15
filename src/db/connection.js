@@ -1,9 +1,6 @@
 const mysql = require('mysql');
 
-var connection = mysql.createConnection(
 
-  {}
-  );
 
 var pool = mysql.createPool({
    
