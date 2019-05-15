@@ -49,7 +49,14 @@ module.exports = function(app){
 	})
 	app.post('/getTareasReceptorProyectos',async (req,res)=>{	
 		try {
-			var tareas = await User.getTareasProyectos('receptor',req.body.id_acceso,req.body.inicio,req.body.fin)
+			var tareas
+			if(req.body.tipo == "vancido"){
+				console.log("vencido");
+				tareas = await User.getTareasProyectosVencidas('receptor',req.body.id_acceso,req.body.inicio,req.body.fin)
+			}else{
+				console.log("NO VENCIDO");
+				tareas = await User.getTareasProyectos('receptor',req.body.id_acceso,req.body.inicio,req.body.fin)
+			}
 			res.json(tareas)
 		} catch (error) {
 			res.status(400).json(error)
@@ -57,7 +64,14 @@ module.exports = function(app){
 	})
 	app.post('/getTareasReceptor',async (req,res)=>{		
 		try {
-			var tareas = await User.getTareas('receptor',req.body.id_acceso,req.body.inicio,req.body.fin,req.body.id_proyecto)
+			var tareas
+			if(req.body.tipo == "vancido"){
+				console.log("vencido");
+				tareas = await User.getTareasVencidas('receptor',req.body.id_acceso,req.body.inicio,req.body.fin,req.body.id_proyecto)
+			}else{
+				console.log("NO VENCIDO");
+				tareas = await User.getTareas('receptor',req.body.id_acceso,req.body.inicio,req.body.fin,req.body.id_proyecto)
+			}			
 			res.json(tareas)
 		} catch (error) {
 			res.status(400).json(error)
@@ -70,24 +84,7 @@ module.exports = function(app){
 		} catch (error) {
 			res.status(400).json(error)
 		}
-	})
-	app.post('/getTareasReceptorProyectosVencidas',async (req,res)=>{	
-		try {
-			var tareas = await User.getTareasProyectosVencidas('receptor',req.body.id_acceso,req.body.inicio,req.body.fin)
-			res.json(tareas)
-		} catch (error) {
-			res.status(400).json(error)
-		}	
-	})
-	app.post('/getTareasReceptorVencidas',async (req,res)=>{	
-		try {
-			var tareas = await User.getTareasVencidas('receptor',req.body.id_acceso,req.body.inicio,req.body.fin,req.body.id_proyecto)
-			res.json(tareas)
-		} catch (error) {
-			res.status(400).json(error)
-		}	
-		
-	})
+	})	
 	app.post('/getTareaEmisorVencidas',async (req,res)=>{	
 		try {
 			var tareas = await User.getTareaEmisorVencidas('emisor',req.body.id_acceso,0,100)
@@ -117,6 +114,4 @@ module.exports = function(app){
 		}		
 		
 	})
-	
-
 }
