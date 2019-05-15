@@ -62,24 +62,26 @@ module.exports = function (app) {
 		if (req.body.id_partida == null) {
 			res.json("null");
 		} else {
-			User.getImagenesPrimeraImagenPartida(req.body.id_partida, (err, data) => {
-				if (err) { res.status(204).json(err); }
-				else {
-					res.json(data);
-				}
-			})
+			// User.getImagenesPrimeraImagenPartida(req.body.id_partida, (err, data) => {
+				// if (err) { res.status(204).json(err); }
+				// else {
+					res.json({
+						"imagen":"/static/Sistema/user_image_default.jpg"
+					});
+				// }
+			// })
 		}
 	})
 	app.post('/getImagenesUltimaImagenPartida', (req, res) => {
 		if (req.body.id_partida == null) {
 			res.json("null");
 		} else {
-			User.getImagenesUltimaImagenPartida(req.body.id_partida, (err, data) => {
-				if (err) { res.status(204).json(err); }
-				else {
-					res.json(data);
-				}
-			})
+			// User.getImagenesUltimaImagenPartida(req.body.id_partida, (err, data) => {
+				// if (err) { res.status(204).json(err); }
+				res.json({
+					"imagen":"/static/Sistema/user_image_default.jpg"
+				});
+			// })
 		}
 	})
 }
