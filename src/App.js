@@ -7,6 +7,8 @@ const morganBody = require('morgan-body');
 
 const cors =require('cors');
 
+const socket = require('socket.io');
+
 const PORT = process.env.PORT || 9000
 
 
@@ -76,6 +78,33 @@ require('./api/GestionTareas/put/routes/r.put.GT')(app);
 
 
 
-app.listen(app.get('port'),()=>{
+const server = app.listen(app.get('port'),()=>{
 	console.log('running in port', PORT);
 })
+
+// Set up socket.io
+const io = socket(server);
+let online = 0;
+let Tareas_online = 0;
+
+
+io.on('connection', (socket) => {
+  online++;
+  console.log(`Socket ${socket.id} connected.`);
+  console.log(`Online: ${online}`);
+  io.emit('visitors', online);
+  // socket.on('add', data => socket.broadcast.emit('add', data));
+  socket.on("tareas_comentarios", (data) => {
+    Tareas_online++
+    console.log(data);
+    io.emit(data.id_tarea, data.data)
+    }
+  );
+
+  socket.on('disconnect', () => {
+    online--;
+    console.log(`Socket ${socket.id} disconnected.`);
+    console.log(`Online: ${online}`);
+    io.emit('visitor exits', online);
+  });
+});
