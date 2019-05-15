@@ -47,29 +47,54 @@ module.exports = function(app){
 			res.status(204).json(error)
 		}
 	})
-	app.post('/getTareasReceptorProyectos',async (req,res)=>{		
-		var tareas = await User.getTareasProyectos('receptor',req.body.id_acceso,req.body.inicio,req.body.fin)
-		res.json(tareas)
+	app.post('/getTareasReceptorProyectos',async (req,res)=>{	
+		try {
+			var tareas = await User.getTareasProyectos('receptor',req.body.id_acceso,req.body.inicio,req.body.fin)
+			res.json(tareas)
+		} catch (error) {
+			res.status(400).json(error)
+		}	
 	})
 	app.post('/getTareasReceptor',async (req,res)=>{		
-		var tareas = await User.getTareas('receptor',req.body.id_acceso,req.body.inicio,req.body.fin,req.body.id_proyecto)
-		res.json(tareas)
+		try {
+			var tareas = await User.getTareas('receptor',req.body.id_acceso,req.body.inicio,req.body.fin,req.body.id_proyecto)
+			res.json(tareas)
+		} catch (error) {
+			res.status(400).json(error)
+		}	
 	})
 	app.post('/getTareasEmisor',async (req,res)=>{		
-		var tareas = await User.getTareaEmisor('emisor',req.body.id_acceso,req.body.inicio,req.body.fin)
-		res.json(tareas)
+		try {
+			var tareas = await User.getTareaEmisor('emisor',req.body.id_acceso,req.body.inicio,req.body.fin)
+			res.json(tareas)
+		} catch (error) {
+			res.status(400).json(error)
+		}
 	})
-	app.post('/getTareasReceptorProyectosVencidas',async (req,res)=>{		
-		var tareas = await User.getTareasProyectosVencidas('receptor',req.body.id_acceso,req.body.inicio,req.body.fin)
-		res.json(tareas)
+	app.post('/getTareasReceptorProyectosVencidas',async (req,res)=>{	
+		try {
+			var tareas = await User.getTareasProyectosVencidas('receptor',req.body.id_acceso,req.body.inicio,req.body.fin)
+			res.json(tareas)
+		} catch (error) {
+			res.status(400).json(error)
+		}	
 	})
-	app.post('/getTareasReceptorVencidas',async (req,res)=>{		
-		var tareas = await User.getTareasVencidas('receptor',req.body.id_acceso,req.body.inicio,req.body.fin,req.body.id_proyecto)
-		res.json(tareas)
+	app.post('/getTareasReceptorVencidas',async (req,res)=>{	
+		try {
+			var tareas = await User.getTareasVencidas('receptor',req.body.id_acceso,req.body.inicio,req.body.fin,req.body.id_proyecto)
+			res.json(tareas)
+		} catch (error) {
+			res.status(400).json(error)
+		}	
+		
 	})
-	app.post('/getTareaEmisorVencidas',async (req,res)=>{		
-		var tareas = await User.getTareaEmisorVencidas('emisor',req.body.id_acceso,0,100)
-		res.json(tareas)
+	app.post('/getTareaEmisorVencidas',async (req,res)=>{	
+		try {
+			var tareas = await User.getTareaEmisorVencidas('emisor',req.body.id_acceso,0,100)
+			res.json(tareas)
+		} catch (error) {
+			res.status(400).json(error)
+		}	
 	})
 	app.post('/getTareaIdTarea',async (req,res)=>{
 		try {
