@@ -45,8 +45,6 @@ userModel.getmaterialesResumen = (id_ficha, tipo) => {
             }
             for (let i = 0; i < res.length; i++) {
                 const recurso = res[i];
-                recurso.descripcion = tools.formatoSoles(recurso.descripcion)
-                recurso.unidad = tools.formatoSoles(recurso.unidad)
                 recurso.recurso_cantidad = tools.formatoSoles(recurso.recurso_cantidad)
                 recurso.recurso_precio = tools.formatoSoles(recurso.recurso_precio)
                 recurso.recurso_parcial = tools.formatoSoles(recurso.recurso_parcial)
@@ -101,8 +99,6 @@ userModel.getmaterialescomponentesResumen = (id_componente,tipo) => {
             }
             for (let i = 0; i < res.length; i++) {
                 const recurso = res[i];
-                recurso.descripcion = tools.formatoSoles(recurso.descripcion)
-                recurso.unidad = tools.formatoSoles(recurso.unidad)
                 recurso.recurso_cantidad = tools.formatoSoles(recurso.recurso_cantidad)
                 recurso.recurso_precio = tools.formatoSoles(recurso.recurso_precio)
                 recurso.recurso_parcial = tools.formatoSoles(recurso.recurso_parcial)
@@ -171,8 +167,6 @@ userModel.getmaterialespartidaTiposLista = (id_partida, tipo, callback) => {
             }
             for (let i = 0; i < res.length; i++) {
                 const recurso = res[i];
-                recurso.descripcion = tools.formatoSoles(recurso.descripcion)
-                recurso.unidad = tools.formatoSoles(recurso.unidad)
                 recurso.recurso_cantidad = tools.formatoSoles(recurso.recurso_cantidad)
                 recurso.recurso_precio = tools.formatoSoles(recurso.recurso_precio)
                 recurso.recurso_parcial = tools.formatoSoles(recurso.recurso_parcial)
