@@ -135,9 +135,35 @@ userModel.getmaterialespartidacomponente = (id_componente,id_actividad) => {
             else if (res.length == 0) {
                 reject("vacio");
             }
-            else {
-                resolve(res);
+            for (let i = 0; i < res.length; i++) {
+                const fila = res[i];
+                // fila.iconocategoria_nombre = "MdMonetizationOn"
+                fila.key = i
+                if(fila.tipo=="titulo"){
+                    fila.unidad_medida = ""
+                    fila.metrado = ""
+                    fila.costo_unitario = ""
+                    fila.parcial = ""
+                    fila.avance_metrado = ""
+                    fila.avance_costo = ""
+                    fila.metrados_saldo = ""
+                    fila.metrados_costo_saldo = ""
+                    fila.porcentaje = ""
+                    fila.porcentaje_negatividad = ""
+                    
+                }else{
+                    fila.metrado = tools.formatoSoles(fila.metrado)
+                    fila.costo_unitario = tools.formatoSoles(fila.costo_unitario)
+                    fila.parcial = tools.formatoSoles(fila.parcial)
+                    fila.avance_metrado = tools.formatoSoles(fila.avance_metrado)
+                    fila.avance_costo = tools.formatoSoles(fila.avance_costo)
+                    fila.metrados_saldo = tools.formatoSoles(fila.metrados_saldo)
+                    fila.metrados_costo_saldo = tools.formatoSoles(fila.metrados_costo_saldo)
+                    fila.porcentaje = Number(tools.formatoSoles(fila.porcentaje))
+                }
             }
+            resolve(res);
+            
         });
     });
 };
