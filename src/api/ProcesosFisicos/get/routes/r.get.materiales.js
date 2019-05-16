@@ -5,50 +5,6 @@ module.exports = function(app){
 		try {
 			var data = await  User.getmaterialesResumenChart(req.body.id_ficha)
 			res.json(data)
-			// res.json(
-			// 	{
-			// 		"series": [
-			// 			{
-			// 			"type": "column",
-			// 			"name": "Expediente",
-			// 			"data": [20, 20,54 ]
-			// 			}, {
-			// 			"type": "column",
-			// 			"name": "acumulado",
-			// 			"data": [10, 30,14]
-			// 			} ,{
-			// 			"type": "spline",
-			// 			"name": "Average",
-			// 			"data": [10, -10,40]
-			// 			}, 
-			// 			{
-			// 			"type": "pie",
-			// 			"name": "Segun Expediente",
-			// 			"data": [
-			// 			{
-			// 				"name": "Servicios",
-			// 				"y": 20
-			// 			},
-			// 			{
-			// 				"name": "Bienes",
-			// 				"y": 30
-			// 			},
-			// 			{
-			// 				"name": "Personal",
-			// 				"y": 50
-			// 			}
-			// 			],
-			// 			"center": [100, 80],
-			// 			"size": 100,
-			// 			"showInLegend": false,
-			// 			"dataLabels": {
-			// 				"enabled": false
-			// 			}
-			// 			}]
-			// 		,categories: ['Personal', 'Bienes', 'Servicios']
-			// 	}
-			// )
-			
 		} catch (error) {
 			res.status(400).json(error);	
 		}
@@ -79,49 +35,8 @@ module.exports = function(app){
 	})
 	app.post('/getmaterialescomponentesChart',async(req,res)=>{
 		try {
-			res.json(
-				{
-					"series": [
-						{
-						"type": "column",
-						"name": "Expediente",
-						"data": [20, 20,54 ]
-						}, {
-						"type": "column",
-						"name": "acumulado",
-						"data": [10, 30,14]
-						} ,{
-						"type": "spline",
-						"name": "Average",
-						"data": [10, -10,40]
-						}, 
-						{
-						"type": "pie",
-						"name": "Segun Expediente",
-						"data": [
-						{
-							"name": "Servicios",
-							"y": 20
-						},
-						{
-							"name": "Bienes",
-							"y": 30
-						},
-						{
-							"name": "Personal",
-							"y": 50
-						}
-						],
-						"center": [100, 80],
-						"size": 100,
-						"showInLegend": false,
-						"dataLabels": {
-							"enabled": false
-						}
-						}]
-					,categories: ['Personal', 'Bienes', 'Servicios']
-				}
-			)
+			var data = await  User.getmaterialescomponentesChart(req.body.id_componente)
+			res.json(data)
 		} catch (error) {
 			res.status(400).json(error);	
 		}
