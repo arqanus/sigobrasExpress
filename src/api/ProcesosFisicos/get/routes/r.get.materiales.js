@@ -71,8 +71,8 @@ module.exports = function(app){
 	})
 	app.post('/getmaterialesResumenEjecucionReal',async(req,res)=>{
 		try {
-			var getmaterialesResumen = await  User.getmaterialesResumen(req.body.id_ficha,req.body.tipo)
-			res.json(getmaterialesResumen)
+			var data = await  User.getmaterialesResumen("componentes.fichas_id_ficha",req.body.id_ficha,req.body.tipo)
+			res.json(data)
 		} catch (error) {
 			res.status(400).json(error);	
 		}
