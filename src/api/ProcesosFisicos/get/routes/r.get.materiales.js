@@ -3,51 +3,52 @@ const User = require('../models/m.get.materiales');
 module.exports = function(app){
 	app.post('/getmaterialesResumenChart',async(req,res)=>{
 		try {
-			// var data = await  User.getmaterialesResumenChart(req.body.id_ficha)
-			// res.json(data)
-			res.json(
-				{
-					"series": [
-						{
-						"type": "column",
-						"name": "Expediente",
-						"data": [20, 20,54 ]
-						}, {
-						"type": "column",
-						"name": "acumulado",
-						"data": [10, 30,14]
-						} ,{
-						"type": "spline",
-						"name": "Average",
-						"data": [10, -10,40]
-						}, 
-						{
-						"type": "pie",
-						"name": "Segun Expediente",
-						"data": [
-						{
-							"name": "Servicios",
-							"y": 20
-						},
-						{
-							"name": "Bienes",
-							"y": 30
-						},
-						{
-							"name": "Personal",
-							"y": 50
-						}
-						],
-						"center": [100, 80],
-						"size": 100,
-						"showInLegend": false,
-						"dataLabels": {
-							"enabled": false
-						}
-						}]
-					,categories: ['Personal', 'Bienes', 'Servicios']
-				}
-			)
+			var data = await  User.getmaterialesResumenChart(req.body.id_ficha)
+			res.json(data)
+			// res.json(
+			// 	{
+			// 		"series": [
+			// 			{
+			// 			"type": "column",
+			// 			"name": "Expediente",
+			// 			"data": [20, 20,54 ]
+			// 			}, {
+			// 			"type": "column",
+			// 			"name": "acumulado",
+			// 			"data": [10, 30,14]
+			// 			} ,{
+			// 			"type": "spline",
+			// 			"name": "Average",
+			// 			"data": [10, -10,40]
+			// 			}, 
+			// 			{
+			// 			"type": "pie",
+			// 			"name": "Segun Expediente",
+			// 			"data": [
+			// 			{
+			// 				"name": "Servicios",
+			// 				"y": 20
+			// 			},
+			// 			{
+			// 				"name": "Bienes",
+			// 				"y": 30
+			// 			},
+			// 			{
+			// 				"name": "Personal",
+			// 				"y": 50
+			// 			}
+			// 			],
+			// 			"center": [100, 80],
+			// 			"size": 100,
+			// 			"showInLegend": false,
+			// 			"dataLabels": {
+			// 				"enabled": false
+			// 			}
+			// 			}]
+			// 		,categories: ['Personal', 'Bienes', 'Servicios']
+			// 	}
+			// )
+			
 		} catch (error) {
 			res.status(400).json(error);	
 		}
@@ -62,8 +63,8 @@ module.exports = function(app){
 	})
 	app.post('/getmaterialesResumen',async(req,res)=>{
 		try {
-			var getmaterialesResumen = await  User.getmaterialesResumen(req.body.id_ficha,req.body.tipo)
-			res.json(getmaterialesResumen)
+			var data = await  User.getmaterialesResumen("componentes.fichas_id_ficha",req.body.id_ficha,req.body.tipo)
+			res.json(data)
 		} catch (error) {
 			res.status(400).json(error);	
 		}
@@ -135,8 +136,8 @@ module.exports = function(app){
 	})
 	app.post('/getmaterialescomponentesResumen',async(req,res)=>{
 		try {
-			var data = await  User.getmaterialescomponentesResumen(req.body.id_componente,req.body.tipo)
-			res.json(data);
+			var data = await  User.getmaterialesResumen("componentes.id_componente",req.body.id_componente,req.body.tipo)
+			res.json(data)
 		} catch (error) {
 			res.status(400).json(error);	
 		}
@@ -169,7 +170,7 @@ module.exports = function(app){
 	})
 	app.post('/getmaterialespartidaTiposLista',async(req,res)=>{
 		try {
-			var data = await User.getmaterialespartidaTiposLista (req.body.id_partida,req.body.tipo)
+			var data = await User.getmaterialesResumen("partidas.id_partida",req.body.id_partida,req.body.tipo)
 			res.json(data);
 		} catch (error) {
 			res.status(400).json(error);	
