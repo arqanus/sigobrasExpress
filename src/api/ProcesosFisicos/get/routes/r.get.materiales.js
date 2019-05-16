@@ -85,7 +85,7 @@ module.exports = function(app){
 	})
 	app.post('/getmaterialespartidaTiposLista',async(req,res)=>{
 		try {
-			var data = await User.getmaterialesResumen("partidas.id_partida",req.body.id_partida,req.body.tipo)
+			var data = await User.getmaterialespartidaTiposLista(req.body.id_partida,req.body.tipo)
 			res.json(data);
 		} catch (error) {
 			res.status(400).json(error);	
