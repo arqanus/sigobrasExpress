@@ -59,7 +59,7 @@ userModel.getmaterialesResumenChart = (id_ficha) => {
                 series,
                 categories
             });
-            resolve(series)
+            // resolve(series)
             
         });
     })
@@ -254,6 +254,19 @@ userModel.getmaterialespartidacomponente = (id_componente,id_actividad) => {
             }
             resolve(res);
             
+        });
+    });
+};
+userModel.getmaterialesPrioridadesRecursos = () => {
+    return new Promise((resolve, reject) => {
+        pool.query("select * from prioridadesrecursos", (error, res) => {
+            if (error) {
+                reject(error);
+            }
+            else if (res.length == 0) {
+                reject("vacio");
+            }           
+            resolve(res);
         });
     });
 };

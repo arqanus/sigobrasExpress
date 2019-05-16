@@ -187,8 +187,9 @@ userModel.getValGeneralPartidas = (id_componente,fecha_inicial,fecha_final)=>{
     })
 }
 userModel.getValGeneraMayoresMetradoslAnyos  = (id_ficha,tipo)=>{    
+    console.log(id_ficha,tipo);
     return new Promise((resolve, reject) => {
-        pool.query("SELECT YEAR(historialactividades.fecha) anyo FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida left JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad INNER JOIN avanceactividades ON avanceactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado = ? AND componentes.fichas_id_ficha = ? GROUP BY YEAR(historialactividades.fecha) ORDER BY historialactividades.fecha",[tipo,id_ficha],(err,res)=>{ 
+        pool.query("SELECT YEAR(avanceactividades.fecha) anyo FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.Fichas_id_ficha = fichas.id_ficha AND historialestados.fecha_inicial <= avanceactividades.fecha AND avanceactividades.fecha < historialestados.fecha_final LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado = ? AND fichas.id_ficha = ? AND estados.codigo != 'A' GROUP BY YEAR(avanceactividades.fecha)",[tipo,id_ficha],(err,res)=>{ 
             if(err){
                 reject(err.code);                 
             }
@@ -197,18 +198,17 @@ userModel.getValGeneraMayoresMetradoslAnyos  = (id_ficha,tipo)=>{
             }else{   
                 resolve(res);
             }
-            
         })
     })
 }
 userModel.getValGeneralMayoresMetradosPeriodos  = (id_ficha,anyo,tipo)=>{    
     return new Promise((resolve, reject) => {
-        pool.query("SELECT fichas.id_ficha, estados.codigo, MIN(avanceactividades.fecha) fecha_inicial, DATE_FORMAT(MAX(avanceactividades.fecha), ' %Y') anyo, DATE_FORMAT(MAX(avanceactividades.fecha), ' %b') mes FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.Fichas_id_ficha = fichas.id_ficha AND historialestados.fecha_inicial <= avanceactividades.fecha AND avanceactividades.fecha < historialestados.fecha_final LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado WHERE historialactividades.estado = ? AND componentes.fichas_id_ficha = ? AND YEAR(avanceactividades.fecha) = ? GROUP BY historialestados.id_historialEstado , DATE_FORMAT(avanceactividades.fecha, '%Y-%b') ORDER BY avanceactividades.fecha",[tipo,id_ficha,anyo],(err,res)=>{ 
+        pool.query("SELECT fichas.id_ficha, estados.codigo, MIN(avanceactividades.fecha) fecha_inicial, DATE_FORMAT(MAX(avanceactividades.fecha), ' %Y') anyo, DATE_FORMAT(MAX(avanceactividades.fecha), ' %b') mes FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.Fichas_id_ficha = fichas.id_ficha AND historialestados.fecha_inicial <= avanceactividades.fecha AND avanceactividades.fecha < historialestados.fecha_final LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado = ? AND fichas.id_ficha = ? AND YEAR(avanceactividades.fecha) = ? AND estados.codigo != 'A' GROUP BY historialestados.id_historialEstado , DATE_FORMAT(avanceactividades.fecha, '%Y-%b') ORDER BY avanceactividades.fecha",[tipo,id_ficha,anyo],(err,res)=>{ 
             if(err){
                 reject(err.code);                 
             }
             else if(res.length == 0){
-                resolve("vacio");    
+                resolve("vacio");
             }else{  
                 cont = 1
                 for (let i = 0; i < res.length; i++) {
@@ -219,14 +219,12 @@ userModel.getValGeneralMayoresMetradosPeriodos  = (id_ficha,anyo,tipo)=>{
                     }else{
                         cont= 1
                     }
-                    delete fila.mes
-                    delete fila.anyo
                     delete fila.id_ficha
                     fila.fecha_inicial = fila.fecha_inicial.toLocaleString()
                     if(i< res.length-1){
                         fila.fecha_final = res[i+1].fecha_inicial.toLocaleString()
                     }else{
-                        fila.fecha_final = new Date().toLocaleString();
+                        fila.fecha_final = (new Date(anyo, 11, 31)).toLocaleString()
                     }
                 }              
                 resolve(res);

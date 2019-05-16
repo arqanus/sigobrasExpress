@@ -75,6 +75,14 @@ module.exports = function(app){
 				res.status(400).json(error);	
 			}
 	})
+	app.get('/getmaterialesPrioridadesRecursos',async(req,res)=>{
+		try {
+			var data = await  User.getmaterialesPrioridadesRecursos()
+			res.json(data);
+		} catch (error) {
+			res.status(400).json(error);	
+		}
+	})
 	app.post('/getmaterialespartidaTipos',async(req,res)=>{
 		try {
 			var data = await  User.getmaterialespartidaTipos(req.body.id_partida)
