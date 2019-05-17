@@ -329,7 +329,17 @@ userModel.getmaterialesResumenEjecucionReal = (id_ficha, tipo) => {
             }
             else if (res.length == 0) {
                 reject("vacio");
-            }           
+            }         
+            for (let i = 0; i < res.length; i++) {
+                const recurso = res[i];
+                recurso.recurso_cantidad = tools.formatoSoles(recurso.recurso_cantidad)
+                recurso.recurso_precio = tools.formatoSoles(recurso.recurso_precio)
+                recurso.recurso_parcial = tools.formatoSoles(recurso.recurso_parcial)
+                recurso.recurso_gasto_cantidad = tools.formatoSoles(recurso.recurso_gasto_cantidad)
+                recurso.recurso_gasto_parcial = tools.formatoSoles(recurso.recurso_gasto_parcial)
+                recurso.diferencia = tools.formatoSoles(recurso.diferencia)
+                recurso.porcentaje = tools.formatoSoles(recurso.porcentaje)                
+            }  
             resolve(res);
         });
     });
