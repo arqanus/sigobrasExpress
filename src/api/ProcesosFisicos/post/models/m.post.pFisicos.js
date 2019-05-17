@@ -114,4 +114,45 @@ userModel.postavancePartidaImagen = (data,callback)=>{
                 
     })
 }
+userModel.postrecursosEjecucionrealCantidad = (data,callback)=>{
+    return new Promise((resolve, reject) => { 
+        
+        pool.query('INSERT INTO recursos_ejecucionreal (fichas_id_ficha,tipo,descripcion,cantidad) VALUES ? ON DUPLICATE key UPDATE cantidad = VALUES(cantidad)',[data],(error,res)=>{
+            if(error){
+                reject(error);
+            }else{
+                resolve(res);
+            }
+        })
+           
+    })
+}
+userModel.postrecursosEjecucionrealPrecio = (data,callback)=>{
+    return new Promise((resolve, reject) => { 
+        
+        pool.query('INSERT INTO recursos_ejecucionreal (fichas_id_ficha,tipo,descripcion,precio) VALUES ? ON DUPLICATE key UPDATE precio = VALUES(precio)',[data],(error,res)=>{
+            if(error){
+                reject(error);
+            }else{
+                resolve(res);
+            }
+        })
+           
+    })
+}
+
+userModel.getrecursosEjecucionreal = (id_ficha,descripcion)=>{
+    return new Promise((resolve, reject) => { 
+        
+        pool.query("SELECT * FROM recursos_ejecucionreal WHERE recursos_ejecucionreal.fichas_id_ficha = ? AND recursos_ejecucionreal.descripcion = ?",[id_ficha,descripcion],(error,res)=>{
+            if(error){
+                reject(error);
+            }else{
+                resolve(res);
+            }
+        })
+           
+    })
+}
+
 module.exports = userModel;

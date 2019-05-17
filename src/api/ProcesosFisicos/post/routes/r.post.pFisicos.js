@@ -634,4 +634,22 @@ module.exports = function(app){
     });
 
   })
+  app.post('/postrecursosEjecucionreal',async(req, res)=>{    
+    try {
+      var data
+      if (req.body.tipo =="cantidad") {
+        data = await User.postrecursosEjecucionrealCantidad(req.body.data)
+      } else {
+        data = await User.postrecursosEjecucionrealPrecio(req.body.data)        
+      }
+      console.log("test",req.body.data);
+      
+      recursosEjecucionreal = await User.getrecursosEjecucionreal(req.body.data[0][0],req.body.data[0][2])        
+
+      res.json(recursosEjecucionreal)
+    } catch (error) {
+        res.status(400).json(error)
+    }
+  })
+  
 }

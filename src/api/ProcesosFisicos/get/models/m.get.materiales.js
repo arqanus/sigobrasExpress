@@ -257,19 +257,6 @@ userModel.getmaterialespartidacomponente = (id_componente,id_actividad) => {
         });
     });
 };
-userModel.getmaterialesPrioridadesRecursos = () => {
-    return new Promise((resolve, reject) => {
-        pool.query("select * from prioridadesrecursos", (error, res) => {
-            if (error) {
-                reject(error);
-            }
-            else if (res.length == 0) {
-                reject("vacio");
-            }           
-            resolve(res);
-        });
-    });
-};
 userModel.getmaterialespartidaTipos = (id_partida) => {
     return new Promise((resolve, reject) => {
         pool.query("SELECT recursos.tipo FROM recursos WHERE recursos.Partidas_id_partida = ? GROUP BY recursos.tipo", id_partida, (error, res) => {
@@ -308,4 +295,31 @@ userModel.getmaterialespartidaTiposLista = (id_partida, tipo, callback) => {
         });
     });
 };
+userModel.getmaterialesPrioridadesRecursos = () => {
+    return new Promise((resolve, reject) => {
+        pool.query("select * from prioridadesrecursos", (error, res) => {
+            if (error) {
+                reject(error);
+            }
+            else if (res.length == 0) {
+                reject("vacio");
+            }           
+            resolve(res);
+        });
+    });
+};
+userModel.getmaterialesiconoscategoriasrecursos = () => {
+    return new Promise((resolve, reject) => {
+        pool.query("SELECT * FROM iconoscategoriasrecursos", (error, res) => {
+            if (error) {
+                reject(error);
+            }
+            else if (res.length == 0) {
+                reject("vacio");
+            }           
+            resolve(res);
+        });
+    });
+};
+
 module.exports = userModel;
