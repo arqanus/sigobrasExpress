@@ -75,14 +75,7 @@ module.exports = function(app){
 				res.status(400).json(error);	
 			}
 	})
-	app.get('/getmaterialesPrioridadesRecursos',async(req,res)=>{
-		try {
-			var data = await  User.getmaterialesPrioridadesRecursos()
-			res.json(data);
-		} catch (error) {
-			res.status(400).json(error);	
-		}
-	})
+	
 	app.post('/getmaterialespartidaTipos',async(req,res)=>{
 		try {
 			var data = await  User.getmaterialespartidaTipos(req.body.id_partida)
@@ -94,6 +87,22 @@ module.exports = function(app){
 	app.post('/getmaterialespartidaTiposLista',async(req,res)=>{
 		try {
 			var data = await User.getmaterialespartidaTiposLista(req.body.id_partida,req.body.tipo)
+			res.json(data);
+		} catch (error) {
+			res.status(400).json(error);	
+		}
+	})
+	app.get('/getmaterialesPrioridadesRecursos',async(req,res)=>{
+		try {
+			var data = await  User.getmaterialesPrioridadesRecursos()
+			res.json(data);
+		} catch (error) {
+			res.status(400).json(error);	
+		}
+	})
+	app.get('/getmaterialesiconoscategoriasrecursos',async(req,res)=>{
+		try {
+			var data = await  User.getmaterialesiconoscategoriasrecursos()
 			res.json(data);
 		} catch (error) {
 			res.status(400).json(error);	

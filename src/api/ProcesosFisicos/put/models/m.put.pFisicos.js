@@ -105,4 +105,48 @@ userModel.getIconocategoria = (id_partida,callback)=>{
     })
 }
 
+userModel.putPrioridadRecurso = (id_partida,id_prioridad,callback)=>{
+    pool.query('update partidas set partidas.prioridadesRecursos_id_prioridadesRecurso = ? where partidas.id_partida = ?',[id_prioridad,id_partida],(error,res)=>{
+        if(error){
+            callback(error);
+        }else{                
+            console.log("res",res); 
+            callback(null,res);
+        }
+    })
+}
+userModel.getPrioridadRecurso = (id_partida,callback)=>{
+    pool.query('SELECT prioridadesrecursos.* FROM partidas LEFT JOIN prioridadesrecursos ON prioridadesrecursos.id_prioridadesRecurso = partidas.prioridadesRecursos_id_prioridadesRecurso WHERE partidas.id_partida = ?',[id_partida],(error,res)=>{
+        if(error){
+            callback(error);
+        }else{                
+            console.log("res",res); 
+            callback(null,res[0]);
+        }
+    })
+}
+userModel.putIconocategoriaRecurso = (id_partida,id_prioridad,callback)=>{
+    
+          
+    pool.query('update partidas set partidas.iconoscategoriasrecursos_id_iconoscategoriasrecurso = ? where partidas.id_partida = ?',[id_prioridad,id_partida],(error,res)=>{
+        if(error){
+            callback(error);
+        }else{                
+            console.log("res",res); 
+            callback(null,res);
+        }
+    })
+      
+}
+userModel.getIconocategoriaRecurso = (id_partida,callback)=>{
+    pool.query('SELECT iconoscategoriasrecursos.* FROM partidas LEFT JOIN iconoscategoriasrecursos ON iconoscategoriasrecursos.id_iconoscategoriasrecurso = partidas.iconoscategoriasrecursos_id_iconoscategoriasrecurso WHERE partidas.id_partida = ?',[id_partida],(error,res)=>{
+        if(error){
+            callback(error);
+        }else{                
+            console.log("res",res); 
+            callback(null,res[0]);
+        }
+    })
+}
+
 module.exports = userModel;

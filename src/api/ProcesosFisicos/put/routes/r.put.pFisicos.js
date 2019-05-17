@@ -59,5 +59,33 @@ module.exports = function(app){
 			}
 		})
   })
+  app.put('/putPrioridadRecurso',(req,res)=>{	
+		User.putPrioridadRecurso(req.body.id_partida,req.body.id_prioridad,(err,data)=>{							
+			if(err){ res.status(204).json(err);}
+			else{
+        User.getPrioridadRecurso(req.body.id_partida,(err,prioridad)=>{							
+          if(err){ res.status(204).json(err);}
+          else{
+            res.json(prioridad)
+          }
+        })
+			}
+		})
+  })
+  app.put('/putIconocategoriaRecurso',(req,res)=>{	
+    console.log(req.body);
+    		
+		User.putIconocategoriaRecurso(req.body.id_partida,req.body.id_iconoCategoria,(err,data)=>{							
+			if(err){ res.status(204).json(err);}
+			else{
+        User.getIconocategoriaRecurso(req.body.id_partida,(err,prioridad)=>{							
+          if(err){ res.status(204).json(err);}
+          else{
+            res.json(prioridad)
+          }
+        })
+			}
+		})
+  })
   
 }
