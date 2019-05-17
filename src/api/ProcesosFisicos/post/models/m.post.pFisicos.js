@@ -144,7 +144,7 @@ userModel.postrecursosEjecucionrealPrecio = (data,callback)=>{
 userModel.getrecursosEjecucionreal = (id_ficha,descripcion)=>{
     return new Promise((resolve, reject) => { 
         
-        pool.query("SELECT * FROM recursos_ejecucionreal WHERE recursos_ejecucionreal.fichas_id_ficha = ? AND recursos_ejecucionreal.descripcion = ?",[id_ficha,descripcion],(error,res)=>{
+        pool.query("SELECT tipo,descripcion,cantidad recurso_gasto_cantidad,precio recurso_gasto_precio FROM recursos_ejecucionreal WHERE recursos_ejecucionreal.fichas_id_ficha = ? AND recursos_ejecucionreal.descripcion = ?",[id_ficha,descripcion],(error,res)=>{
             if(error){
                 reject(error);
             }else{
