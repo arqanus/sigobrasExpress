@@ -203,5 +203,16 @@ userModel.getValGeneralTodosComponentes = (id_ficha,fecha_inicial,fecha_final)=>
         })
     })
 }
+userModel.getComponentesPartidasIngresadas= (id_ficha)=>{
+    return new Promise((resolve, reject) => {
+        pool.query("SELECT componentes.*,max(recursos.descripcion) recurso_descripcion FROM componentes INNER JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente left join recursos on recursos.Partidas_id_partida = partidas.id_partida WHERE componentes.fichas_id_ficha = ? group by componentes.id_componente",[id_ficha],(err,res)=>{
+            if(err){
+                reject(err.code);
+            }else{
+                resolve(res)
+            }
+        })
+    })
+}
 
 module.exports = userModel;

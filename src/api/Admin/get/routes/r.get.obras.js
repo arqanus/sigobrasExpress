@@ -74,5 +74,13 @@ module.exports = function(app){
 		} catch (error) {
 			res.status(400).json(error)
 		}
-    })
+		})
+	app.post('/getComponentesPartidasIngresadas',async(req,res)=>{
+		try {
+			var data = await User.getComponentesPartidasIngresadas(req.body.id_ficha)
+			res.json(data)
+		} catch (error) {
+			res.status(400).json(error)
+		}
+	})
 }
