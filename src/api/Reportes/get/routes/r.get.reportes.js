@@ -96,158 +96,96 @@ module.exports = function(app){
         }
 	})
 	//6.4 vaorizacion pormayores metrados
-	app.post('/valorizacionMayoresMetrados',(req,res)=>{
-		if(req.body.id_ficha == null){
-			res.json("null");		
-		}else{
-			User.getValGeneralExtras(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha_final,'Mayor Metrado',(err,data)=>{							
-				if(err){ res.status(204).json(err);}
-				else{
-					res.json(data)
-				}
-			})
+	app.post('/valorizacionMayoresMetrados',async(req,res)=>{
+		try {
+			var data = await User.getValGeneralExtras(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha_final,'Mayor Metrado')	
+			res.json(data)
+		} catch (error) {
+			res.status(400).json(error)
 		}
 	})
 	//6.5 valorizacion de partidas nuevas
 	app.post('/valorizacionPartidasNuevas',(req,res)=>{
-		if(req.body.id_ficha == null){
-			res.json("null");		
-		}else{
-			User.getValGeneralExtras(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha_final,'Partida Nueva',(err,data)=>{							
-					if(err){ res.status(204).json(err);}
-					else{
-						res.json(data)
-					}
-		
-				})
-			
+		try {
+			var data = User.getValGeneralExtras(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha_final,'Partida Nueva')
+			res.json(data)
+		} catch (error) {
+			res.status(400).json(error)
 		}
-		
 	})
 	//6.6 consolidado general de las valorizacines
 	//6.7 resumen de avan ce fisico de las partidas de obra por mes 
-	app.post('/resumenAvanceFisicoPartidasObraMes',(req,res)=>{
-		if(req.body.id_ficha == null){
-			res.json("null");		
-		}else{
-			User.getMonthsByFicha(req.body.id_ficha,(err,meses)=>{							
-				if(err){ res.status(204).json(err);}
-				else{
-
-					User.resumenAvanceFisicoPartidasObraMes(meses,req.body.id_ficha,(err,data)=>{							
-						if(err){ res.status(204).json(err);}
-						else{
-		
-							res.json(data);	
-						}
-			
-					})
-				}
-
-			})
+	app.post('/resumenAvanceFisicoPartidasObraMes',async(req,res)=>{
+		try {
+			var data = await User.getMonthsByFicha(req.body.id_ficha)
+			var data2 = await User.resumenAvanceFisicoPartidasObraMes(meses,req.body.id_ficha)
+			res.json(data)
+		} catch (error) {
+			res.status(400).json(error)
 		}
-		
 	})
 	//6.8 avance mensual comparativos de acuerdo al presupuesto delaobra y mesavance comparativos
-	app.post('/avanceMensualComparativoPresupuesto',(req,res)=>{
-		if(req.body.id_ficha == null){
-			res.json("null");		
-		}else{
-			User.avanceMensualComparativoPresupuesto(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha_final,(err,data)=>{							
-				if(err){ res.status(204).json(err);}
-				else{
-					res.json(data)
-				}
-			})
+	app.post('/avanceMensualComparativoPresupuesto',async(req,res)=>{
+		try {
+			var data = await User.avanceMensualComparativoPresupuesto(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha_final)
+			res.json(data)
+		} catch (error) {
+			res.status(400).json(error)
 		}
-		
 	})
 	//6.9 avance comparativ diagraa degantt
-	app.post('/getCortes',(req,res)=>{
-		if(req.body.id_ficha == null){
-			res.json("null");		
-		}else{
-			User.getCortes(req.body.id_ficha,(err,data)=>{							
-				if(err){ res.status(204).json(err);}
-				else{
-					res.json(data)
-				}
-			})
+	app.post('/getCortes',async(req,res)=>{
+		try {
+			var data = await User.getCortes(req.body.id_ficha)
+			res.json(data)
+		} catch (error) {
+			res.status(400).json(error)
 		}
-		
 	})
-	app.post('/avanceComparativoDiagramaGantt',(req,res)=>{
-		if(req.body.id_ficha == null){
-			res.json("null");		
-		}else{
-			User.histogramaAvanceObra(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha_final,(err,data)=>{							
-				if(err){ res.status(204).json(err);}
-				else{
-					res.json(data)
-				}
-			})
+	app.post('/avanceComparativoDiagramaGantt',async(req,res)=>{
+		try {
+			var data = await User.histogramaAvanceObra(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha_final)
+			res.json(data)
+		} catch (error) {
+			res.status(400).json(error)
 		}
-		
 	})
 	//6.10 histograma del avance de obras curva s
-	app.post('/histogramaAvanceObra',(req,res)=>{
-		if(req.body.id_ficha == null){
-			res.json("null");		
-		}else{
-			User.histogramaAvanceObra(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha_final,(err,data)=>{							
-				if(err){ res.status(204).json(err);}
-				else{
-					res.json(data)
-				}
-			})
+	app.post('/histogramaAvanceObra',async(req,res)=>{
+		try {
+			var data = await User.histogramaAvanceObra(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha_final)
+			res.json(data)
+		} catch (error) {
+			res.status(400).json(error)
 		}
-		
 	})
 	//6.11 proyeccion de trabajos prosxioms mes cronograma
 	//6.12 informe mensual
 	app.post('/informeControlEjecucionObras',(req,res)=>{
-		// console.log(req.body);
-	if(req.body.id_ficha == null){
-			res.json("null");		
-		}else{
-			User.getinformeControlEjecucionObras(req.body.id_ficha,(err,data)=>{							
-				if(err){ res.status(204).json(err);}
-				else{					
-					res.json(data);	
-				}
-
-			})
+		
+		try {
+			var data = User.getinformeControlEjecucionObras(req.body.id_ficha)
+			res.json(data)
+		} catch (error) {
+			res.status(400).json(error)
 		}
 		
 	})
 	app.post('/getcronograma',(req,res)=>{
-		if(req.body.id_ficha == null){
-			res.json("null");		
-		}else{
-			User.getcronograma(req.body.id_ficha,(err,data)=>{							
-				if(err){ res.status(204).json(err);}
-				else{
-					res.json(data)
-				}
-
-			})
+		try {
+			var data = User.getcronograma(req.body.id_ficha)
+			res.json(data)
+		} catch (error) {
+			res.status(400).json(error)
 		}
 		
 	})
 	app.post('/getInformeImagen', (req, res)=>{
-		if(req.body.id_ficha == null){
-			res.json("null");		
-		}else{
-			User.getInformeImagen(req.body.id_ficha,(err,data)=>{							
-				if(err){ res.status(204).json(err);}
-				else{
-					res.json(data)
-				}
-
-			})
+		try {
+			var data = User.getInformeImagen(req.body.id_ficha)
+			res.json(data)
+		} catch (error) {
+			res.status(400).json(error)
 		}
 	});
-	
-
-
 }
