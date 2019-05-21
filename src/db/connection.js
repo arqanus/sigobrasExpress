@@ -13,8 +13,8 @@ var pool = mysql.createPool({
 
     /**********config laptop run* */
     host: '192.168.0.4',
-    user: 'kaid0',
-    password: 'kaid0',    
+    user: 'kaido',
+    password: 'kaido',    
     database: 'SIGOBRAS_DB',
     connectTimeout: 1000
 
