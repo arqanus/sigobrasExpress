@@ -98,7 +98,7 @@ io.on('connection', (socket) => {
     Tareas_online++
     console.log(data);
     console.log("id_tarea",data.id_tarea);
-    io.emit(data.id_tarea, data.data)
+    io.broadcast.emit(data.id_tarea, data.data)
     }
   );
 
