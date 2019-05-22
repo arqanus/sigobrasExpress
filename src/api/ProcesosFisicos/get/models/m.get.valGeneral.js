@@ -186,6 +186,7 @@ userModel.getValGeneralPartidas = (id_componente,fecha_inicial,fecha_final)=>{
         })                   
     })
 }
+
 userModel.getValGeneraMayoresMetradoslAnyos  = (id_ficha,tipo)=>{    
     console.log(id_ficha,tipo);
     return new Promise((resolve, reject) => {
