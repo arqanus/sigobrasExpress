@@ -2,7 +2,6 @@ const User = require('../models/m.get.reportes');
 const User2 = require('../../../ProcesosFisicos/get/models/m.get.valGeneral');
 const User3 = require('../../../Interfaz/get/models/m.get.interfaz');
 const User4 = require('../../../ProcesosFisicos/get/models/m.get.historial');
-var path = require('path');
 module.exports = function(app){
 	//cabecera
 	app.post('/getAnyoReportes',async(req,res)=>{
@@ -118,7 +117,6 @@ module.exports = function(app){
 	app.post('/resumenAvanceFisicoPartidasObraMes',async(req,res)=>{
 		try {
 			var data = await User.getMonthsByFicha(req.body.id_ficha)
-			var data2 = await User.resumenAvanceFisicoPartidasObraMes(meses,req.body.id_ficha)
 			res.json(data)
 		} catch (error) {
 			res.status(400).json(error)

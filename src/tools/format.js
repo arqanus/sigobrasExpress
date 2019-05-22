@@ -101,4 +101,22 @@ userModel.ColoresRandomRGB =function ColoresRandom() {
     var angle = Math.round( Math.random() * 360 );
     return "linear-gradient(" + angle + "deg, " + newColor1 + ", " + newColor2 + ")";
 }
+userModel.fechaLargaCorta = (MyDate)=>{
+	var MyDateString;
+	MyDateString = (MyDate.getFullYear()+'-'+('0' + (MyDate.getMonth()+1)).slice(-2)+'-'+('0' + MyDate.getDate()).slice(-2))
+	return MyDateString
+}
+userModel.fechaActual = ()=>{
+	var today = new Date();
+	var dd = today.getDate();
+	var mm = today.getMonth()+1; //January is 0!
+	var yyyy = today.getFullYear();
+	if(dd<10) {
+					dd = '0'+dd
+	} 
+	if(mm<10) {
+					mm = '0'+mm
+	} 
+	return yyyy+"-"+mm;
+}
 module.exports = userModel;

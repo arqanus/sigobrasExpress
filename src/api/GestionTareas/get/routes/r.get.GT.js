@@ -10,7 +10,7 @@ function daysdifference(date1, date2) {
 	var difference_ms = (date1_ms - date2_ms);
 
 	// Convert back to days and return
-	return Math.round(difference_ms/ONEDAY);
+	return Math.floor(difference_ms/ONEDAY)
 }
 
 module.exports = function(app){
