@@ -50,7 +50,7 @@ module.exports = function(app){
 	app.post('/getTareasReceptorProyectos',async (req,res)=>{	
 		try {
 			var tareas
-			if(req.body.tipo == "vancido"){
+			if(req.body.tipo == "vencido"){
 				console.log("vencido");
 				tareas = await User.getTareasProyectosVencidas('receptor',req.body.id_acceso,req.body.inicio,req.body.fin)
 			}else{
