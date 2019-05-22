@@ -14,16 +14,29 @@ userModel.getObras = (id_acceso) => {
       }
       for (let i = 0; i < res.length; i++) {
         const fila = res[i];
-        fila.g_total_presu = tools.formatoSoles(fila.g_total_presu)
+        // fila.g_total_presu = tools.formatoSoles(fila.g_total_presu)
         fila.presu_avance = tools.formatoSoles(fila.presu_avance)
         fila.porcentaje_avance = tools.formatoSoles(fila.porcentaje_avance)
         fila.costo_directo = tools.formatoSoles(fila.costo_directo)
-        fila.avance_financiero = tools.formatoSoles(fila.avance_financiero)
-        fila.porcentaje_financiero = tools.formatoSoles(fila.porcentaje_financiero)
+        // fila.avance_financiero = tools.formatoSoles(fila.avance_financiero)
+        // fila.porcentaje_financiero = tools.formatoSoles(fila.porcentaje_financiero)
       }
       resolve(res);
     })
   })
+}
+userModel.getAvanceFinancieroCortes = (id_ficha) => {
+  return new Promise((resolve, reject) => {
+    pool.query("SELECT SUM(monto) avance_financiero FROM historialestados WHERE historialestados.Fichas_id_ficha = ? GROUP BY historialestados.Fichas_id_ficha", [id_ficha], (error, res) => {
+      if (error) {
+        reject(error);
+      } else if (res.length == 0) {
+        reject("vacio");
+      }
+      resolve(res[0])
+    })
+  })
+
 }
 userModel.getComponentesPgerenciales = (id_ficha) => {
   return new Promise((resolve, reject) => {
