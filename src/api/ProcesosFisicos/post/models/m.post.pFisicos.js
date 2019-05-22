@@ -148,7 +148,7 @@ userModel.getrecursosEjecucionreal = (id_ficha,descripcion)=>{
             if(error){
                 reject(error);
             }else{
-                resolve(res);
+                resolve(res[0]);
             }
         })
            
