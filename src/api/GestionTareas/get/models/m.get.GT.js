@@ -56,7 +56,7 @@ userModel.getTareaUsuariosPorCargo = (id_acceso,id_cargo)=>{
 }
 userModel.getTareasProyectos = (emireceptor,id_acceso,inicio,fin)=>{
     return new Promise((resolve, reject) => { 
-        pool.query('select proyectos.* FROM tareas LEFT JOIN proyectos ON proyectos.id_proyecto = tareas.proyectos_id_proyecto left JOIN tareas_has_accesos ON tareas_has_accesos.tareas_id_tarea = tareas.id_tarea WHERE '+emireceptor+' = ? AND ? <= avance AND avance <= ? AND tareas.fecha_final >= now() group by proyectos.id_proyecto order by tareas.fecha_final desc',[id_acceso,inicio,fin],(err,res)=>{
+        pool.query('select proyectos.* FROM tareas LEFT JOIN proyectos ON proyectos.id_proyecto = tareas.proyectos_id_proyecto left JOIN tareas_has_accesos ON tareas_has_accesos.tareas_id_tarea = tareas.id_tarea WHERE '+emireceptor+' = ? AND ? <= avance AND avance <= ? AND (avance = 100 or tareas.fecha_final >= NOW()) group by proyectos.id_proyecto order by tareas.fecha_final desc',[id_acceso,inicio,fin],(err,res)=>{
             if (err) {
                 return reject(err)
             }else if(res.length == 0){
@@ -68,7 +68,7 @@ userModel.getTareasProyectos = (emireceptor,id_acceso,inicio,fin)=>{
 }
 userModel.getTareas = (emireceptor,id_acceso,inicio,fin,id_proyecto)=>{
     return new Promise((resolve, reject) => { 
-        pool.query('SELECT tareas.id_tarea, proyectos.color proyecto_color, proyectos.nombre proyecto_nombre, tareas.asunto, tareas.avance porcentaje_avance, DATEDIFF(tareas.fecha_final, NOW()) prioridad_color, usuarios.nombre emisor_nombre, cargos.nombre emisor_cargo FROM tareas LEFT JOIN proyectos ON proyectos.id_proyecto = tareas.proyectos_id_proyecto LEFT JOIN tareas_has_accesos ON tareas_has_accesos.tareas_id_tarea = tareas.id_tarea LEFT JOIN accesos ON accesos.id_acceso = tareas.emisor LEFT JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo WHERE '+emireceptor+' = ? AND ? <= avance AND avance <= ? and proyectos.id_proyecto = ? and tareas.fecha_final >= now()',[id_acceso,inicio,fin,id_proyecto],(err,res)=>{
+        pool.query('SELECT tareas.id_tarea, proyectos.color proyecto_color, proyectos.nombre proyecto_nombre, tareas.asunto, tareas.avance porcentaje_avance, DATEDIFF(tareas.fecha_final, NOW()) prioridad_color, usuarios.nombre emisor_nombre, cargos.nombre emisor_cargo FROM tareas LEFT JOIN proyectos ON proyectos.id_proyecto = tareas.proyectos_id_proyecto LEFT JOIN tareas_has_accesos ON tareas_has_accesos.tareas_id_tarea = tareas.id_tarea LEFT JOIN accesos ON accesos.id_acceso = tareas.emisor LEFT JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo WHERE '+emireceptor+' = ? AND ? <= avance AND avance <= ? and proyectos.id_proyecto = ? and (avance = 100 or tareas.fecha_final >= NOW())',[id_acceso,inicio,fin,id_proyecto],(err,res)=>{
             if (err) {  
                 return reject(err)
             }else if(res.length == 0){
