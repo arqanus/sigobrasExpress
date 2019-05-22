@@ -60,6 +60,8 @@ module.exports = (app) => {
 				cronograma.grafico_financiero = []
 				cronograma.grafico_periodos = []
 				cronograma.data = []
+			}else{
+				fecha_final = cronograma.data[cronograma.data.length-1].fecha
 			}
 			cronograma.fecha_inicial = fecha_inicial
 			cronograma.fecha_final = fecha_final
