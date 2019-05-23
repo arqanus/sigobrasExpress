@@ -636,11 +636,13 @@ module.exports = function(app){
   })
   app.post('/postrecursosEjecucionreal',async(req, res)=>{    
     try {
-      var data
+      var data = ""
       if (req.body.tipo =="cantidad") {
         data = await User.postrecursosEjecucionrealCantidad(req.body.data)
-      } else {
+      } else if(req.body.tipo =="precio"){
         data = await User.postrecursosEjecucionrealPrecio(req.body.data)        
+      }else if(req.body.tipo =="codigo"){
+        data = await User.postrecursosEjecucionrealCodigo(req.body.data)        
       }
       console.log("test",req.body.data);
       

@@ -344,5 +344,20 @@ userModel.getmaterialesResumenEjecucionReal = (id_ficha, tipo) => {
         });
     });
 };
+userModel.gettipodocumentoadquisicion = () => {
+    return new Promise((resolve, reject) => {
+        pool.query("select * from tipodocumentoadquisicion", (error, res) => {
+            if (error) {
+                reject(error);
+            }
+            else if (res.length == 0) {
+                reject("vacio");
+            }         
+            else{
+                resolve(res)
+            }
+        });
+    });
+};
 
 module.exports = userModel;

@@ -108,4 +108,13 @@ module.exports = function(app){
 			res.status(400).json(error);	
 		}
 	})
+	app.get('/gettipodocumentoadquisicion',async(req,res)=>{
+		try {
+			var data = await  User.gettipodocumentoadquisicion()
+			res.json(data);
+		} catch (error) {
+			res.status(400).json(error);	
+		}
+	})
+	
 }
