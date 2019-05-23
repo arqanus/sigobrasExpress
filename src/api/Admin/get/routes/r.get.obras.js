@@ -4,7 +4,15 @@ module.exports = function(app){
 	app.get('/listaObras',async(req,res)=>{
 		try {
 			var obras = await User.getObras()
-        	res.json(obras);
+			res.json(obras);
+		} catch (error) {
+			res.status(400).json(error)
+		}
+	})
+	app.post('/getObra',async(req,res)=>{
+		try {
+			var data = await User.getObra(req.body.id_ficha)
+			res.json(data);
 		} catch (error) {
 			res.status(400).json(error)
 		}
@@ -33,7 +41,7 @@ module.exports = function(app){
 			res.status(400).json(error)
 		}
 	})
-	app.get('/getUnidadEjecutora',async(req,res)=>{
+	app.get('/getUnidadEjecutoras',async(req,res)=>{
 		try {
 			var unidadesEjecutoras = await User.getUnidadEjecutora()
 			res.json(unidadesEjecutoras)
@@ -48,8 +56,6 @@ module.exports = function(app){
 		} catch (error) {
 			res.status(400).json(error)
 		}
-							
-		
 	})
 	app.post('/getHistorialEstados',async(req,res)=>{
 		try {

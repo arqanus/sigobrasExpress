@@ -1,314 +1,124 @@
 const User = require('../models/m.post.obras');
+const User2 = require('../../get/models/m.get.obras');
 
-module.exports = function(app){
-    app.post('/postTipoObras',(req,res)=>{
-		
-		User.postTipoObra(req.body.data,(err,data)=>{							
-			if(err){ res.status(204).json(err);}
-			else{
-				res.json(data);	
-			}
-
-		})
-	
-	})
-	app.post('/postUnidadEjecutora',(req,res)=>{
-		
-		User.postUnidadEjecutora(req.body.data,(err,data)=>{							
-			if(err){ res.status(204).json(err);}
-			else{
-				res.json(data);	
-			}
-
-		})
-		
-	
-	
-		
+module.exports = (app) => {
+    app.post('/postTipoObras', async (req, res) => {
+        try {
+            var data = await User.postTipoObra(req.body)
+            res.json(data)
+        } catch (error) {
+            res.status(400).json(error)
+        }
     })
-    app.post('/postEstado',(req,res)=>{
-		
-		User.postEstado(req.body,(err,data)=>{
-			
-			if(err) res.status(204).json(err);
-			res.status(200).json(data);
-		})
-	})
-    app.post('/nuevaObra',(req,res)=>{
-        console.log("newobra");
-        
-		var id_estado = req.body.id_estado
-		var componentes = req.body.componentes
-		var fecha_final = req.body.fecha_final
-		// console.log("fecha final",fecha_final);
-		
-		// delete req.body.g_total_presu;
-		delete req.body.id_estado;
-		delete req.body.componentes;
-		delete req.body.fecha_final;		
-		User.postFicha(req.body,(err,id_ficha)=>{
-			if(err) {res.status(204).json(err);}
-			else{
-				var plazoEjecucion={
-					"FechaEjecucion":fecha_final,
-					"fichas_id_ficha":id_ficha,
-				}
-				User.postPlazoEjecucion(plazoEjecucion,(err,data)=>{
-					if(err) {res.status(204).json(err);}
-					else{
-						var Historial = {											
-							"Fichas_id_ficha":id_ficha,
-							"Estados_id_estado":id_estado,
-						}
-						User.postHistorialEstado(Historial,(err,data)=>{							
-							if(err){ res.status(204).json(err);}
-							else{
-								var data_procesada = [];								
-								for(var i = 0; i < componentes.length; i++){
-									var componente = [];
-									componente.push(componentes[i]["0"]);
-									componente.push(componentes[i]["1"]);
-									componente.push(componentes[i]["2"]);	
-									componente.push(id_ficha);								
-									data_procesada.push(componente);
-								}		
-								// console.log(data_procesada);
-								User.postComponentes(data_procesada,(err,idComponente)=>{
-									if(err) {res.status(204).json(err);}
-									else{	
-                                        var dataComponentes={
-                                            "componentes":[]
-                                        }
-                                        var idcomptemp = idComponente
-
-                                        				
-                                        for (let i = 0; i < componentes.length; i++) {
-                                            dataComponentes.componentes.push(
-                                                {
-                                                "numero": i+1,
-                                                "idComponente": idcomptemp,
-                                                }
-                                            )
-                                            idcomptemp++                                            
-                                        }
-										res.json(dataComponentes)									
-										
-										
-									}
-		
-									
-								})	
-							}
-		
-						})
-					}
-					
-						
-				})
-
-					
-					
-				
-			}
-			
-			
-        })	
+    app.post('/postEstado', async (req, res) => {
+        try {
+            var data = await User.postEstado(req.body)
+            res.json(data)
+        } catch (error) {
+            res.status(400).json(error)
+        }
     })
-    app.post('/postComponentes',(req,res)=>{
-        var componentes = []  
-        for (let i = 0; i < req.body.componentes.length; i++) {
-            const fila = req.body.componentes[i];
-            componentes.push(
-                [
-                    fila[0],
-                    fila[1],
-                    fila[2],
-                    req.body.id_ficha
-                ]
-            )
-        }        
-        User.postComponentes(componentes,(err,idComponente)=>{
-            if(err) {res.status(204).json(err);}
-            else{
-                var HistorialComponentes = []
-                var temp_idComponente = idComponente
-                for (let i = 0; i < req.body.componentes.length; i++) {
-                    const fila = req.body.componentes[i];
-                    HistorialComponentes.push(
-                        ['Partida Nueva',temp_idComponente]
-                    )
-                    temp_idComponente++
-                    
-                }                
-                User.postHistorialComponentes(HistorialComponentes,(err,data)=>{
-                    if(err) {res.status(204).json(err);}
-                    else{
-                        var dataComponentes={
-                            "componentes":[]
-                        }
-                        var idcomptemp = idComponente
-
-                                        
-                        for (let i = 0; i < componentes.length; i++) {
-                            dataComponentes.componentes.push(
-                                {
-                                "numero": i+1,
-                                "idComponente": idcomptemp,
-                                }
-                            )
-                            idcomptemp++                                            
-                        }
-                        res.json(dataComponentes)	                  
-                    }              
-                })                    
-            }              
-        })    
-    })	    
-    app.post('/nuevasPartidas',(req,res)=>{
-
-        User.getPrioridad((err,prioridad)=>{							
-			if(err){ res.status(204).json(err);}
-			else{
-				User.getIconocategoria((err,Iconocategoria)=>{							
-                    if(err){ res.status(204).json(err);}
-                    else{
-                      
-                        var errores=[]
-        
-                        var listaPartidas = []
-                        // console.log("body",req.body)
-                        // console.log("ruta")
-                        var data = req.body.data
-                        var estado = req.body.estado   
-                        
-                        for (let i = 0; i < data.length; i++) {
-                            const element = data[i];
-                            const obPartida = [
-                                element.tipo,
-                                element.item,
-                                element.descripcion,
-                                element.unidad_medida,
-                                element.metrado,
-                                element.costo_unitario,
-                                element.equipo,
-                                element.rendimiento,
-                                element.componentes_id_componente,
-                                prioridad.id_prioridad,
-                                Iconocategoria.id_iconoCategoria                                
-                            ]
-                            listaPartidas.push(obPartida)
-                        }
-                       
-                        User.postPartidas(listaPartidas,(err,idPartida)=>{
-                            if(err){
-                                errores.push(
-                                    {
-                                        "PostPartidas":"partida",
-                                        "error":err
-                                    }
-                                )
-                                res.json(err);
-                            }
-                            else{
-                                // res.json(idPartida);
-                                            
-                                // console.log("partidas insertadas")
-                                // res.json(idPartida)
-                                var tempIdpartida = idPartida						
-                                var actividades = []
-                                var recursos = []
-                                for (let j = 0; j < data.length; j++,tempIdpartida+=1) {
-                                    // console.log("actividades")
-                                    //insertando idpartida
-                                    if(data[j].tipo == "partida"){
-                                        var obActividad = data[j].actividades
-                                        for (let k = 0; k < obActividad.length; k++) {
-                                            obActividad[k].push(tempIdpartida);
-                                            // obActividad[k].push(estado);
-                                        }
-                                        actividades = actividades.concat(obActividad)
-                    
-                                        // recursos agregando id partida
-                                        var obRecurso = data[j].recursos
-                                        // console.log("recursos")
-                                        for (let k = 0; k < obRecurso.length; k++) {
-                                            obRecurso[k].push(tempIdpartida);
-                                        }
-                                        recursos = recursos.concat(obRecurso)
-                                    }				
-                                }
-                                // console.log("actividades",actividades);
-                                
-                                User.postActividades(actividades,(err,id_actividad)=>{
-                                    if(err){
-                                        errores.push(
-                                            {
-                                                "elemento":"actividad",
-                                                "error":err
-                                            }
-                                        )						
-                                    }
-                                    else{
-                                        User.postRecursos(recursos,(err,idrecursos)=>{
-                                            if(err){
-                                                errores.push(
-                                                    {
-                                                        "elemento":"recursos",
-                                                        "error":err
-                                                    }
-                                                )
-                                                res.status(204).json(errores);
-                                            }
-                                            else{
-                                                if(estado == "oficial"){
-                                                    res.json("exito")
-                                                }else{                                           
-                                                    var historialActividad = []
-                                                    var tempidactividad = id_actividad
-                                                    for (let i = 0; i < actividades.length; i++) {
-                                                        historialActividad.push(
-                                                            ['Partida Nueva',tempidactividad]
-                                                        )
-                                                        tempidactividad++
-                                                    }                                                    
-                                                 
-                                                    User.posthistorialActividad(historialActividad,(err,data)=>{
-                                                        if(err){ res.status(204).json(err);}
-                                                        else{
-                                                            res.json(data)
-                                                        }
-                                                    })
-                    
-                                                }
-                                                
-                                                
-                                            }
-                                        })
-                                    }
-                                })
-                                    
-                                                
-                            }
-                        })
-                    }
-        
-                })	
-			}
-
-		})
-       	
+    app.post('/postUnidadEjecutora', async (req, res) => {
+        try {
+            var data = await User.postUnidadEjecutora(req.body)
+            res.json(data)
+        } catch (error) {
+            res.status(400).json(error)
+        }
     })
-    app.post('/postAvanceActividadPorObra',(req,res)=>{
-		
-		User.postAvanceActividadPorObra(req.body,(err,data)=>{
-			
-            if(err){ res.status(204).json(err);}
-            else{
-			res.status(200).json(data);
-
+    app.post('/nuevaObra', async (req, res) => {
+        try {
+            var id_ficha = await User.postFicha(req.body.ficha)
+            var plazoEjecucion = {
+                "FechaEjecucion": req.body.fecha_final,
+                "fichas_id_ficha": id_ficha,
             }
-		})
-	})
-   
-	
+            var id_plazoEjecucion = await User.postPlazoEjecucion(plazoEjecucion)
+            var Historial = {
+                "Fichas_id_ficha": id_ficha,
+                "Estados_id_estado": req.body.id_estado,
+                "fecha_inicial": req.body.ficha.fecha_inicial
+            }
+            var id_historial = await User.postHistorialEstado(Historial)
+            for (let i = 0; i < req.body.componentes.length; i++) {
+                const componente = req.body.componentes[i];
+                componente.push(id_ficha)
+            }
+            var id_componente = await User.postComponentes(req.body.componentes)
+            res.json(id_ficha)
+        } catch (error) {
+            res.status(400).json(error)
+        }
+    })
+    app.post('/postComponentes', async (req, res) => {
+        try {
+            var id_componente = await User.postComponentes(req.body)
+            var HistorialComponentes = []
+            for (let i = 0; i < req.body.length; i++) {
+                HistorialComponentes.push(
+                    ['Partida Nueva', id_componente++]
+                )
+            }
+            var id_historialComponentes = await User.postHistorialComponentes(HistorialComponentes)
+            res.json(id_componente)
+        } catch (error) {
+            res.status(400).json(error)
+        }
+    })
+
+    app.post('/nuevasPartidas', async (req, res) => {
+        try {
+            var estado = req.body.estado
+            var id_prioridad = await User2.getPrioridad()
+            id_prioridad = id_prioridad.id_prioridad
+            var id_iconoCategoria = await User2.getIconocategoria()
+            id_iconoCategoria = id_iconoCategoria.id_iconoCategoria
+            var id_prioridadesRecurso = await User2.getPrioridadesRecursos()
+            id_prioridadesRecurso = id_prioridadesRecurso.id_prioridadesRecurso
+            var id_iconoscategoriasrecurso = await User2.getIconocategoriaRecursos()
+            id_iconoscategoriasrecurso = id_iconoscategoriasrecurso.id_iconoscategoriasrecurso
+            for (let i = 0; i < req.body.partidas.length; i++) {
+                const partida = req.body.partidas[i];
+                partida.data.prioridades_id_prioridad = id_prioridad
+                partida.data.iconosCategorias_id_iconoCategoria = id_iconoCategoria
+                partida.data.prioridadesRecursos_id_prioridadesRecurso = id_prioridadesRecurso
+                partida.data.iconosCategoriasRecursos_id_iconoscategoriasrecurso = id_iconoscategoriasrecurso
+                var id_partida  = await User.postPartida(partida.data)
+                if(partida.actividades){
+                    for (let i = 0; i < partida.actividades.length; i++) {
+                        const actividad = partida.actividades[i];
+                        actividad.Partidas_id_partida = id_partida
+                        var id_actividad = await User.postActividad(actividad)
+                        if (estado != "oficial") {
+                            var historialActividad = {
+                                estado:'Partida Nueva',
+                                actividades_id_actividad:id_actividad
+                            }
+                            User.posthistorialActividad(historialActividad)
+                        }
+                    }
+                }
+                if(partida.recursos){
+                    for (let i = 0; i < partida.recursos.length; i++) {
+                        const recurso = partida.recursos[i];
+                        recurso.Partidas_id_partida = id_partida
+                        var id_recurso = await User.postRecurso(recurso)  
+                    }
+                }
+            }
+            res.json("exito")
+        } catch (error) {
+            console.log(error);
+            res.status(400).json(error)
+        }
+    })
+
+    app.post('/postAvanceActividadPorObra', async (req, res) => {
+        try {
+            var data = await User.postAvanceActividadPorObra(req.body)
+            res.json(data)
+        } catch (error) {
+            res.status(400).json(error)
+        }
+    })
 }
