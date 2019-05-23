@@ -140,6 +140,20 @@ userModel.postrecursosEjecucionrealPrecio = (data,callback)=>{
            
     })
 }
+userModel.postrecursosEjecucionrealCodigo = (data,callback)=>{
+    return new Promise((resolve, reject) => { 
+        
+        pool.query('INSERT INTO recursos_ejecucionreal (fichas_id_ficha,tipo,descripcion,tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion) VALUES ? ON DUPLICATE key UPDATE tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion = VALUES(tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion)',[data],(error,res)=>{
+            if(error){
+                reject(error);
+            }else{
+                resolve(res);
+            }
+        })
+           
+    })
+}
+
 
 userModel.getrecursosEjecucionreal = (id_ficha,descripcion)=>{
     return new Promise((resolve, reject) => { 
