@@ -9,9 +9,9 @@ module.exports = function(app){
 			res.status(400).json(error)
 		}
 	})
-	app.get('/getUsuariosConAcceso',async(req,res)=>{
+	app.post('/getUsuariosConAcceso',async(req,res)=>{
 		try {
-			var getUsuariosConAcceso = await User.getUsuariosConAcceso()
+			var getUsuariosConAcceso = await User.getUsuariosConAcceso(req.body.id_ficha)
         	res.json(getUsuariosConAcceso);
 		} catch (error) {
 			res.status(400).json(error)

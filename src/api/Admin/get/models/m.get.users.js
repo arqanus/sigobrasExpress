@@ -12,9 +12,9 @@ userModel.getUsuarios = ()=>{
         })        
     })
 }
-userModel.getUsuariosConAcceso = ()=>{
+userModel.getUsuariosConAcceso = (id_ficha)=>{
     return new Promise((resolve, reject) => {
-        pool.query('SELECT usuarios.*, accesos.usuario,accesos.id_acceso FROM usuarios inner JOIN (SELECT MAX(id_acceso) id_acceso,accesos.Usuarios_id_usuario id_usuario FROM accesos GROUP BY accesos.Usuarios_id_usuario) acceso_max ON acceso_max.id_usuario = usuarios.id_usuario LEFT JOIN accesos ON accesos.id_acceso = acceso_max.id_acceso GROUP BY usuarios.id_usuario', (error,res)=>{
+        pool.query('select * from (SELECT usuarios.*, accesos.usuario, accesos.id_acceso,max(if(fichas_id_ficha =?,true,false)) seleccionado FROM usuarios INNER JOIN (SELECT MAX(id_acceso) id_acceso, accesos.Usuarios_id_usuario id_usuario FROM accesos GROUP BY accesos.Usuarios_id_usuario) acceso_max ON acceso_max.id_usuario = usuarios.id_usuario LEFT JOIN accesos ON accesos.id_acceso = acceso_max.id_acceso left join fichas_has_accesos on fichas_has_accesos.Accesos_id_acceso = accesos.id_acceso GROUP BY usuarios.id_usuario) usuarios_seleccionados where NOT seleccionado',[id_ficha],(error,res)=>{
             if(error){
                 reject(error);
             }else{

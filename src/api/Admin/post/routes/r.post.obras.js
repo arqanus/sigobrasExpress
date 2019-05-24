@@ -28,23 +28,28 @@ module.exports = (app) => {
     })
     app.post('/nuevaObra', async (req, res) => {
         try {
-            var id_ficha = await User.postFicha(req.body.ficha)
-            var plazoEjecucion = {
-                "FechaEjecucion": req.body.fecha_final,
-                "fichas_id_ficha": id_ficha,
-            }
+            var plazoEjecucion = req.body.plazoEjecucion
+            var Historial = req.body.Historial
+            var componentes = req.body.componentes
+
+            delete req.body.plazoEjecucion
+            delete req.body.Historial
+            delete req.body.componentes
+
+            var id_ficha = await User.postFicha(req.body)
+
+            plazoEjecucion.fichas_id_ficha = id_ficha
             var id_plazoEjecucion = await User.postPlazoEjecucion(plazoEjecucion)
-            var Historial = {
-                "Fichas_id_ficha": id_ficha,
-                "Estados_id_estado": req.body.id_estado,
-                "fecha_inicial": req.body.ficha.fecha_inicial
-            }
+
+            Historial.Fichas_id_ficha = id_ficha
             var id_historial = await User.postHistorialEstado(Historial)
-            for (let i = 0; i < req.body.componentes.length; i++) {
-                const componente = req.body.componentes[i];
+
+            for (let i = 0; i < componentes.length; i++) {
+                const componente = componentes[i];
                 componente.push(id_ficha)
             }
-            var id_componente = await User.postComponentes(req.body.componentes)
+            var id_componente = await User.postComponentes(componentes)
+
             res.json(id_ficha)
         } catch (error) {
             res.status(400).json(error)
@@ -66,6 +71,72 @@ module.exports = (app) => {
         }
     })
 
+    app.post('/nuevasPartidasLento', async (req, res) => {
+        try {
+            throw "error"
+            var estado = req.body.estado
+            var id_prioridad = await User2.getPrioridad()
+            id_prioridad = id_prioridad.id_prioridad
+            var id_iconoCategoria = await User2.getIconocategoria()
+            id_iconoCategoria = id_iconoCategoria.id_iconoCategoria
+            var id_prioridadesRecurso = await User2.getPrioridadesRecursos()
+            id_prioridadesRecurso = id_prioridadesRecurso.id_prioridadesRecurso
+            var id_iconoscategoriasrecurso = await User2.getIconocategoriaRecursos()
+            id_iconoscategoriasrecurso = id_iconoscategoriasrecurso.id_iconoscategoriasrecurso
+
+            for (let i = 0; i < req.body.partidas.length; i++) {
+                const partida = req.body.partidas[i];
+                var actividades = null
+                if (partida.actividades) {
+                    actividades = partida.actividades
+                    delete partida.actividades
+                }
+                var recursos = null
+                if (partida.recursos) {
+                    recursos = partida.recursos
+                    delete partida.recursos
+                }
+
+                //se agrega foreing keys de las prioridadeseiconospor defecto
+                partida.prioridades_id_prioridad = id_prioridad
+                partida.iconosCategorias_id_iconoCategoria = id_iconoCategoria
+                partida.prioridadesRecursos_id_prioridadesRecurso = id_prioridadesRecurso
+                partida.iconosCategoriasRecursos_id_iconoscategoriasrecurso = id_iconoscategoriasrecurso
+
+                //se ingresa partida
+                var id_partida = await User.postPartida(partida)
+                // console.log("id_partida",id_partida);
+
+                if (actividades) {
+                    for (let i = 0; i < actividades.length; i++) {
+                        const actividad = actividades[i];
+                        actividad.Partidas_id_partida = id_partida
+                        var id_actividad = await User.postActividad(actividad)
+                        // console.log("id_actividad",id_actividad);
+                        if (estado != "oficial") {
+                            var historialActividad = {
+                                estado: 'Partida Nueva',
+                                actividades_id_actividad: id_actividad
+                            }
+                            var historialActividad = User.posthistorialActividad(historialActividad)
+                        }
+                    }
+                }
+                if (recursos) {
+                    for (let i = 0; i < recursos.length; i++) {
+                        const recurso = recursos[i];
+                        recurso.Partidas_id_partida = id_partida
+                        var id_recurso = await User.postRecurso(recurso)
+                        // console.log("id_recurso",id_recurso);
+                    }
+                }
+            }
+            res.json("exito")
+        } catch (error) {
+            console.log(error);
+            res.status(400).json(error)
+        }
+    })
     app.post('/nuevasPartidas', async (req, res) => {
         try {
             var estado = req.body.estado
@@ -77,34 +148,89 @@ module.exports = (app) => {
             id_prioridadesRecurso = id_prioridadesRecurso.id_prioridadesRecurso
             var id_iconoscategoriasrecurso = await User2.getIconocategoriaRecursos()
             id_iconoscategoriasrecurso = id_iconoscategoriasrecurso.id_iconoscategoriasrecurso
+            var partidas = []
             for (let i = 0; i < req.body.partidas.length; i++) {
                 const partida = req.body.partidas[i];
-                partida.data.prioridades_id_prioridad = id_prioridad
-                partida.data.iconosCategorias_id_iconoCategoria = id_iconoCategoria
-                partida.data.prioridadesRecursos_id_prioridadesRecurso = id_prioridadesRecurso
-                partida.data.iconosCategoriasRecursos_id_iconoscategoriasrecurso = id_iconoscategoriasrecurso
-                var id_partida  = await User.postPartida(partida.data)
-                if(partida.actividades){
-                    for (let i = 0; i < partida.actividades.length; i++) {
-                        const actividad = partida.actividades[i];
-                        actividad.Partidas_id_partida = id_partida
-                        var id_actividad = await User.postActividad(actividad)
-                        if (estado != "oficial") {
-                            var historialActividad = {
-                                estado:'Partida Nueva',
-                                actividades_id_actividad:id_actividad
-                            }
-                            User.posthistorialActividad(historialActividad)
+                partidas.push(
+                    [
+                        partida.tipo,
+                        partida.item,
+                        partida.descripcion,
+                        partida.metrado,
+                        partida.unidad_medida,
+                        partida.costo_unitario,
+                        partida.equipo,
+                        partida.rendimiento,
+                        partida.componentes_id_componente,
+                        id_prioridad,
+                        id_iconoCategoria,
+                        id_prioridadesRecurso,
+                        id_iconoscategoriasrecurso
+                    ]
+                )
+            }
+            var id_partida = await User.postPartidas(partidas)
+            var actividades = []
+            var recursos = []
+            for (let i = 0; i < req.body.partidas.length; i++) {
+                const partida = req.body.partidas[i];
+                if (partida.tipo == "partida") {
+                    //actividades
+                    for (let j = 0; j < partida.actividades.length; j++) {
+                        const actividad = partida.actividades[j];
+                        //se revisa si el nombre de la actividad esta vacio
+                        if (!actividad.nombre && actividades[actividades.length - 1]) {
+                            actividad.nombre = actividades[actividades.length - 1][1]
                         }
+                        actividades.push(
+                            [
+                                actividad.tipo,
+                                actividad.nombre,
+                                actividad.veces,
+                                actividad.largo,
+                                actividad.ancho,
+                                actividad.alto,
+                                actividad.parcial,
+                                id_partida
+                            ]
+                        )
+                    }
+                    //recursos
+                    for (let j = 0; j < partida.recursos.length; j++) {
+                        const recurso = partida.recursos[j];
+                        recursos.push(
+                            [
+                                recurso.tipo,
+                                recurso.codigo,
+                                recurso.descripcion,
+                                recurso.unidad,
+                                recurso.cuadrilla,
+                                recurso.cantidad,
+                                recurso.precio,
+                                recurso.parcial,
+                                id_partida
+                            ]
+                        )
                     }
                 }
-                if(partida.recursos){
-                    for (let i = 0; i < partida.recursos.length; i++) {
-                        const recurso = partida.recursos[i];
-                        recurso.Partidas_id_partida = id_partida
-                        var id_recurso = await User.postRecurso(recurso)  
-                    }
+                id_partida++
+            }
+            var id_actividad = await User.postActividades(actividades)
+            console.log("id_actividad", id_actividad);
+            var id_recurso = await User.postRecursos(recursos)
+            console.log("id_recurso", id_recurso);
+            if (estado != "oficial") {
+                var historialActividad = []
+                for (let i = 0; i < actividades.length; i++) {
+                    historialActividad.push(
+                        [
+                            'Partida Nueva',
+                            id_actividad
+                        ]
+                    )
+                    id_actividad++
                 }
+                var id_historialActividad = await User.posthistorialActividades(historialActividad)
             }
             res.json("exito")
         } catch (error) {
@@ -112,6 +238,7 @@ module.exports = (app) => {
             res.status(400).json(error)
         }
     })
+
 
     app.post('/postAvanceActividadPorObra', async (req, res) => {
         try {
