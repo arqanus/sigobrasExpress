@@ -104,9 +104,34 @@ userModel.postPartida = (data) => {
 		})
 	})
 }
+userModel.postPartidas = (data) => {
+	return new Promise((resolve, reject) => {
+		pool.query('INSERT INTO partidas (tipo, item, descripcion, metrado, unidad_medida, costo_unitario, equipo, rendimiento, componentes_id_componente,prioridades_id_prioridad,iconosCategorias_id_iconoCategoria,prioridadesRecursos_id_prioridadesRecurso,iconosCategoriasRecursos_id_iconoscategoriasrecurso) values ?', [data], (error, res) => {
+			if (error) { 
+				console.log(error);
+				reject(error.code); 
+			}
+			else {
+				resolve(res.insertId);
+			}
+		})
+	})
+}
 userModel.postActividad = (data) => {
 	return new Promise((resolve, reject) => {
 		pool.query('insert into actividades set ?', [data], (error, res) => {
+			if (error) { 
+				reject(error.code); 
+			}
+			else {
+				resolve(res.insertId);
+			}
+		})
+	})
+}
+userModel.postActividades = (data) => {
+	return new Promise((resolve, reject) => {
+		pool.query('insert into actividades  (tipo, nombre, veces, largo, ancho, alto, parcial, Partidas_id_partida) values ?', [data], (error, res) => {
 			if (error) { 
 				reject(error.code); 
 			}
@@ -129,7 +154,19 @@ userModel.postRecurso = (data) => {
 		})
 	})
 }
-
+userModel.postRecursos = (data) => {
+	return new Promise((resolve, reject) => {
+		pool.query('INSERT INTO recursos( tipo, codigo, descripcion, unidad, cuadrilla, cantidad, precio, parcial, Partidas_id_partida) values ?', [data], (error, res) => {
+			if (error) { 
+				console.log(error);
+				reject(error.code); 
+			}
+			else {
+				resolve(res.insertId);
+			}
+		})
+	})
+}
 
 userModel.postmeta = (data) => {
 	return new Promise((resolve, reject) => {
@@ -160,6 +197,19 @@ userModel.postHistorialComponentes = (data) => {
 userModel.posthistorialActividad = (data) => {
 	return new Promise((resolve, reject) => {
 		pool.query('insert into historialActividades set ?', [data], (error, res) => {
+			if (error) { 
+				console.log(error);
+				reject(error.code); 
+			}
+			else {
+				resolve(res.insertId);
+			}
+		})
+	})
+}
+userModel.posthistorialActividades = (data) => {
+	return new Promise((resolve, reject) => {
+		pool.query('insert into historialActividades (estado, actividades_id_actividad) values ?', [data], (error, res) => {
 			if (error) { 
 				console.log(error);
 				reject(error.code); 

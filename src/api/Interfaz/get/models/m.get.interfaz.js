@@ -98,16 +98,13 @@ userModel.getMenu = (data,callback)=>{
                             }else{
                                 element.submenus.splice(0,0,
                                     {
-                                        "nombreMenu": "Paralizado ",
+                                        "nombreMenu": "MDdiario",
                                         "ruta": "/ParalizacionObra",
                                         "nombrecomponente":"ParalizacionObra"
                                     }
                                 )
 
                             }
-                            
-                            
-
                         }else{
 
                         }

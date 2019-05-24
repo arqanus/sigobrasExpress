@@ -114,4 +114,12 @@ module.exports = function (app) {
 		}
 
 	})
+	app.post('/getChartRendimientoUsuario', async (req, res) => {
+		try {
+			var data = await User.getChartRendimientoUsuario(req.body.id_acceso)
+			res.json(data)
+		} catch (error) {
+			res.status(400).json(error)
+		}
+	})
 }
