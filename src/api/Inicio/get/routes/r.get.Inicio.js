@@ -75,6 +75,8 @@ module.exports = (app) => {
 				avance_Acumulado = valorizacionCorte.valor_total
 			}else{
 				corte = "vacio"
+				periodoCorte = {}
+				periodoCorte.fecha_final = periodos[0].fecha_inicial
 			}
 			var cronograma = await User.getcronogramaInicio(corte, req.body.id_ficha, periodoCorte.fecha_final)
 			if (cronograma == "vacio") {
