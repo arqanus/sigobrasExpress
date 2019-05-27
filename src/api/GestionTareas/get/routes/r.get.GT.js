@@ -122,4 +122,20 @@ module.exports = function (app) {
 			res.status(400).json(error)
 		}
 	})
+	app.post('/getChartRendimientoUsuarioAnyos', async (req, res) => {
+		try {
+			var data = await User.getChartRendimientoUsuarioAnyos(req.body.id_acceso)
+			res.json(data)
+		} catch (error) {
+			res.status(400).json(error)
+		}
+	})
+	app.post('/getUsuarioTareasDetalles', async (req, res) => {
+		try {
+			var data = await User.getUsuarioTareasDetalles(req.body.id_acceso)
+			res.json(data)
+		} catch (error) {
+			res.status(400).json(error)
+		}
+	})
 }

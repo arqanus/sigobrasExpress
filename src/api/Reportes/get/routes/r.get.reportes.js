@@ -2,6 +2,8 @@ const User = require('../models/m.get.reportes');
 const User2 = require('../../../ProcesosFisicos/get/models/m.get.valGeneral');
 const User3 = require('../../../Interfaz/get/models/m.get.interfaz');
 const User4 = require('../../../ProcesosFisicos/get/models/m.get.historial');
+const User5 = require('../../../Inicio/get/models/m.get.Inicio');
+const tools = require('../../../../tools/format')
 module.exports = function (app) {
 	//cabecera
 	app.post('/getAnyoReportes', async (req, res) => {
@@ -148,42 +150,108 @@ module.exports = function (app) {
 		}
 	})
 	//6.9 avance comparativ diagraa degantt
-	app.post('/getCortes', async (req, res) => {
-		try {
-			var data = await User.getCortes(req.body.id_ficha)
-			res.json(data)
-		} catch (error) {
-			res.status(400).json(error)
-		}
-	})
+	// app.post('/getCortes', async (req, res) => {
+	// 	try {
+	// 		var data = await User.getCortes(req.body.id_ficha)
+	// 		res.json(data)
+	// 	} catch (error) {
+	// 		res.status(400).json(error)
+	// 	}
+	// })
 	app.post('/avanceComparativoDiagramaGantt', async (req, res) => {
 		try {
-			var data = await User.histogramaAvanceObra(req.body.id_ficha, req.body.fecha_inicial, req.body.fecha_final)
-			res.json(data)
+			var corte = await User5.getUltimoCorte(req.body.id_ficha)
+			var fecha_inicial = tools.fechaLargaCorta(new Date(corte.fecha_inicial))
+			var fecha_final = tools.fechaLargaCorta(new Date(corte.fecha_final))
+			var avance = await User5.getAvanceGestionAnterior(req.body.id_ficha, corte.fecha_final)
+			corte.programado_monto = avance.valor_total || 0
+			corte.programado_porcentaje = avance.porcentaje || 0
+			corte.fisico_monto = avance.valor_total || 0
+			corte.fisico_porcentaje = avance.porcentaje || 0
+			corte.financiero_porcentaje = (corte.financiero_monto / avance.g_total_presu * 100)
+			var avance_Acumulado = 0
+			if (corte.codigo == "C") {
+				avance_Acumulado = corte.fisico_monto
+			}
+			var cronograma = await User5.getcronogramaInicio(corte, req.body.id_ficha, corte.fecha_final)
+			if (cronograma == "vacio") {
+				cronograma = {}
+				cronograma.programado_monto_total
+				cronograma.programado_porcentaje_total
+				cronograma.fisico_monto_total
+				cronograma.fisico_porcentaje_total
+				cronograma.financiero_monto_total
+				cronograma.financiero_porcentaje_total
+				cronograma.grafico_programado = []
+				cronograma.grafico_fisico = []
+				cronograma.grafico_financiero = []
+				cronograma.grafico_periodos = []
+				cronograma.data = []
+			}else{
+				fecha_final = cronograma.data[cronograma.data.length-1].fecha
+			}
+			cronograma.fecha_inicial = fecha_inicial
+			cronograma.fecha_final = fecha_final
+			cronograma.avance_Acumulado = avance_Acumulado
+			cronograma.fechaActual = tools.fechaActual()
+			res.json(cronograma)
 		} catch (error) {
+			console.log(error);			
 			res.status(400).json(error)
 		}
 	})
 	//6.10 histograma del avance de obras curva s
 	app.post('/histogramaAvanceObra', async (req, res) => {
 		try {
-			var data = await User.histogramaAvanceObra(req.body.id_ficha, req.body.fecha_inicial, req.body.fecha_final)
-			res.json(data)
+			var corte = await User5.getUltimoCorte(req.body.id_ficha)
+			var fecha_inicial = tools.fechaLargaCorta(new Date(corte.fecha_inicial))
+			var fecha_final = tools.fechaLargaCorta(new Date(corte.fecha_final))
+			var avance = await User5.getAvanceGestionAnterior(req.body.id_ficha, corte.fecha_final)
+			corte.programado_monto = avance.valor_total || 0
+			corte.programado_porcentaje = avance.porcentaje || 0
+			corte.fisico_monto = avance.valor_total || 0
+			corte.fisico_porcentaje = avance.porcentaje || 0
+			corte.financiero_porcentaje = (corte.financiero_monto / avance.g_total_presu * 100)
+			var avance_Acumulado = 0
+			if (corte.codigo == "C") {
+				avance_Acumulado = corte.fisico_monto
+			}
+			var cronograma = await User5.getcronogramaInicio(corte, req.body.id_ficha, corte.fecha_final)
+			if (cronograma == "vacio") {
+				cronograma = {}
+				cronograma.programado_monto_total
+				cronograma.programado_porcentaje_total
+				cronograma.fisico_monto_total
+				cronograma.fisico_porcentaje_total
+				cronograma.financiero_monto_total
+				cronograma.financiero_porcentaje_total
+				cronograma.grafico_programado = []
+				cronograma.grafico_fisico = []
+				cronograma.grafico_financiero = []
+				cronograma.grafico_periodos = []
+				cronograma.data = []
+			}else{
+				fecha_final = cronograma.data[cronograma.data.length-1].fecha
+			}
+			cronograma.fecha_inicial = fecha_inicial
+			cronograma.fecha_final = fecha_final
+			cronograma.avance_Acumulado = avance_Acumulado
+			cronograma.fechaActual = tools.fechaActual()
+			res.json(cronograma)
 		} catch (error) {
+			console.log(error);			
 			res.status(400).json(error)
 		}
 	})
 	//6.11 proyeccion de trabajos prosxioms mes cronograma
 	//6.12 informe mensual
-	app.post('/informeControlEjecucionObras', (req, res) => {
-
+	app.post('/informeControlEjecucionObras', async(req, res) => {
 		try {
-			var data = User.getinformeControlEjecucionObras(req.body.id_ficha)
+			var data = await User.getinformeControlEjecucionObras(req.body.id_ficha)
 			res.json(data)
 		} catch (error) {
 			res.status(400).json(error)
 		}
-
 	})
 	app.post('/getcronograma', (req, res) => {
 		try {
