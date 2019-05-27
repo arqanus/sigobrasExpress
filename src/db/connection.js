@@ -11,15 +11,15 @@ var pool = mysql.createPool({
     // password: 'kaido',    
     // database: 'sigobras_db',
     // //master_test
-    // host: 'localhost',
-    // user: 'kaido',
-    // password: 'kaido',    
-    // database: 'sigobras_db_test',
-    // //dev_test
-    host: '192.168.0.4',
+    host: 'localhost',
     user: 'kaido',
     password: 'kaido',    
     database: 'sigobras_db_test',
+    // //dev_test
+    // host: '192.168.0.4',
+    // user: 'kaido',
+    // password: 'kaido',    
+    // database: 'sigobras_db_test',
     // //mish
     // host: '192.168.0.4',
     // user: 'mish',
