@@ -16,7 +16,7 @@ module.exports = function (app) {
 	})
 	app.post('/getPeriodsByAnyo', async (req, res) => {
 		try {
-			var periodos = await User2.getValGeneralPeriodos(req.body.id_ficha, req.body.anyo)
+			var periodos = await User2.getValGeneralPeriodos(req.body.id_ficha, req.body.anyo,"FALSE")
 			res.json(periodos)
 		} catch (error) {
 			res.status(400).json(error)

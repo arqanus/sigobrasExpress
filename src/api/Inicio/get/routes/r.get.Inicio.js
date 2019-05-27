@@ -1,5 +1,6 @@
 const User = require('../models/m.get.Inicio');
 const tools = require('../../../../tools/format')
+const User2 = require('../../../ProcesosFisicos/get/models/m.get.valGeneral');
 
 module.exports = (app) => {
 	app.post('/PGlistaObras', async (req, res) => {
@@ -10,7 +11,7 @@ module.exports = (app) => {
 				var avance_financiero = await User.getAvanceFinancieroCortes(obra.id_ficha)
 				avance_financiero = avance_financiero.avance_financiero
 				obra.avance_financiero += avance_financiero
-				obra.porcentaje_financiero = obra.avance_financiero/obra.g_total_presu*100
+				obra.porcentaje_financiero = obra.avance_financiero / obra.g_total_presu * 100
 				//format
 				obra.g_total_presu = tools.formatoSoles(obra.g_total_presu)
 				obra.avance_financiero = tools.formatoSoles(obra.avance_financiero)
@@ -44,20 +45,34 @@ module.exports = (app) => {
 	});
 	app.post('/getcronogramaInicio', async (req, res) => {
 		try {
-			var corte = await User.getUltimoCorte(req.body.id_ficha)
-			var fecha_inicial = tools.fechaLargaCorta(new Date(corte.fecha_inicial))
-			var fecha_final = tools.fechaLargaCorta(new Date(corte.fecha_final))
-			var avance = await User.getAvanceGestionAnterior(req.body.id_ficha, corte.fecha_final)
-			corte.programado_monto = avance.valor_total || 0
-			corte.programado_porcentaje = avance.porcentaje || 0
-			corte.fisico_monto = avance.valor_total || 0
-			corte.fisico_porcentaje = avance.porcentaje || 0
-			corte.financiero_porcentaje = (corte.financiero_monto / avance.g_total_presu * 100)
-			var avance_Acumulado = 0
-			if (corte.codigo == "C") {
-				avance_Acumulado = corte.fisico_monto
+			var periodos = await User2.getValGeneralPeriodos(req.body.id_ficha, 101, "TRUE")
+			//buscamos corte
+			var periodoCorte = null
+			for (let i = periodos.length - 1; i >= 0; i--) {
+				const periodo = periodos[i];
+				if (periodo.codigo == "C") {
+					periodoCorte = periodo
+					break;
+				}
 			}
-			var cronograma = await User.getcronogramaInicio(corte, req.body.id_ficha, corte.fecha_final)
+			var valorizacionCorte = null
+			var corte = {}
+			if (periodoCorte) {
+				valorizacionCorte = await User2.getValGeneralResumenPeriodo(req.body.id_ficha, periodoCorte.fecha_inicial, periodoCorte.fecha_final,false)
+				var financiero_monto = await User.getFinancieroMonto(req.body.id_ficha)
+				corte.id_historialEstado = 123
+				corte.codigo = "C"
+				corte.fecha = tools.fechaLargaCorta(new Date(periodoCorte.fecha_final))
+				corte.mes = 0
+				corte.anyo = 0				
+				corte.programado_monto = valorizacionCorte.valor_total
+				corte.programado_porcentaje = valorizacionCorte.porcentaje_total
+				corte.fisico_monto = valorizacionCorte.valor_total
+				corte.fisico_porcentaje = valorizacionCorte.porcentaje_total
+				corte.financiero_monto = financiero_monto.financiero_monto
+				corte.financiero_porcentaje = financiero_monto.financiero_porcentaje
+			}
+			var cronograma = await User.getcronogramaInicio(corte, req.body.id_ficha, periodoCorte.fecha_final)
 			if (cronograma == "vacio") {
 				cronograma = {}
 				cronograma.programado_monto_total
@@ -71,15 +86,22 @@ module.exports = (app) => {
 				cronograma.grafico_financiero = []
 				cronograma.grafico_periodos = []
 				cronograma.data = []
-			}else{
-				fecha_final = cronograma.data[cronograma.data.length-1].fecha
+			} else {
+				// fecha_final = cronograma.data[cronograma.data.length - 1].fecha
 			}
-			cronograma.fecha_inicial = fecha_inicial
-			cronograma.fecha_final = fecha_final
-			cronograma.avance_Acumulado = avance_Acumulado
+			// cronograma.fecha_inicial = fecha_inicial
+			// cronograma.fecha_final = fecha_final
+			// cronograma.avance_Acumulado = avance_Acumulado
 			cronograma.fechaActual = tools.fechaActual()
-			res.json(cronograma)
+			res.json(
+				{
+					cronograma,
+					periodos,			
+					corte				
+				}
+			)
 		} catch (error) {
+			console.log(error);
 			res.status(204).json(error)
 		}
 	})

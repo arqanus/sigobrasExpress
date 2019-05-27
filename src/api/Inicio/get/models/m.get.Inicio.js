@@ -110,28 +110,9 @@ userModel.getUsuariosByCargo = (id_ficha, id_cargo) => {
     })
   })
 }
-userModel.getUltimoCorte = (id_ficha) => {
+userModel.getFinancieroMonto = (id_ficha) => {
   return new Promise((resolve, reject) => {
-    pool.query("(SELECT 'C' codigo, DATE_FORMAT(historialestados.fecha_inicial, '%Y-%m-%d') fecha, DATE_FORMAT(historialestados.fecha_inicial, '%b.') mes, DATE_FORMAT(historialestados.fecha_inicial, '%Y') anyo, 0 programado_monto, 0 programado_porcentaje, 0 fisico_monto, 0 fisico_porcentaje, historialestados.monto financiero_monto, 0 financiero_porcentaje, historialestados.id_historialEstado, historialestados.fecha_inicial, historialestados.fecha_final FROM historialestados LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado WHERE estados.codigo = 'C' AND historialestados.Fichas_id_ficha = ? ORDER BY historialestados.id_historialEstado DESC LIMIT 1) UNION (SELECT 'I' codigo, 0 fecha, 0 mes, 0 anyo, 0 programado_monto, 0 programado_porcentaje, 0 fisico_monto, 0 fisico_porcentaje, 0 financiero_monto, 0 financiero_porcentaje, 0 id_historialEstado, fichas.fecha_inicial fecha_inicial, fichas.fecha_inicial fecha_final FROM fichas WHERE fichas.id_ficha = ?)", [id_ficha, id_ficha], (error, res) => {
-      if (error) {
-        reject(error);
-      } else if (res.length == 0) {
-        resolve("vacio");
-      } else {
-        for (let i = 0; i < res.length; i++) {
-          const fila = res[i];
-          // console.log("fila",fila);
-          fila.fecha_inicial = fila.fecha_inicial.toLocaleString()
-          fila.fecha_final = fila.fecha_final.toLocaleString()
-        }
-        resolve(res[0]);
-      }
-    })
-  })
-}
-userModel.getAvanceGestionAnterior = (id_ficha, fecha_final) => {
-  return new Promise((resolve, reject) => {
-    pool.query("SELECT COALESCE(SUM(periodo_actual.valor), 0) valor_total, COALESCE(SUM(periodo_actual.valor), 0) / tb_costo_directo.costo_directo * 100 porcentaje, fichas.g_total_presu FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN (SELECT componentes.fichas_id_ficha, SUM(componentes.presupuesto) costo_directo FROM componentes GROUP BY componentes.fichas_id_ficha) tb_costo_directo ON tb_costo_directo.fichas_id_ficha = componentes.fichas_id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN (SELECT partidas.id_partida, CAST(SUM(avanceactividades.valor) AS DECIMAL (20 , 2 )) * costo_unitario valor FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.fecha < ? AND historialactividades.estado IS NULL GROUP BY partidas.id_partida) periodo_actual ON periodo_actual.id_partida = partidas.id_partida WHERE componentes.fichas_id_ficha = ? GROUP BY componentes.fichas_id_ficha", [fecha_final, id_ficha], (error, res) => {
+    pool.query("SELECT historialestados.monto financiero_monto, historialestados.monto / fichas.g_total_presu * 100 financiero_porcentaje FROM historialestados LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado LEFT JOIN fichas ON fichas.id_ficha = historialestados.Fichas_id_ficha WHERE estados.codigo = 'C' AND historialestados.Fichas_id_ficha = ? LIMIT 1", [id_ficha], (error, res) => {
       if (error) {
         reject(error);
       } else if (res.length == 0) {
