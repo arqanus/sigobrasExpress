@@ -318,8 +318,8 @@ userModel.getChartRendimientoUsuario = (id_acceso) => {
                     }
                     if (proyectos_nombres.indexOf(dato.nombre) === -1) {
                         series.push({
-                            name:dato.nombre,
-                            data:[] 
+                            name: dato.nombre,
+                            data: []
                         })
                         proyectos_nombres.push(dato.nombre)
                     }
@@ -329,28 +329,68 @@ userModel.getChartRendimientoUsuario = (id_acceso) => {
                     const cat = categories[i];
                     for (let j = 0; j < series.length; j++) {
                         const serie = series[j];
-                        serie.data.push(0)                        
+                        serie.data.push(0)
                     }
                 }
                 //lenando data
-               
+
                 for (let i = 0; i < res.length; i++) {
                     const dato = res[i];
                     for (let j = 0; j < series.length; j++) {
                         const serie = series[j];
-                        if(serie.name == dato.nombre){
+                        if (serie.name == dato.nombre) {
                             var index = meses_numero.indexOf(dato.mes_numero)
                             serie.data[index] = dato.tareas_cantidad
                             break
                         }
                     }
-                    
+
                 }
-               
+
                 return resolve({
                     series,
                     categories
                 })
+            }
+        })
+    })
+}
+userModel.getChartRendimientoUsuarioAnyos = (id_acceso) => {
+    return new Promise((resolve, reject) => {
+        pool.query("SELECT YEAR(fecha_final) anyo FROM ((SELECT fecha_final FROM tareas LEFT JOIN tareas_has_accesos ON tareas_has_accesos.tareas_id_tarea = tareas.id_tarea WHERE receptor = ? AND avance = 100) UNION (SELECT fecha_final FROM tareas LEFT JOIN tareas_has_accesos ON tareas_has_accesos.tareas_id_tarea = tareas.id_tarea LEFT JOIN proyectos ON proyectos.id_proyecto = tareas.proyectos_id_proyecto WHERE receptor = ? AND avance < 100 AND tareas.fecha_final < NOW())) rendimiento_usuario GROUP BY YEAR(fecha_final)", [id_acceso, id_acceso], (err, res) => {
+            if (err) {
+                return reject(err)
+            } else {
+                
+                return resolve(res)
+            }
+        })
+    })
+}
+userModel.getUsuarioTareasDetalles = (id_acceso) => {
+    return new Promise((resolve, reject) => {
+        pool.query("select * from usuarios", [id_acceso, id_acceso], (err, res) => {
+            if (err) {
+                return reject(err)
+            } else {
+                return resolve(
+                    {
+                        nombre: "ang 95",
+                        apellido: "apaza",
+                        foto: "/static/Sistema/user_image_default.jpg",
+                        obrasAcargo: [
+                            {
+                                idObra: 12,
+                                codigoObra: "0001"
+                            }
+                        ],
+                        cargo: "residente",
+                        calificacionEstrellas: [1, 1, 1, 0, 0],
+                        tareasConcluidas: 10,
+                        tareasVencidas: 50,
+                        tareasDesdeHastaAnios: "2016 - 2019"
+                    }
+                )
             }
         })
     })
