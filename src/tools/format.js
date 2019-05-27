@@ -58,9 +58,9 @@ userModel.rome = function rome(N,s,b,a,o,t){
         s='IVXLCDM'.charAt(o>2?b+N-(N&=~1)+(o=1):b)+s;
     return Array(t+1).join('M')+s;
 }
-userModel.monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-"Julio", "Agosto", "Setiembre", "Octubre", "Noviembre", "Diciembre"
-];
+userModel.monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio","Julio", "Agosto", "Setiembre", "Octubre", "Noviembre", "Diciembre"];
+userModel.shortMonthNames = ["ene", "feb", "mar", "abr", "may", "jun","jul", "ago", "sep", "oct", "nov", "dic"];
+
 userModel.weekDay = ["Do","Lu","Ma","Mi","Ju","Vi","Sa"]
 userModel.ColoresRandom =function ColoresRandom() {
 
