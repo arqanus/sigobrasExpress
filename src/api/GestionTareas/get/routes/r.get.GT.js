@@ -133,6 +133,8 @@ module.exports = function (app) {
 	app.post('/getUsuarioTareasDetalles', async (req, res) => {
 		try {
 			var data = await User.getUsuarioTareasDetalles(req.body.id_acceso)
+			var obrasAcargo = await User.getObrasAcargo(req.body.id_acceso)
+			data.obrasAcargo = obrasAcargo
 			res.json(data)
 		} catch (error) {
 			res.status(400).json(error)
