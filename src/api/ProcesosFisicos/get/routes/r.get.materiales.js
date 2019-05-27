@@ -33,6 +33,22 @@ module.exports = function(app){
 			res.status(400).json(error);	
 		}
 	})
+	app.post('/getmaterialesResumenEjecucionRealCodigos',async(req,res)=>{
+		try {
+			var data = await  User.getmaterialesResumenEjecucionRealCodigos(req.body.id_ficha,req.body.tipo)
+			res.json(data)
+		} catch (error) {
+			res.status(400).json(error);	
+		}
+	})
+	app.post('/getmaterialesResumenEjecucionRealCodigosData',async(req,res)=>{
+		try {
+			var data = await  User.getmaterialesResumenEjecucionRealCodigosData(req.body.id_ficha,req.body.tipo,req.body.codigo)
+			res.json(data)
+		} catch (error) {
+			res.status(400).json(error);	
+		}
+	})
 	app.post('/getmaterialescomponentesChart',async(req,res)=>{
 		try {
 			var data = await  User.getmaterialescomponentesChart(req.body.id_componente)
