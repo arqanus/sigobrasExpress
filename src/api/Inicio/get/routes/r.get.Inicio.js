@@ -64,8 +64,8 @@ module.exports = (app) => {
 				corte.id_historialEstado = financiero_monto.id_historialEstado
 				corte.codigo = "C"
 				corte.fecha = tools.fechaLargaCorta(new Date(periodoCorte.fecha_final))
-				corte.mes = 0
-				corte.anyo = 0
+				corte.mes = periodoCorte.mes+"."
+				corte.anyo = periodoCorte.anyo
 				corte.programado_monto = valorizacionCorte.valor_total
 				corte.programado_porcentaje = valorizacionCorte.porcentaje_total
 				corte.fisico_monto = valorizacionCorte.valor_total
