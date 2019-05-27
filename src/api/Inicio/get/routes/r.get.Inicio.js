@@ -92,6 +92,7 @@ module.exports = (app) => {
 				cronograma.grafico_financiero = []
 				cronograma.grafico_periodos = []
 				cronograma.data = []
+				fecha_final = tools.fechaLargaCorta(new Date(periodoCorte.fecha_final))
 			} else {
 				fecha_final = cronograma.data[cronograma.data.length - 1].fecha
 			}
