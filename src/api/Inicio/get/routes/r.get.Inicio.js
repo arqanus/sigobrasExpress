@@ -57,48 +57,48 @@ module.exports = (app) => {
 			}
 			var valorizacionCorte = null
 			var corte = {}
+			var avance_Acumulado = 0
 			if (periodoCorte) {
-				valorizacionCorte = await User2.getValGeneralResumenPeriodo(req.body.id_ficha, periodoCorte.fecha_inicial, periodoCorte.fecha_final,false)
+				valorizacionCorte = await User2.getValGeneralResumenPeriodo(req.body.id_ficha, periodoCorte.fecha_inicial, periodoCorte.fecha_final, false)
 				var financiero_monto = await User.getFinancieroMonto(req.body.id_ficha)
-				corte.id_historialEstado = 123
+				corte.id_historialEstado = financiero_monto.id_historialEstado
 				corte.codigo = "C"
 				corte.fecha = tools.fechaLargaCorta(new Date(periodoCorte.fecha_final))
 				corte.mes = 0
-				corte.anyo = 0				
+				corte.anyo = 0
 				corte.programado_monto = valorizacionCorte.valor_total
 				corte.programado_porcentaje = valorizacionCorte.porcentaje_total
 				corte.fisico_monto = valorizacionCorte.valor_total
 				corte.fisico_porcentaje = valorizacionCorte.porcentaje_total
 				corte.financiero_monto = financiero_monto.financiero_monto
 				corte.financiero_porcentaje = financiero_monto.financiero_porcentaje
+				avance_Acumulado = valorizacionCorte.valor_total
+			}else{
+				corte = "vacio"
 			}
 			var cronograma = await User.getcronogramaInicio(corte, req.body.id_ficha, periodoCorte.fecha_final)
 			if (cronograma == "vacio") {
 				cronograma = {}
-				cronograma.programado_monto_total
-				cronograma.programado_porcentaje_total
-				cronograma.fisico_monto_total
-				cronograma.fisico_porcentaje_total
-				cronograma.financiero_monto_total
-				cronograma.financiero_porcentaje_total
+				cronograma.programado_monto_total = 0
+				cronograma.programado_porcentaje_total= 0
+				cronograma.fisico_monto_total = 0
+				cronograma.fisico_porcentaje_total= 0
+				cronograma.financiero_monto_total= 0
+				cronograma.financiero_porcentaje_total= 0
 				cronograma.grafico_programado = []
 				cronograma.grafico_fisico = []
 				cronograma.grafico_financiero = []
 				cronograma.grafico_periodos = []
 				cronograma.data = []
 			} else {
-				// fecha_final = cronograma.data[cronograma.data.length - 1].fecha
+				fecha_final = cronograma.data[cronograma.data.length - 1].fecha
 			}
-			// cronograma.fecha_inicial = fecha_inicial
-			// cronograma.fecha_final = fecha_final
-			// cronograma.avance_Acumulado = avance_Acumulado
+			cronograma.fecha_inicial = tools.fechaLargaCorta(new Date(periodoCorte.fecha_final))
+			cronograma.fecha_final = fecha_final
+			cronograma.avance_Acumulado = avance_Acumulado
 			cronograma.fechaActual = tools.fechaActual()
 			res.json(
-				{
-					cronograma,
-					periodos,			
-					corte				
-				}
+				cronograma
 			)
 		} catch (error) {
 			console.log(error);

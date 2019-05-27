@@ -112,7 +112,7 @@ userModel.getUsuariosByCargo = (id_ficha, id_cargo) => {
 }
 userModel.getFinancieroMonto = (id_ficha) => {
   return new Promise((resolve, reject) => {
-    pool.query("SELECT historialestados.monto financiero_monto, historialestados.monto / fichas.g_total_presu * 100 financiero_porcentaje FROM historialestados LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado LEFT JOIN fichas ON fichas.id_ficha = historialestados.Fichas_id_ficha WHERE estados.codigo = 'C' AND historialestados.Fichas_id_ficha = ? LIMIT 1", [id_ficha], (error, res) => {
+    pool.query("SELECT historialestados.monto financiero_monto, historialestados.monto / fichas.g_total_presu * 100 financiero_porcentaje,historialestados.id_historialEstado FROM historialestados LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado LEFT JOIN fichas ON fichas.id_ficha = historialestados.Fichas_id_ficha WHERE estados.codigo = 'C' AND historialestados.Fichas_id_ficha = ? LIMIT 1", [id_ficha], (error, res) => {
       if (error) {
         reject(error);
       } else if (res.length == 0) {
@@ -128,10 +128,10 @@ userModel.getcronogramaInicio = (corte, id_ficha, fecha_inicial) => {
     pool.query("SELECT 'E' codigo, DATE_FORMAT(cronogramamensual.mes, '%Y-%m-%d') fecha, DATE_FORMAT(cronogramamensual.mes, '%b.') mes, DATE_FORMAT(cronogramamensual.mes, '%Y') anyo, programado programado_monto, programado / tb_presupuesto.presupuesto * 100 programado_porcentaje, COALESCE(tb_fisico.fisico_monto, 0) fisico_monto, COALESCE(tb_fisico.fisico_monto, 0) / tb_presupuesto.presupuesto * 100 fisico_porcentaje, COALESCE(financieroEjecutado, 0) financiero_monto, COALESCE(financieroEjecutado, 0) / fichas.g_total_presu * 100 financiero_porcentaje FROM cronogramamensual LEFT JOIN (SELECT componentes.fichas_id_ficha, avanceactividades.fecha, DATE_FORMAT(avanceactividades.fecha, '%m ') mes, DATE_FORMAT(avanceactividades.fecha, '%Y ') anyo, SUM(avanceactividades.valor * partidas.costo_unitario) fisico_monto FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND avanceactividades.fecha >= ? GROUP BY componentes.fichas_id_ficha , DATE_FORMAT(avanceactividades.fecha, '%m %Y') ORDER BY avanceactividades.fecha) tb_fisico ON tb_fisico.fichas_id_ficha = cronogramamensual.fichas_id_ficha AND DATE_FORMAT(tb_fisico.fecha, '%m %Y') = DATE_FORMAT(cronogramamensual.mes, '%m %Y') LEFT JOIN (SELECT componentes.fichas_id_ficha, SUM(componentes.presupuesto) presupuesto FROM componentes GROUP BY componentes.fichas_id_ficha) tb_presupuesto ON tb_presupuesto.fichas_id_ficha = cronogramamensual.fichas_id_ficha left join fichas on fichas.id_ficha = cronogramamensual.fichas_id_ficha WHERE cronogramamensual.fichas_id_ficha = ? AND DATE_FORMAT(cronogramamensual.mes, '%Y-%m-01') >= DATE_FORMAT(?, '%Y-%m-01') AND cronogramamensual.programado != 0", [fecha_inicial, id_ficha, fecha_inicial], (error, res) => {
       if (error) {
         reject(error);
-      } else if (res.length == 0) {
+      } else if (res.length == 0 && corte=="vacio") {
         resolve("vacio");
       } else {
-        if (corte != "vacio" && corte.codigo != "I") {
+        if (corte != "vacio") {
           delete corte.fecha_inicial
           delete corte.fecha_final
           res.unshift(corte)
