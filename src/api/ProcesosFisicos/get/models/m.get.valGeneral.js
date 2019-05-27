@@ -13,9 +13,9 @@ userModel.getValGeneralAnyos  = (id_ficha)=>{
         })
     })
 }
-userModel.getValGeneralPeriodos  = (id_ficha,anyo)=>{    
+userModel.getValGeneralPeriodos  = (id_ficha,anyo,ListarTodo)=>{    
     return new Promise((resolve, reject) => { 
-        pool.query("SELECT fichas.id_ficha, estados.codigo, MIN(avanceactividades.fecha) fecha_inicial, DATE_FORMAT(MAX(avanceactividades.fecha), ' %Y') anyo, DATE_FORMAT(MAX(avanceactividades.fecha), ' %b') mes FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.Fichas_id_ficha = fichas.id_ficha AND historialestados.fecha_inicial <= avanceactividades.fecha AND avanceactividades.fecha < historialestados.fecha_final LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND fichas.id_ficha = ? AND YEAR(avanceactividades.fecha) = ?  AND estados.codigo != 'A' GROUP BY historialestados.id_historialEstado , DATE_FORMAT(avanceactividades.fecha, '%Y-%b') ORDER BY avanceactividades.fecha",[id_ficha,anyo],(err,res)=>{ 
+        pool.query("SELECT fichas.id_ficha, estados.codigo, MIN(avanceactividades.fecha) fecha_inicial, DATE_FORMAT(MAX(avanceactividades.fecha), ' %Y') anyo, DATE_FORMAT(MAX(avanceactividades.fecha), ' %b') mes FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.Fichas_id_ficha = fichas.id_ficha AND historialestados.fecha_inicial <= avanceactividades.fecha AND avanceactividades.fecha < historialestados.fecha_final LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND fichas.id_ficha = ? AND (YEAR(avanceactividades.fecha) = ? OR "+ListarTodo+")  AND estados.codigo != 'A' GROUP BY historialestados.id_historialEstado , DATE_FORMAT(avanceactividades.fecha, '%Y-%b') ORDER BY avanceactividades.fecha",[id_ficha,anyo],(err,res)=>{ 
             if(err){
                 return reject(err)                
             }
@@ -54,7 +54,7 @@ userModel.getValGeneralComponentes = (id_ficha)=>{
         })
     })    
 }
-userModel.getValGeneralResumenPeriodo = (id_ficha,fecha_inicial,fecha_final)=>{
+userModel.getValGeneralResumenPeriodo = (id_ficha,fecha_inicial,fecha_final,formated)=>{
     return new Promise((resolve, reject) => {
         pool.query("SELECT componentes.numero, componentes.nombre, componentes.presupuesto, COALESCE(SUM(periodo_anterior.valor), 0) valor_anterior, COALESCE(SUM(periodo_anterior.valor), 0) / presupuesto * 100 porcentaje_anterior, COALESCE(SUM(periodo_actual.valor), 0) valor_actual, COALESCE(SUM(periodo_actual.valor), 0) / presupuesto * 100 porcentaje_actual, COALESCE(SUM(periodo_anterior.valor), 0) + COALESCE(SUM(periodo_actual.valor), 0) valor_total, (COALESCE(SUM(periodo_anterior.valor), 0) + COALESCE(SUM(periodo_actual.valor), 0)) / presupuesto * 100 porcentaje_total, componentes.presupuesto - COALESCE(SUM(periodo_anterior.valor), 0) - COALESCE(SUM(periodo_actual.valor), 0) valor_saldo, 100 - ((COALESCE(SUM(periodo_anterior.valor), 0) + COALESCE(SUM(periodo_actual.valor), 0)) / presupuesto * 100) porcentaje_saldo FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN (SELECT partidas.id_partida, CAST(SUM(avanceactividades.valor) AS DECIMAL (20 , 2 )) * costo_unitario valor FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.fecha < ? AND historialactividades.estado IS NULL GROUP BY partidas.id_partida) periodo_anterior ON periodo_anterior.id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, CAST(SUM(avanceactividades.valor) AS DECIMAL (20 , 2 )) * costo_unitario valor FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.fecha >= ? AND avanceactividades.fecha < ? AND historialactividades.estado IS NULL GROUP BY partidas.id_partida) periodo_actual ON periodo_actual.id_partida = partidas.id_partida WHERE componentes.fichas_id_ficha = ? GROUP BY componentes.id_componente ",[fecha_inicial,fecha_inicial,fecha_final,id_ficha],(err,res)=>{ 
             if(err){
@@ -86,8 +86,9 @@ userModel.getValGeneralResumenPeriodo = (id_ficha,fecha_inicial,fecha_final)=>{
                     fila.valor_saldo = tools.formatoSoles(fila.valor_saldo)
                     fila.porcentaje_saldo = tools.formatoSoles(fila.porcentaje_saldo)
                 }
-                return resolve(
-                    {
+                var data = {}
+                if(formated){
+                    data = {
                         "presupuesto":tools.formatoSoles(presupuesto),
                         "valor_anterior":tools.formatoSoles( valor_anterior),
                         "valor_actual":tools.formatoSoles(valor_actual),
@@ -99,7 +100,22 @@ userModel.getValGeneralResumenPeriodo = (id_ficha,fecha_inicial,fecha_final)=>{
                         "porcentaje_saldo":tools.formatoSoles(valor_saldo/presupuesto*100),
                         "componentes":res
                     }
-                );
+                }else{
+                    data = {
+                        "presupuesto":presupuesto,
+                        "valor_anterior": valor_anterior,
+                        "valor_actual":valor_actual,
+                        "valor_total": valor_total,
+                        "valor_saldo":valor_saldo,
+                        "porcentaje_anterior":valor_anterior/presupuesto*100,
+                        "porcentaje_actual":valor_actual/presupuesto*100,
+                        "porcentaje_total":valor_total/presupuesto*100,
+                        "porcentaje_saldo":valor_saldo/presupuesto*100,
+                        "componentes":res
+                    }
+                }
+                
+                return resolve(data);
             }
             
             
