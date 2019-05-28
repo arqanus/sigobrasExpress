@@ -45,6 +45,9 @@ module.exports = (app) => {
 	});
 	app.post('/getcronogramaInicio', async (req, res) => {
 		try {
+			if(req.body.id_ficha == null){
+				throw "null"
+			}
 			var periodos = await User2.getValGeneralPeriodos(req.body.id_ficha, 101, "TRUE")
 			//buscamos corte
 			var periodoCorte = null
