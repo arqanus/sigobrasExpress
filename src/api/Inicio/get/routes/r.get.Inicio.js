@@ -64,7 +64,7 @@ module.exports = (app) => {
 				corte.id_historialEstado = financiero_monto.id_historialEstado
 				corte.codigo = "C"
 				corte.fecha = tools.fechaLargaCorta(new Date(periodoCorte.fecha_final))
-				corte.mes = periodoCorte.mes+"."
+				corte.mes = periodoCorte.mes + "."
 				corte.anyo = periodoCorte.anyo
 				corte.programado_monto = valorizacionCorte.valor_total
 				corte.programado_porcentaje = valorizacionCorte.porcentaje_total
@@ -73,7 +73,7 @@ module.exports = (app) => {
 				corte.financiero_monto = financiero_monto.financiero_monto
 				corte.financiero_porcentaje = financiero_monto.financiero_porcentaje
 				avance_Acumulado = valorizacionCorte.valor_total
-			}else{
+			} else {
 				corte = "vacio"
 				periodoCorte = {}
 				periodoCorte.fecha_final = periodos[0].fecha_inicial
@@ -82,11 +82,11 @@ module.exports = (app) => {
 			if (cronograma == "vacio") {
 				cronograma = {}
 				cronograma.programado_monto_total = 0
-				cronograma.programado_porcentaje_total= 0
+				cronograma.programado_porcentaje_total = 0
 				cronograma.fisico_monto_total = 0
-				cronograma.fisico_porcentaje_total= 0
-				cronograma.financiero_monto_total= 0
-				cronograma.financiero_porcentaje_total= 0
+				cronograma.fisico_porcentaje_total = 0
+				cronograma.financiero_monto_total = 0
+				cronograma.financiero_porcentaje_total = 0
 				cronograma.grafico_programado = []
 				cronograma.grafico_fisico = []
 				cronograma.grafico_financiero = []
