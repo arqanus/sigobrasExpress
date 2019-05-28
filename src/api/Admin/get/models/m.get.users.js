@@ -44,4 +44,27 @@ userModel.getUsuariosAcceso = ()=>{
         })        
     })
 }
+userModel.getUsuariosAcceso = ()=>{
+    return new Promise((resolve, reject) => {
+        pool.query("SELECT usuarios.id_usuario, usuarios.nombre, usuarios.apellido_paterno, usuarios.apellido_materno, usuarios.dni, usuarios.direccion, usuarios.email, usuarios.celular, usuarios.cpt FROM usuarios INNER JOIN accesos ON accesos.Usuarios_id_usuario = usuarios.id_usuario", (error,res)=>{
+            if(error){ reject(error);  }
+            else{
+                resolve(res);
+            }
+        })        
+    })
+}
+userModel.getUsuarioData = (id_usuario) => {
+    return new Promise((resolve, reject) => {
+      pool.query("SELECT * FROM usuarios WHERE id_usuario = ?", [id_usuario], (error, res) => {
+        if(error){ reject(error);  }
+            else{
+                resolve(res[0]);
+            }
+      });
+    });
+  };
+  
+
+
 module.exports = userModel;

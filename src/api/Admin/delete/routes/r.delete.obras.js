@@ -10,4 +10,13 @@ module.exports = (app)=>{
 			res.status(400).json(error)
 		}
 	})
+	app.delete('/deleteEliminarUsuario',async(req,res)=>{
+		try {
+			var data  = await User.deleteEliminarUsuario(req.body.id_usuario)
+			res.json(data)
+		} catch (error) {
+			res.status(400).json(error)
+		}
+
+	})
 }

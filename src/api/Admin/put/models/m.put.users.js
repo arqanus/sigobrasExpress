@@ -13,5 +13,15 @@ userModel.putMenusUsuarios = (data,callback)=>{
     })        
     
 }
+userModel.putactualizarUsuario = (usuarios) => {
+    return new Promise((resolve, reject) => {
+        pool.query('UPDATE usuarios set nombre=?, apellido_paterno=?,apellido_materno=?,dni=?,direccion=?,email=?,celular=?,cpt=? where id_usuario = ?', [usuarios.nombre, usuarios.apellido_paterno, usuarios.apellido_materno, usuarios.dni, usuarios.direccion, usuarios.email, usuarios.celular, usuarios.cpt,usuarios.id_usuario], (error, res) => {
+          if(error){ reject(error);  }
+              else{
+                  resolve(res);
+              }
+        });
+      });
+  };
 
 module.exports = userModel;

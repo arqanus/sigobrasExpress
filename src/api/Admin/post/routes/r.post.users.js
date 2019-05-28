@@ -5,11 +5,52 @@ var fs = require('fs');
 module.exports = function(app){
 	app.post('/nuevoUsuario',async(req,res)=>{
 		try {
-			var postUsuario = await User.postUsuario(req.body)
-        	res.json(postUsuario);
-		} catch (error) {
-			res.status(400).json(error)
-		}
+			console.log("ingresado");
+			
+            var folder = "Usuarios/"
+            var dir = __dirname+'/../../../../public/'+folder
+            //crear ruta si no existe
+            if (!fs.existsSync(dir)){
+            fs.mkdirSync(dir);
+            }
+            var form = new formidable.IncomingForm();
+            //se configura la ruta de guardar
+			form.uploadDir = dir;
+			//guarda la imagen
+            var formFiles = await new Promise((resolve, reject)=>{
+                form.parse(req, (err, fields, files)=>{
+                    if (err) {
+                        return reject(err);
+                    }
+                    return resolve({fields, files});
+                });
+			});
+			// res.json(formFiles)
+			if(formFiles.fields.imagen=='null'||formFiles.fields.imagen=='undefined')
+			{
+				delete formFiles.fields.imagen
+			}
+			
+			/**ingresar nuevo datos */
+			var id_usuario = await User.postnuevoUsuario(formFiles.fields)
+			// res.json(id_usuario)
+			if(formFiles.files.imagen){
+				console.log("ingresando imagen");
+				
+				// //se renombre el archivo
+				var archivo_name = id_usuario+".jpg"
+				fs.rename(formFiles.files.imagen.path,dir+archivo_name,(err)=>{})
+						
+				//Actualizando nombre de imagen
+				var id_usuario = await User.putUsuarioImagen("/static/"+folder+archivo_name,id_usuario)
+		
+			}
+			res.json(id_usuario)
+			
+			
+        } catch (error) {
+            res.status(400).json(error)
+        }
 	})
 	app.post('/nuevoCargo',async(req,res)=>{
 		try {
@@ -68,3 +109,4 @@ module.exports = function(app){
 	})
 	
 }
+

@@ -10,4 +10,18 @@ userModel.deleteEliminarHistorial = (id_historialEstado) => {
 		})
 	})
 }
+userModel.deleteEliminarUsuario = (id_usuario)=>{
+    return new Promise((resolve, reject) => { 
+        pool.query("DELETE FROM usuarios WHERE id_Usuario = ? ",id_usuario,(error,res)=>{
+            if(error){
+                reject(error.code);
+            }else{
+                resolve(res)
+            }
+        })
+    })
+    
+}
+
+
 module.exports = userModel;
