@@ -12,3 +12,13 @@ module.exports = function(app){
 		})
 	})	
 }
+module.exports = function(app){
+	app.put('/putactualizarUsuario',async(req,res)=>{
+		try {
+			var data=await User.putactualizarUsuario(req.body)
+			res.json(data)
+		} catch (error) {
+			res.status(400).json(error)
+		}
+	})	
+}

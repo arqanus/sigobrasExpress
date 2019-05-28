@@ -33,4 +33,22 @@ module.exports = function(app){
 			res.status(400).json(error)
 		}
 	})
+	app.post('/getUsuarioData',async(req,res)=>{
+		try {
+			var getUsuarioData = await User.getUsuarioData(req.body.id_usuario)
+        	res.json(getUsuarioData);
+		} catch (error) {
+			console.log(error);
+			
+			res.status(400).json(error)
+		}
+	})
+	app.get('/getactualizarUsuario ',async(req,res)=>{
+		try {
+			var getactualizarUsuario  = await User.getactualizarUsuario ()
+        	res.json(getactualizarUsuario );
+		} catch (error) {
+			res.status(400).json(error)
+		}
+	})
 }

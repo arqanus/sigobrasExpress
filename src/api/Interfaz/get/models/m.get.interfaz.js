@@ -210,4 +210,7 @@ userModel.getIdUsuarioIdAcceso = (id_acceso)=>{
         })  
     })
 }
+
+
+
 module.exports = userModel;
