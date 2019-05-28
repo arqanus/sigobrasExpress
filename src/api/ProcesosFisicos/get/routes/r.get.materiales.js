@@ -43,8 +43,20 @@ module.exports = function(app){
 	})
 	app.post('/getmaterialesResumenEjecucionRealCodigos',async(req,res)=>{
 		try {
-			var data = await  User.getmaterialesResumenEjecucionRealCodigos(req.body.id_ficha,req.body.tipo)
-			res.json(data)
+			var tipodocumentoadquisicion = await  User.gettipodocumentoadquisicion()
+			for (let i = 0; i < tipodocumentoadquisicion.length; i++) {
+				const tipoDoc = tipodocumentoadquisicion[i];
+				tipoDoc.idDocumento = tipoDoc.id_tipoDocumentoAdquisicion
+				tipoDoc.tipoDocumento = tipoDoc.nombre_largo
+				delete tipoDoc.id_tipoDocumentoAdquisicion
+				delete tipoDoc.nombre_largo
+				var codigos = await  User.getmaterialesResumenEjecucionRealCodigos(req.body.id_ficha,req.body.tipo,tipoDoc.idDocumento)	
+				tipoDoc.cantidad = codigos.length
+				tipoDoc.codigos = codigos
+			}
+			res.json(
+					tipodocumentoadquisicion
+			)
 		} catch (error) {
 			res.status(400).json(error);	
 		}

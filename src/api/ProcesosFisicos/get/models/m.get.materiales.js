@@ -369,15 +369,13 @@ userModel.getmaterialesResumenEjecucionRealSinCodigo = (id_ficha, tipo) => {
         });
     });
 };
-userModel.getmaterialesResumenEjecucionRealCodigos = (id_ficha, tipo) => {
+userModel.getmaterialesResumenEjecucionRealCodigos = (id_ficha, tipo,tipoDocumentoAdquisicion) => {
     return new Promise((resolve, reject) => {
-        pool.query("/*COALESCE(parcial_negativo / parcial_positivo, 0) + 1 porcentaje_negatividad_ajustado*/ SELECT recursos_ejecucionreal.codigo FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente INNER JOIN recursos ON recursos.partidas_id_partida = partidas.id_partida inner JOIN recursos_ejecucionreal ON recursos_ejecucionreal.descripcion = CONVERT( recursos.descripcion USING UTF8) COLLATE utf8_spanish_ci WHERE componentes.fichas_id_ficha = ? AND recursos.tipo = ? AND recursos_ejecucionreal.codigo is not null GROUP BY recursos_ejecucionreal.codigo",[id_ficha, tipo], (error, res) => {
+        pool.query("/*COALESCE(parcial_negativo / parcial_positivo, 0) + 1 porcentaje_negatividad_ajustado*/ SELECT codigo, COUNT(descripcion) cantidad FROM (SELECT recursos_ejecucionreal.codigo, recursos_ejecucionreal.descripcion FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente INNER JOIN recursos ON recursos.partidas_id_partida = partidas.id_partida INNER JOIN recursos_ejecucionreal ON recursos_ejecucionreal.descripcion = CONVERT( recursos.descripcion USING UTF8) COLLATE utf8_spanish_ci WHERE componentes.fichas_id_ficha = ? AND recursos.tipo = ? AND recursos_ejecucionreal.tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion = ? AND recursos_ejecucionreal.codigo IS NOT NULL GROUP BY recursos_ejecucionreal.descripcion) recursos_ejecucionreal GROUP BY codigo",[id_ficha, tipo,tipoDocumentoAdquisicion], (error, res) => {
             if (error) {
                 reject(error);
             }
-            else if (res.length == 0) {
-                reject("vacio");
-            }else{
+            else {
                 resolve(res);
             }    
         });
