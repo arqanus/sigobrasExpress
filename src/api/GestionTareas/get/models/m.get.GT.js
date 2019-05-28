@@ -301,7 +301,7 @@ userModel.getTareaComentarios = (id_comentario, id_tarea) => {
 }
 userModel.getChartRendimientoUsuario = (id_acceso) => {
     return new Promise((resolve, reject) => {
-        pool.query("SELECT * FROM ((SELECT COUNT(tareas.id_tarea) tareas_cantidad, DATE_FORMAT(fecha_final, '%m') - 1 mes_numero, proyectos.nombre, id_proyecto FROM tareas LEFT JOIN tareas_has_accesos ON tareas_has_accesos.tareas_id_tarea = tareas.id_tarea LEFT JOIN proyectos ON proyectos.id_proyecto = tareas.proyectos_id_proyecto WHERE receptor = ? AND avance = 100 GROUP BY DATE_FORMAT(fecha_final, '%Y-%m-01') , id_proyecto) UNION (SELECT COUNT(tareas.id_tarea) tareas_cantidad, DATE_FORMAT(fecha_final, '%m') - 1 mes_numero, CONCAT(proyectos.nombre, ' VENCIDO') nombre, id_proyecto FROM tareas LEFT JOIN tareas_has_accesos ON tareas_has_accesos.tareas_id_tarea = tareas.id_tarea LEFT JOIN proyectos ON proyectos.id_proyecto = tareas.proyectos_id_proyecto WHERE receptor = ? AND avance < 100 AND tareas.fecha_final < NOW() GROUP BY DATE_FORMAT(fecha_final, '%Y-%m-01') , id_proyecto)) rendimiento_usuario order by id_proyecto,nombre,mes_numero", [id_acceso, id_acceso], (err, res) => {
+        pool.query("SELECT * FROM ((SELECT COUNT(tareas.id_tarea) tareas_cantidad, DATE_FORMAT(fecha_final, '%m') - 1 mes_numero, proyectos.nombre, id_proyecto FROM tareas LEFT JOIN tareas_has_accesos ON tareas_has_accesos.tareas_id_tarea = tareas.id_tarea LEFT JOIN proyectos ON proyectos.id_proyecto = tareas.proyectos_id_proyecto WHERE receptor = ? AND avance = 100 GROUP BY DATE_FORMAT(fecha_final, '%Y-%m-01') , id_proyecto) UNION (SELECT COUNT(tareas.id_tarea) tareas_cantidad, DATE_FORMAT(fecha_final, '%m') - 1 mes_numero, CONCAT(proyectos.nombre, ' VENCIDO') nombre, id_proyecto FROM tareas LEFT JOIN tareas_has_accesos ON tareas_has_accesos.tareas_id_tarea = tareas.id_tarea LEFT JOIN proyectos ON proyectos.id_proyecto = tareas.proyectos_id_proyecto WHERE receptor = ? AND avance < 100 AND tareas.fecha_final < NOW() GROUP BY DATE_FORMAT(fecha_final, '%Y-%m-01') , id_proyecto)) rendimiento_usuario order by mes_numero,id_proyecto,nombre", [id_acceso, id_acceso], (err, res) => {
             if (err) {
                 return reject(err)
             } else {
@@ -346,7 +346,17 @@ userModel.getChartRendimientoUsuario = (id_acceso) => {
                     }
 
                 }
-
+                //ordenar series
+                function compare(a, b) {
+                    if (a.name < b.name) {
+                        return -1;
+                    }
+                    if (a.name > b.name) {
+                        return 1;
+                    }
+                    return 0;
+                }
+                series.sort(compare);
                 return resolve({
                     series,
                     categories
