@@ -50,7 +50,7 @@ userModel.getmaterialesResumenChart = (id_ficha) => {
                 series[3].data.push(
                     {
                         "name": tipoRecurso.tipo,
-                        "y": tools.formatoPorcentaje(tipoRecurso.recurso_gasto_parcial)
+                        "y": tools.formatoPorcentaje(tipoRecurso.recurso_parcial)
                     }
                 )
                 categories.push(tipoRecurso.tipo)
