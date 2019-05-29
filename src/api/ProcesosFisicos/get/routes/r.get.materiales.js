@@ -3,7 +3,7 @@ const User = require('../models/m.get.materiales');
 module.exports = function(app){
 	app.post('/getmaterialesResumenChart',async(req,res)=>{
 		try {
-			var data = await  User.getmaterialesResumenChart(req.body.id_ficha)
+			var data = await  User.getmaterialesResumenChart("componentes.fichas_id_ficha",req.body.id_ficha)
 			res.json(data)
 		} catch (error) {
 			res.status(400).json(error);	
@@ -63,7 +63,8 @@ module.exports = function(app){
 	})
 	app.post('/getmaterialesResumenEjecucionRealCodigosData',async(req,res)=>{
 		try {
-			var data = await  User.getmaterialesResumenEjecucionRealCodigosData(req.body.id_ficha,req.body.tipo,req.body.codigo)
+			var data = await  User.getmaterialesResumenEjecucionRealCodigosData(req.body.id_ficha,req.body.tipo,req.body.codigo,req.body.id_tipoDocumentoAdquisicion
+				)
 			res.json(data)
 		} catch (error) {
 			res.status(400).json(error);	
@@ -71,7 +72,7 @@ module.exports = function(app){
 	})
 	app.post('/getmaterialescomponentesChart',async(req,res)=>{
 		try {
-			var data = await  User.getmaterialescomponentesChart(req.body.id_componente)
+			var data = await  User.getmaterialesResumenChart("componentes.id_componente",req.body.id_componente)
 			res.json(data)
 		} catch (error) {
 			res.status(400).json(error);	
