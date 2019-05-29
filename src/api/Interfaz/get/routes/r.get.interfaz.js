@@ -38,6 +38,8 @@ module.exports = function(app){
 	app.post('/getDatosGenerales',async(req,res)=>{
 		try {
 			var getDatosGenerales = await User.getDatosGenerales(req.body.id_ficha)
+			var costo_directo = await User.getCostoDirecto(req.body.id_ficha,true)
+			getDatosGenerales.costo_directo = costo_directo
 			res.json(getDatosGenerales)
 		} catch (error) {
 			res.status(204).json(error)
