@@ -41,7 +41,7 @@ module.exports = function(app){
             estado:"Mayor Metrado",
             Actividades_id_actividad:id_actividad
           }
-					User.posthistorialActividades(historialActividad,(err,id_historial)=>{
+					User.posthistorialActividades(historialActividad,async(err,id_historial)=>{
             if(err){ res.status(204).json(err);}
             else{
               var partidas = await User.getPartidas(null,id_actividad)
