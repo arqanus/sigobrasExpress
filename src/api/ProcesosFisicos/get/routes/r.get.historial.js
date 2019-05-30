@@ -16,16 +16,13 @@ module.exports = function(app){
             res.status(400).json(error);
         }
     })
-    app.post('/getHistorialAnyosResumen',(req,res)=>{
-        if (req.body.id_ficha == null) {
-            res.json("null")
-        } else {			
-            User.getHistorialAnyosResumen(req.body.id_ficha,req.body.anyo,(err,data)=>{
-                if(err){ res.status(204).json(err);}
-                else{
-                    res.json(data);	
-                }
-            })
+    app.post('/getHistorialAnyosResumen',async(req,res)=>{
+        try {
+            var data = await User.getHistorialAnyosResumen(req.body.id_ficha,req.body.anyo)
+            res.json(data)
+        } catch (error) {
+            console.log(error)
+            res.status(400).json(error)
         }
     })
     app.post('/getHistorialMeses',async(req,res)=>{
