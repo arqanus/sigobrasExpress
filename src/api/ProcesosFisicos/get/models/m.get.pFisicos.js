@@ -1,33 +1,33 @@
 const pool = require('../../../../db/connection');
 const tools = require('../../../../tools/format')
 let userModel = {};
-// function formatoAvance(data) {
-//     if (data == null) {
-//         return 0
-//     }
-//     if (isNaN(data)) {
-//         return data
-//     }
-//     data = Number(data)
-//     if (isNaN(data)) {
-//         data = 0
-//     }
-//     if (data == 0) {
-//         return 0
-//     }
-//     else if (data < 1) {
-//         data = data.toLocaleString('es-PE', {
-//             minimumFractionDigits: 4,
-//             maximumFractionDigits: 4
-//         })
-//     } else {
-//         data = data.toLocaleString('es-PE', {
-//             minimumFractionDigits: 3,
-//             maximumFractionDigits: 3
-//         })
-//     }
-//     return data
-// }
+function formatoAvance(data) {
+    if (data == null) {
+        return 0
+    }
+    if (isNaN(data)) {
+        return data
+    }
+    data = Number(data)
+    if (isNaN(data)) {
+        data = 0
+    }
+    if (data == 0) {
+        return 0
+    }
+    else if (data < 1) {
+        data = data.toLocaleString('es-PE', {
+            minimumFractionDigits: 4,
+            maximumFractionDigits: 4
+        })
+    } else {
+        data = data.toLocaleString('es-PE', {
+            minimumFractionDigits: 3,
+            maximumFractionDigits: 3
+        })
+    }
+    return data
+}
 userModel.getComponentes = (id_ficha) => {
     return new Promise((resolve, reject) => {
         pool.query("SELECT componentes.*  FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida left JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE  partidas.tipo != 'titulo' AND historialactividades.estado IS NULL AND componentes.fichas_id_ficha = ? GROUP BY componentes.id_componente", id_ficha, (error, res) => {
@@ -65,13 +65,13 @@ userModel.getPartidas = (id_componente=null, id_actividad=null,id_ficha=null) =>
                         fila.porcentaje = ""
                         fila.porcentaje_negatividad = ""
                     } else {
-                        fila.metrado = tools.formatoSoles(fila.metrado)
-                        fila.costo_unitario = tools.formatoSoles(fila.costo_unitario)
-                        fila.parcial = tools.formatoSoles(fila.parcial)
-                        fila.avance_metrado = tools.formatoSoles(fila.avance_metrado)
-                        fila.avance_costo = tools.formatoSoles(fila.avance_costo)
-                        fila.metrados_saldo = tools.formatoSoles(fila.metrados_saldo)
-                        fila.metrados_costo_saldo = tools.formatoSoles(fila.metrados_costo_saldo)
+                        fila.metrado = formatoAvance(fila.metrado)
+                        fila.costo_unitario = formatoAvance(fila.costo_unitario)
+                        fila.parcial = formatoAvance(fila.parcial)
+                        fila.avance_metrado = formatoAvance(fila.avance_metrado)
+                        fila.avance_costo = formatoAvance(fila.avance_costo)
+                        fila.metrados_saldo = formatoAvance(fila.metrados_saldo)
+                        fila.metrados_costo_saldo = formatoAvance(fila.metrados_costo_saldo)
                         fila.porcentaje = tools.formatoPorcentaje(fila.porcentaje)
                     }
                     if (fila.partida_duracion != "") {
@@ -149,18 +149,18 @@ userModel.getActividades = (id_partida) => {
                         fila.actividad_porcentaje = 0
                         fila.unidad_medida = 0
                     } else {
-                        fila.veces_actividad = tools.formatoSoles(fila.veces_actividad)
-                        fila.largo_actividad = tools.formatoSoles(fila.largo_actividad)
-                        fila.ancho_actividad = tools.formatoSoles(fila.ancho_actividad)
-                        fila.alto_actividad = tools.formatoSoles(fila.alto_actividad)
-                        fila.metrado_actividad = tools.formatoSoles(fila.metrado_actividad)
-                        fila.costo_unitario = tools.formatoSoles(fila.costo_unitario)
-                        fila.parcial_actividad = tools.formatoSoles(fila.parcial_actividad)//formatoAvance
-                        fila.actividad_avance_metrado = tools.formatoSoles(fila.actividad_avance_metrado)
-                        fila.actividad_avance_costo = tools.formatoSoles(fila.actividad_avance_costo)//formatoAvance
-                        fila.actividad_metrados_saldo = tools.formatoSoles(fila.actividad_metrados_saldo)
-                        fila.actividad_metrados_costo_saldo = tools.formatoSoles(fila.actividad_metrados_costo_saldo)
-                        fila.actividad_porcentaje = tools.formatoSoles(fila.actividad_porcentaje)
+                        fila.veces_actividad = formatoAvance(fila.veces_actividad)
+                        fila.largo_actividad = formatoAvance(fila.largo_actividad)
+                        fila.ancho_actividad = formatoAvance(fila.ancho_actividad)
+                        fila.alto_actividad = formatoAvance(fila.alto_actividad)
+                        fila.metrado_actividad = formatoAvance(fila.metrado_actividad)
+                        fila.costo_unitario = formatoAvance(fila.costo_unitario)
+                        fila.parcial_actividad = formatoAvance(fila.parcial_actividad)//formatoAvance
+                        fila.actividad_avance_metrado = formatoAvance(fila.actividad_avance_metrado)
+                        fila.actividad_avance_costo = formatoAvance(fila.actividad_avance_costo)//formatoAvance
+                        fila.actividad_metrados_saldo = formatoAvance(fila.actividad_metrados_saldo)
+                        fila.actividad_metrados_costo_saldo = formatoAvance(fila.actividad_metrados_costo_saldo)
+                        fila.actividad_porcentaje = formatoAvance(fila.actividad_porcentaje)
                     }
                 }
                 resolve(res);
@@ -300,19 +300,19 @@ userModel.getActividadesDuracion = (id_ficha) => {
                     const fila = res[i];
                     // fila.duracion_real = fila.duracion
                     if (fila.duracion < 60) {
-                        fila.duracion = tools.formatoSoles(fila.duracion) + "min"
+                        fila.duracion = formatoAvance(fila.duracion) + "min"
                     } else if (fila.duracion < 480) {
                         var horas = Math.trunc(fila.duracion / 60) + "h"
-                        var minutos = tools.formatoSoles(fila.duracion % 60) + "min"
+                        var minutos = formatoAvance(fila.duracion % 60) + "min"
                         fila.duracion = horas + " " + minutos
                     } else {
                         var dias = Math.trunc(fila.duracion / 480) + "d"
                         var residuo_dias = Math.trunc(fila.duracion % 480)
                         var horas = Math.trunc(residuo_dias / 60) + "h"
-                        var minutos = tools.formatoSoles(residuo_dias % 60) + "min"
+                        var minutos = formatoAvance(residuo_dias % 60) + "min"
                         fila.duracion = dias + " " + horas + " " + minutos
                     }
-                    res[i].duracion_dia = tools.formatoSoles(res[i].duracion_dia)
+                    res[i].duracion_dia = formatoAvance(res[i].duracion_dia)
                 }
                 resolve(res);
             }
