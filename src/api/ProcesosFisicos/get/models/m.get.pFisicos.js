@@ -28,6 +28,33 @@ function formatoAvance(data) {
     }
     return data
 }
+function formato(data) {
+    if (data == null) {
+        return 0
+    }
+    if (isNaN(data)) {
+        return data
+    }
+    data = Number(data)
+    if (isNaN(data)) {
+        data = 0
+    }
+    if (data == 0) {
+        return 0
+    }
+    else if (data < 1) {
+        data = data.toLocaleString('es-PE', {
+            minimumFractionDigits: 4,
+            maximumFractionDigits: 4
+        })
+    } else {
+        data = data.toLocaleString('es-PE', {
+            minimumFractionDigits: 3,
+            maximumFractionDigits: 3
+        })
+    }
+    return data
+}
 userModel.getComponentes = (id_ficha) => {
     return new Promise((resolve, reject) => {
         pool.query("SELECT componentes.*  FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida left JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE  partidas.tipo != 'titulo' AND historialactividades.estado IS NULL AND componentes.fichas_id_ficha = ? GROUP BY componentes.id_componente", id_ficha, (error, res) => {
