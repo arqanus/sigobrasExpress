@@ -653,5 +653,21 @@ module.exports = function(app){
         res.status(400).json(error)
     }
   })
+  app.post('/postdocumentoAdquisicion',async(req, res)=>{    
+    try {
+      var recursos_ejecucionreal = req.body.recursos_ejecucionreal
+      delete req.body.recursos_ejecucionreal
+      var insertId = await User.postdocumentoAdquisicion(req.body)
+      for (let i = 0; i < recursos_ejecucionreal.length; i++) {
+        const recurso = recursos_ejecucionreal[i];
+        recurso.push(insertId)
+      }
+      var data = await User.putrecursosEjecucionrealIdDocumentoAdquisicion(recursos_ejecucionreal)
+      res.json("exito")
+    } catch (error) {
+      console.log(error)
+      res.status(400).json(error)
+    }
+  })
   
 }

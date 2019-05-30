@@ -233,4 +233,16 @@ userModel.postAvanceActividadPorObra = (data) => {
 		})
 	})
 }
+userModel.postclasificadoresPresupuestarios = (data) => {
+	return new Promise((resolve, reject) => {
+		pool.query('Insert into clasificadores_presupuestarios (anyo,clasificador,descripcion,descripcion_detallada) values ?', [data], (error, res) => {
+			if (error) { 
+				console.log(error);
+				reject(error.code); 
+			}else {
+				resolve(res);
+			}
+		})
+	})
+}
 module.exports = userModel;
