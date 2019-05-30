@@ -44,9 +44,9 @@ module.exports = function(app){
 					User.posthistorialActividades(historialActividad,async(err,id_historial)=>{
             if(err){ res.status(204).json(err);}
             else{
-              var partidas = await User.getPartidas(null,id_actividad)
-              var data = await User.getActividades(partidas[0].id_partida)
-              mayorMetrado = await User.getPartidasMayorMetradoAvance(partidas[0].id_partida)
+              var partidas = await User2.getPartidas(null,id_actividad)
+              var data = await User2.getActividades(partidas[0].id_partida)
+              mayorMetrado = await User2.getPartidasMayorMetradoAvance(partidas[0].id_partida)
               mayorMetrado = mayorMetrado || {}
               res.json(
                   {
