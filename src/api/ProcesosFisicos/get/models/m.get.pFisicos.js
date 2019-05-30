@@ -28,31 +28,29 @@ function formatoAvance(data) {
     }
     return data
 }
-function formato(data) {
-    if (data == null) {
-        return 0
-    }
-    if (isNaN(data)) {
-        return data
-    }
+function formato(data){
+    
+    // data = parseFloat(data)
     data = Number(data)
-    if (isNaN(data)) {
-        data = 0
+    if(isNaN(data)){
+        
+        data=0
     }
-    if (data == 0) {
+    if(data == 0){
         return 0
     }
-    else if (data < 1) {
+    else if(data < 1){
         data = data.toLocaleString('es-PE', {
             minimumFractionDigits: 4,
             maximumFractionDigits: 4
-        })
-    } else {
+          })
+    }else{
         data = data.toLocaleString('es-PE', {
-            minimumFractionDigits: 3,
-            maximumFractionDigits: 3
-        })
-    }
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          })
+    } 
+
     return data
 }
 userModel.getComponentes = (id_ficha) => {
