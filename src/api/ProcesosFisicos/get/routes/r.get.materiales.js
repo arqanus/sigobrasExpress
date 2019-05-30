@@ -153,9 +153,9 @@ module.exports = function(app){
 			res.status(400).json(error);	
 		}
 	})
-	app.get('/getclasificadoresPesupuestarios',async(req,res)=>{
+	app.post('/getclasificadoresPesupuestarios',async(req,res)=>{
 		try {
-			var data = await  User.getclasificadoresPesupuestarios()
+			var data = await  User.getclasificadoresPesupuestarios(req.body.todos,req.body.clasificador)
 			res.json(data);
 		} catch (error) {
 			res.status(400).json(error);	

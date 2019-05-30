@@ -420,9 +420,9 @@ userModel.gettipodocumentoadquisicion = () => {
         });
     });
 };
-userModel.getclasificadoresPesupuestarios = () => {
+userModel.getclasificadoresPesupuestarios = (todos = true,clasificador=null ) => {
     return new Promise((resolve, reject) => {
-        pool.query("SELECT * FROM clasificadores_presupuestarios", (error, res) => {
+        pool.query("SELECT * FROM clasificadores_presupuestarios WHERE ? OR clasificadores_presupuestarios.clasificador = ?",[todos,clasificador], (error, res) => {
             if (error) {
                 reject(error);
             }
