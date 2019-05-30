@@ -420,5 +420,20 @@ userModel.gettipodocumentoadquisicion = () => {
         });
     });
 };
+userModel.getclasificadoresPesupuestarios = () => {
+    return new Promise((resolve, reject) => {
+        pool.query("SELECT * FROM clasificadores_presupuestarios", (error, res) => {
+            if (error) {
+                reject(error);
+            }
+            else if (res.length == 0) {
+                reject("vacio");
+            }         
+            else{
+                resolve(res)
+            }
+        });
+    });
+};
 
 module.exports = userModel;
