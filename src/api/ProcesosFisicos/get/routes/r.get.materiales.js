@@ -63,8 +63,8 @@ module.exports = function(app){
 	})
 	app.post('/getmaterialesResumenEjecucionRealCodigosData',async(req,res)=>{
 		try {
-			var data = await  User.getmaterialesResumenEjecucionRealCodigosData(req.body.id_ficha,req.body.tipo,req.body.codigo,req.body.id_tipoDocumentoAdquisicion
-				)
+			
+			var data = await  User.getmaterialesResumenEjecucionReal(req.body.id_ficha,req.body.tipo,req.body.codigo,false,req.body.id_tipoDocumentoAdquisicion,false)
 			res.json(data)
 		} catch (error) {
 			res.status(400).json(error);	
