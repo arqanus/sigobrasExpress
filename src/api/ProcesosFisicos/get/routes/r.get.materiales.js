@@ -65,7 +65,15 @@ module.exports = function(app){
 		try {
 			
 			var data = await  User.getmaterialesResumenEjecucionReal(req.body.id_ficha,req.body.tipo,req.body.codigo,false,req.body.id_tipoDocumentoAdquisicion,false)
-			res.json(data)
+			var id_documentoAdquisicion =  data[0].documentosAdquisicion_id_documentoAdquisicion
+			var documentoAdquisicion = await  User.getdocumentosadquisicion(id_documentoAdquisicion)
+			if(documentoAdquisicion == "vacio"){
+				documentoAdquisicion = {}
+			}
+			documentoAdquisicion.recursos = data	
+			res.json(
+				documentoAdquisicion
+			)
 		} catch (error) {
 			res.status(400).json(error);	
 		}
