@@ -157,7 +157,7 @@ module.exports = function(app){
                 "observacion":fields.observacion,
                 "accesos_id_acceso":fields.accesos_id_acceso
               }
-              User.postAvanceActividad(avanceActividad,(err,data)=>{
+              User.postAvanceActividad(avanceActividad,async(err,data)=>{
                 if(err){ res.status(204).json(err);}
                 else{
                   
@@ -191,7 +191,7 @@ module.exports = function(app){
               "observacion":fields.observacion,
               "accesos_id_acceso":fields.accesos_id_acceso
             }
-            User.postAvanceActividad(avanceActividad,(err,data)=>{
+            User.postAvanceActividad(avanceActividad,async(err,data)=>{
               if(err){ res.status(204).json(err);}
               else{
                 
@@ -274,7 +274,7 @@ module.exports = function(app){
             "observacion":fields.observacion,
             "accesos_id_acceso":fields.accesos_id_acceso
           }
-          User.postAvanceActividad(avanceActividad,(err,data)=>{
+          User.postAvanceActividad(avanceActividad,async(err,data)=>{
             if(err){ res.status(204).json(err);}
             else{
               
@@ -308,7 +308,7 @@ module.exports = function(app){
           "observacion":fields.observacion,
           "accesos_id_acceso":fields.accesos_id_acceso
         }
-        User.postAvanceActividad(avanceActividad,(err,data)=>{
+        User.postAvanceActividad(avanceActividad,async(err,data)=>{
           if(err){ res.status(204).json(err);}
           else{
             
@@ -390,7 +390,7 @@ module.exports = function(app){
             "accesos_id_acceso":fields.accesos_id_acceso,
             "fecha":fields.fecha
           }
-          User.postAvanceActividad(avanceActividad,(err,data)=>{
+          User.postAvanceActividad(avanceActividad,async(err,data)=>{
             if(err){ res.status(204).json(err);}
             else{
               
@@ -425,7 +425,7 @@ module.exports = function(app){
           "accesos_id_acceso":fields.accesos_id_acceso,
           "fecha":fields.fecha
         }
-        User.postAvanceActividad(avanceActividad,(err,data)=>{
+        User.postAvanceActividad(avanceActividad,async(err,data)=>{
           if(err){ res.status(204).json(err);}
           else{
             
