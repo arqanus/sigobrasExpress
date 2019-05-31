@@ -60,9 +60,15 @@ module.exports = (app) => {
                 res.json("null");
             } else {
                 var componentes = await User.getComponentesPNuevas(req.body.id_ficha)
-                var partidas = await User.getPartidasPNuevas(componentes[0].id_componente)
-                componentes[0].partidas = partidas
-                res.json(componentes);
+                if(componentes =="vacio"){
+                    res.json("vacio")
+                }else{
+                    var partidas = await User.getPartidasPNuevas(componentes[0].id_componente)
+                    componentes[0].partidas = partidas
+                    res.json(componentes);
+                }
+                
+                
             }
         } catch (error) {
             console.log(error)

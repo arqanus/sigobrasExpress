@@ -238,11 +238,17 @@ module.exports = (app) => {
             res.status(400).json(error)
         }
     })
-
-
     app.post('/postAvanceActividadPorObra', async (req, res) => {
         try {
             var data = await User.postAvanceActividadPorObra(req.body)
+            res.json(data)
+        } catch (error) {
+            res.status(400).json(error)
+        }
+    })
+    app.post('/postclasificadoresPresupuestarios', async (req, res) => {
+        try {
+            var data = await User.postclasificadoresPresupuestarios(req.body)
             res.json(data)
         } catch (error) {
             res.status(400).json(error)
