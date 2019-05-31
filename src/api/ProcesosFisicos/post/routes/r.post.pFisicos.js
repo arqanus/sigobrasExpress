@@ -50,6 +50,7 @@ module.exports = function(app){
               mayorMetrado = mayorMetrado || {}
               res.json(
                   {
+                    "partida":partidas[0],
                       "mayor_metrado": {
                           "mm_avance_metrado": mayorMetrado.avance_metrado || 0,
                           "mm_avance_costo": mayorMetrado.avance_costo || 0,
