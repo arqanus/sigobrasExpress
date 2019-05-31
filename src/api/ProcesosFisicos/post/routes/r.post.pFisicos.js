@@ -161,36 +161,23 @@ module.exports = function(app){
                 if(err){ res.status(204).json(err);}
                 else{
                   
-                  User2.getPartidas(null,avanceActividad.Actividades_id_actividad,(err,partida)=>{
-                    if(err){ res.status(204).json(err);}
-                    else{
-                      
-                      User2.getActividades(partida[0].id_partida,(err,actividades)=>{
-                        if(err){ res.status(204).json(err);}
-                        else{
-                          User2.getPartidasMayorMetradoAvance(partida[0].id_partida,(err,mayorMetrado)=>{
-                            if(err){ res.status(204).json(err);}
-                            else{
-                                mayorMetrado = mayorMetrado||{}
-                                res.json(
-                                    {
-                                      "partida":partida[0],
-                                      "mayor_metrado":{
-                                          "mm_avance_metrado": mayorMetrado.avance_metrado||0,
-                                          "mm_avance_costo": mayorMetrado.avance_costo||0,
-                                          "mm_metrados_saldo": mayorMetrado.metrados_saldo||0,
-                                          "mm_metrados_costo_saldo": mayorMetrado.metrados_costo_saldo||0,
-                                          "mm_porcentaje": mayorMetrado.porcentaje||0
-                                      },
-                                      "actividades":actividades
-                                    }
-                                );
-                            }
-                          })	
-                        }
-                      })
-                    }
-                  })
+                  var partidas = await User2.getPartidas(null,id_actividad)
+              var actividades = await User2.getActividades(partidas[0].id_partida)
+              mayorMetrado = await User2.getPartidasMayorMetradoAvance(partidas[0].id_partida)
+              mayorMetrado = mayorMetrado || {}
+              res.json(
+                  {
+                    "partida":partidas[0],
+                    "mayor_metrado":{
+                        "mm_avance_metrado": mayorMetrado.avance_metrado||0,
+                        "mm_avance_costo": mayorMetrado.avance_costo||0,
+                        "mm_metrados_saldo": mayorMetrado.metrados_saldo||0,
+                        "mm_metrados_costo_saldo": mayorMetrado.metrados_costo_saldo||0,
+                        "mm_porcentaje": mayorMetrado.porcentaje||0
+                    },
+                    "actividades":actividades
+                  }
+              );
                 }
               })
             }); 
@@ -208,36 +195,23 @@ module.exports = function(app){
               if(err){ res.status(204).json(err);}
               else{
                 
-                User2.getPartidas(null,avanceActividad.Actividades_id_actividad,(err,partida)=>{
-                  if(err){ res.status(204).json(err);}
-                  else{
-                    
-                    User2.getActividades(partida[0].id_partida,(err,actividades)=>{
-                      if(err){ res.status(204).json(err);}
-                      else{
-                        User2.getPartidasMayorMetradoAvance(partida[0].id_partida,(err,mayorMetrado)=>{
-                          if(err){ res.status(204).json(err);}
-                          else{
-                              mayorMetrado = mayorMetrado||{}
-                              res.json(
-                                  {
-                                    "partida":partida[0],
-                                    "mayor_metrado":{
-                                        "mm_avance_metrado": mayorMetrado.avance_metrado||0,
-                                        "mm_avance_costo": mayorMetrado.avance_costo||0,
-                                        "mm_metrados_saldo": mayorMetrado.metrados_saldo||0,
-                                        "mm_metrados_costo_saldo": mayorMetrado.metrados_costo_saldo||0,
-                                        "mm_porcentaje": mayorMetrado.porcentaje||0
-                                    },
-                                    "actividades":actividades
-                                  }
-                              );
-                          }
-                        })	
-                      }
-                    })
-                  }
-                })
+                var partidas = await User2.getPartidas(null,id_actividad)
+                var actividades = await User2.getActividades(partidas[0].id_partida)
+                mayorMetrado = await User2.getPartidasMayorMetradoAvance(partidas[0].id_partida)
+                mayorMetrado = mayorMetrado || {}
+                res.json(
+                    {
+                      "partida":partidas[0],
+                      "mayor_metrado":{
+                          "mm_avance_metrado": mayorMetrado.avance_metrado||0,
+                          "mm_avance_costo": mayorMetrado.avance_costo||0,
+                          "mm_metrados_saldo": mayorMetrado.metrados_saldo||0,
+                          "mm_metrados_costo_saldo": mayorMetrado.metrados_costo_saldo||0,
+                          "mm_porcentaje": mayorMetrado.porcentaje||0
+                      },
+                      "actividades":actividades
+                    }
+                );
               }
             })
           }
@@ -304,36 +278,23 @@ module.exports = function(app){
             if(err){ res.status(204).json(err);}
             else{
               
-              User2.getPartidas(null,avanceActividad.Actividades_id_actividad,(err,partida)=>{
-                if(err){ res.status(204).json(err);}
-                else{
-                  
-                  User2.getActividades(partida[0].id_partida,(err,actividades)=>{
-                    if(err){ res.status(204).json(err);}
-                    else{
-                      User2.getPartidasMayorMetradoAvance(partida[0].id_partida,(err,mayorMetrado)=>{
-                        if(err){ res.status(204).json(err);}
-                        else{
-                            mayorMetrado = mayorMetrado||{}
-                            res.json(
-                                {
-                                  "partida":partida[0],
-                                  "mayor_metrado":{
-                                      "mm_avance_metrado": mayorMetrado.avance_metrado||0,
-                                      "mm_avance_costo": mayorMetrado.avance_costo||0,
-                                      "mm_metrados_saldo": mayorMetrado.metrados_saldo||0,
-                                      "mm_metrados_costo_saldo": mayorMetrado.metrados_costo_saldo||0,
-                                      "mm_porcentaje": mayorMetrado.porcentaje||0
-                                  },
-                                  "actividades":actividades
-                                }
-                            );
-                        }
-                      })	
-                    }
-                  })
-                }
-              })
+              var partidas = await User2.getPartidas(null,id_actividad)
+              var actividades = await User2.getActividades(partidas[0].id_partida)
+              mayorMetrado = await User2.getPartidasMayorMetradoAvance(partidas[0].id_partida)
+              mayorMetrado = mayorMetrado || {}
+              res.json(
+                  {
+                    "partida":partidas[0],
+                    "mayor_metrado":{
+                        "mm_avance_metrado": mayorMetrado.avance_metrado||0,
+                        "mm_avance_costo": mayorMetrado.avance_costo||0,
+                        "mm_metrados_saldo": mayorMetrado.metrados_saldo||0,
+                        "mm_metrados_costo_saldo": mayorMetrado.metrados_costo_saldo||0,
+                        "mm_porcentaje": mayorMetrado.porcentaje||0
+                    },
+                    "actividades":actividades
+                  }
+              );
             }
           })
         }); 
@@ -351,36 +312,23 @@ module.exports = function(app){
           if(err){ res.status(204).json(err);}
           else{
             
-            User2.getPartidas(null,avanceActividad.Actividades_id_actividad,(err,partida)=>{
-              if(err){ res.status(204).json(err);}
-              else{
-                
-                User2.getActividades(partida[0].id_partida,(err,actividades)=>{
-                  if(err){ res.status(204).json(err);}
-                  else{
-                    User2.getPartidasMayorMetradoAvance(partida[0].id_partida,(err,mayorMetrado)=>{
-                      if(err){ res.status(204).json(err);}
-                      else{
-                          mayorMetrado = mayorMetrado||{}
-                          res.json(
-                              {
-                                "partida":partida[0],
-                                "mayor_metrado":{
-                                    "mm_avance_metrado": mayorMetrado.avance_metrado||0,
-                                    "mm_avance_costo": mayorMetrado.avance_costo||0,
-                                    "mm_metrados_saldo": mayorMetrado.metrados_saldo||0,
-                                    "mm_metrados_costo_saldo": mayorMetrado.metrados_costo_saldo||0,
-                                    "mm_porcentaje": mayorMetrado.porcentaje||0
-                                },
-                                "actividades":actividades
-                              }
-                          );
-                      }
-                    })	
+            var partidas = await User2.getPartidas(null,id_actividad)
+              var actividades = await User2.getActividades(partidas[0].id_partida)
+              mayorMetrado = await User2.getPartidasMayorMetradoAvance(partidas[0].id_partida)
+              mayorMetrado = mayorMetrado || {}
+              res.json(
+                  {
+                    "partida":partidas[0],
+                    "mayor_metrado":{
+                        "mm_avance_metrado": mayorMetrado.avance_metrado||0,
+                        "mm_avance_costo": mayorMetrado.avance_costo||0,
+                        "mm_metrados_saldo": mayorMetrado.metrados_saldo||0,
+                        "mm_metrados_costo_saldo": mayorMetrado.metrados_costo_saldo||0,
+                        "mm_porcentaje": mayorMetrado.porcentaje||0
+                    },
+                    "actividades":actividades
                   }
-                })
-              }
-            })
+              );
           }
         })
       }
@@ -446,36 +394,23 @@ module.exports = function(app){
             if(err){ res.status(204).json(err);}
             else{
               
-              User2.getPartidas(null,avanceActividad.Actividades_id_actividad,(err,partida)=>{
-                if(err){ res.status(204).json(err);}
-                else{
-                  
-                  User2.getActividades(partida[0].id_partida,(err,actividades)=>{
-                    if(err){ res.status(204).json(err);}
-                    else{
-                      User2.getPartidasMayorMetradoAvance(partida[0].id_partida,(err,mayorMetrado)=>{
-                        if(err){ res.status(204).json(err);}
-                        else{
-                            mayorMetrado = mayorMetrado||{}
-                            res.json(
-                                {
-                                  "partida":partida[0],
-                                  "mayor_metrado":{
-                                      "mm_avance_metrado": mayorMetrado.avance_metrado||0,
-                                      "mm_avance_costo": mayorMetrado.avance_costo||0,
-                                      "mm_metrados_saldo": mayorMetrado.metrados_saldo||0,
-                                      "mm_metrados_costo_saldo": mayorMetrado.metrados_costo_saldo||0,
-                                      "mm_porcentaje": mayorMetrado.porcentaje||0
-                                  },
-                                  "actividades":actividades
-                                }
-                            );
-                        }
-                      })	
-                    }
-                  })
-                }
-              })
+              var partidas = await User2.getPartidas(null,id_actividad)
+              var actividades = await User2.getActividades(partidas[0].id_partida)
+              mayorMetrado = await User2.getPartidasMayorMetradoAvance(partidas[0].id_partida)
+              mayorMetrado = mayorMetrado || {}
+              res.json(
+                  {
+                    "partida":partidas[0],
+                    "mayor_metrado":{
+                        "mm_avance_metrado": mayorMetrado.avance_metrado||0,
+                        "mm_avance_costo": mayorMetrado.avance_costo||0,
+                        "mm_metrados_saldo": mayorMetrado.metrados_saldo||0,
+                        "mm_metrados_costo_saldo": mayorMetrado.metrados_costo_saldo||0,
+                        "mm_porcentaje": mayorMetrado.porcentaje||0
+                    },
+                    "actividades":actividades
+                  }
+              );
             }
           })
         }); 
@@ -494,36 +429,23 @@ module.exports = function(app){
           if(err){ res.status(204).json(err);}
           else{
             
-            User2.getPartidas(null,avanceActividad.Actividades_id_actividad,(err,partida)=>{
-              if(err){ res.status(204).json(err);}
-              else{
-                
-                User2.getActividades(partida[0].id_partida,(err,actividades)=>{
-                  if(err){ res.status(204).json(err);}
-                  else{
-                    User2.getPartidasMayorMetradoAvance(partida[0].id_partida,(err,mayorMetrado)=>{
-                      if(err){ res.status(204).json(err);}
-                      else{
-                          mayorMetrado = mayorMetrado||{}
-                          res.json(
-                              {
-                                "partida":partida[0],
-                                "mayor_metrado":{
-                                    "mm_avance_metrado": mayorMetrado.avance_metrado||0,
-                                    "mm_avance_costo": mayorMetrado.avance_costo||0,
-                                    "mm_metrados_saldo": mayorMetrado.metrados_saldo||0,
-                                    "mm_metrados_costo_saldo": mayorMetrado.metrados_costo_saldo||0,
-                                    "mm_porcentaje": mayorMetrado.porcentaje||0
-                                },
-                                "actividades":actividades
-                              }
-                          );
-                      }
-                    })	
-                  }
-                })
-              }
-            })
+            var partidas = await User2.getPartidas(null,id_actividad)
+            var actividades = await User2.getActividades(partidas[0].id_partida)
+            mayorMetrado = await User2.getPartidasMayorMetradoAvance(partidas[0].id_partida)
+            mayorMetrado = mayorMetrado || {}
+            res.json(
+                {
+                  "partida":partidas[0],
+                  "mayor_metrado":{
+                      "mm_avance_metrado": mayorMetrado.avance_metrado||0,
+                      "mm_avance_costo": mayorMetrado.avance_costo||0,
+                      "mm_metrados_saldo": mayorMetrado.metrados_saldo||0,
+                      "mm_metrados_costo_saldo": mayorMetrado.metrados_costo_saldo||0,
+                      "mm_porcentaje": mayorMetrado.porcentaje||0
+                  },
+                  "actividades":actividades
+                }
+            );
           }
         })
       }
