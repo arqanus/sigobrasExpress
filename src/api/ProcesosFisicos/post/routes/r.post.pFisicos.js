@@ -161,7 +161,7 @@ module.exports = function(app){
                 if(err){ res.status(204).json(err);}
                 else{
                   
-                  var partidas = await User2.getPartidas(null,id_actividad)
+                  var partidas = await User2.getPartidas(null,fields.Actividades_id_actividad)
               var actividades = await User2.getActividades(partidas[0].id_partida)
               mayorMetrado = await User2.getPartidasMayorMetradoAvance(partidas[0].id_partida)
               mayorMetrado = mayorMetrado || {}
@@ -195,7 +195,7 @@ module.exports = function(app){
               if(err){ res.status(204).json(err);}
               else{
                 
-                var partidas = await User2.getPartidas(null,id_actividad)
+                var partidas = await User2.getPartidas(null,fields.Actividades_id_actividad)
                 var actividades = await User2.getActividades(partidas[0].id_partida)
                 mayorMetrado = await User2.getPartidasMayorMetradoAvance(partidas[0].id_partida)
                 mayorMetrado = mayorMetrado || {}
@@ -278,7 +278,7 @@ module.exports = function(app){
             if(err){ res.status(204).json(err);}
             else{
               
-              var partidas = await User2.getPartidas(null,id_actividad)
+              var partidas = await User2.getPartidas(null,fields.Actividades_id_actividad)
               var actividades = await User2.getActividades(partidas[0].id_partida)
               mayorMetrado = await User2.getPartidasMayorMetradoAvance(partidas[0].id_partida)
               mayorMetrado = mayorMetrado || {}
@@ -312,7 +312,7 @@ module.exports = function(app){
           if(err){ res.status(204).json(err);}
           else{
             
-            var partidas = await User2.getPartidas(null,id_actividad)
+            var partidas = await User2.getPartidas(null,fields.Actividades_id_actividad)
               var actividades = await User2.getActividades(partidas[0].id_partida)
               mayorMetrado = await User2.getPartidasMayorMetradoAvance(partidas[0].id_partida)
               mayorMetrado = mayorMetrado || {}
@@ -394,7 +394,7 @@ module.exports = function(app){
             if(err){ res.status(204).json(err);}
             else{
               
-              var partidas = await User2.getPartidas(null,id_actividad)
+              var partidas = await User2.getPartidas(null,fields.Actividades_id_actividad)
               var actividades = await User2.getActividades(partidas[0].id_partida)
               mayorMetrado = await User2.getPartidasMayorMetradoAvance(partidas[0].id_partida)
               mayorMetrado = mayorMetrado || {}
@@ -429,7 +429,7 @@ module.exports = function(app){
           if(err){ res.status(204).json(err);}
           else{
             
-            var partidas = await User2.getPartidas(null,id_actividad)
+            var partidas = await User2.getPartidas(null,fields.Actividades_id_actividad)
             var actividades = await User2.getActividades(partidas[0].id_partida)
             mayorMetrado = await User2.getPartidasMayorMetradoAvance(partidas[0].id_partida)
             mayorMetrado = mayorMetrado || {}
