@@ -1,8 +1,14 @@
 let userModel = {};
+userModel.Redondear =(data) =>{
+    data = Math.round(data * 10000000000) / 10000000000
+    data = Math.round(data * 10000) / 10000
+    return data
+}
 userModel.formatoSoles = function formatoSoles(data){
     // console.log("formatoSoles",data);
     
     data = Number(data)
+    data = userModel.Redondear(data)
     if(isNaN(data)||data ==0){
         data = "-"
     }
@@ -27,6 +33,7 @@ userModel.formatoSolesPresicion = function formatoSoles(data){
     // console.log("formatoSoles",data);
     
     data = Number(data)
+    data = userModel.Redondear(data)
     if(isNaN(data)||data ==0){
         data = "-"
     }else{
@@ -43,6 +50,7 @@ userModel.formatoPorcentaje = function formatoSoles(data){
     // console.log("formatoSoles",data);
     
     data = Number(data)
+    data = userModel.Redondear(data)
     if(isNaN(data)){
         data = 0
     }else{

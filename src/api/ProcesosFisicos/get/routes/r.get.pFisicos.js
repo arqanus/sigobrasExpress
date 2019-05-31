@@ -139,7 +139,7 @@ module.exports = (app) => {
     })
     app.post('/getPartidasObra', async (req, res) => {
         try {
-            var data = await User.getPartidas(null, null,req.body.id_ficha)
+            var data = await User.getPartidas(null, null,req.body.id_ficha,false)
             res.json(data)
         } catch (error) {
             console.log(error)
