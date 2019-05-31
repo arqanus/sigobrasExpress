@@ -45,20 +45,20 @@ module.exports = function(app){
             if(err){ res.status(204).json(err);}
             else{
               var partidas = await User2.getPartidas(null,id_actividad)
-              var data = await User2.getActividades(partidas[0].id_partida)
+              var actividades = await User2.getActividades(partidas[0].id_partida)
               mayorMetrado = await User2.getPartidasMayorMetradoAvance(partidas[0].id_partida)
               mayorMetrado = mayorMetrado || {}
               res.json(
                   {
                     "partida":partidas[0],
-                      "mayor_metrado": {
-                          "mm_avance_metrado": mayorMetrado.avance_metrado || 0,
-                          "mm_avance_costo": mayorMetrado.avance_costo || 0,
-                          "mm_metrados_saldo": mayorMetrado.metrados_saldo || 0,
-                          "mm_metrados_costo_saldo": mayorMetrado.metrados_costo_saldo || 0,
-                          "mm_porcentaje": mayorMetrado.porcentaje || 0
-                      },
-                      "actividades": data
+                    "mayor_metrado":{
+                        "mm_avance_metrado": mayorMetrado.avance_metrado||0,
+                        "mm_avance_costo": mayorMetrado.avance_costo||0,
+                        "mm_metrados_saldo": mayorMetrado.metrados_saldo||0,
+                        "mm_metrados_costo_saldo": mayorMetrado.metrados_costo_saldo||0,
+                        "mm_porcentaje": mayorMetrado.porcentaje||0
+                    },
+                    "actividades":actividades
                   }
               );
               // User2.getPartidas(null,id_actividad,(err,partida)=>{
