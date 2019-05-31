@@ -199,7 +199,7 @@ userModel.getComponentesPNuevas = (id_ficha) => {
             if (error) {
                 reject(error);
             } else if (res.length == 0) {
-                reject("vacio");
+                resolve("vacio");
             } else {
                 resolve(res);
             }
