@@ -327,7 +327,7 @@ userModel.getclasificadoresPesupuestarios = (todos = true, clasificador = null) 
 };
 userModel.getdocumentosadquisicion = (id_documentoAdquisicion) => {
     return new Promise((resolve, reject) => {
-        pool.query("SELECT documentosadquisicion.id_documentoAdquisicion, documentosadquisicion.razonSocial, documentosadquisicion.RUC, DATE_FORMAT(documentosadquisicion.fecha,'%Y-%m-%d'), documentosadquisicion.SIAF, documentosadquisicion.NCP, clasificadores_presupuestarios.clasificador FROM documentosadquisicion LEFT JOIN clasificadores_presupuestarios ON clasificadores_presupuestarios.id_clasificador_presupuestario = documentosadquisicion.clasificadores_presupuestarios_id_clasificador_presupuestario WHERE documentosadquisicion.id_documentoAdquisicion = ?", [id_documentoAdquisicion], (error, res) => {
+        pool.query("SELECT documentosadquisicion.id_documentoAdquisicion, documentosadquisicion.razonSocial, documentosadquisicion.RUC, DATE_FORMAT(documentosadquisicion.fecha,'%Y-%m-%d') fecha, documentosadquisicion.SIAF, documentosadquisicion.NCP, clasificadores_presupuestarios.clasificador FROM documentosadquisicion LEFT JOIN clasificadores_presupuestarios ON clasificadores_presupuestarios.id_clasificador_presupuestario = documentosadquisicion.clasificadores_presupuestarios_id_clasificador_presupuestario WHERE documentosadquisicion.id_documentoAdquisicion = ?", [id_documentoAdquisicion], (error, res) => {
             if (error) {
                 reject(error);
             }
