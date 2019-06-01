@@ -35,7 +35,7 @@ module.exports = function(app){
 	})
 	app.post('/getmaterialesResumenEjecucionRealSinCodigo',async(req,res)=>{
 		try {
-			var data = await  User.getmaterialesResumenEjecucionReal(req.body.id_ficha,req.body.tipo,"null",false)
+			var data = await  User.getmaterialesResumenEjecucionReal(req.body.id_ficha,req.body.tipo,false,"null",false)
 			res.json(data)
 		} catch (error) {
 			res.status(400).json(error);	
@@ -50,7 +50,7 @@ module.exports = function(app){
 				tipoDoc.tipoDocumento = tipoDoc.nombre_largo
 				delete tipoDoc.id_tipoDocumentoAdquisicion
 				delete tipoDoc.nombre_largo
-				var codigos = await  User.getmaterialesResumenEjecucionRealCodigos(req.body.id_ficha,req.body.tipo,tipoDoc.idDocumento)	
+				var codigos = await  User.getmaterialesResumenEjecucionRealCodigos(req.body.id_ficha,tipoDoc.idDocumento)	
 				tipoDoc.cantidad = codigos.length
 				tipoDoc.codigos = codigos
 			}
@@ -64,7 +64,7 @@ module.exports = function(app){
 	app.post('/getmaterialesResumenEjecucionRealCodigosData',async(req,res)=>{
 		try {
 			
-			var data = await  User.getmaterialesResumenEjecucionReal(req.body.id_ficha,req.body.tipo,req.body.codigo,false,req.body.id_tipoDocumentoAdquisicion,false)
+			var data = await  User.getmaterialesResumenEjecucionReal(req.body.id_ficha,req.body.tipo,true,req.body.codigo,false,req.body.id_tipoDocumentoAdquisicion,false)
 			var id_documentoAdquisicion =  data[0].documentosAdquisicion_id_documentoAdquisicion
 			var documentoAdquisicion = await  User.getdocumentosadquisicion(id_documentoAdquisicion)
 			if(documentoAdquisicion == "vacio"){
