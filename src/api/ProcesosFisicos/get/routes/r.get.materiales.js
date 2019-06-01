@@ -69,6 +69,14 @@ module.exports = function(app){
 			var documentoAdquisicion = await  User.getdocumentosadquisicion(id_documentoAdquisicion)
 			if(documentoAdquisicion == "vacio"){
 				documentoAdquisicion = {}
+				documentoAdquisicion.id_documentoAdquisicion = ""
+				documentoAdquisicion.razonSocial = ""
+				documentoAdquisicion.RUC = ""
+				documentoAdquisicion.fecha = ""
+				documentoAdquisicion.SIAF = ""
+				documentoAdquisicion.NCP = ""
+				documentoAdquisicion.clasificadores_presupuestarios_id_clasificador_presupuestario = ""
+				documentoAdquisicion.clasificador = ""
 			}
 			documentoAdquisicion.recursos = data	
 			res.json(
