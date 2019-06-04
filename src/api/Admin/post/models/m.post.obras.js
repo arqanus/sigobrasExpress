@@ -222,7 +222,7 @@ userModel.posthistorialActividades = (data) => {
 }
 userModel.postAvanceActividadPorObra = (data) => {
 	return new Promise((resolve, reject) => {
-		pool.query('Insert into avanceActividades (actividades_id_actividad,fecha,valor,accesos_id_acceso) values ?', [data], (err, res) => {
+		pool.query('Insert into avanceActividades (actividades_id_actividad,fecha,valor,accesos_id_acceso) values ?', [data], (error, res) => {
 			if (error) { 
 				console.log(error);
 				reject(error.code); 
