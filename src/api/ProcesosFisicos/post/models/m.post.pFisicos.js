@@ -156,4 +156,15 @@ userModel.putrecursosEjecucionrealIdDocumentoAdquisicion = (data) => {
         })
     })
 }
+userModel.postRecursosNuevos = (data) => {
+    return new Promise((resolve, reject) => {
+        pool.query("INSERT INTO recursosnuevos set ?", [data], (error, res) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(res);
+            }
+        })
+    })
+}
 module.exports = userModel;

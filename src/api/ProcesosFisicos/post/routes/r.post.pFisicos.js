@@ -486,4 +486,13 @@ module.exports = function (app) {
       res.status(400).json(error)
     }
   })
+  app.post('/postRecursosNuevos', async (req, res) => {
+    try {
+      var data = await User.postRecursosNuevos(req.body)
+      res.json("exito")
+    } catch (error) {
+      console.log(error)
+      res.status(400).json(error)
+    }
+  })
 }
