@@ -323,7 +323,7 @@ userModel.getRecursosNuevos = (id_ficha) => {
                 reject(error);
             }
             else if (res.length == 0) {
-                reject("vacio");
+                resolve([]);
             }else{
                 resolve(res);
             }            
