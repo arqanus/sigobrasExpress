@@ -1,13 +1,21 @@
-const express = require('express');
-const app = express();
 
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const morganBody = require('morgan-body');
+var path = require('path');
 
 const cors =require('cors');
 
 const socket = require('socket.io');
+
+var fs = require('fs');
+var https = require('https');
+var privateKey  = fs.readFileSync((path.resolve('sslcert/server.key')), 'utf8');
+var certificate = fs.readFileSync((path.resolve('sslcert/server.cert')), 'utf8');
+
+var credentials = {key: privateKey, cert: certificate};
+const express = require('express');
+var app = express();
 
 const PORT = process.env.PORT || 9000
 
@@ -76,16 +84,13 @@ require('./api/GestionTareas/get/routes/r.get.GT')(app);
 require('./api/GestionTareas/post/routes/r.post.GT')(app);
 require('./api/GestionTareas/put/routes/r.put.GT')(app);
 
-
-
-const server = app.listen(app.get('port'),()=>{
-	console.log('running in port', PORT);
+var server = https.createServer(credentials, app).listen(PORT, () => {
+  console.log('Listening...',PORT)
 })
 
 // Set up socket.io
 const io = socket(server);
 let online = 0;
-let Tareas_online = 0;
 
 
 io.on('connection', (socket) => {
