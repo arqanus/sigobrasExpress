@@ -87,5 +87,14 @@ module.exports = function(app){
 			}
 		})
   })
+  app.put('/putRecursoNuevo', async (req, res) => {
+    try {
+      var data = await User.putRecursoNuevo(req.body)
+      res.json("exito")
+    } catch (error) {
+      console.log(error)
+      res.status(400).json(error)
+    }
+  })
   
 }
