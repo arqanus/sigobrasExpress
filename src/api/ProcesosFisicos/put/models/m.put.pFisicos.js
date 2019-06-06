@@ -148,5 +148,16 @@ userModel.getIconocategoriaRecurso = (id_partida,callback)=>{
         }
     })
 }
+userModel.putRecursoNuevo = (recursoNuevo) => {
+    return new Promise((resolve, reject) => {
+        pool.query("UPDATE recursosnuevos SET recursosnuevos.descripcion = ?, recursosnuevos.unidad = ?, recursosnuevos.cantidad = ?, recursosnuevos.precio = ? where recursosnuevos.id_recursoNuevo = ?", [recursoNuevo.descripcion,recursoNuevo.unidad,recursoNuevo.cantidad,recursoNuevo.precio,recursoNuevo.id_recursoNuevo], (error, res) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(res);
+            }
+        })
+    })
+}
 
 module.exports = userModel;
