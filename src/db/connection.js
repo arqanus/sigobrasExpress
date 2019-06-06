@@ -15,7 +15,7 @@ var pool = mysql.createPool({
     // user: 'kaido',
     // password: 'kaido',    
     // database: 'sigobras_db_test',
-    // //dev_test
+    //dev_test
     host: '192.168.0.4',
     user: 'kaido',
     password: 'kaido',    
