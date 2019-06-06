@@ -91,16 +91,16 @@ require('./api/GestionTareas/put/routes/r.put.GT')(app);
 
 
 //defecto
-// const server = app.listen(app.get('port'),()=>{
-// 	console.log('running in port', PORT);
-// })
+const server = app.listen(app.get('port'),()=>{
+	console.log('running in port', PORT);
+})
 // // set up a route to redirect http to https
 // app.get('*', (req, res) =>{  
 //   res.redirect('https://localhost:10000' + req.url);
 // })
-var server = https.createServer(credentials, app).listen(9000, () => {
-  console.log('Listening...',PORT)
-})
+// var server = https.createServer(credentials, app).listen(9000, () => {
+//   console.log('Listening...',PORT)
+// })
 
 
 
