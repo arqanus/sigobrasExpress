@@ -17,7 +17,7 @@ var credentials = {key: privateKey, cert: certificate};
 const express = require('express');
 var app = express();
 
-const PORT = process.env.PORT || 9002
+const PORT = process.env.PORT || 9000
 
 
 //open cors
