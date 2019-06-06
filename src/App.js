@@ -10,8 +10,8 @@ const socket = require('socket.io');
 
 var fs = require('fs');
 var https = require('https');
-var privateKey  = fs.readFileSync((path.resolve('sslcert/server.key')), 'utf8');
-var certificate = fs.readFileSync((path.resolve('sslcert/server.cert')), 'utf8');
+var privateKey  = fs.readFileSync(path.resolve(__dirname + '/sslcert/server.key'), 'utf8');
+var certificate = fs.readFileSync(path.resolve(__dirname + '/sslcert/server.cert'), 'utf8');
 
 var credentials = {key: privateKey, cert: certificate};
 const express = require('express');
