@@ -110,7 +110,7 @@ module.exports = function(app){
 			res.status(400).json(error);	
 		}
 	})
-  	app.post('/getmaterialescomponentes',async(req,res)=>{
+  app.post('/getmaterialescomponentes',async(req,res)=>{
 			try {
 				var componentes = await  User.getmaterialescomponentes(req.body.id_ficha)
 				var partidas = await  User.getmaterialespartidacomponente(componentes[0].id_componente)
