@@ -489,7 +489,11 @@ module.exports = function (app) {
   app.post('/postRecursosNuevos', async (req, res) => {
     try {
       var data = await User.postRecursosNuevos(req.body)
-      res.json("exito")
+      res.json(
+        {          
+          "id_recursoNuevo":data.insertId
+        }
+      )
     } catch (error) {
       console.log(error)
       res.status(400).json(error)

@@ -87,14 +87,17 @@ require('./api/GestionTareas/put/routes/r.put.GT')(app);
 // var server = https.createServer(credentials, app).listen(PORT, () => {
 //   console.log('Listening...',PORT)
 // })
-var server = https.createServer(credentials, app).listen(PORT, () => {
-  console.log('Listening...',PORT)
+// var server = https.createServer(credentials, app).listen(PORT, () => {
+//   console.log('Listening...',PORT)
+// })
+const server = app.listen(app.get('port'),()=>{
+	console.log('running in port', PORT);
 })
 
 // set up a route to redirect http to https
-server.get('*', (req, res) =>{  
-    res.redirect('https://' + req.headers.host + req.url);
-})
+// server.get('*', (req, res) =>{  
+//     res.redirect('https://' + req.headers.host + req.url);
+// })
 
 // Set up socket.io
 const io = socket(server);
