@@ -32,18 +32,26 @@ module.exports = function (app) {
 			recursosEjecucionReal = recursosEjecucionReal.concat(nuevosRecursos)
 			//ordenar series
 			function compare(a, b) {
-				if (a.id_tipoDocumentoAdquisicion > b.id_tipoDocumentoAdquisicion) {
+				if (!(a.id_tipoDocumentoAdquisicion == "") && (b.id_tipoDocumentoAdquisicion == "")) {
 					return -1;
 				}
-				if (a.id_tipoDocumentoAdquisicion < b.id_tipoDocumentoAdquisicion) {
+				if ((a.id_tipoDocumentoAdquisicion == "") && !(b.id_tipoDocumentoAdquisicion == "")) {
 					return 1;
 				}
-				if (a.id_tipoDocumentoAdquisicion == b.id_tipoDocumentoAdquisicion) {
-					if (a.recurso_codigo > b.recurso_codigo) {
+				if (!(a.id_tipoDocumentoAdquisicion == "") && !(b.id_tipoDocumentoAdquisicion == "")) {
+					if (a.id_tipoDocumentoAdquisicion < b.id_tipoDocumentoAdquisicion) {
 						return -1;
 					}
-					if (a.recurso_codigo < b.recurso_codigo) {
+					if (a.id_tipoDocumentoAdquisicion > b.id_tipoDocumentoAdquisicion) {
 						return 1;
+					}
+					if (a.id_tipoDocumentoAdquisicion == b.id_tipoDocumentoAdquisicion) {
+						if (a.recurso_codigo < b.recurso_codigo) {
+							return -1;
+						}
+						if (a.recurso_codigo > b.recurso_codigo) {
+							return 1;
+						}
 					}
 				}
 				if (a.descripcion < b.descripcion) {
