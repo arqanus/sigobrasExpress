@@ -316,14 +316,11 @@ userModel.getmaterialesiconoscategoriasrecursos = () => {
         });
     });
 };
-userModel.getRecursosNuevos = (id_ficha) => {
+userModel.getRecursosNuevos = (id_ficha,tipo) => {
     return new Promise((resolve, reject) => {
-        pool.query("SELECT id_recursoNuevo,'nuevo' recurso_estado_origen,codigo recurso_codigo, id_tipoDocumentoAdquisicion, nombre tipodocumentoadquisicion_nombre, descripcion, unidad, cantidad recurso_cantidad, precio recurso_precio, cantidad*precio recurso_parcial, '' recurso_gasto_cantidad, '' recurso_gasto_precio, '' recurso_gasto_parcial, '' diferencia, '' porcentaje, tipo, false bloqueado, documentosAdquisicion_id_documentoAdquisicion FROM recursosnuevos LEFT JOIN tipodocumentoadquisicion ON tipodocumentoadquisicion.id_tipoDocumentoAdquisicion = recursosnuevos.tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion WHERE recursosnuevos.fichas_id_ficha = ?",[id_ficha],(error, res) => {
+        pool.query("SELECT id_recursoNuevo,'nuevo' recurso_estado_origen,codigo recurso_codigo, id_tipoDocumentoAdquisicion, nombre tipodocumentoadquisicion_nombre, descripcion, unidad, cantidad recurso_cantidad, precio recurso_precio, cantidad*precio recurso_parcial, '' recurso_gasto_cantidad, '' recurso_gasto_precio, '' recurso_gasto_parcial, '' diferencia, '' porcentaje, tipo, false bloqueado, documentosAdquisicion_id_documentoAdquisicion FROM recursosnuevos LEFT JOIN tipodocumentoadquisicion ON tipodocumentoadquisicion.id_tipoDocumentoAdquisicion = recursosnuevos.tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion WHERE recursosnuevos.fichas_id_ficha = ? and tipo = ?",[id_ficha,tipo],(error, res) => {
             if (error) {
                 reject(error);
-            }
-            else if (res.length == 0) {
-                resolve([]);
             }else{
                 resolve(res);
             }            
