@@ -338,5 +338,16 @@ userModel.getRecursosNuevosCodigos = (id_ficha,id_tipoDocumentoAdquisicion) => {
         });
     });
 };
+userModel.getRecursosNuevosCodigosData = (id_ficha,codigo) => {
+    return new Promise((resolve, reject) => {
+        pool.query("SELECT 'nuevo' recurso_estado_origen, tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion id_tipoDocumentoAdquisicion, tipodocumentoadquisicion.nombre tipodocumentoadquisicion_nombre, descripcion, unidad, cantidad recurso_cantidad, precio recurso_precio, cantidad * precio recurso_parcial FROM recursosnuevos left join tipodocumentoadquisicion on tipodocumentoadquisicion.id_tipoDocumentoAdquisicion = recursosnuevos.tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion WHERE fichas_id_ficha = ? AND codigo = ?",[id_ficha,codigo],(error, res) => {
+            if (error) {
+                reject(error);
+            }else{
+                resolve(res);
+            }            
+        });
+    });
+};
 
 module.exports = userModel;
