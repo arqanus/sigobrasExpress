@@ -106,9 +106,7 @@ userModel.getmaterialesResumenEjecucionReal = (id_ficha, tipo,todosRecursos=fals
             if (error) {
                 reject(error);
             }
-            else if (res.length == 0) {
-                reject("vacio");
-            } else {
+            else {
                 for (let i = 0; i < res.length; i++) {
                     const recurso = res[i];
                     recurso.recurso_cantidad = tools.formatoSoles(recurso.recurso_cantidad)
