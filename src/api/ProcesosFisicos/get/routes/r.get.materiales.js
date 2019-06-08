@@ -87,6 +87,10 @@ module.exports = function (app) {
 				delete tipoDoc.id_tipoDocumentoAdquisicion
 				delete tipoDoc.nombre_largo
 				var codigos = await User.getmaterialesResumenEjecucionRealCodigos(req.body.id_ficha, tipoDoc.idDocumento)
+				var codigosNuevosRecursos = await User.getRecursosNuevosCodigos(req.body.id_ficha, tipoDoc.idDocumento)
+				codigos = codigos.concat(codigosNuevosRecursos)
+				//quitando duplicados
+				codigos = [...new Set(codigos)];
 				tipoDoc.cantidad = codigos.length
 				tipoDoc.codigos = codigos
 			}
