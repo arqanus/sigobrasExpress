@@ -327,5 +327,16 @@ userModel.getRecursosNuevos = (id_ficha,tipo) => {
         });
     });
 };
+userModel.getRecursosNuevosCodigos = (id_ficha,id_tipoDocumentoAdquisicion) => {
+    return new Promise((resolve, reject) => {
+        pool.query("SELECT codigo,count(recursosnuevos.id_recursoNuevo)cantidad,false bloqueado FROM recursosnuevos WHERE recursosnuevos.fichas_id_ficha = ? AND recursosnuevos.tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion = ? GROUP BY codigo",[id_ficha,id_tipoDocumentoAdquisicion],(error, res) => {
+            if (error) {
+                reject(error);
+            }else{
+                resolve(res);
+            }            
+        });
+    });
+};
 
 module.exports = userModel;
