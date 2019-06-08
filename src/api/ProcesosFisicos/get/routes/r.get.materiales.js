@@ -105,6 +105,8 @@ module.exports = function (app) {
 		try {
 
 			var data = await User.getmaterialesResumenEjecucionReal(req.body.id_ficha, req.body.tipo, true, req.body.codigo, false, req.body.id_tipoDocumentoAdquisicion, false)
+			var dataRecursoNuevo = await User.getRecursosNuevosCodigosData(req.body.id_ficha,req.body.codigo)
+			data = data.concat(dataRecursoNuevo)
 			var id_documentoAdquisicion = data[0].documentosAdquisicion_id_documentoAdquisicion
 			var documentoAdquisicion = await User.getdocumentosadquisicion(id_documentoAdquisicion)
 			if (documentoAdquisicion == "vacio") {
@@ -120,7 +122,10 @@ module.exports = function (app) {
 			}
 			documentoAdquisicion.recursos = data
 			res.json(
-				documentoAdquisicion
+				{
+					dataRecursoNuevo,
+					documentoAdquisicion
+				}				
 			)
 		} catch (error) {
 			res.status(400).json(error);
