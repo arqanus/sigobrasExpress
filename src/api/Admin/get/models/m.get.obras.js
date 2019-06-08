@@ -12,7 +12,7 @@ userModel.getObras = () => {
 }
 userModel.getObra = (id_ficha) => {
     return new Promise((resolve, reject) => {
-        pool.query('select *from fichas where id_ficha = ?',[id_ficha], (err, res) => {
+        pool.query('select *from fichas where id_ficha = ?', [id_ficha], (err, res) => {
             if (err) reject(err);
             resolve(res[0]);
         })
@@ -262,6 +262,39 @@ userModel.getIconocategoriaRecursos = () => {
                 reject(err.code);
             } else {
                 resolve(res[0])
+            }
+        })
+    })
+}
+userModel.getCostosPresupuestales = (id_ficha) => {
+    return new Promise((resolve, reject) => {
+        pool.query("SELECT * FROM costospresupuestales WHERE fichas_id_ficha = ?", [id_ficha], (err, res) => {
+            if (err) {
+                reject(err.code);
+            } else {
+                resolve(res)
+            }
+        })
+    })
+}
+userModel.getCostosPresupuestalesMontos = (id_ficha) => {
+    return new Promise((resolve, reject) => {
+        pool.query("SELECT costospresupuestales.nombre, SUM(presupuesto_analitico.monto) monto FROM costospresupuestales INNER JOIN presupuesto_analitico ON presupuesto_analitico.costosPresupuestales_id_costoPresupuestal = costospresupuestales.id_costoPresupuestal WHERE costospresupuestales.fichas_id_ficha = ? GROUP BY costospresupuestales.id_costoPresupuestal ", [id_ficha], (err, res) => {
+            if (err) {
+                reject(err.code);
+            } else {
+                resolve(res)
+            }
+        })
+    })
+}
+userModel.getResoluciones = (id_ficha) => {
+    return new Promise((resolve, reject) => {
+        pool.query("select * from resoluciones where fichas_id_ficha=?", [id_ficha], (err, res) => {
+            if (err) {
+                reject(err.code);
+            } else {
+                resolve(res)
             }
         })
     })

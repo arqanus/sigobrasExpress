@@ -17,6 +17,14 @@ module.exports = (app)=>{
 		} catch (error) {
 			res.status(400).json(error)
 		}
-
+	})
+	app.delete('/deleteResolucion',async(req,res)=>{
+		try {
+			var data  = await User.deleteResolucion(req.body.id_resolucion)
+			res.json(data)
+		} catch (error) {
+			console.log(error);			
+			res.status(400).json(error)
+		}
 	})
 }
