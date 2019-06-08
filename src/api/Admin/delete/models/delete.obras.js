@@ -22,6 +22,18 @@ userModel.deleteEliminarUsuario = (id_usuario)=>{
     })
     
 }
+userModel.deleteResolucion = (id_resolucion)=>{
+    return new Promise((resolve, reject) => { 
+        pool.query("delete from resoluciones where id_resolucion = ?",[id_resolucion],(error,res)=>{
+            if(error){
+                reject(error.code);
+            }else{
+                resolve(res)
+            }
+        })
+    })
+    
+}
 
 
 module.exports = userModel;

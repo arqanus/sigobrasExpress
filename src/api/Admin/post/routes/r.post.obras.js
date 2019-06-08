@@ -254,4 +254,44 @@ module.exports = (app) => {
             res.status(400).json(error)
         }
     })
+    app.post('/postResolucion', async (req, res) => {
+        try {
+            var data = await User.postResolucion(req.body)
+            res.json(data.insertId)
+        } catch (error) {
+            res.status(400).json(error)
+        }
+    })
+    app.post('/postCostosPresupuestales', async (req, res) => {
+        try {
+            var data = await User.postCostosPresupuestales(req.body)
+            res.json(data)
+        } catch (error) {
+            res.status(400).json(error)
+        }
+    })
+    app.post('/postPresupuesto_analitico', async (req, res) => {
+        try {
+            var data = await User.postResolucion(req.body.resolucion)
+            var id_resolucion = data.insertId
+            var data = await User.postCostosPresupuestales(req.body.costosPresupuestales)
+            var costosPresupuestales  = await User2.getCostosPresupuestales(req.body.resolucion.fichas_id_ficha)
+            var presupuesto_analitico_preparado  = req.body.presupuesto_analitico_preparado
+            //remplazando foreink key de costosPresupuestales
+            for (let i = 0; i < presupuesto_analitico_preparado.length; i++) {
+                const analitico = presupuesto_analitico_preparado[i];
+                var index_analitico = costosPresupuestales.findIndex(x => x.nombre == analitico[0])
+                console.log(analitico[0],index_analitico,costosPresupuestales[index_analitico]);
+                
+                    var costoPresupuestal = costosPresupuestales[index_analitico].id_costoPresupuestal
+                analitico[0] = costoPresupuestal
+                analitico.unshift(id_resolucion)
+            }
+            var data  = await User.postPresupuestoAnalitico(presupuesto_analitico_preparado)
+            res.json(data)
+        } catch (error) {
+            console.log(error);            
+            res.status(400).json(error)
+        }
+    })
 }

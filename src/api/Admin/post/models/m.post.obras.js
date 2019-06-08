@@ -245,4 +245,40 @@ userModel.postclasificadoresPresupuestarios = (data) => {
 		})
 	})
 }
+userModel.postResolucion = (data) => {
+	return new Promise((resolve, reject) => {
+		pool.query('Insert into resoluciones set ?', [data], (error, res) => {
+			if (error) { 
+				console.log(error);
+				reject(error.code); 
+			}else {
+				resolve(res);
+			}
+		})
+	})
+}
+userModel.postCostosPresupuestales = (data) => {
+	return new Promise((resolve, reject) => {
+		pool.query('INSERT INTO costospresupuestales ( nombre, fichas_id_ficha) VALUES ? ON DUPLICATE key UPDATE nombre = VALUES(nombre)', [data], (error, res) => {
+			if (error) { 
+				console.log(error);
+				reject(error.code); 
+			}else {
+				resolve(res);
+			}
+		})
+	})
+}
+userModel.postPresupuestoAnalitico = (data) => {
+	return new Promise((resolve, reject) => {
+		pool.query('insert INTO presupuesto_analitico ( resoluciones_id_resolucion, costosPresupuestales_id_costoPresupuestal, clasificadores_presupuestarios_id_clasificador_presupuestario, monto ) VALUES ?', [data], (error, res) => {
+			if (error) { 
+				console.log(error);
+				reject(error.code); 
+			}else {
+				resolve(res);
+			}
+		})
+	})
+}
 module.exports = userModel;

@@ -89,4 +89,28 @@ module.exports = function(app){
 			res.status(400).json(error)
 		}
 	})
+	app.post('/getCostosPresupuestales',async(req,res)=>{
+		try {
+			var data = await User.getCostosPresupuestales(req.body.id_ficha)
+			res.json(data)
+		} catch (error) {
+			res.status(400).json(error)
+		}
+	})
+	app.post('/getCostosPresupuestalesMontos',async(req,res)=>{
+		try {
+			var data = await User.getCostosPresupuestalesMontos(req.body.id_ficha)
+			res.json(data)
+		} catch (error) {
+			res.status(400).json(error)
+		}
+	})
+	app.post('/getResoluciones',async(req,res)=>{
+		try {
+			var data = await User.getResoluciones(req.body.id_ficha)
+			res.json(data)
+		} catch (error) {
+			res.status(400).json(error)
+		}
+	})
 }

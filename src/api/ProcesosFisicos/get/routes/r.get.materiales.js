@@ -28,8 +28,42 @@ module.exports = function (app) {
 	app.post('/getmaterialesResumenEjecucionReal', async (req, res) => {
 		try {
 			var recursosEjecucionReal = await User.getmaterialesResumenEjecucionReal(req.body.id_ficha, req.body.tipo)
-			var nuevosRecursos = await User.getRecursosNuevos(req.body.id_ficha)
+			var nuevosRecursos = await User.getRecursosNuevos(req.body.id_ficha, req.body.tipo)
 			recursosEjecucionReal = recursosEjecucionReal.concat(nuevosRecursos)
+			//ordenar series
+			function compare(a, b) {
+				if (!(a.id_tipoDocumentoAdquisicion == "") && (b.id_tipoDocumentoAdquisicion == "")) {
+					return -1;
+				}
+				if ((a.id_tipoDocumentoAdquisicion == "") && !(b.id_tipoDocumentoAdquisicion == "")) {
+					return 1;
+				}
+				if (!(a.id_tipoDocumentoAdquisicion == "") && !(b.id_tipoDocumentoAdquisicion == "")) {
+					if (a.id_tipoDocumentoAdquisicion < b.id_tipoDocumentoAdquisicion) {
+						return -1;
+					}
+					if (a.id_tipoDocumentoAdquisicion > b.id_tipoDocumentoAdquisicion) {
+						return 1;
+					}
+					if (a.id_tipoDocumentoAdquisicion == b.id_tipoDocumentoAdquisicion) {
+						if (a.recurso_codigo < b.recurso_codigo) {
+							return -1;
+						}
+						if (a.recurso_codigo > b.recurso_codigo) {
+							return 1;
+						}
+					}
+				}
+				if (a.descripcion < b.descripcion) {
+					return -1;
+				}
+				if (a.descripcion > b.descripcion) {
+					return 1;
+				}
+				return 0;
+			}
+			recursosEjecucionReal.sort(compare);
+
 			res.json(recursosEjecucionReal)
 		} catch (error) {
 			res.status(400).json(error);
