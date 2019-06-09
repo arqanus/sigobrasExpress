@@ -106,9 +106,7 @@ userModel.getmaterialesResumenEjecucionReal = (id_ficha, tipo,todosRecursos=fals
             if (error) {
                 reject(error);
             }
-            else if (res.length == 0) {
-                reject("vacio");
-            } else {
+            else {
                 for (let i = 0; i < res.length; i++) {
                     const recurso = res[i];
                     recurso.recurso_cantidad = tools.formatoSoles(recurso.recurso_cantidad)
@@ -126,7 +124,7 @@ userModel.getmaterialesResumenEjecucionReal = (id_ficha, tipo,todosRecursos=fals
 };
 userModel.getmaterialesResumenEjecucionRealCodigos = (id_ficha,tipoDocumentoAdquisicion) => {
     return new Promise((resolve, reject) => {
-        pool.query("SELECT codigo, COUNT(descripcion) cantidad,bloqueado FROM (SELECT recursos_ejecucionreal.codigo, recursos_ejecucionreal.descripcion,IF(recursos_ejecucionreal.documentosAdquisicion_id_documentoAdquisicion IS NULL, 0, 1) bloqueado FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente INNER JOIN recursos ON recursos.partidas_id_partida = partidas.id_partida INNER JOIN recursos_ejecucionreal ON recursos_ejecucionreal.descripcion = CONVERT( recursos.descripcion USING UTF8) COLLATE utf8_spanish_ci WHERE componentes.fichas_id_ficha = ? AND recursos_ejecucionreal.tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion = ? AND recursos_ejecucionreal.codigo IS NOT NULL GROUP BY recursos_ejecucionreal.descripcion) recursos_ejecucionreal GROUP BY codigo", [id_ficha,  tipoDocumentoAdquisicion], (error, res) => {
+        pool.query("SELECT codigo, COUNT(descripcion) cantidad,bloqueado FROM (SELECT recursos_ejecucionreal.codigo, recursos_ejecucionreal.descripcion,IF(recursos_ejecucionreal.documentosAdquisicion_id_documentoAdquisicion IS NULL, 0, 1) bloqueado FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente INNER JOIN recursos ON recursos.partidas_id_partida = partidas.id_partida INNER JOIN recursos_ejecucionreal ON recursos_ejecucionreal.descripcion = CONVERT( recursos.descripcion USING UTF8) COLLATE utf8_spanish_ci WHERE recursos_ejecucionreal.fichas_id_ficha = ? AND recursos_ejecucionreal.tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion = ? AND recursos_ejecucionreal.codigo IS NOT NULL GROUP BY recursos_ejecucionreal.descripcion) recursos_ejecucionreal GROUP BY codigo", [id_ficha,  tipoDocumentoAdquisicion], (error, res) => {
             if (error) {
                 reject(error);
             }
@@ -319,6 +317,28 @@ userModel.getmaterialesiconoscategoriasrecursos = () => {
 userModel.getRecursosNuevos = (id_ficha,tipo) => {
     return new Promise((resolve, reject) => {
         pool.query("SELECT id_recursoNuevo,'nuevo' recurso_estado_origen,codigo recurso_codigo, id_tipoDocumentoAdquisicion, nombre tipodocumentoadquisicion_nombre, descripcion, unidad, cantidad recurso_cantidad, precio recurso_precio, cantidad*precio recurso_parcial, '' recurso_gasto_cantidad, '' recurso_gasto_precio, '' recurso_gasto_parcial, '' diferencia, '' porcentaje, tipo, false bloqueado, documentosAdquisicion_id_documentoAdquisicion FROM recursosnuevos LEFT JOIN tipodocumentoadquisicion ON tipodocumentoadquisicion.id_tipoDocumentoAdquisicion = recursosnuevos.tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion WHERE recursosnuevos.fichas_id_ficha = ? and tipo = ?",[id_ficha,tipo],(error, res) => {
+            if (error) {
+                reject(error);
+            }else{
+                resolve(res);
+            }            
+        });
+    });
+};
+userModel.getRecursosNuevosCodigos = (id_ficha,id_tipoDocumentoAdquisicion) => {
+    return new Promise((resolve, reject) => {
+        pool.query("SELECT codigo,count(recursosnuevos.id_recursoNuevo)cantidad,false bloqueado FROM recursosnuevos WHERE recursosnuevos.fichas_id_ficha = ? AND recursosnuevos.tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion = ? GROUP BY codigo",[id_ficha,id_tipoDocumentoAdquisicion],(error, res) => {
+            if (error) {
+                reject(error);
+            }else{
+                resolve(res);
+            }            
+        });
+    });
+};
+userModel.getRecursosNuevosCodigosData = (id_ficha,codigo,id_tipoDocumentoAdquisicion) => {
+    return new Promise((resolve, reject) => {
+        pool.query("SELECT 'nuevo' recurso_estado_origen,codigo recurso_codigo, tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion id_tipoDocumentoAdquisicion, tipodocumentoadquisicion.nombre tipodocumentoadquisicion_nombre, descripcion, unidad, cantidad recurso_gasto_cantidad, precio recurso_gasto_precio, cantidad * precio recurso_gasto_parcial FROM recursosnuevos left join tipodocumentoadquisicion on tipodocumentoadquisicion.id_tipoDocumentoAdquisicion = recursosnuevos.tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion WHERE fichas_id_ficha = ? AND codigo = ? AND recursosnuevos.tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion = ?",[id_ficha,codigo,id_tipoDocumentoAdquisicion],(error, res) => {
             if (error) {
                 reject(error);
             }else{

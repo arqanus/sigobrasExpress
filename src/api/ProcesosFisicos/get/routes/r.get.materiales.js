@@ -87,6 +87,10 @@ module.exports = function (app) {
 				delete tipoDoc.id_tipoDocumentoAdquisicion
 				delete tipoDoc.nombre_largo
 				var codigos = await User.getmaterialesResumenEjecucionRealCodigos(req.body.id_ficha, tipoDoc.idDocumento)
+				var codigosNuevosRecursos = await User.getRecursosNuevosCodigos(req.body.id_ficha, tipoDoc.idDocumento)
+				codigos = codigos.concat(codigosNuevosRecursos)
+				//quitando duplicados
+				codigos = [...new Set(codigos)];
 				tipoDoc.cantidad = codigos.length
 				tipoDoc.codigos = codigos
 			}
@@ -101,6 +105,8 @@ module.exports = function (app) {
 		try {
 
 			var data = await User.getmaterialesResumenEjecucionReal(req.body.id_ficha, req.body.tipo, true, req.body.codigo, false, req.body.id_tipoDocumentoAdquisicion, false)
+			var dataRecursoNuevo = await User.getRecursosNuevosCodigosData(req.body.id_ficha,req.body.codigo,req.body.id_tipoDocumentoAdquisicion)
+			data = data.concat(dataRecursoNuevo)
 			var id_documentoAdquisicion = data[0].documentosAdquisicion_id_documentoAdquisicion
 			var documentoAdquisicion = await User.getdocumentosadquisicion(id_documentoAdquisicion)
 			if (documentoAdquisicion == "vacio") {
@@ -116,9 +122,10 @@ module.exports = function (app) {
 			}
 			documentoAdquisicion.recursos = data
 			res.json(
-				documentoAdquisicion
+				documentoAdquisicion		
 			)
 		} catch (error) {
+			console.log(error);			
 			res.status(400).json(error);
 		}
 	})
