@@ -122,7 +122,7 @@ module.exports = function (app) {
 			}
 			documentoAdquisicion.recursos = data
 			res.json(
-				data		
+				documentoAdquisicion		
 			)
 		} catch (error) {
 			console.log(error);			
