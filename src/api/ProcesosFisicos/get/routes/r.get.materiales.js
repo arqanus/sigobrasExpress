@@ -103,7 +103,6 @@ module.exports = function (app) {
 	})
 	app.post('/getmaterialesResumenEjecucionRealCodigosData', async (req, res) => {
 		try {
-
 			var data = await User.getmaterialesResumenEjecucionReal(req.body.id_ficha, req.body.tipo, true, req.body.codigo, false, req.body.id_tipoDocumentoAdquisicion, false)
 			var dataRecursoNuevo = await User.getRecursosNuevosCodigosData(req.body.id_ficha,req.body.codigo,req.body.id_tipoDocumentoAdquisicion)
 			data = data.concat(dataRecursoNuevo)
