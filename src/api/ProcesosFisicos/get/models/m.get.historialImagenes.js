@@ -89,5 +89,16 @@ userModel.getImagenesHistorialPartidas = (id_partida, callback) => {
         }
     });
 };
+userModel.getPrimeraUltimaImagen = (id_partida,orden = "asc") => {
+    return new Promise((resolve, reject) => {
+        pool.query("SELECT * FROM ((SELECT imagen, fecha, Partidas_id_partida FROM partidasimagenes) UNION (SELECT imagen, fecha, Partidas_id_partida FROM actividades LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.imagen IS NOT NULL)) tb_imagenes where Partidas_id_partida = 16914 order by fecha "+orden, [id_partida], (error, res) => {
+            if (error) {
+                reject(error);
+            }else {
+                resolve(res[0]);
+            }
+        });
+    });
+}
 module.exports = userModel;
 
