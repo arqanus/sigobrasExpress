@@ -458,9 +458,9 @@ module.exports = function (app) {
         data = await User.postrecursosEjecucionrealPrecio(req.body.data)
       } else if (req.body.tipo == "codigo") {
         data = await User.postrecursosEjecucionrealCodigo(req.body.data)
-      }else if (req.body.tipo == "unidad") {
+      } else if (req.body.tipo == "unidad") {
         data = await User.postrecursosEjecucionrealUnidad(req.body.data)
-      }else if (req.body.tipo == "descripcion") {
+      } else if (req.body.tipo == "descripcion") {
         data = await User.postrecursosEjecucionrealdescripcionModificada(req.body.data)
       }
       console.log("test", req.body.data);
@@ -473,13 +473,20 @@ module.exports = function (app) {
   app.post('/postdocumentoAdquisicion', async (req, res) => {
     try {
       var recursos_ejecucionreal = req.body.recursos_ejecucionreal
+      var recursos_nuevos = req.body.recursos_nuevos
       delete req.body.recursos_ejecucionreal
+      delete req.body.recursos_nuevos
       var insertId = await User.postdocumentoAdquisicion(req.body)
       for (let i = 0; i < recursos_ejecucionreal.length; i++) {
         const recurso = recursos_ejecucionreal[i];
         recurso.push(insertId)
       }
+      for (let i = 0; i < recursos_nuevos.length; i++) {
+        const recurso = recursos_nuevos[i];
+        recurso.push(insertId)
+      }
       var data = await User.putrecursosEjecucionrealIdDocumentoAdquisicion(recursos_ejecucionreal)
+      var data2 = await User.putrecursosNuevosDocumentoAdquisicion(recursos_nuevos)
       res.json("exito")
     } catch (error) {
       console.log(error)
@@ -490,8 +497,8 @@ module.exports = function (app) {
     try {
       var data = await User.postRecursosNuevos(req.body)
       res.json(
-        {          
-          "id_recursoNuevo":data.insertId
+        {
+          "id_recursoNuevo": data.insertId
         }
       )
     } catch (error) {

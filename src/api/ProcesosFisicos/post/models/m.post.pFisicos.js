@@ -156,6 +156,17 @@ userModel.putrecursosEjecucionrealIdDocumentoAdquisicion = (data) => {
         })
     })
 }
+userModel.putrecursosNuevosDocumentoAdquisicion = (data) => {
+    return new Promise((resolve, reject) => {
+        pool.query("INSERT INTO recursosnuevos (fichas_id_ficha,id_recursoNuevo,documentosAdquisicion_id_documentoAdquisicion) VALUES ? ON DUPLICATE key UPDATE documentosAdquisicion_id_documentoAdquisicion = VALUES(documentosAdquisicion_id_documentoAdquisicion)", [data], (error, res) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(res);
+            }
+        })
+    })
+}
 userModel.postRecursosNuevos = (data) => {
     return new Promise((resolve, reject) => {
         pool.query("INSERT INTO recursosnuevos set ?", [data], (error, res) => {

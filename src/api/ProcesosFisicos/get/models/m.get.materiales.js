@@ -392,7 +392,7 @@ userModel.getRecursosNuevosCodigos = (id_ficha,id_tipoDocumentoAdquisicion) => {
 };
 userModel.getRecursosNuevosCodigosData = (id_ficha,codigo,id_tipoDocumentoAdquisicion) => {
     return new Promise((resolve, reject) => {
-        pool.query("SELECT 'nuevo' recurso_estado_origen,codigo recurso_codigo, tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion id_tipoDocumentoAdquisicion, tipodocumentoadquisicion.nombre tipodocumentoadquisicion_nombre, descripcion, unidad, cantidad recurso_gasto_cantidad, precio recurso_gasto_precio, cantidad * precio recurso_gasto_parcial FROM recursosnuevos left join tipodocumentoadquisicion on tipodocumentoadquisicion.id_tipoDocumentoAdquisicion = recursosnuevos.tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion WHERE fichas_id_ficha = ? AND codigo = ? AND recursosnuevos.tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion = ?",[id_ficha,codigo,id_tipoDocumentoAdquisicion],(error, res) => {
+        pool.query("SELECT 'nuevo' recurso_estado_origen,codigo recurso_codigo, tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion id_tipoDocumentoAdquisicion, tipodocumentoadquisicion.nombre tipodocumentoadquisicion_nombre, descripcion, unidad, cantidad recurso_gasto_cantidad, precio recurso_gasto_precio, cantidad * precio recurso_gasto_parcial ,documentosAdquisicion_id_documentoAdquisicion FROM recursosnuevos left join tipodocumentoadquisicion on tipodocumentoadquisicion.id_tipoDocumentoAdquisicion = recursosnuevos.tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion WHERE fichas_id_ficha = ? AND codigo = ? AND recursosnuevos.tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion = ?",[id_ficha,codigo,id_tipoDocumentoAdquisicion],(error, res) => {
             if (error) {
                 reject(error);
             }else{
