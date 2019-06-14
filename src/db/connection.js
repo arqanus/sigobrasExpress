@@ -3,18 +3,23 @@ var pool = mysql.createPool({
     //master
     // host: 'localhost',
     // user: 'root',
-    // password: 'password',    
+    // password: 'Mds@anton@mysqlserver1.',  
     // database: 'sigobras_db',
     // //dev
     // host: '192.168.0.4',
     // user: 'kaido',
-    // password: 'kaido',    
+    // password: 'K@idos1.', 
     // database: 'sigobras_db',
-    // //master_test
+    //master_test
     host: 'localhost',
-    user: 'kaido',
-    password: 'kaido',    
+    user: 'root',
+    password: 'Mds@anton@mysqlserver1.',  
     database: 'sigobras_db_test',
+    //dev_test
+    // host: '192.168.0.4',
+    // user: 'kaido',
+    // password: 'K@idos1.',    
+    // database: 'sigobras_db_test',
     // //dev_test
     // host: '192.168.0.4',
     // user: 'kaido',
