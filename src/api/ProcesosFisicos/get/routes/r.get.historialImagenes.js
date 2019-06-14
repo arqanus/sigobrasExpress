@@ -58,30 +58,20 @@ module.exports = function (app) {
 			})
 		}
 	})
-	app.post('/getImagenesPrimeraImagenPartida', (req, res) => {
-		if (req.body.id_partida == null) {
-			res.json("null");
-		} else {
-			// User.getImagenesPrimeraImagenPartida(req.body.id_partida, (err, data) => {
-				// if (err) { res.status(204).json(err); }
-				// else {
-					res.json({
-						"imagen":"/static/Sistema/user_image_default.jpg"
-					});
-				// }
-			// })
+	app.post('/getImagenesPrimeraImagenPartida', async (req, res) => {
+		try {
+			var data = await User.getPrimeraUltimaImagen(req.body.id_partida)
+			res.json(data)
+		} catch (error) {
+			res.status(400).json(error);
 		}
 	})
-	app.post('/getImagenesUltimaImagenPartida', (req, res) => {
-		if (req.body.id_partida == null) {
-			res.json("null");
-		} else {
-			// User.getImagenesUltimaImagenPartida(req.body.id_partida, (err, data) => {
-				// if (err) { res.status(204).json(err); }
-				res.json({
-					"imagen":"/static/Sistema/user_image_default.jpg"
-				});
-			// })
+	app.post('/getImagenesUltimaImagenPartida', async (req, res) => {
+		try {
+			var data = await User.getPrimeraUltimaImagen(req.body.id_partida,"desc")
+			res.json(data)
+		} catch (error) {
+			res.status(400).json(error);
 		}
 	})
 }

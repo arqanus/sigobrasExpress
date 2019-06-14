@@ -100,25 +100,79 @@ userModel.getmaterialesResumen = (consulta, id_ficha, tipo) => {
         resolve(res)
     });
 };
-userModel.getmaterialesResumenEjecucionReal = (id_ficha, tipo,todosRecursos=false,codigo="null",todosCodigos=true,id_tipoDocumentoAdquisicion,todosTipos = true) => {
+userModel.getmaterialesResumenEjecucionReal = (id_ficha, tipo,todosRecursos=false,codigo="null",todosCodigos=true,id_tipoDocumentoAdquisicion,todosTipos = true,agrupacion = "recursos.descripcion",formato = true) => {
     return new Promise((resolve, reject) => {
-        pool.query("SELECT 'oficial' recurso_estado_origen,COALESCE(recursos_ejecucionreal.codigo, '') recurso_codigo, COALESCE(tipodocumentoadquisicion.id_tipoDocumentoAdquisicion, '') id_tipoDocumentoAdquisicion, COALESCE(tipodocumentoadquisicion.nombre, '') tipodocumentoadquisicion_nombre, COALESCE(recursos_ejecucionreal.descripcion_modificada, recursos.descripcion) descripcion, recursos.unidad, SUM(IF(recursos.unidad = '%MO', 0, recursos.cantidad * partidas.metrado)) recurso_cantidad, IF(recursos.unidad = '%MO', 0, recursos.precio) recurso_precio, SUM(IF(recursos.unidad = '%MO', recursos.cantidad * recursos.precio / 100, recursos.cantidad * partidas.metrado * recursos.precio)) recurso_parcial, COALESCE(recursos_ejecucionreal.cantidad, SUM(IF(recursos.unidad = '%MO', 0, COALESCE(partidas_metrado.avance, 0) * recursos.cantidad))) recurso_gasto_cantidad, COALESCE(recursos_ejecucionreal.precio, recursos.precio) recurso_gasto_precio, (COALESCE(recursos_ejecucionreal.cantidad, SUM(IF(recursos.unidad = '%MO', 0, COALESCE(partidas_metrado.avance, 0) * recursos.cantidad)))) * (COALESCE(recursos_ejecucionreal.precio, recursos.precio)) recurso_gasto_parcial, (SUM(IF(recursos.unidad = '%MO', recursos.cantidad * recursos.precio / 100, recursos.cantidad * partidas.metrado * recursos.precio))) - ((COALESCE(recursos_ejecucionreal.cantidad, SUM(IF(recursos.unidad = '%MO', 0, COALESCE(partidas_metrado.avance, 0) * recursos.cantidad)))) * (COALESCE(recursos_ejecucionreal.precio, recursos.precio))) diferencia, ((SUM(IF(recursos.unidad = '%MO', recursos.cantidad * recursos.precio / 100, recursos.cantidad * partidas.metrado * recursos.precio))) - ((COALESCE(recursos_ejecucionreal.cantidad, SUM(IF(recursos.unidad = '%MO', 0, COALESCE(partidas_metrado.avance, 0) * recursos.cantidad)))) * (COALESCE(recursos_ejecucionreal.precio, recursos.precio)))) / (SUM(IF(recursos.unidad = '%MO', recursos.cantidad * recursos.precio / 100, recursos.cantidad * partidas.metrado * recursos.precio))) * 100 porcentaje, recursos.tipo, IF(recursos_ejecucionreal.documentosAdquisicion_id_documentoAdquisicion IS NULL, 0, 1) bloqueado, documentosAdquisicion_id_documentoAdquisicion FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente INNER JOIN recursos ON recursos.partidas_id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, COALESCE(SUM(recursos.cantidad * partidas_metrado.avance * recursos.precio), 0) ManoDeObra, partidas_metrado.avance FROM partidas LEFT JOIN recursos ON recursos.partidas_id_partida = partidas.id_partida AND recursos.tipo = 'Mano de Obra' LEFT JOIN (SELECT partidas.id_partida, COALESCE(SUM(avanceactividades.valor), 0) avance FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad GROUP BY partidas.id_partida) partidas_metrado ON partidas_metrado.id_partida = partidas.id_partida GROUP BY partidas.id_partida) partidas_metrado ON partidas_metrado.id_partida = partidas.id_partida LEFT JOIN recursos_ejecucionreal ON recursos_ejecucionreal.descripcion = recursos.descripcion AND componentes.fichas_id_ficha = recursos_ejecucionreal.fichas_id_ficha LEFT JOIN tipodocumentoadquisicion ON tipodocumentoadquisicion.id_tipoDocumentoAdquisicion = recursos_ejecucionreal.tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion WHERE componentes.fichas_id_ficha = ? AND (recursos.tipo = ? or ?)AND (COALESCE(recursos_ejecucionreal.codigo,'null') = ? or ?) and (tipodocumentoadquisicion.id_tipoDocumentoAdquisicion = ? or ?) GROUP BY recursos.descripcion", [id_ficha, tipo,todosRecursos,codigo,todosCodigos,id_tipoDocumentoAdquisicion,todosTipos], (error, res) => {
+        pool.query("SELECT 'oficial' recurso_estado_origen,COALESCE(recursos_ejecucionreal.codigo, '') recurso_codigo, COALESCE(tipodocumentoadquisicion.id_tipoDocumentoAdquisicion, '') id_tipoDocumentoAdquisicion, COALESCE(tipodocumentoadquisicion.nombre, '') tipodocumentoadquisicion_nombre, COALESCE(recursos_ejecucionreal.descripcion_modificada, recursos.descripcion) descripcion, recursos.unidad, SUM(IF(recursos.unidad = '%MO', 0, recursos.cantidad * partidas.metrado)) recurso_cantidad, IF(recursos.unidad = '%MO', 0, recursos.precio) recurso_precio, SUM(IF(recursos.unidad = '%MO', recursos.cantidad * recursos.precio / 100, recursos.cantidad * partidas.metrado * recursos.precio)) recurso_parcial, COALESCE(recursos_ejecucionreal.cantidad, SUM(IF(recursos.unidad = '%MO', 0, COALESCE(partidas_metrado.avance, 0) * recursos.cantidad))) recurso_gasto_cantidad, COALESCE(recursos_ejecucionreal.precio, recursos.precio) recurso_gasto_precio, (COALESCE(recursos_ejecucionreal.cantidad, SUM(IF(recursos.unidad = '%MO', 0, COALESCE(partidas_metrado.avance, 0) * recursos.cantidad)))) * (COALESCE(recursos_ejecucionreal.precio, recursos.precio)) recurso_gasto_parcial, (SUM(IF(recursos.unidad = '%MO', recursos.cantidad * recursos.precio / 100, recursos.cantidad * partidas.metrado * recursos.precio))) - ((COALESCE(recursos_ejecucionreal.cantidad, SUM(IF(recursos.unidad = '%MO', 0, COALESCE(partidas_metrado.avance, 0) * recursos.cantidad)))) * (COALESCE(recursos_ejecucionreal.precio, recursos.precio))) diferencia, ((SUM(IF(recursos.unidad = '%MO', recursos.cantidad * recursos.precio / 100, recursos.cantidad * partidas.metrado * recursos.precio))) - ((COALESCE(recursos_ejecucionreal.cantidad, SUM(IF(recursos.unidad = '%MO', 0, COALESCE(partidas_metrado.avance, 0) * recursos.cantidad)))) * (COALESCE(recursos_ejecucionreal.precio, recursos.precio)))) / (SUM(IF(recursos.unidad = '%MO', recursos.cantidad * recursos.precio / 100, recursos.cantidad * partidas.metrado * recursos.precio))) * 100 porcentaje, recursos.tipo, IF(recursos_ejecucionreal.documentosAdquisicion_id_documentoAdquisicion IS NULL, 0, 1) bloqueado, documentosAdquisicion_id_documentoAdquisicion FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente INNER JOIN recursos ON recursos.partidas_id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, COALESCE(SUM(recursos.cantidad * partidas_metrado.avance * recursos.precio), 0) ManoDeObra, partidas_metrado.avance FROM partidas LEFT JOIN recursos ON recursos.partidas_id_partida = partidas.id_partida AND recursos.tipo = 'Mano de Obra' LEFT JOIN (SELECT partidas.id_partida, COALESCE(SUM(avanceactividades.valor), 0) avance FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad GROUP BY partidas.id_partida) partidas_metrado ON partidas_metrado.id_partida = partidas.id_partida GROUP BY partidas.id_partida) partidas_metrado ON partidas_metrado.id_partida = partidas.id_partida LEFT JOIN recursos_ejecucionreal ON recursos_ejecucionreal.descripcion = recursos.descripcion AND componentes.fichas_id_ficha = recursos_ejecucionreal.fichas_id_ficha LEFT JOIN tipodocumentoadquisicion ON tipodocumentoadquisicion.id_tipoDocumentoAdquisicion = recursos_ejecucionreal.tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion WHERE componentes.fichas_id_ficha = ? AND (recursos.tipo = ? or ?)AND (COALESCE(recursos_ejecucionreal.codigo,'null') = ? or ?) and (tipodocumentoadquisicion.id_tipoDocumentoAdquisicion = ? or ?) GROUP BY "+agrupacion, [id_ficha, tipo,todosRecursos,codigo,todosCodigos,id_tipoDocumentoAdquisicion,todosTipos], (error, res) => {
             if (error) {
                 reject(error);
             }
             else {
-                for (let i = 0; i < res.length; i++) {
-                    const recurso = res[i];
-                    recurso.recurso_cantidad = tools.formatoSoles(recurso.recurso_cantidad)
-                    recurso.recurso_precio = tools.formatoSoles(recurso.recurso_precio)
-                    recurso.recurso_parcial = tools.formatoSoles(recurso.recurso_parcial)
-                    recurso.recurso_gasto_cantidad = tools.formatoSoles(recurso.recurso_gasto_cantidad)
-                    recurso.recurso_gasto_parcial = tools.formatoSoles(recurso.recurso_gasto_parcial)
-                    recurso.diferencia = tools.formatoSoles(recurso.diferencia)
-                    recurso.porcentaje = tools.formatoPorcentaje(recurso.porcentaje)
-                }
+                if(formato){
+                    for (let i = 0; i < res.length; i++) {
+                        const recurso = res[i];
+                        recurso.recurso_cantidad = tools.formatoSoles(recurso.recurso_cantidad)
+                        recurso.recurso_precio = tools.formatoSoles(recurso.recurso_precio)
+                        recurso.recurso_parcial = tools.formatoSoles(recurso.recurso_parcial)
+                        recurso.recurso_gasto_cantidad = tools.formatoSoles(recurso.recurso_gasto_cantidad)
+                        recurso.recurso_gasto_parcial = tools.formatoSoles(recurso.recurso_gasto_parcial)
+                        recurso.diferencia = tools.formatoSoles(recurso.diferencia)
+                        recurso.porcentaje = tools.formatoPorcentaje(recurso.porcentaje)
+                    }
+                }               
                 resolve(res);
             }
+        });
+    });
+};
+userModel.getmaterialesResumenEjecucionRealChart = (id_ficha) => {
+    console.log(id_ficha);    
+    return new Promise(async (resolve, reject) => {
+        var res = await userModel.getmaterialesResumenEjecucionReal(id_ficha, "",true,"",true,"",true,"recursos.tipo",false)
+        var series = [
+            {
+                "type": "column",
+                "name": "Expediente",
+                "data": []
+            },
+            {
+                "type": "column",
+                "name": "Acumulado",
+                "data": []
+            },
+            {
+                "type": "spline",
+                "name": "Diferencia",
+                "data": []
+            },
+            {
+                "type": "pie",
+                "name": "Segun Expediente",
+                "data": [],
+                "center": [100, 80],
+                "size": 100,
+                "showInLegend": false,
+                "dataLabels": {
+                    "enabled": false
+                }
+            }
+        ]
+        var categories = []
+        for (let i = 0; i < res.length; i++) {
+            const tipoRecurso = res[i];
+            series[0].data.push(tools.formatoPorcentaje(tipoRecurso.recurso_parcial))
+            series[1].data.push(tools.formatoPorcentaje(tipoRecurso.recurso_gasto_parcial))
+            series[2].data.push(tools.formatoPorcentaje(tipoRecurso.diferencia))
+            series[3].data.push(
+                {
+                    "name": tipoRecurso.tipo,
+                    "y": tools.formatoPorcentaje(tipoRecurso.recurso_parcial)
+                }
+            )
+            categories.push(tipoRecurso.tipo)
+        }
+        resolve({
+            series,
+            categories
         });
     });
 };
@@ -338,7 +392,7 @@ userModel.getRecursosNuevosCodigos = (id_ficha,id_tipoDocumentoAdquisicion) => {
 };
 userModel.getRecursosNuevosCodigosData = (id_ficha,codigo,id_tipoDocumentoAdquisicion) => {
     return new Promise((resolve, reject) => {
-        pool.query("SELECT 'nuevo' recurso_estado_origen,codigo recurso_codigo, tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion id_tipoDocumentoAdquisicion, tipodocumentoadquisicion.nombre tipodocumentoadquisicion_nombre, descripcion, unidad, cantidad recurso_gasto_cantidad, precio recurso_gasto_precio, cantidad * precio recurso_gasto_parcial FROM recursosnuevos left join tipodocumentoadquisicion on tipodocumentoadquisicion.id_tipoDocumentoAdquisicion = recursosnuevos.tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion WHERE fichas_id_ficha = ? AND codigo = ? AND recursosnuevos.tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion = ?",[id_ficha,codigo,id_tipoDocumentoAdquisicion],(error, res) => {
+        pool.query("SELECT 'nuevo' recurso_estado_origen,codigo recurso_codigo, tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion id_tipoDocumentoAdquisicion, tipodocumentoadquisicion.nombre tipodocumentoadquisicion_nombre, descripcion, unidad, cantidad recurso_gasto_cantidad, precio recurso_gasto_precio, cantidad * precio recurso_gasto_parcial ,documentosAdquisicion_id_documentoAdquisicion,id_recursoNuevo FROM recursosnuevos left join tipodocumentoadquisicion on tipodocumentoadquisicion.id_tipoDocumentoAdquisicion = recursosnuevos.tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion WHERE fichas_id_ficha = ? AND codigo = ? AND recursosnuevos.tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion = ?",[id_ficha,codigo,id_tipoDocumentoAdquisicion],(error, res) => {
             if (error) {
                 reject(error);
             }else{
