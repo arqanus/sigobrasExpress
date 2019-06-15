@@ -26,7 +26,7 @@ userModel.postEstado = (data) => {
 		})
 	})
 }
-userModel.postUnidadEjecutora = (data) => {
+userModel.postUnidadEjecutoras = (data) => {
 	return new Promise((resolve, reject) => {
 		pool.query("INSERT INTO UnidadEjecutoras (nombre) VALUES ?", [data], (error, res) => {
 			if (error) { 

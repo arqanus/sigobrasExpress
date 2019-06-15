@@ -18,9 +18,9 @@ module.exports = (app) => {
             res.status(400).json(error)
         }
     })
-    app.post('/postUnidadEjecutora', async (req, res) => {
+    app.post('/postUnidadEjecutoras', async (req, res) => {
         try {
-            var data = await User.postUnidadEjecutora(req.body)
+            var data = await User.postUnidadEjecutoras(req.body)
             res.json(data)
         } catch (error) {
             res.status(400).json(error)
