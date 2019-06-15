@@ -1,10 +1,10 @@
 const mysql = require('mysql');
 var pool = mysql.createPool({
     //master
-    host: 'localhost',
-    user: 'root',
-    password: 'Mds@anton@mysqlserver1.',  
-    database: 'sigobras_db',
+    // host: 'localhost',
+    // user: 'root',
+    // password: 'Mds@anton@mysqlserver1.',  
+    // database: 'sigobras_db',
     // //dev
     // host: '192.168.0.4',
     // user: 'kaido',
@@ -16,10 +16,10 @@ var pool = mysql.createPool({
     // password: 'Mds@anton@mysqlserver1.',  
     // database: 'sigobras_db_test',
     //dev_test
-    // host: '192.168.0.4',
-    // user: 'kaido',
-    // password: 'K@idos1.',    
-    // database: 'sigobras_db_test',
+    host: '192.168.0.4',
+    user: 'kaido',
+    password: 'K@idos1.',    
+    database: 'sigobras_db_test',   
     // //dev_test
     // host: '192.168.0.4',
     // user: 'kaido',
