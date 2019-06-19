@@ -69,7 +69,7 @@ userModel.getMenu = (data,callback)=>{
                     for (let i = 0; i < json.length; i++) {
                         const element = json[i];
                         if(element.nombreMenu=="PROCESOS FISICOS" ){
-                            if(cargo == "residente"||cargo == "asistente técnico"){
+                            if(cargo == "RESIDENTE"||cargo == "ASISTENTE TECNICO"){
                                 if(estado == "Ejecucion"||estado == "Corte"||estado == "Actualizacion"){
                                     element.submenus.splice(0,0,
                                         {
