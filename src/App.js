@@ -17,7 +17,7 @@ var credentials = {key: privateKey, cert: certificate};
 const express = require('express');
 var app = express();
 
-const PORT = process.env.PORT || 9005
+const PORT = process.env.PORT || 9000
 
 
 //open cors
@@ -84,16 +84,16 @@ require('./api/GestionTareas/get/routes/r.get.GT')(app);
 require('./api/GestionTareas/post/routes/r.post.GT')(app);
 require('./api/GestionTareas/put/routes/r.put.GT')(app);
 
-var server = https.createServer(credentials, app).listen(PORT, () => {
-  console.log('Listening...',PORT)
-})
+// var server = https.createServer(credentials, app).listen(PORT, () => {
+//   console.log('Listening...',PORT)
+// })
 
 
 
 //defecto
-// const server = app.listen(app.get('port'),()=>{
-// 	console.log('running in port', PORT);
-// })
+const server = app.listen(app.get('port'),()=>{
+	console.log('running in port', PORT);
+})
 // // set up a route to redirect http to https
 // app.get('*', (req, res) =>{    
 //   res.redirect('https://localhost:10000' + req.url);
