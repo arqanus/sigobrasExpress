@@ -11,10 +11,10 @@ var pool = mysql.createPool({
     password: 'K@idos1.', 
     database: 'sigobras_db',
     //master_test
-    // host: 'localhost',
-    // user: 'root',
-    // password: 'Mds@anton@mysqlserver1.',  
-    // database: 'sigobras_db_test',
+    host: 'localhost',
+    user: 'root',
+    password: 'Mds@anton@mysqlserver1.',  
+    database: 'sigobras_db_test',
     //dev_test
     // host:'190.117.94.80',
     host: '192.168.0.4',
