@@ -115,7 +115,6 @@ io.on('connection', (socket) => {
   console.log(`Online: ${online}`);
   io.emit('visitors', online);
   socket.on("tareas_comentarios", (data) => {
-    Tareas_online++
     console.log(data);
     console.log("id_tarea",data.id_tarea);
     socket.broadcast.emit(data.id_tarea, data.data)
