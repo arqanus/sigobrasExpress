@@ -291,7 +291,7 @@ userModel.getTareaSubordinadosTareas = (id_acceso) => {
 }
 userModel.getTareaComentarios = (id_comentario, id_tarea) => {
     return new Promise((resolve, reject) => {
-        pool.query("SELECT comentarios.mensaje, DATE_FORMAT(comentarios.fecha, '%h:%i %p') hora, DATE_FORMAT(comentarios.fecha, '%d/%c/%Y') fecha, CONCAT(usuarios.nombre,usuarios.apellido_paterno) usuario, usuarios.imagen FROM comentarios left join accesos on accesos.id_acceso = comentarios.accesos_id_acceso left join usuarios on usuarios.id_usuario = accesos.Usuarios_id_usuario where id_comentario = ? or comentarios.tareas_id_tarea = ?", [id_comentario, id_tarea], (err, res) => {
+        pool.query("SELECT comentarios.mensaje, DATE_FORMAT(comentarios.fecha, '%h:%i %p') hora, DATE_FORMAT(comentarios.fecha, '%d/%c/%Y') fecha, CONCAT(usuarios.nombre,' ',usuarios.apellido_paterno) usuario, usuarios.imagen FROM comentarios left join accesos on accesos.id_acceso = comentarios.accesos_id_acceso left join usuarios on usuarios.id_usuario = accesos.Usuarios_id_usuario where id_comentario = ? or comentarios.tareas_id_tarea = ?", [id_comentario, id_tarea], (err, res) => {
             if (err) {
                 return reject(err)
             }
