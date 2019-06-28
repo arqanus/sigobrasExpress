@@ -8,7 +8,7 @@ var pool = mysql.createPool({
     // //dev
     host: '192.168.0.4',
     user: 'kaido',
-    password: 'kaido',    
+    password: 'K@idos1.',    
     database: 'sigobras_db',
     // //master_test
     // host: 'localhost',
