@@ -32,11 +32,11 @@ userModel.getValGeneralPeriodos  = (id_ficha,anyo,ListarTodo)=>{
                         cont= 1
                     }
                     delete fila.id_ficha
-                    fila.fecha_inicial = fila.fecha_inicial.toLocaleString()
+                    fila.fecha_inicial = fila.fecha_inicial
                     if(i< res.length-1){
-                        fila.fecha_final = res[i+1].fecha_inicial.toLocaleString()
+                        fila.fecha_final = res[i+1].fecha_inicial
                     }else{
-                        fila.fecha_final = (new Date(anyo, 11, 31)).toLocaleString()
+                        fila.fecha_final = (new Date(anyo, 11, 31))
                     }
                 }   
                 return resolve(res)
