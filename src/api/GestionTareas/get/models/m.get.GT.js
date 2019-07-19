@@ -35,7 +35,7 @@ userModel.getTareaAccesoCargo = (id_acceso) => {
 }
 userModel.getTareaCargos = (id_acceso, nivel) => {
     return new Promise((resolve, reject) => {
-        pool.query('SELECT cargos.id_Cargo, cargos.nombre FROM fichas_has_accesos a LEFT JOIN fichas ON fichas.id_ficha = a.Fichas_id_ficha LEFT JOIN fichas_has_accesos b ON b.Fichas_id_ficha = fichas.id_ficha LEFT JOIN accesos ON accesos.id_acceso = b.accesos_id_acceso LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo WHERE a.accesos_id_acceso = ? and cargos.nivel > ? GROUP BY cargos.id_Cargo', [id_acceso, nivel], (err, res) => {
+        pool.query('SELECT cargos.id_Cargo, cargos.nombre FROM fichas_has_accesos a LEFT JOIN fichas ON fichas.id_ficha = a.Fichas_id_ficha LEFT JOIN fichas_has_accesos b ON b.Fichas_id_ficha = fichas.id_ficha LEFT JOIN accesos ON accesos.id_acceso = b.accesos_id_acceso LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo WHERE a.accesos_id_acceso = ? GROUP BY cargos.id_Cargo', [id_acceso, nivel], (err, res) => {
             if (err) {
                 return reject(err)
             }
