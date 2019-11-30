@@ -34,15 +34,15 @@ userModel.formatoSolesPresicion = function formatoSoles(data){
     
     data = Number(data)
     data = userModel.Redondear(data)
-    if(isNaN(data)||data ==0){
-        data = "-"
-    }else{
-        // data = data.toLocaleString('es-PE', {
-        //     minimumFractionDigits: 3,
-        //     maximumFractionDigits: 6
-        //     }
-        // )
-    }
+    // if(isNaN(data)||data ==0){
+    //     data = "-"
+    // }else{
+    //     data = data.toLocaleString('es-PE', {
+    //         minimumFractionDigits: 3,
+    //         maximumFractionDigits: 6
+    //         }
+    //     )
+    // }
        
     return data
 }
