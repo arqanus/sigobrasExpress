@@ -37,11 +37,11 @@ userModel.formatoSolesPresicion = function formatoSoles(data){
     if(isNaN(data)||data ==0){
         data = "-"
     }else{
-        data = data.toLocaleString('es-PE', {
-            minimumFractionDigits: 3,
-            maximumFractionDigits: 6
-            }
-        )
+        // data = data.toLocaleString('es-PE', {
+        //     minimumFractionDigits: 3,
+        //     maximumFractionDigits: 6
+        //     }
+        // )
     }
        
     return data
