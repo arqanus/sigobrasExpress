@@ -248,15 +248,9 @@ module.exports = function (app) {
     });
   })
   app.post('/avanceActividadActualizacion', (req, res) => {
-    var dir = __dirname + '/../../../../public/'
-    //crear ruta si no existe
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir);
-    }
-    var form = new formidable.IncomingForm();
-    //se configura la ruta de guardar
-    form.uploadDir = dir;
-    form.parse(req, function (err, fields, files) {
+    if (fields.valor <= 0) {
+      res.json("valor no permitido")
+    } else {
       console.log("accesos_id_acceso :", fields.accesos_id_acceso);
       console.log("codigo_obra :", fields.codigo_obra);
       console.log("Actividades_id_actividad :", fields.Actividades_id_actividad);
@@ -346,7 +340,7 @@ module.exports = function (app) {
           }
         })
       }
-    });
+    }
   })
   app.post('/avanceActividadImagen', (req, res) => {
     //ruta de la carpeta public de imagenes
