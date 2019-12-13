@@ -47,6 +47,7 @@ module.exports = function (app) {
     }
   })
   app.post('/avanceActividad', (req, res) => {
+    console.log("avanceActividad");
     //ruta de la carpeta public de imagenes
     var dir = __dirname + '/../../../../public/'
     //crear ruta si no existe
@@ -150,6 +151,7 @@ module.exports = function (app) {
     });
   })
   app.post('/avanceActividadCorte', (req, res) => {
+    console.log("avanceActividadCorte");
     var dir = __dirname + '/../../../../public/'
     //crear ruta si no existe
     if (!fs.existsSync(dir)) {
@@ -248,6 +250,7 @@ module.exports = function (app) {
     });
   })
   app.post('/avanceActividadActualizacion', (req, res) => {
+    console.log("avanceActividadActualizacion");
     //ruta de la carpeta public de imagenes
     var dir = __dirname + '/../../../../public/'
     //crear ruta si no existe
