@@ -248,36 +248,79 @@ module.exports = function (app) {
     });
   })
   app.post('/avanceActividadActualizacion', (req, res) => {
-    if (fields.valor <= 0) {
-      res.json("valor no permitido")
-    } else {
-      console.log("accesos_id_acceso :", fields.accesos_id_acceso);
-      console.log("codigo_obra :", fields.codigo_obra);
-      console.log("Actividades_id_actividad :", fields.Actividades_id_actividad);
-      console.log("valor :", fields.valor);
-      console.log("foto :", fields.foto);
-      console.log("observacion :", fields.observacion);
-      console.log("descripcion :", fields.descripcion);
-      console.log("descripcion :", fields.fecha);
-      if (err) {
-        res.json(err)
-      }
-      //folder de la obra
-      var obraFolder = dir + "/" + fields.codigo_obra
-      if (!fs.existsSync(obraFolder)) {
-        fs.mkdirSync(obraFolder);
-      }  // TODO: make sure my_file and project_id exist  
-      var ruta = "/" + fields.accesos_id_acceso + "_" + fields.Actividades_id_actividad + "_" + datetime() + ".jpg"
-      //files foto
-      if (files.foto) {
-        fs.rename(files.foto.path, obraFolder + ruta, function (err) {
-          if (err) {
-            res.json(err)
-          }
+    //ruta de la carpeta public de imagenes
+    var dir = __dirname + '/../../../../public/'
+    //crear ruta si no existe
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir);
+    }
+    var form = new formidable.IncomingForm();
+    //se configura la ruta de guardar
+    form.uploadDir = dir;
+    form.parse(req, function (err, fields, files) {
+      if (fields.valor <= 0) {
+        res.json("valor no permitido")
+      } else {
+        console.log("accesos_id_acceso :", fields.accesos_id_acceso);
+        console.log("codigo_obra :", fields.codigo_obra);
+        console.log("Actividades_id_actividad :", fields.Actividades_id_actividad);
+        console.log("valor :", fields.valor);
+        console.log("foto :", fields.foto);
+        console.log("observacion :", fields.observacion);
+        console.log("descripcion :", fields.descripcion);
+        console.log("descripcion :", fields.fecha);
+        if (err) {
+          res.json(err)
+        }
+        //folder de la obra
+        var obraFolder = dir + "/" + fields.codigo_obra
+        if (!fs.existsSync(obraFolder)) {
+          fs.mkdirSync(obraFolder);
+        }  // TODO: make sure my_file and project_id exist  
+        var ruta = "/" + fields.accesos_id_acceso + "_" + fields.Actividades_id_actividad + "_" + datetime() + ".jpg"
+        //files foto
+        if (files.foto) {
+          fs.rename(files.foto.path, obraFolder + ruta, function (err) {
+            if (err) {
+              res.json(err)
+            }
+            var avanceActividad = {
+              "Actividades_id_actividad": fields.Actividades_id_actividad,
+              "valor": fields.valor,
+              "imagen": "/static/" + fields.codigo_obra + ruta,
+              "imagenAlt": fields.codigo_obra,
+              "descripcion": fields.descripcion,
+              "observacion": fields.observacion,
+              "accesos_id_acceso": fields.accesos_id_acceso,
+              "fecha": fields.fecha
+            }
+            User.postAvanceActividad(avanceActividad, async (err, data) => {
+              if (err) { res.status(204).json(err); }
+              else {
+                var partidas = await User2.getPartidas(null, fields.Actividades_id_actividad)
+                var actividades = await User2.getActividades(partidas[0].id_partida)
+                mayorMetrado = await User2.getPartidasMayorMetradoAvance(partidas[0].id_partida)
+                mayorMetrado = mayorMetrado || {}
+                res.json(
+                  {
+                    "partida": partidas[0],
+                    "mayor_metrado": {
+                      "mm_avance_metrado": mayorMetrado.avance_metrado || 0,
+                      "mm_avance_costo": mayorMetrado.avance_costo || 0,
+                      "mm_metrados_saldo": mayorMetrado.metrados_saldo || 0,
+                      "mm_metrados_costo_saldo": mayorMetrado.metrados_costo_saldo || 0,
+                      "mm_porcentaje": mayorMetrado.porcentaje || 0
+                    },
+                    "actividades": actividades
+                  }
+                );
+              }
+            })
+          });
+        } else {
           var avanceActividad = {
             "Actividades_id_actividad": fields.Actividades_id_actividad,
             "valor": fields.valor,
-            "imagen": "/static/" + fields.codigo_obra + ruta,
             "imagenAlt": fields.codigo_obra,
             "descripcion": fields.descripcion,
             "observacion": fields.observacion,
@@ -306,41 +349,9 @@ module.exports = function (app) {
               );
             }
           })
-        });
-      } else {
-        var avanceActividad = {
-          "Actividades_id_actividad": fields.Actividades_id_actividad,
-          "valor": fields.valor,
-          "imagenAlt": fields.codigo_obra,
-          "descripcion": fields.descripcion,
-          "observacion": fields.observacion,
-          "accesos_id_acceso": fields.accesos_id_acceso,
-          "fecha": fields.fecha
         }
-        User.postAvanceActividad(avanceActividad, async (err, data) => {
-          if (err) { res.status(204).json(err); }
-          else {
-            var partidas = await User2.getPartidas(null, fields.Actividades_id_actividad)
-            var actividades = await User2.getActividades(partidas[0].id_partida)
-            mayorMetrado = await User2.getPartidasMayorMetradoAvance(partidas[0].id_partida)
-            mayorMetrado = mayorMetrado || {}
-            res.json(
-              {
-                "partida": partidas[0],
-                "mayor_metrado": {
-                  "mm_avance_metrado": mayorMetrado.avance_metrado || 0,
-                  "mm_avance_costo": mayorMetrado.avance_costo || 0,
-                  "mm_metrados_saldo": mayorMetrado.metrados_saldo || 0,
-                  "mm_metrados_costo_saldo": mayorMetrado.metrados_costo_saldo || 0,
-                  "mm_porcentaje": mayorMetrado.porcentaje || 0
-                },
-                "actividades": actividades
-              }
-            );
-          }
-        })
       }
-    }
+    });
   })
   app.post('/avanceActividadImagen', (req, res) => {
     //ruta de la carpeta public de imagenes
