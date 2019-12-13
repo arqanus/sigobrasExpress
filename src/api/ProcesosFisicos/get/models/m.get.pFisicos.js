@@ -73,7 +73,7 @@ userModel.getPartidas = (id_componente=null, id_actividad=null,id_ficha=null,for
             if (error) {
                 reject(error);
             } else if (res.length == 0) {
-                reject("vacio");
+                reject("vacio getPartidas");
             } else {
                 if (formato) {
                     for (let i = 0; i < res.length; i++) {

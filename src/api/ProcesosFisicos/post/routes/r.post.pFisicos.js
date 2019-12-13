@@ -271,7 +271,7 @@ module.exports = function (app) {
         console.log("foto :", fields.foto);
         console.log("observacion :", fields.observacion);
         console.log("descripcion :", fields.descripcion);
-        console.log("descripcion :", fields.fecha);
+        console.log("fecha :", fields.fecha);
         if (err) {
           res.json(err)
         }
