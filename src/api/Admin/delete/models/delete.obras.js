@@ -34,6 +34,35 @@ userModel.deleteResolucion = (id_resolucion)=>{
     })
     
 }
+userModel.deleteHistorial = (body)=>{
+    return new Promise((resolve, reject) => { 
+        var query = 
+        `DELETE 
+            avanceactividades
+        FROM
+            componentes
+                LEFT JOIN
+            partidas ON partidas.componentes_id_componente = componentes.id_componente
+                LEFT JOIN
+            actividades ON actividades.Partidas_id_partida = partidas.id_partida
+                LEFT JOIN
+            avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad
+        WHERE
+            fichas_id_ficha = ${body.obra}
+                AND (YEAR(avanceactividades.fecha) = ${body.anio}
+                OR IF(${body.anio} = 0, TRUE, FALSE))
+                AND (MONTH(avanceactividades.fecha) = ${body.mes}
+                OR IF(${body.mes} = 0, TRUE, FALSE))`
+        pool.query(query,(error,res)=>{
+            if(error){
+                reject(error.code);
+            }else{
+                resolve(res)
+            }
+        })
+    })
+    
+}
 
 
 module.exports = userModel;

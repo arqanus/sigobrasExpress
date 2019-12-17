@@ -27,4 +27,13 @@ module.exports = (app)=>{
 			res.status(400).json(error)
 		}
 	})
+	app.delete('/Historial',async(req,res)=>{
+		try {
+			console.log(req.body);
+			var data = await User.deleteHistorial(req.body)
+			res.json(data);
+		} catch (error) {
+			res.status(400).json(error)
+		}
+	})
 }
