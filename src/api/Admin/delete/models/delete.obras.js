@@ -63,6 +63,19 @@ userModel.deleteHistorial = (body)=>{
     })
     
 }
-
+userModel.deleteHistorialById = (id_AvanceActividades)=>{
+    return new Promise((resolve, reject) => { 
+        var query = 
+        `delete from avanceactividades where id_AvanceActividades = ${id_AvanceActividades}`
+        pool.query(query,(error,res)=>{
+            if(error){
+                reject(error.code);
+            }else{
+                resolve(res)
+            }
+        })
+    })
+    
+}
 
 module.exports = userModel;

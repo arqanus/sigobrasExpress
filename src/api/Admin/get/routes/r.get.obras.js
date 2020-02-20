@@ -113,4 +113,13 @@ module.exports = function(app){
 			res.status(400).json(error)
 		}
 	})
+	app.post('/getHistorialByFechas',async(req,res)=>{
+		try {
+			var { id_componente, fecha_ini, fecha_fin } = req.body
+			var data = await User.getHistorialByFechas(id_componente,fecha_ini,fecha_fin)
+			res.json(data)
+		} catch (error) {
+			res.status(400).json(error)
+		}
+	})
 }

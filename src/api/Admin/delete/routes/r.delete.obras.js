@@ -36,4 +36,12 @@ module.exports = (app)=>{
 			res.status(400).json(error)
 		}
 	})
+	app.delete('/deleteHistorialById',async(req,res)=>{
+		try {
+			var data = await User.deleteHistorialById(req.body.id_AvanceActividades)
+			res.json(data);
+		} catch (error) {
+			res.status(400).json(error)
+		}
+	})
 }
