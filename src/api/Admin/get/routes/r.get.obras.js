@@ -122,4 +122,18 @@ module.exports = function(app){
 			res.status(400).json(error)
 		}
 	})
+//////////////////////////////////////////////////////////////////////////////////////////////////
+	app.get('/prueba',async(req,res)=>{
+		try {
+			
+			var data = await User.prueba()
+			res.json(data)
+		} catch (error) {
+			res.status(400).json(error)
+		}
+	})
+
+
+
+
 }

@@ -311,4 +311,24 @@ userModel.getHistorialByFechas = (id_componente,fecha_ini,fecha_fin) => {
     })
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////
+userModel.prueba = () => {
+    return new Promise((resolve, reject) => {
+        pool.query("SELECT * FROM fichas", [], (err, res) => {
+            if (err) {
+                reject(err.code);
+            } else {
+                resolve(res)
+            }
+        })
+    })
+}
+
+
+
+
+
+
+
+
 module.exports = userModel;
