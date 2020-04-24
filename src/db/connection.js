@@ -1,7 +1,7 @@
 const mysql = require('mysql');
 var pool = mysql.createPool({
     
-    //MODO SERVIDOR PARA SUBIR TIENE ESTAR ACTIVO
+    // //MODO SERVIDOR PARA SUBIR TIENE ESTAR ACTIVO
     host: 'localhost',
     user: 'root',
     password: 'Mds@anton@mysqlserver1.',  
