@@ -207,6 +207,19 @@ userModel.listaobrasModelo = () => { //nombra la query
     })
 }
 
+userModel.putproyecciones = (insertintoproeccion) => { //nombra la query
+    return new Promise((resolve, reject) => {
+        var query = "INSERT INTO avance_proyecciones (proyeccion_exptec, proyeccion_variable, mes_anyo, componentes_id_componente) VALUES ? ON DUPLICATE KEY UPDATE proyeccion_exptec = values(proyeccion_exptec), proyeccion_variable = values(proyeccion_variable)"//AHI SE CAMBIA LA QUERY
+        pool.query(query, [insertintoproeccion], (error, resultado) => { //ejecutqa la query
+            if (error) {
+                reject(error);   //reconoce el error
+            } else {
+                resolve(resultado); //funcion que devuelve el resultado a la ruta
+            }
+        })
+    })
+}
+
 
 
 

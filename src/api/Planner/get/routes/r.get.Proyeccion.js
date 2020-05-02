@@ -146,7 +146,16 @@ module.exports = (app) => {
         } 
     })
 
-
+    app.post('/putproyecciones',async(peticion,respuesta)=>{
+        try {
+           var data  = await User.putproyecciones(peticion.body)
+            
+            respuesta.json(data)
+        } catch (error) {
+            console.log(error);
+            respuesta.status(204).json(error)
+        } 
+    })
 
 
 }
