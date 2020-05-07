@@ -87,6 +87,10 @@ require('./api/GestionTareas/put/routes/r.put.GT')(app);
 ////////////////////////////////////////////////////////////////////////////
 require('./api/Planner/get/routes/r.get.Proyeccion')(app);
 
+//procesos gerenciales
+
+require('./api/ProcesosGerenciales/get/routes/r.get.comunicados')(app);
+
 // var server = https.createServer(credentials, app).listen(PORT, () => {
 //   console.log('Listening...',PORT)
 // })
