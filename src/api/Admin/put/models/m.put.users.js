@@ -24,4 +24,19 @@ userModel.putactualizarUsuario = (usuarios) => {
       });
   };
 
+     userModel.putMenuUsuarioUnico = (menu, id_acceso) => { 
+    return new Promise((resolve, reject) => {
+        var query = 'update accesos set menu = ? where id_acceso = ?'
+        pool.query(query, [menu, id_acceso], (error, resultado) => { 
+            if (error) {
+                reject(error);   
+            } else {
+                resolve(resultado); 
+                                        
+            }
+        })
+    })
+}
+
+
 module.exports = userModel;

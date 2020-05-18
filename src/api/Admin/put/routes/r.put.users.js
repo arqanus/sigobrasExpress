@@ -21,4 +21,19 @@ module.exports = function(app){
 			res.status(400).json(error)
 		}
 	})	
+
+	app.put('/putmenuusuariounico', async (peticion, respuesta) => {
+
+        try {
+			peticion.body.menu = JSON.stringify(peticion.body.menu)
+                   
+            var data = await User.putMenuUsuarioUnico(peticion.body.menu,peticion.body.id_acceso)
+            respuesta.json(data)
+        } catch (error) {
+            console.log(error);
+            respuesta.status(204).json(error)
+        }
+    })
+
+
 }
