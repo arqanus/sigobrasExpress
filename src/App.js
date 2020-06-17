@@ -90,6 +90,9 @@ require('./api/Planner/get/routes/r.get.Proyeccion')(app);
 //procesos gerenciales
 
 require('./api/ProcesosGerenciales/get/routes/r.get.comunicados')(app);
+require('./api/ProcesosGerenciales/get/routes/r.get.recursospersonal')(app);
+require('./api/ProcesosGerenciales/get/routes/r.get.infobras')(app);
+
 
 // var server = https.createServer(credentials, app).listen(PORT, () => {
 //   console.log('Listening...',PORT)
