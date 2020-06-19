@@ -154,8 +154,27 @@ module.exports = (app) => {
 
     app.post('/gastoestimadogore_mo_semana',async(peticion,respuesta)=>{
         try {
-           var data  = await User.gastoestimadogore_mo_semana(peticion.body.id_ficha, peticion.body.anyo, peticion.body.mes)
+
+            var SelectRecPersonalSemana  = await User.SelectRecPersonalSemana(peticion.body.id_ficha, peticion.body.anyo, peticion.body.mes)
             
+            var data = []
+
+            for (let i = 0; i < SelectRecPersonalSemana.length; i++) {
+                const element = SelectRecPersonalSemana[i];
+                var gastoestimadogore_mo_semana  = await User.gastoestimadogore_mo_semana(peticion.body.id_ficha, peticion.body.anyo, peticion.body.mes, element.semana) 
+                console.log("data", gastoestimadogore_mo_semana);
+                if (gastoestimadogore_mo_semana == null) {
+                    console.log("ES NULL");
+                    gastoestimadogore_mo_semana =  {
+                        "gasto_semana_mo": 0,
+                        "semana": element.semana
+                    }
+                }
+                data.push(gastoestimadogore_mo_semana)
+                
+            }
+
+                     
             respuesta.json(data)
         } catch (error) {
             console.log(error);

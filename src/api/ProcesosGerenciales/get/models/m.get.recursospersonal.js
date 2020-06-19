@@ -218,14 +218,14 @@ userModel.gastoestimadoexptec_mo_semana = (id_ficha, anyo, mes) => {
 }
 
 
-userModel.gastoestimadogore_mo_semana = (id_ficha, anyo, mes) => { 
+userModel.gastoestimadogore_mo_semana = (id_ficha, anyo, mes, semana) => { 
     return new Promise((resolve, reject) => {
-        var query = "SELECT SUM(cantidad_personal * costo_mo_gore * dias_trabajados) gasto_semana_mo, semana FROM resumen_gasto_mo WHERE fichas_id_ficha = ? AND anyo = ? AND mes = ? group by semana"
-        pool.query(query, [id_ficha, anyo, mes], (error, resultado) => { //ejecutqa la query
+        var query = "SELECT SUM(cantidad_personal * costo_mo_gore * dias_trabajados) gasto_semana_mo, semana FROM resumen_gasto_mo WHERE fichas_id_ficha = ? AND anyo = ? AND mes = ? and semana = ? group by semana"
+        pool.query(query, [id_ficha, anyo, mes, semana], (error, resultado) => { //ejecutqa la query
             if (error) {
                 reject(error);   
             } else {
-                resolve(resultado); 
+                resolve(resultado[0]); 
             }
         })
     })
