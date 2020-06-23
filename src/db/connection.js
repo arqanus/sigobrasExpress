@@ -27,7 +27,10 @@ pool.getConnection((err, connection) => {
             console.error('Database connection was refused.')
         }
     }
-    if (connection) connection.release()
+    if (connection){
+        console.log("Database Connection stablished")
+        connection.release()
+    }
     return
 })
 module.exports = pool;

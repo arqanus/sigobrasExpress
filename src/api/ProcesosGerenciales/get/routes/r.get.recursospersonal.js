@@ -156,6 +156,7 @@ module.exports = (app) => {
         try {
 
             var SelectRecPersonalSemana  = await User.SelectRecPersonalSemana(peticion.body.id_ficha, peticion.body.anyo, peticion.body.mes)
+            console.log(SelectRecPersonalSemana);
             
             var data = []
 
