@@ -92,6 +92,7 @@ require('./api/Planner/get/routes/r.get.Proyeccion')(app);
 require('./api/ProcesosGerenciales/get/routes/r.get.comunicados')(app);
 require('./api/ProcesosGerenciales/get/routes/r.get.recursospersonal')(app);
 require('./api/ProcesosGerenciales/get/routes/r.get.infobras')(app);
+require('./api/ProcesosGerenciales/get/routes/r.get.plazos')(app);
 
 
 // var server = https.createServer(credentials, app).listen(PORT, () => {
