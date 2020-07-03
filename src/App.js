@@ -44,7 +44,9 @@ morganBody(app);
 
 //static
 app.use('/static', express.static(__dirname + '/public'));
- 
+
+//interf gerencial
+require('./api/InterfazGerencial/get/routes/r.get.InterfazGerencial')(app);
 //routes 
 require('./api/Admin/get/routes/r.get.obras')(app);
 require('./api/Admin/get/routes/r.get.users')(app);
