@@ -19,7 +19,7 @@ userModel.SelectRecPersonalAnyos = (id_ficha) => {
 
 userModel.SelectRecPersonalMeses = (id_ficha, anyo) => {
     return new Promise((resolve, reject) => {
-        var query = "SELECT MONTH(avanceactividades.fecha) mes FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE COALESCE(avanceactividades.valor, 0) != 0 AND fichas.id_ficha = ? AND YEAR(avanceactividades.fecha) = ? GROUP BY MONTH(avanceactividades.fecha);"
+        var query = "SELECT MONTH(avanceactividades.fecha) mes FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN (SELECT partidas.* FROM partidas LEFT JOIN recursos ON recursos.Partidas_id_partida = partidas.id_partida WHERE recursos.tipo = 'Mano de Obra' GROUP BY id_partida) partidas_mo ON partidas_mo.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas_mo.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE COALESCE(avanceactividades.valor, 0) != 0 AND fichas.id_ficha = ? AND YEAR(avanceactividades.fecha) = ? GROUP BY MONTH(avanceactividades.fecha)"
         pool.query(query, [id_ficha, anyo], (error, resultado) => {
             if (error) {
                 reject(error);
