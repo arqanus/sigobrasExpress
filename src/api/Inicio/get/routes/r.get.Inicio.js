@@ -10,19 +10,8 @@ module.exports = (app) => {
 				const obra = obras[i];
 				var avance_financiero = await User.getAvanceFinancieroCortes(obra.id_ficha)
 				avance_financiero = avance_financiero.avance_financiero
-				// if (obra.avance_financiero == undefined) {
-				// 	obra.avance_financiero = 0
-				// }
-				console.log("obras", obra.avance_financiero, avance_financiero);
-				
 				obra.avance_financiero = obra.avance_financiero + avance_financiero
-
-				// obra.avance_financiero += avance_financiero
-
-				console.log("suma", obra.avance_financiero);
-				
 				obra.porcentaje_financiero = obra.avance_financiero / obra.g_total_presu * 100
-				//format
 				obra.g_total_presu = tools.formatoSoles(obra.g_total_presu)
 				obra.avance_financiero = tools.formatoSoles(obra.avance_financiero)
 				obra.porcentaje_financiero = tools.formatoPorcentaje(obra.porcentaje_financiero)

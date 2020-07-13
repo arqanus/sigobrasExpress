@@ -172,6 +172,8 @@ module.exports = (app) => {
             var id_partida = await User.postPartidas(partidas)
             var actividades = []
             var recursos = []
+            console.log("partidas");
+            
             for (let i = 0; i < req.body.partidas.length; i++) {
                 const partida = req.body.partidas[i];
                 if (partida.tipo == "partida") {
@@ -198,6 +200,11 @@ module.exports = (app) => {
                     //recursos
                     for (let j = 0; j < partida.recursos.length; j++) {
                         const recurso = partida.recursos[j];
+                        // console.log("recurso",recurso);
+                        if(recurso.descripcion == " " || recurso.descripcion == "" ||recurso.descripcion == null){
+                            console.log("vacio",recurso,);
+                        }
+                        
                         recursos.push(
                             [
                                 recurso.tipo,
