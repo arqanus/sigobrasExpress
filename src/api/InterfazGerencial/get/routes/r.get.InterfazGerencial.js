@@ -34,7 +34,15 @@ module.exports = (app) => {
 	});
 	app.post('/getInterfazGerencialData', async (req, res) => {
 		try {
-			var data = await User.getInterfazGerencialData(req.body.id_unidadEjecutora, req.body.idsectores, req.body.idmodalidad_ejecutora, req.body.id_Estado)
+			var data = await User.getInterfazGerencialData(req.body.id_acceso,req.body.id_unidadEjecutora, req.body.idsectores, req.body.idmodalidad_ejecutora, req.body.id_Estado)
+			res.json(data)
+		} catch (error) {
+			res.status(200).json(error)
+		}
+	});
+	app.post('/IG_AvanceFisico_anyos', async (req, res) => {
+		try {
+			var data = await User.IG_AvanceFisico_anyos(req.body.id_acceso,req.body.id_unidadEjecutora, req.body.idsectores, req.body.idmodalidad_ejecutora, req.body.id_Estado)
 			res.json(data)
 		} catch (error) {
 			res.status(200).json(error)
@@ -42,7 +50,15 @@ module.exports = (app) => {
 	});
 	app.post('/IG_AvanceFisico', async (req, res) => {
 		try {
-			var data = await User.IG_AvanceFisico()
+			var data = await User.IG_AvanceFisico(req.body.id_acceso,req.body.id_unidadEjecutora, req.body.idsectores, req.body.idmodalidad_ejecutora, req.body.id_Estado,req.body.anyo)
+			res.json(data)
+		} catch (error) {
+			res.status(200).json(error)
+		}
+	});
+	app.post('/IG_AvanceFisicoProgramado_anyos', async (req, res) => {
+		try {
+			var data = await User.IG_AvanceFisicoProgramado_anyos(req.body.id_acceso,req.body.id_unidadEjecutora, req.body.idsectores, req.body.idmodalidad_ejecutora, req.body.id_Estado)
 			res.json(data)
 		} catch (error) {
 			res.status(200).json(error)
@@ -50,7 +66,7 @@ module.exports = (app) => {
 	});
 	app.post('/IG_AvanceFisicoProgramado', async (req, res) => {
 		try {
-			var data = await User.IG_AvanceFisicoProgramado()
+			var data = await User.IG_AvanceFisicoProgramado(req.body.id_acceso,req.body.id_unidadEjecutora, req.body.idsectores, req.body.idmodalidad_ejecutora, req.body.id_Estado,req.body.anyo)
 			res.json(data)
 		} catch (error) {
 			res.status(200).json(error)
