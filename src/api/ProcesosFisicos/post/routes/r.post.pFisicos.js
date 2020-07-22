@@ -516,4 +516,42 @@ module.exports = function (app) {
       res.status(400).json(error)
     }
   })
+
+  app.post('/agregarCostoIndirecto', async (req, res) => {
+    
+    try {
+      var data = await User.agregarCostoIndirecto(req.body)
+      res.json(
+        data
+      )
+    } catch (error) {
+      console.log(error)
+      res.status(400).json(error)
+    }
+
+  })
+
+  app.post('/getCostosIndirectos', async (req, res) => {
+    try {
+      var data = await User.getCostosIndirectos(req.body)
+      res.json(
+        data
+      )
+    } catch (error) {
+      console.log(error)
+      res.status(400).json(error)
+    }
+  })
+
+  app.post('/eliminarCostosIndirectos', async (req, res) => {
+    try {
+      var data = await User.eliminarCostosIndirectos(req.body)
+      res.json(
+        data
+      )
+    } catch (error) {
+      console.log(error)
+      res.status(400).json(error)
+    }
+  })
 }

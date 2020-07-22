@@ -178,4 +178,40 @@ userModel.postRecursosNuevos = (data) => {
         })
     })
 }
+userModel.agregarCostoIndirecto = (data) => {
+    return new Promise((resolve, reject) => {
+        
+        pool.query("insert into costosindirectos (id,nombre,monto,fichas_id_ficha,fecha_inicial,fecha_final) values (?,?,?,?,?,?) on duplicate key update nombre = values (nombre), monto = values(monto);", [data.id,data.nombre,data.monto,data.fichas_id_ficha,data.fecha_inicial,data.fecha_final], (error, res) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(res);
+            }
+        })
+    })
+}
+
+userModel.getCostosIndirectos = (data) => {
+    return new Promise((resolve, reject) => {
+        pool.query("SELECT * FROM costosindirectos WHERE fichas_id_ficha = ? AND fecha_inicial = ? AND fecha_final = ?", [data.fichas_id_ficha,data.fecha_inicial,data.fecha_final], (error, res) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(res);
+            }
+        })
+    })
+}
+
+userModel.eliminarCostosIndirectos = (data) => {
+    return new Promise((resolve, reject) => {
+        pool.query("DELETE FROM costosindirectos WHERE id = ?", [data.id], (error, res) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(res);
+            }
+        })
+    })
+}
 module.exports = userModel;
