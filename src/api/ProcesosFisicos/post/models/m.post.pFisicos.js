@@ -193,7 +193,7 @@ userModel.agregarCostoIndirecto = (data) => {
 
 userModel.getCostosIndirectos = (data) => {
     return new Promise((resolve, reject) => {
-        pool.query("SELECT * FROM costosindirectos WHERE fichas_id_ficha = ? AND fecha_inicial = ? AND fecha_final = ?", [data.fichas_id_ficha,data.fecha_inicial,data.fecha_final], (error, res) => {
+        pool.query("SELECT * FROM costosindirectos WHERE fichas_id_ficha = ? AND fecha_inicial = ? ", [data.fichas_id_ficha,data.fecha_inicial], (error, res) => {
             if (error) {
                 reject(error);
             } else {
