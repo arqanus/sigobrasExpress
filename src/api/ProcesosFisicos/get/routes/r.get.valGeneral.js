@@ -43,8 +43,9 @@ module.exports = (app)=>{
         }
     })
     app.post('/getValGeneralPartidas',async (req,res)=>{
+        console.log(req.body.formato);
         try {
-            var partidas = await User.getValGeneralPartidas(req.body.id_componente,req.body.fecha_inicial,req.body.fecha_final)
+            var partidas = await User.getValGeneralPartidas(req.body.id_componente,req.body.fecha_inicial,req.body.fecha_final,req.body.formato)
             res.json(partidas)
         } catch (error) {
             res.status(204).json(error)
