@@ -43,7 +43,7 @@ userModel.getValGeneralPeriodos  = (id_ficha,anyo,ListarTodo)=>{
                             "-" +  this.getDate();
                          }
 
-                        fila.fecha_final = (new Date(anyo + 1, 0, 1)).formatMMDDYYYY()
+                        fila.fecha_final = (new Date(parseInt(anyo) + 1, 0, 1)).formatMMDDYYYY()
                     }
 
 
