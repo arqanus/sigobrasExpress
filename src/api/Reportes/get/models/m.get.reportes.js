@@ -620,7 +620,79 @@ userModel.getinformeControlEjecucionObras = (id_ficha)=>{
         })
     })
 }
+userModel.getAvancesCabezera = (id_ficha,fecha_inicial,fecha_final,formated)=>{
+    console.log("FECHAS", fecha_inicial, fecha_final );
+    
+    return new Promise((resolve, reject) => {
+        pool.query("SELECT componentes.numero, componentes.nombre, componentes.presupuesto, COALESCE(SUM(periodo_anterior.valor), 0) valor_anterior, COALESCE(SUM(periodo_anterior.valor), 0) / presupuesto * 100 porcentaje_anterior, COALESCE(SUM(periodo_actual.valor), 0) valor_actual, COALESCE(SUM(periodo_actual.valor), 0) / presupuesto * 100 porcentaje_actual, COALESCE(SUM(periodo_anterior.valor), 0) + COALESCE(SUM(periodo_actual.valor), 0) valor_total, (COALESCE(SUM(periodo_anterior.valor), 0) + COALESCE(SUM(periodo_actual.valor), 0)) / presupuesto * 100 porcentaje_total, componentes.presupuesto - COALESCE(SUM(periodo_anterior.valor), 0) - COALESCE(SUM(periodo_actual.valor), 0) valor_saldo, 100 - ((COALESCE(SUM(periodo_anterior.valor), 0) + COALESCE(SUM(periodo_actual.valor), 0)) / presupuesto * 100) porcentaje_saldo FROM componentes  LEFT JOIN historialcomponentes ON historialcomponentes.componentes_id_componente = componentes.id_componente LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN (SELECT partidas.id_partida, CAST(SUM(avanceactividades.valor) AS DECIMAL (20 , 10 )) * costo_unitario valor FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.fecha < ? AND historialactividades.estado IS NULL GROUP BY partidas.id_partida) periodo_anterior ON periodo_anterior.id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, CAST(SUM(avanceactividades.valor) AS DECIMAL (20 ,10 )) * costo_unitario valor FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.fecha >= ? AND avanceactividades.fecha < ? AND historialactividades.estado IS NULL GROUP BY partidas.id_partida) periodo_actual ON periodo_actual.id_partida = partidas.id_partida WHERE componentes.fichas_id_ficha = ? and historialcomponentes.estado is null GROUP BY componentes.id_componente ",[fecha_inicial,fecha_inicial,fecha_final,id_ficha],(err,res)=>{ 
+            if(err){
+                return reject(err)
+            }else if(res.length == 0){
+                return resolve("VACIO")   
+            }else{
+                var presupuesto = 0 
+                var valor_anterior = 0 
+                var valor_actual = 0 
+                var valor_total = 0 
+                var valor_saldo = 0             
+                for (let i = 0; i < res.length; i++) {
+                    const fila = res[i];
+                    presupuesto +=  fila.presupuesto 
 
+                    valor_anterior += fila.valor_anterior
+                    valor_actual += fila.valor_actual
+                    valor_total += fila.valor_total
+                    valor_saldo += fila.valor_saldo                       
+                    
+                    fila.presupuesto = tools.formatoSoles(fila.presupuesto)
+                    fila.valor_anterior = tools.formatoSoles(fila.valor_anterior)
+                    fila.porcentaje_anterior = tools.formatoSoles(fila.porcentaje_anterior)
+                    fila.valor_actual = tools.formatoSoles(fila.valor_actual)
+                    fila.porcentaje_actual = tools.formatoSoles(fila.porcentaje_actual)
+                    fila.valor_total = tools.formatoSoles(fila.valor_total)
+                    fila.porcentaje_total = tools.formatoSoles(fila.porcentaje_total)
+                    fila.valor_saldo = tools.formatoSoles(fila.valor_saldo)
+                    fila.porcentaje_saldo = tools.formatoSoles(fila.porcentaje_saldo)
+                }
+                var data = {}
+                if(formated){
+                    data = {
+                        "presupuesto":tools.formatoSoles(presupuesto),
+                        "valor_anterior":tools.formatoSoles( valor_anterior),
+                        "valor_actual":tools.formatoSoles(valor_actual),
+                        "valor_total":tools.formatoSoles( valor_total),
+                        "valor_saldo":tools.formatoSoles(valor_saldo),
+                        "porcentaje_anterior":tools.formatoSoles(valor_anterior/presupuesto*100),
+                        "porcentaje_actual":tools.formatoSoles(valor_actual/presupuesto*100),
+                        "porcentaje_total":tools.formatoSoles(valor_total/presupuesto*100),
+                        "porcentaje_saldo":tools.formatoSoles(valor_saldo/presupuesto*100),
+                        
+                    }
+                }else{
+                    data = {
+                        "presupuesto":presupuesto,
+                        "valor_anterior": valor_anterior,
+                        "valor_actual":valor_actual,
+                        "valor_total": valor_total,
+                        "valor_saldo":valor_saldo,
+                        "porcentaje_anterior":valor_anterior/presupuesto*100,
+                        "porcentaje_actual":valor_actual/presupuesto*100,
+                        "porcentaje_total":valor_total/presupuesto*100,
+                        "porcentaje_saldo":valor_saldo/presupuesto*100,
+                        
+                    }
+                }
+                
+                return resolve(data);
+            }
+            
+            
+        })
+        
+        
+                
+    })
+}
 
 
 
