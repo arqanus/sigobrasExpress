@@ -301,7 +301,7 @@ userModel.getResoluciones = (id_ficha) => {
 }
 userModel.getHistorialByFechas = (id_componente,fecha_ini,fecha_fin) => {
     return new Promise((resolve, reject) => {
-        pool.query("SELECT avanceactividades.* FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE id_componente = ? AND DATE_FORMAT(?, '%Y-%m-%d') <= DATE_FORMAT(avanceactividades.fecha, '%Y-%m-%d') AND DATE_FORMAT(avanceactividades.fecha, '%Y-%m-%d') <= DATE_FORMAT(?, '%Y-%m-%d')", [id_componente,fecha_ini,fecha_fin], (err, res) => {
+        pool.query("SELECT item, avanceactividades.* FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE id_componente = ? AND DATE_FORMAT(?, '%Y-%m-%d') <= DATE_FORMAT(avanceactividades.fecha, '%Y-%m-%d') AND DATE_FORMAT(avanceactividades.fecha, '%Y-%m-%d') <= DATE_FORMAT(?, '%Y-%m-%d')", [id_componente,fecha_ini,fecha_fin], (err, res) => {
             if (err) {
                 reject(err.code);
             } else {
