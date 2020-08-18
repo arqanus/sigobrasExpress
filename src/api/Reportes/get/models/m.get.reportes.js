@@ -3,6 +3,7 @@ const tools = require('../../../../tools/format')
 
 let userModel = {};
 
+//API PARA PARA IDENTIFICAR REGION PROVINCIA Y DISTRITOS
 userModel.getInformeDataGeneral  = (id_ficha,fecha_inicial)=>{    
     return new Promise((resolve, reject) => {
         pool.query("SELECT fichas.id_ficha, UPPER(fichas.g_meta) g_meta, fichas.g_total_presu presupuesto_general, UPPER(MONTHNAME(?)) mes, UPPER(fichas.tiempo_ejec) plazo_de_ejecucion, UPPER(fichas.g_local_reg) region, UPPER(fichas.g_local_prov) provincia, UPPER(fichas.g_local_dist) distrito, UPPER(COALESCE(fichas.lugar, '')) lugar FROM fichas WHERE fichas.id_ficha = ?",[fecha_inicial,id_ficha],(err,res)=>{ 
