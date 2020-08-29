@@ -66,7 +66,7 @@ module.exports = (app) => {
 				console.log(req.body.id_ficha, financiero_monto);
 				
 				corte.id_historialEstado = financiero_monto.id_historialEstado
-				corte.codigo = "C"
+				corte.codigo = "CORTE"
 				corte.fecha = tools.fechaLargaCorta(new Date(periodoCorte.fecha_final))
 				corte.mes = periodoCorte.mes + "."
 				corte.anyo = periodoCorte.anyo
