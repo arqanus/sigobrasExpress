@@ -72,7 +72,7 @@ userModel.getImagenesHistorialPartidas = (id_partida, callback) => {
             callback(err);
         }
         else {
-            conn.query("SELECT partidasimagenes.fecha, partidasimagenes.imagen, partidasimagenes.imagenAlt, partidasimagenes.descripcionObservacion descripcion FROM partidasimagenes WHERE partidasimagenes.imagen IS NOT NULL AND partidasimagenes.Partidas_id_partida = ?", id_partida, (error, res) => {
+            conn.query("SELECT DATE_FORMAT(partidasimagenes.fecha, '%d-%m-%Y') fecha, partidasimagenes.imagen, partidasimagenes.imagenAlt, partidasimagenes.descripcionObservacion descripcion FROM partidasimagenes WHERE partidasimagenes.imagen IS NOT NULL AND partidasimagenes.Partidas_id_partida = ?", id_partida, (error, res) => {
                 if (error) {
                     callback(error);
                 }
