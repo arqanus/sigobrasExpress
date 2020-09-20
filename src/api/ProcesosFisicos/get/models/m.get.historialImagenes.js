@@ -49,7 +49,7 @@ userModel.getImagenesHistorialActividades = (id_partida, callback) => {
             callback(err);
         }
         else {
-            conn.query("SELECT avanceactividades.fecha, avanceactividades.imagen, avanceactividades.imagenAlt, avanceactividades.descripcion FROM actividades LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.imagen IS NOT NULL and actividades.Partidas_id_partida = ?", id_partida, (error, res) => {
+            conn.query("SELECT DATE_FORMAT(avanceactividades.fecha, '%d-%m-%Y') fecha, avanceactividades.imagen, avanceactividades.imagenAlt, avanceactividades.descripcion FROM actividades LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.imagen IS NOT NULL and actividades.Partidas_id_partida = ?", id_partida, (error, res) => {
                 if (error) {
                     callback(error);
                 }
