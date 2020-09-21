@@ -1,9 +1,10 @@
 const pool = require('../../../../db/connection');
 const tools = require('../../../../tools/format')
 
-let userModel = {};
+// let userModel = {}; (SE CAMBIÓ EL LET USERMODEL POR EXPORTAR A TODO)
 //val general principal
-userModel.getValGeneralAnyos = (id_ficha) => {
+module.exports = {
+getValGeneralAnyos(id_ficha){
     return new Promise((resolve, reject) => {
         pool.query("SELECT year(avanceactividades.fecha) anyo FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.Fichas_id_ficha = fichas.id_ficha AND historialestados.fecha_inicial <= avanceactividades.fecha AND avanceactividades.fecha < historialestados.fecha_final LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado left join historialactividades on historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado is null and fichas.id_ficha = ? GROUP BY year(avanceactividades.fecha)", id_ficha, (err, res) => {
             if (err) {
@@ -12,8 +13,8 @@ userModel.getValGeneralAnyos = (id_ficha) => {
             return resolve(res)
         })
     })
-}
-userModel.getValGeneralPeriodos = (id_ficha, anyo, ListarTodo) => {
+},
+getValGeneralPeriodos(id_ficha, anyo, ListarTodo){
     return new Promise((resolve, reject) => {
         pool.query("SELECT fichas.id_ficha, estados.codigo, MIN(DATE_FORMAT(avanceactividades.fecha, '%Y-%m-%d')) fecha_inicial, DATE_FORMAT(MAX(avanceactividades.fecha), '%Y') anyo, DATE_FORMAT(MAX(avanceactividades.fecha), '%b') mes FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.Fichas_id_ficha = fichas.id_ficha AND historialestados.fecha_inicial <= avanceactividades.fecha AND avanceactividades.fecha < historialestados.fecha_final LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND fichas.id_ficha = ? AND (YEAR(avanceactividades.fecha) = ? OR " + ListarTodo + ")  AND estados.codigo != 'A' AND COALESCE(avanceactividades.valor, 0) != 0 GROUP BY historialestados.id_historialEstado , DATE_FORMAT(avanceactividades.fecha, '%Y-%b') ORDER BY avanceactividades.fecha", [id_ficha, anyo], (err, res) => {
             if (err) {
@@ -52,8 +53,8 @@ userModel.getValGeneralPeriodos = (id_ficha, anyo, ListarTodo) => {
             }
         })
     })
-}
-userModel.getValGeneralComponentes = (id_ficha) => {
+},
+getValGeneralComponentes(id_ficha){
     return new Promise((resolve, reject) => {
         pool.query("SELECT componentes.id_componente, componentes.numero, componentes.nombre, componentes.presupuesto FROM componentes left join historialcomponentes on historialcomponentes.componentes_id_componente = componentes.id_componente WHERE historialcomponentes.componentes_id_componente is null and componentes.fichas_id_ficha = ?", [id_ficha], (err, res) => {
             if (err) {
@@ -62,8 +63,8 @@ userModel.getValGeneralComponentes = (id_ficha) => {
             return resolve(res)
         })
     })
-}
-userModel.getValGeneralResumenPeriodo = (id_ficha, fecha_inicial, fecha_final, formated) => {
+},
+getValGeneralResumenPeriodo(id_ficha, fecha_inicial, fecha_final, formated){
     console.log("FECHAS", fecha_inicial, fecha_final);
 
     return new Promise((resolve, reject) => {
@@ -135,9 +136,9 @@ userModel.getValGeneralResumenPeriodo = (id_ficha, fecha_inicial, fecha_final, f
 
 
     })
-}
+},
 // SELECT partidas.tipo, partidas.item, partidas.descripcion, partidas.metrado, partidas.costo_unitario, partidas.metrado * partidas.costo_unitario precio_parcial, periodo_anterior.metrado metrado_anterior, periodo_anterior.valor valor_anterior, periodo_anterior.porcentaje porcentaje_anterior, periodo_actual.metrado metrado_actual, periodo_actual.valor valor_actual, periodo_actual.porcentaje porcentaje_actual, COALESCE(periodo_anterior.metrado, 0) + COALESCE(periodo_actual.metrado, 0) metrado_total, COALESCE(periodo_anterior.valor, 0) + COALESCE(periodo_actual.valor, 0) valor_total, (COALESCE(periodo_anterior.metrado, 0) + COALESCE(periodo_actual.metrado, 0)) porcentaje_total, partidas.metrado - (COALESCE(periodo_anterior.metrado, 0) + COALESCE(periodo_actual.metrado, 0)) metrado_saldo, partidas.metrado * costo_unitario - COALESCE(periodo_anterior.valor, 0) - COALESCE(periodo_actual.valor, 0) valor_saldo, 100 - COALESCE(periodo_anterior.porcentaje, 0) - COALESCE(periodo_actual.porcentaje, 0) porcentaje_saldo FROM partidas LEFT JOIN (SELECT partidas.id_partida, SUM(avanceactividades.valor) metrado, CAST(SUM(avanceactividades.valor) AS DECIMAL (25 , 20 )) * costo_unitario valor, SUM(avanceactividades.valor) / metrado * 100 porcentaje FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.fecha < ? AND historialactividades.estado IS NULL GROUP BY partidas.id_partida) periodo_anterior ON periodo_anterior.id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, SUM(avanceactividades.valor) metrado, CAST(SUM(avanceactividades.valor) AS DECIMAL (25 , 20 )) * costo_unitario valor, SUM(avanceactividades.valor) / metrado * 100 porcentaje FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.fecha >= ? AND avanceactividades.fecha < ? AND historialactividades.estado IS NULL GROUP BY partidas.id_partida) periodo_actual ON periodo_actual.id_partida = partidas.id_partida WHERE partidas.componentes_id_componente = ? ORDER BY partidas.id_partida"
-userModel.getValGeneralPartidas = (id_componente, fecha_inicial, fecha_final, formato = true) => {
+getValGeneralPartidas(id_componente, fecha_inicial, fecha_final, formato = true){
     return new Promise((resolve, reject) => {
         pool.query("SELECT partidas.tipo, partidas.item, partidas.descripcion, partidas.unidad_medida, partidas.metrado, partidas.costo_unitario, partidas.metrado * partidas.costo_unitario precio_parcial, periodo_anterior.metrado metrado_anterior, periodo_anterior.valor valor_anterior, periodo_anterior.porcentaje porcentaje_anterior, periodo_actual.metrado metrado_actual, periodo_actual.valor valor_actual, periodo_actual.porcentaje porcentaje_actual, COALESCE(periodo_anterior.metrado, 0) + COALESCE(periodo_actual.metrado, 0) metrado_total, COALESCE(periodo_anterior.valor, 0) + COALESCE(periodo_actual.valor, 0) valor_total, (COALESCE(periodo_anterior.porcentaje, 0) + COALESCE(periodo_actual.porcentaje, 0)) porcentaje_total, partidas.metrado - (COALESCE(periodo_anterior.metrado, 0) + COALESCE(periodo_actual.metrado, 0)) metrado_saldo, partidas.metrado * costo_unitario - COALESCE(periodo_anterior.valor, 0) - COALESCE(periodo_actual.valor, 0) valor_saldo, 100 - COALESCE(periodo_anterior.porcentaje, 0) - COALESCE(periodo_actual.porcentaje, 0) porcentaje_saldo FROM partidas LEFT JOIN (SELECT partidas.id_partida, SUM(avanceactividades.valor) metrado, CAST(SUM(avanceactividades.valor) AS DECIMAL (25 , 10 )) * costo_unitario valor, SUM(avanceactividades.valor) / metrado * 100 porcentaje FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.fecha < ? AND historialactividades.estado IS NULL GROUP BY partidas.id_partida) periodo_anterior ON periodo_anterior.id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, SUM(avanceactividades.valor) metrado, CAST(SUM(avanceactividades.valor) AS DECIMAL (25 , 10 )) * costo_unitario valor, SUM(avanceactividades.valor) / metrado * 100 porcentaje FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.fecha >= ? AND avanceactividades.fecha < ? AND historialactividades.estado IS NULL GROUP BY partidas.id_partida) periodo_actual ON periodo_actual.id_partida = partidas.id_partida WHERE partidas.componentes_id_componente = ? ORDER BY partidas.id_partida", [fecha_inicial, fecha_inicial, fecha_final, id_componente], (err, res) => {
             if (err) {
@@ -233,9 +234,9 @@ userModel.getValGeneralPartidas = (id_componente, fecha_inicial, fecha_final, fo
             }
         })
     })
-}
+},
 
-userModel.getValGeneraMayoresMetradoslAnyos = (id_ficha, tipo) => {
+getValGeneraMayoresMetradoslAnyos(id_ficha, tipo){
     console.log(id_ficha, tipo);
     return new Promise((resolve, reject) => {
         pool.query("SELECT YEAR(avanceactividades.fecha) anyo FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.Fichas_id_ficha = fichas.id_ficha AND historialestados.fecha_inicial <= avanceactividades.fecha AND avanceactividades.fecha < historialestados.fecha_final LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado = ? AND fichas.id_ficha = ? AND estados.codigo != 'A' GROUP BY YEAR(avanceactividades.fecha)", [tipo, id_ficha], (err, res) => {
@@ -249,8 +250,8 @@ userModel.getValGeneraMayoresMetradoslAnyos = (id_ficha, tipo) => {
             }
         })
     })
-}
-userModel.getValGeneralMayoresMetradosPeriodos = (id_ficha, anyo, tipo) => {
+},
+getValGeneralMayoresMetradosPeriodos(id_ficha, anyo, tipo){
     return new Promise((resolve, reject) => {
         pool.query("SELECT fichas.id_ficha, estados.codigo, MIN(DATE_FORMAT(avanceactividades.fecha, '%Y-%m-%d')) fecha_inicial, DATE_FORMAT(MAX(avanceactividades.fecha), ' %Y') anyo, DATE_FORMAT(MAX(avanceactividades.fecha), ' %b') mes FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.Fichas_id_ficha = fichas.id_ficha AND historialestados.fecha_inicial <= avanceactividades.fecha AND avanceactividades.fecha < historialestados.fecha_final LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado = ? AND fichas.id_ficha = ? AND YEAR(avanceactividades.fecha) = ? AND estados.codigo != 'A' GROUP BY historialestados.id_historialEstado , DATE_FORMAT(avanceactividades.fecha, '%Y-%b') ORDER BY avanceactividades.fecha", [tipo, id_ficha, anyo], (err, res) => {
             if (err) {
@@ -280,8 +281,8 @@ userModel.getValGeneralMayoresMetradosPeriodos = (id_ficha, anyo, tipo) => {
             }
         })
     })
-}
-userModel.getValGeneralMayoresMetradosComponentes = (fecha_inicial, fecha_final, id_ficha, tipo) => {
+},
+getValGeneralMayoresMetradosComponentes(fecha_inicial, fecha_final, id_ficha, tipo){
     return new Promise((resolve, reject) => {
         pool.query("SELECT componentes.id_componente, componentes.numero, componentes.nombre, componentes.presupuesto FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad INNER JOIN avanceactividades ON avanceactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado = ? AND avanceactividades.fecha >= ? AND avanceactividades.fecha < ? AND componentes.fichas_id_ficha = ? GROUP BY componentes.id_componente", [tipo, fecha_inicial, fecha_final, id_ficha], (error, res) => {
             if (error) {
@@ -293,8 +294,8 @@ userModel.getValGeneralMayoresMetradosComponentes = (fecha_inicial, fecha_final,
             }
         })
     })
-}
-userModel.getValGeneralMayoresMetradosResumenPeriodo = (id_ficha, fecha_inicial, fecha_final, tipo) => {
+},
+getValGeneralMayoresMetradosResumenPeriodo(id_ficha, fecha_inicial, fecha_final, tipo){
     return new Promise((resolve, reject) => {
         var query =
             pool.query("SELECT componentes.numero, componentes.nombre, componentes.presupuesto, periodo_anterior.valor valor_anterior, periodo_anterior.porcentaje porcentaje_anterior, periodo_actual.valor valor_actual, periodo_actual.porcentaje porcentaje_actual, COALESCE(periodo_anterior.valor, 0) + COALESCE(periodo_actual.valor, 0) valor_total, COALESCE(periodo_anterior.porcentaje, 0) + COALESCE(periodo_actual.porcentaje, 0) porcentaje_total, componentes.presupuesto - COALESCE(periodo_anterior.valor, 0) - COALESCE(periodo_actual.valor, 0) valor_saldo, 100 - COALESCE(periodo_anterior.porcentaje, 0) - COALESCE(periodo_actual.porcentaje, 0) porcentaje_saldo FROM componentes LEFT JOIN (SELECT partidas.componentes_id_componente, SUM(avanceactividades.valor * costo_unitario) valor, SUM(avanceactividades.valor * costo_unitario) / componentes.presupuesto * 100 porcentaje FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado = ? and avanceactividades.fecha < ? AND historialactividades.estado IS NULL GROUP BY partidas.componentes_id_componente) periodo_anterior ON periodo_anterior.componentes_id_componente = componentes.id_componente inner JOIN (SELECT partidas.componentes_id_componente, SUM(avanceactividades.valor * costo_unitario) valor, SUM(avanceactividades.valor * costo_unitario) / componentes.presupuesto * 100 porcentaje FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado = ? and avanceactividades.fecha >= ? AND avanceactividades.fecha < ? AND historialactividades.estado = ? GROUP BY partidas.componentes_id_componente) periodo_actual ON periodo_actual.componentes_id_componente = componentes.id_componente WHERE componentes.fichas_id_ficha = ?", [tipo, fecha_inicial, tipo, fecha_inicial, fecha_final, tipo, id_ficha], (error, res) => {
@@ -339,8 +340,8 @@ userModel.getValGeneralMayoresMetradosResumenPeriodo = (id_ficha, fecha_inicial,
                 }
             })
     })
-}
-userModel.getValGeneralMayoresMetradosPartidas = (id_componente, fecha_inicial, fecha_final, tipo) => {
+},
+getValGeneralMayoresMetradosPartidas(id_componente, fecha_inicial, fecha_final, tipo){
     return new Promise((resolve, reject) => {
         pool.query("/*COALESCE(parcial_negativo / parcial_positivo, 0) + 1 porcentaje_negatividad_ajustado*/ SELECT partidas.tipo, partidas.item, partidas.descripcion, partidas.metrado, partidas.costo_unitario, partidas.precio_parcial, (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) * periodo_anterior.metrado metrado_anterior, (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) * periodo_anterior.valor valor_anterior, (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) * periodo_anterior.metrado / partidas.metrado * 100 porcentaje_anterior, (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) * periodo_actual.metrado metrado_actual, (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) * periodo_actual.valor valor_actual, (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) * periodo_actual.metrado / partidas.metrado * 100 porcentaje_actual, (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) * (COALESCE(periodo_anterior.metrado, 0) + COALESCE(periodo_actual.metrado, 0)) metrado_total, (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) * (COALESCE(periodo_anterior.valor, 0) + COALESCE(periodo_actual.valor, 0)) valor_total, (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) * (COALESCE(periodo_anterior.metrado / partidas.metrado * 100, 0) + COALESCE(periodo_actual.metrado / partidas.metrado * 100, 0)) porcentaje_total, partidas.metrado - (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) * COALESCE(periodo_anterior.metrado, 0) - (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) * COALESCE(periodo_actual.metrado, 0) metrado_saldo, partidas.precio_parcial - (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) * COALESCE(periodo_anterior.valor, 0) - (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) * COALESCE(periodo_actual.valor, 0) valor_saldo, 100 - (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) * COALESCE(periodo_anterior.metrado / partidas.metrado * 100, 0) - (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) * COALESCE(periodo_actual.metrado / partidas.metrado * 100, 0) porcentaje_saldo FROM (SELECT partidas.componentes_id_componente, partidas.id_partida, partidas.tipo, partidas.item, partidas.descripcion, SUM(actividades.parcial) metrado, partidas.costo_unitario, SUM(actividades.parcial) * partidas.costo_unitario precio_parcial FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN (SELECT * FROM historialactividades WHERE historialactividades.id_historialActividades = (SELECT MAX(b2.id_historialActividades) FROM historialactividades b2 WHERE b2.actividades_id_actividad = historialactividades.actividades_id_actividad AND b2.fecha < ?)) historialactividad ON historialactividad.actividades_id_actividad = actividades.id_actividad WHERE historialactividad.estado = ? GROUP BY partidas.id_partida) partidas LEFT JOIN (SELECT partidas.id_partida, SUM(avanceactividades.valor) metrado, SUM(avanceactividades.valor * costo_unitario) valor FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.fecha < ? AND historialactividades.estado = ? GROUP BY partidas.id_partida) periodo_anterior ON periodo_anterior.id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, SUM(avanceactividades.valor) metrado, SUM(avanceactividades.valor * costo_unitario) valor FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.fecha >= ? AND avanceactividades.fecha < ? AND historialactividades.estado = ? GROUP BY partidas.id_partida) periodo_actual ON periodo_actual.id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_positivo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE actividades.parcial > 0 AND historialactividades.estado =? GROUP BY partidas.id_partida) p1 ON p1.id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_negativo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE actividades.parcial < 0 AND historialactividades.estado =? GROUP BY partidas.id_partida) p2 ON p2.id_partida = partidas.id_partida WHERE partidas.componentes_id_componente = ? ORDER BY partidas.id_partida", [fecha_final, tipo, fecha_inicial, tipo, fecha_inicial, fecha_final, tipo, tipo, tipo, id_componente], (error, res) => {
             if (error) {
@@ -415,4 +416,5 @@ userModel.getValGeneralMayoresMetradosPartidas = (id_componente, fecha_inicial, 
         })
     })
 }
-module.exports = userModel;
+}
+// module.exports = userModel;
