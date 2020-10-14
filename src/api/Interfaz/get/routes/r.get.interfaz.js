@@ -11,7 +11,7 @@ function soloLetras(req,res,next){
 }
 
 module.exports = function(app){
-  app.get('/login',soloLetras,async(req,res)=>{		
+  app.post('/login',soloLetras,async(req,res)=>{		
 	  try {
 		var data = await User.getId_acceso(req.body)
 		res.json(data);
