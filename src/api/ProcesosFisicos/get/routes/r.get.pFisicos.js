@@ -6,8 +6,6 @@ module.exports = (app) => {
                 res.json("null");
             } else {
                 var componentes = await User.getComponentes(req.body.id_ficha)
-                var partidas = await User.getPartidas(componentes[0].id_componente, null)
-                componentes[0].partidas = partidas
                 res.json(componentes);
             }
         } catch (error) {
@@ -20,8 +18,8 @@ module.exports = (app) => {
             if (req.body.id_componente == null || req.body.id_componente == "null" || req.body.id_componente == "") {
                 res.json("null");
             } else {
-                var data = await User.getPartidas(req.body.id_componente, null)
-                res.json(data)
+                var partidas = await User.getPartidas(req.body.id_componente, null)
+                res.json(partidas)
             }
         } catch (error) {
             console.log(error)
@@ -60,15 +58,15 @@ module.exports = (app) => {
                 res.json("null");
             } else {
                 var componentes = await User.getComponentesPNuevas(req.body.id_ficha)
-                if(componentes =="vacio"){
+                if (componentes == "vacio") {
                     res.json("vacio")
-                }else{
+                } else {
                     var partidas = await User.getPartidasPNuevas(componentes[0].id_componente)
                     componentes[0].partidas = partidas
                     res.json(componentes);
                 }
-                
-                
+
+
             }
         } catch (error) {
             console.log(error)
@@ -139,8 +137,55 @@ module.exports = (app) => {
     })
     app.post('/getPartidasObra', async (req, res) => {
         try {
-            var data = await User.getPartidas(null, null,req.body.id_ficha,false)
+            var data = await User.getPartidas(null, null, req.body.id_ficha, false)
             res.json(data)
+        } catch (error) {
+            console.log(error)
+            res.status(204).json(error)
+        }
+    })
+    app.post('/getPartidaComentarios', async (req, res) => {
+        try {
+            var data = await User.getPartidaComentarios(req.body.id_partida)
+            res.json(data)
+        } catch (error) {
+            console.log(error)
+            res.status(204).json(error)
+        }
+    })
+    app.post('/postPartidaComentarios', async (req, res) => {
+        try {
+            var data = await User.postPartidaComentario(req.body.comentario, req.body.id_partida, req.body.id_acceso)
+            res.json({ message: "comentario guardado exitosamente" })
+        } catch (error) {
+            console.log(error)
+            res.status(204).json(error)
+        }
+    })
+    app.post('/getPartidacomentariosNoVistos', async (req, res) => {
+        try {
+            var data = await User.getPartidacomentariosNoVistos(req.body.id_componente)
+            res.json(data)
+        } catch (error) {
+            console.log(error)
+            res.status(204).json(error)
+        }
+    })
+    app.post('/postComentariosVistos', async (req, res) => {
+        try {
+            var req_comentariosNoVistos = await User.getComentariosNoVistos(req.body.id_partida)
+            var idComentariosNoVistos = [];
+            console.log("idComentariosNoVistos cantidad :",idComentariosNoVistos.length);
+            req_comentariosNoVistos.forEach(element => {
+                idComentariosNoVistos.push([req.body.id_acceso, element.id])
+            });
+            console.log("idComentariosNoVistos cantidad :",idComentariosNoVistos.length);
+            console.log("idComentariosNoVistos :",idComentariosNoVistos);
+            if (idComentariosNoVistos.length > 0) {
+                var req_comentariosVistos = await User.postComentariosVistos(idComentariosNoVistos)
+                console.log("re",req_comentariosVistos);
+            }
+            res.json({ message: "mensajes visteados exitosamente" })
         } catch (error) {
             console.log(error)
             res.status(204).json(error)
