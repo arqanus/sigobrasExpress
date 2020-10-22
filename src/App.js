@@ -66,6 +66,7 @@ require('./api/ProcesosFisicos/get/routes/r.get.materiales')(app);
 require('./api/ProcesosFisicos/get/routes/r.get.pFisicos')(app);
 require('./api/ProcesosFisicos/get/routes/r.get.valGeneral')(app);
 require('./api/ProcesosFisicos/get/routes/r.get.gantt')(app);
+require('./api/ProcesosFisicos/get/routes/r.get.dificultades')(app);
 
 
 require('./api/ProcesosFisicos/post/routes/r.post.pFisicos')(app);
