@@ -12,22 +12,7 @@ var fs = require('fs');
 var https = require('https');
 const express = require('express');
 var app = express();
-
 const PORT = process.env.PORT || 9000
-
-
-//open cors
-var whitelist = ['http://localhost:9009']
-var corsOptions = {
-  origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true)
-    } else {
-      callback(new Error('Not allowed by CORS'))
-    }
-  }
-}
-// app.use(cors(corsOptions))
 app.use(cors())
 //settings
 app.set('port',PORT);
@@ -92,32 +77,14 @@ require('./api/ProcesosGerenciales/get/routes/r.get.comunicados')(app);
 require('./api/ProcesosGerenciales/get/routes/r.get.recursospersonal')(app);
 require('./api/ProcesosGerenciales/get/routes/r.get.infobras')(app);
 require('./api/ProcesosGerenciales/get/routes/r.get.plazos')(app);
-
-
-// var server = https.createServer(credentials, app).listen(PORT, () => {
-//   console.log('Listening...',PORT)
-// })
-
-
-
 //defecto
 const server = app.listen(app.get('port'),()=>{
 	console.log('running in port', PORT);
 })
-// // set up a route to redirect http to https
-// app.get('*', (req, res) =>{    
-//   res.redirect('https://localhost:10000' + req.url);
-// })
-// var server = https.createServer(credentials, app).listen(9000, () => {
-//   console.log('Listening...',PORT)
-// })
-
-
 
 // Set up socket.io
 const io = socket(server);
 let online = 0;
-
 
 io.on('connection', (socket) => {
   online++;
@@ -130,12 +97,18 @@ io.on('connection', (socket) => {
     socket.broadcast.emit(data.id_tarea, data.data)
     // io.emit(data.id_tarea, data.data)
     }
-  );
-
+  ); 
   socket.on('disconnect', () => {
     online--;
     console.log(`Socket ${socket.id} disconnected.`);
     console.log(`Online: ${online}`);
     io.emit('visitor exits', online);
   });
+  socket.on("partidas_comentarios_post", (data) => {
+    console.log("data",data);
+    socket.broadcast.emit("partidas_comentarios_get-"+data.id_partida, data.id_partida)
+    // io.emit("partidas_comentarios_get-"+data.id_partida, data.id_partida)
+    // io.emit(data.id_tarea, data.data)
+    }
+  );
 });

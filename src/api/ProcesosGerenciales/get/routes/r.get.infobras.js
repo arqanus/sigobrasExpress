@@ -1,9 +1,8 @@
-const User = require('../models/m.get.infobras'); 
+const User = require('../models/m.get.infobras');
 module.exports = (app) => {
-    
+
     app.post('/infobras', async (peticion, respuesta) => {
         try {
-                   
             var data = await User.infobras(peticion.body.id_ficha)
             respuesta.json(data)
         } catch (error) {
@@ -11,7 +10,4 @@ module.exports = (app) => {
             respuesta.status(204).json(error)
         }
     })
-
-
-    
 }
