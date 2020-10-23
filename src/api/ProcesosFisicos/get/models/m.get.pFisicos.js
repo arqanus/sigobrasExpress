@@ -387,9 +387,9 @@ module.exports = {
             })
         })
     },
-    postPartidaComentario(comentario,id_partida,id_acceso) {
+    postPartidaComentario(comentario, id_partida, id_acceso) {
         return new Promise((resolve, reject) => {
-            pool.query("INSERT INTO partida_comentarios (`comentario`, `id_partida`, `id_acceso`) VALUES (?,?,?);", [comentario,id_partida,id_acceso], (err, res) => {
+            pool.query("INSERT INTO partida_comentarios (`comentario`, `id_partida`, `id_acceso`) VALUES (?,?,?);", [comentario, id_partida, id_acceso], (err, res) => {
                 if (err) {
                     reject(err);
                 }
@@ -397,9 +397,9 @@ module.exports = {
             })
         })
     },
-    getPartidacomentariosNoVistos(id_componente) {
+    getPartidacomentariosNoVistos(id_componente, id_acceso) {
         return new Promise((resolve, reject) => {
-            pool.query("SELECT partidas.id_partida, SUM(IF(partida_comentarios.id IS NOT NULL AND partida_comentarios_visto.estado IS NULL, 1, 0)) mensajes FROM partidas LEFT JOIN partida_comentarios ON partida_comentarios.id_partida = partidas.id_partida LEFT JOIN partida_comentarios_visto ON partida_comentarios_visto.partida_comentarios_id = partida_comentarios.id WHERE partidas.componentes_id_componente = ? GROUP BY partidas.id_partida", [id_componente], (err, res) => {
+            pool.query("SELECT partidas.id_partida, SUM(IF(partida_comentarios_mod.id IS NOT NULL, 1, 0)) mensajes FROM partidas LEFT JOIN (SELECT partida_comentarios.* FROM partida_comentarios LEFT JOIN partida_comentarios_visto ON partida_comentarios_visto.partida_comentarios_id = partida_comentarios.id AND partida_comentarios_visto.accesos_id = ? WHERE partida_comentarios_visto.id IS NULL) partida_comentarios_mod ON partida_comentarios_mod.id_partida = partidas.id_partida WHERE partidas.componentes_id_componente = ? GROUP BY partidas.id_partida", [id_acceso, id_componente], (err, res) => {
                 if (err) {
                     reject(err);
                 }
@@ -407,9 +407,9 @@ module.exports = {
             })
         })
     },
-    getComentariosNoVistos(id_partida) {
+    getComentariosNoVistos(id_acceso, id_partida) {
         return new Promise((resolve, reject) => {
-            pool.query("SELECT partida_comentarios.id FROM partida_comentarios LEFT JOIN partida_comentarios_visto ON partida_comentarios_visto.partida_comentarios_id = partida_comentarios.id WHERE partida_comentarios.id_partida = ? AND partida_comentarios_visto.estado IS NULL;", [id_partida], (err, res) => {
+            pool.query("SELECT partida_comentarios.* FROM partida_comentarios LEFT JOIN partida_comentarios_visto ON partida_comentarios_visto.partida_comentarios_id = partida_comentarios.id AND partida_comentarios_visto.accesos_id = ? WHERE id_partida = ? AND partida_comentarios_visto.id IS NULL ; ", [id_acceso, id_partida], (err, res) => {
                 if (err) {
                     reject(err);
                 }
