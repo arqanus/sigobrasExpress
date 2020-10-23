@@ -164,7 +164,7 @@ module.exports = (app) => {
     })
     app.post('/getPartidacomentariosNoVistos', async (req, res) => {
         try {
-            var data = await User.getPartidacomentariosNoVistos(req.body.id_componente,req.body.id_acceso)
+            var data = await User.getPartidacomentariosNoVistos(req.body.id_componente, req.body.id_acceso)
             res.json(data)
         } catch (error) {
             console.log(error)
@@ -173,19 +173,28 @@ module.exports = (app) => {
     })
     app.post('/postComentariosVistos', async (req, res) => {
         try {
-            var req_comentariosNoVistos = await User.getComentariosNoVistos(req.body.id_acceso,req.body.id_partida)
+            var req_comentariosNoVistos = await User.getComentariosNoVistos(req.body.id_acceso, req.body.id_partida)
             var idComentariosNoVistos = [];
-            console.log("idComentariosNoVistos cantidad :",idComentariosNoVistos.length);
+            console.log("idComentariosNoVistos cantidad :", idComentariosNoVistos.length);
             req_comentariosNoVistos.forEach(element => {
                 idComentariosNoVistos.push([req.body.id_acceso, element.id])
             });
-            console.log("idComentariosNoVistos cantidad :",idComentariosNoVistos.length);
-            console.log("idComentariosNoVistos :",idComentariosNoVistos);
+            console.log("idComentariosNoVistos cantidad :", idComentariosNoVistos.length);
+            console.log("idComentariosNoVistos :", idComentariosNoVistos);
             if (idComentariosNoVistos.length > 0) {
                 var req_comentariosVistos = await User.postComentariosVistos(idComentariosNoVistos)
-                console.log("re",req_comentariosVistos);
+                console.log("re", req_comentariosVistos);
             }
             res.json({ message: "mensajes visteados exitosamente" })
+        } catch (error) {
+            console.log(error)
+            res.status(204).json(error)
+        }
+    })
+    app.post('/getComponentesComentarios', async (req, res) => {
+        try {
+            var getComponentesComentarios = await User.getComponentesComentarios(req.body.id_acceso, req.body.id_ficha)
+            res.json(getComponentesComentarios)
         } catch (error) {
             console.log(error)
             res.status(204).json(error)
