@@ -164,7 +164,7 @@ module.exports = (app) => {
     })
     app.post('/getPartidacomentariosNoVistos', async (req, res) => {
         try {
-            var data = await User.getPartidacomentariosNoVistos(req.body.id_componente)
+            var data = await User.getPartidacomentariosNoVistos(req.body.id_componente,req.body.id_acceso)
             res.json(data)
         } catch (error) {
             console.log(error)
@@ -173,7 +173,7 @@ module.exports = (app) => {
     })
     app.post('/postComentariosVistos', async (req, res) => {
         try {
-            var req_comentariosNoVistos = await User.getComentariosNoVistos(req.body.id_partida)
+            var req_comentariosNoVistos = await User.getComentariosNoVistos(req.body.id_acceso,req.body.id_partida)
             var idComentariosNoVistos = [];
             console.log("idComentariosNoVistos cantidad :",idComentariosNoVistos.length);
             req_comentariosNoVistos.forEach(element => {
