@@ -41,6 +41,7 @@ module.exports = (app) => {
 			// renombre y mueve de lugar el archivo
 			fs.rename(formFiles.files.path, dir + obraFolder, (err) => { })
 			formFiles.fields.residente_documentoLink = "/static/" + obraFolder
+			formFiles.fields.id = formFiles.fields.id == "null" ? null : formFiles.fields.id
 			var request = await User.getDificultadesHabilitado(formFiles.fields.fichas_id_ficha, formFiles.fields.id)
 			if (request == undefined || request.habilitado) {
 				var data = await User.postDificultadesResidente(formFiles.fields)
