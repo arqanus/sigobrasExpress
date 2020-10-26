@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const morganBody = require('morgan-body');
 var path = require('path');
 
-const cors =require('cors');
+const cors = require('cors');
 
 const socket = require('socket.io');
 
@@ -15,12 +15,12 @@ var app = express();
 const PORT = process.env.PORT || 9000
 app.use(cors())
 //settings
-app.set('port',PORT);
+app.set('port', PORT);
 
 //middleares
 app.use(morgan('dev'));
-	//entender jason
-app.use(bodyParser.json({limit: '50mb'}));
+//entender jason
+app.use(bodyParser.json({ limit: '50mb' }));
 morganBody(app);
 
 //static
@@ -78,8 +78,8 @@ require('./api/ProcesosGerenciales/get/routes/r.get.recursospersonal')(app);
 require('./api/ProcesosGerenciales/get/routes/r.get.infobras')(app);
 require('./api/ProcesosGerenciales/get/routes/r.get.plazos')(app);
 //defecto
-const server = app.listen(app.get('port'),()=>{
-	console.log('running in port', PORT);
+const server = app.listen(app.get('port'), () => {
+  console.log('running in port', PORT);
 })
 
 // Set up socket.io
@@ -93,11 +93,11 @@ io.on('connection', (socket) => {
   io.emit('visitors', online);
   socket.on("tareas_comentarios", (data) => {
     console.log(data);
-    console.log("id_tarea",data.id_tarea);
+    console.log("id_tarea", data.id_tarea);
     socket.broadcast.emit(data.id_tarea, data.data)
     // io.emit(data.id_tarea, data.data)
-    }
-  ); 
+  }
+  );
   socket.on('disconnect', () => {
     online--;
     console.log(`Socket ${socket.id} disconnected.`);
@@ -105,10 +105,15 @@ io.on('connection', (socket) => {
     io.emit('visitor exits', online);
   });
   socket.on("partidas_comentarios_post", (data) => {
-    console.log("data",data);
-    socket.broadcast.emit("partidas_comentarios_get-"+data.id_partida, data.id_partida)
-    // io.emit("partidas_comentarios_get-"+data.id_partida, data.id_partida)
-    // io.emit(data.id_tarea, data.data)
-    }
-  );
+    console.log("data", data);
+    socket.broadcast.emit("partidas_comentarios_get-" + data.id_partida, data.id_partida)
+  });
+  socket.on("partidas_comentarios_notificacion_post", (data) => {
+    console.log("data", data);
+    socket.broadcast.emit("partidas_comentarios_notificacion_get-" + data.id_componente, data.id_componente)
+  });
+  socket.on("componentes_comentarios_notificacion_post", (data) => {
+    console.log("data", data);
+    socket.broadcast.emit("componentes_comentarios_notificacion_get-" + data.id_ficha, data.id_ficha)
+  });
 });
