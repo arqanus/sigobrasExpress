@@ -1,4 +1,5 @@
 const User = require('../models/m.get.historial');
+const Tools = require('../../../../tools/format');
 
 module.exports = function(app){
     //gethistorial
@@ -18,7 +19,13 @@ module.exports = function(app){
     })
     app.post('/getHistorialAnyosResumen',async(req,res)=>{
         try {
-            var data = await User.getHistorialAnyosResumen(req.body.id_ficha,req.body.anyo)
+            var meses = await User.getHistorialMeses2(req.body.id_ficha,req.body.anyo)
+            var categories = []
+            meses.forEach(element => {
+                categories.push(Tools.monthNames[element.mes-1])
+            });
+            var data = await User.getHistorialAnyosResumen2(req.body.id_ficha,req.body.anyo,meses)
+            data.categories = categories
             res.json(data)
         } catch (error) {
             console.log(error)

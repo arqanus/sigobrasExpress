@@ -72,7 +72,7 @@ userModel.getHistorialAnyosResumen = (id_ficha, anyo, callback) => {
                         );
                         listaItems.push(avance.numero)
                         leyenda.push(
-    
+
                             {
                                 "numero": avance.numero,
                                 "componente_nombre": avance.nombre,
@@ -80,11 +80,11 @@ userModel.getHistorialAnyosResumen = (id_ficha, anyo, callback) => {
                                 "valor": 0,
                                 "porcentaje": 0
                             }
-    
+
                         )
-    
+
                     }
-    
+
                 }
                 //llenando de ceros
                 var categories = []
@@ -95,15 +95,15 @@ userModel.getHistorialAnyosResumen = (id_ficha, anyo, callback) => {
                         componente.data.push(0)
                     }
                 }
-    
+
                 //llenando datos de avance
-    
+
                 for (let i = 0; i < res.length; i++) {
                     const avance = res[i]
                     for (let j = 0; j < series.length; j++) {
                         const componente = series[j];
                         // console.log("avance",avance.nombre,componente.name,avance.dia);
-    
+
                         if (avance.numero == componente.name && avance.valor != null) {
                             componente.data[avance.dia - dia_inicial] = Number(avance.valor.toFixed(2))
                             leyenda[j].valor += avance.valor
@@ -114,14 +114,14 @@ userModel.getHistorialAnyosResumen = (id_ficha, anyo, callback) => {
                 //porcentaje de leyenda
                 for (let i = 0; i < leyenda.length; i++) {
                     const comp = leyenda[i];
-                    comp.porcentaje = comp.valor/comp.presupuesto *100
+                    comp.porcentaje = comp.valor / comp.presupuesto * 100
                     //formato
                     comp.presupuesto = tools.formatoSoles(comp.presupuesto)
                     comp.valor = tools.formatoSoles(comp.valor)
                     comp.porcentaje = tools.formatoSoles(comp.porcentaje)
                 }
-    
-                resolve( {
+
+                resolve({
                     categories,
                     series,
                     leyenda
@@ -129,11 +129,75 @@ userModel.getHistorialAnyosResumen = (id_ficha, anyo, callback) => {
             }
         })
     })
-    
+
+}
+userModel.getHistorialAnyosResumen2 = (id_ficha, anyo, meses) => {
+    return new Promise((resolve, reject) => {
+        var query = "SELECT CONCAT('C-', componentes.numero) numero, componentes.nombre, componentes.presupuesto,SUM(avanceactividades.valor * partidas.costo_unitario) valor,"
+        meses.forEach(item => {
+            query += `SUM(IF(MONTH(avanceactividades.fecha) = ${item.mes}, avanceactividades.valor * partidas.costo_unitario, 0)) m${item.mes},`
+        });
+        query = query.slice(0, -1)
+        query += " FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND COALESCE(avanceactividades.valor, 0) != 0 AND fichas.id_ficha = ? AND YEAR(avanceactividades.fecha) = ? GROUP BY componentes.id_componente";
+        pool.query(query, [id_ficha, anyo], (err, res) => {
+            if (err) {
+                reject(err);
+            } else if (res.length == 0) {
+                reject("vacio");
+            } else {
+                var series = []
+                var leyenda = []
+
+                res.forEach(element => {
+                    var data = []
+                    meses.forEach((element2, index) => {
+                        data.push(Number(Number(element["m" + (index + 1)]).toFixed(2)))
+                    });
+                    series.push(
+                        {
+                            "name": element.numero,
+                            "data": data
+                        },
+                    )
+                    leyenda.push(
+                        {
+                            "numero": element.numero,
+                            "componente_nombre": element.nombre,
+                            "presupuesto": element.presupuesto,
+                            "valor": element.valor,
+                            "porcentaje": element.valor / element.presupuesto * 100
+                        }
+                    )
+                });
+
+                resolve({
+                    series,
+                    leyenda,
+                });
+            }
+        })
+    })
+
 }
 userModel.getHistorialMeses = (id_ficha, anyo) => {
     return new Promise((resolve, reject) => {
         pool.query("SELECT DATE_FORMAT(avanceactividades.fecha, '%Y-%m-01') fecha, MONTHNAME(avanceactividades.fecha) mes FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.Fichas_id_ficha = fichas.id_ficha AND historialestados.fecha_inicial <= avanceactividades.fecha AND avanceactividades.fecha < historialestados.fecha_final LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND COALESCE(avanceactividades.valor, 0) != 0 AND fichas.id_ficha = ? and year(avanceactividades.fecha)= ? GROUP BY DATE_FORMAT(avanceactividades.fecha, '%Y-%b') order by DATE_FORMAT(avanceactividades.fecha, '%Y-%m-01')", [id_ficha, anyo], (err, res) => {
+            if (err) {
+                console.log(err);
+                reject(err.code);
+            }
+            else if (res.length == 0) {
+                reject("vacio");
+
+            } else {
+                resolve(res);
+            }
+        })
+    })
+}
+userModel.getHistorialMeses2 = (id_ficha, anyo) => {
+    return new Promise((resolve, reject) => {
+        pool.query("SELECT DATE_FORMAT(avanceactividades.fecha, '%Y-%m-01') fecha, MONTH(avanceactividades.fecha) mes FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.Fichas_id_ficha = fichas.id_ficha AND historialestados.fecha_inicial <= avanceactividades.fecha AND avanceactividades.fecha < historialestados.fecha_final LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND COALESCE(avanceactividades.valor, 0) != 0 AND fichas.id_ficha = ? and year(avanceactividades.fecha)= ? GROUP BY DATE_FORMAT(avanceactividades.fecha, '%Y-%b') order by DATE_FORMAT(avanceactividades.fecha, '%Y-%m-01')", [id_ficha, anyo], (err, res) => {
             if (err) {
                 console.log(err);
                 reject(err.code);
