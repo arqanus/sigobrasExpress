@@ -42,7 +42,7 @@ module.exports = (app) => {
 			fs.rename(formFiles.files.path, dir + obraFolder, (err) => { })
 			formFiles.fields.residente_documentoLink = "/static/" + obraFolder
 			formFiles.fields.id = formFiles.fields.id == "null" ? null : formFiles.fields.id
-			var request = await User.getDificultadesHabilitado(formFiles.fields.fichas_id_ficha, formFiles.fields.id)
+			var request = await User.getDificultadesHabilitado(formFiles.fields.id)
 			if (request == undefined || request.habilitado) {
 				var data = await User.postDificultadesResidente(formFiles.fields)
 				res.json({ message: "registro exitoso" })
@@ -56,16 +56,105 @@ module.exports = (app) => {
 	});
 	app.post('/postDificultadesSupervisor', async (req, res) => {
 		try {
-			var request = await User.getDificultadesHabilitado(req.body.fichas_id_ficha, req.body.id)
-			console.log("habilitado es ", request.habilitado);
+			var form = new formidable.IncomingForm();
+			var formFiles = await new Promise((resolve, reject) => {
+				form.parse(req, (err, fields, files) => {
+					if (err) {
+						return reject(err);
+					}
+					return resolve({ fields, files: files.residente_archivo });
+				});
+			});
+			console.log("fields", formFiles.fields);
+			var request = await User.getDificultadesHabilitado(formFiles.fields.id)
+			console.log("habilitado es ", formFiles.fields.habilitado);
+			formFiles.fields.supervisor_visto = formFiles.fields.supervisor_visto == "true" ? true : false
 			if (request.habilitado) {
-				var data = await User.postDificultadesSupervisor(req.body)
+
+				var data = await User.postDificultadesSupervisor(formFiles.fields, !request.habilitado)
 				res.json({ message: "registro exitoso" })
 			} else {
 				res.json({ message: "el registro esta bloqueado" });
 			}
 		} catch (error) {
+			console.log({ error });
+			res.status(204).json(error)
+		}
+	});
+	app.post('/getConsultas', async (req, res) => {
+		try {
+			var data = await User.getConsultas(req.body.id_ficha)
+			res.json(data)
+		} catch (error) {
 			res.status(200).json(error)
 		}
 	});
+	app.post('/postConsultaResidente', async (req, res) => {
+		try {
+			var request = await User.getConsultasHabilitado(req.body.id)
+			if (request == undefined || request.habilitado) {
+				var data = await User.postConsultaResidente(req.body)
+				console.log("req ",data);
+				res.json({ message: "registro exitoso" })
+			} else {
+				res.json({ message: "el registro esta bloqueado" });
+			}
+
+		} catch (error) {
+			res.status(204).json(error)
+		}
+	});
+	app.post('/postConsultaSupervisor', async (req, res) => {
+		try {
+			var request = await User.getConsultasHabilitado(req.body.id)
+			if (request == undefined || request.habilitado) {
+				var data = await User.postConsultaSupervisor(req.body)
+				res.json({ message: "registro exitoso" })
+			} else {
+				res.json({ message: "el registro esta bloqueado" });
+			}
+		} catch (error) {
+			console.log({ error });
+			res.status(204).json(error)
+		}
+	});
+
+	app.post('/getObservaciones', async (req, res) => {
+		try {
+			var data = await User.getObservaciones(req.body.id_ficha)
+			res.json(data)
+		} catch (error) {
+			res.status(200).json(error)
+		}
+	});
+	app.post('/postObservacionesResidente', async (req, res) => {
+		try {
+			var request = await User.getObservacionesHabilitado(req.body.id)
+			if (request == undefined || request.habilitado) {
+				var data = await User.postObservacionesResidente(req.body)
+				res.json({ message: "registro exitoso" })
+			} else {
+				res.json({ message: "el registro esta bloqueado" });
+			}
+
+		} catch (error) {
+			res.status(204).json(error)
+		}
+	});
+	app.post('/postObservacionesSupervisor', async (req, res) => {
+		try {
+			var request = await User.getObservacionesHabilitado(req.body.id)
+			if (request == undefined || request.habilitado) {
+				var data = await User.postObservacionesSupervisor(req.body)
+				res.json({ message: "registro exitoso" })
+			} else {
+				res.json({ message: "el registro esta bloqueado" });
+			}
+		} catch (error) {
+			console.log({ error });
+			res.status(204).json(error)
+		}
+	});
+
+
 }
