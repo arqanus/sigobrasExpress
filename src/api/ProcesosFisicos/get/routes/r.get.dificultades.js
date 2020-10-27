@@ -30,19 +30,25 @@ module.exports = (app) => {
 				});
 			});
 			//se genera el nombre del archivo
-			var extensionArchivo = "." + formFiles.files.name.split('.').pop()
-			var archivo_name = Tools.datetime() + extensionArchivo
-			//se verifica y crea las carpetas de obra 
-			var obraFolder = formFiles.fields.obra_codigo + "/DIFICULTADES/"
-			if (!fs.existsSync(dir + obraFolder)) {
-				fs.mkdirSync(dir + obraFolder, { recursive: true });
+			if (formFiles.files) {
+				var extensionArchivo = "." + formFiles.files.name.split('.').pop()
+				var archivo_name = Tools.datetime() + extensionArchivo
+				//se verifica y crea las carpetas de obra 
+				var obraFolder = formFiles.fields.obra_codigo + "/DIFICULTADES/"
+				if (!fs.existsSync(dir + obraFolder)) {
+					fs.mkdirSync(dir + obraFolder, { recursive: true });
+				}
+				obraFolder += archivo_name
+				// renombre y mueve de lugar el archivo
+				fs.rename(formFiles.files.path, dir + obraFolder, (err) => { })
+				formFiles.fields.residente_documentoLink = "/static/" + obraFolder
 			}
-			obraFolder += archivo_name
-			// renombre y mueve de lugar el archivo
-			fs.rename(formFiles.files.path, dir + obraFolder, (err) => { })
-			formFiles.fields.residente_documentoLink = "/static/" + obraFolder
+
+
 			formFiles.fields.id = formFiles.fields.id == "null" ? null : formFiles.fields.id
 			var request = await User.getDificultadesHabilitado(formFiles.fields.id)
+			console.log("formFiles.fields ", formFiles.fields);
+			console.log("request habilitado", request);
 			if (request == undefined || request.habilitado) {
 				var data = await User.postDificultadesResidente(formFiles.fields)
 				res.json({ message: "registro exitoso" })
@@ -51,6 +57,7 @@ module.exports = (app) => {
 			}
 
 		} catch (error) {
+			console.log(error);
 			res.status(204).json(error)
 		}
 	});
@@ -94,7 +101,7 @@ module.exports = (app) => {
 			var request = await User.getConsultasHabilitado(req.body.id)
 			if (request == undefined || request.habilitado) {
 				var data = await User.postConsultaResidente(req.body)
-				console.log("req ",data);
+				console.log("req ", data);
 				res.json({ message: "registro exitoso" })
 			} else {
 				res.json({ message: "el registro esta bloqueado" });
