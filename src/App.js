@@ -116,4 +116,9 @@ io.on('connection', (socket) => {
     console.log("data", data);
     socket.broadcast.emit("componentes_comentarios_notificacion_get-" + data.id_ficha, data.id_ficha)
   });
+  socket.on("dificultades_comentarios_post", (data) => {
+    console.log("data", data);
+    socket.broadcast.emit("dificultades_comentarios_get-" + data.id_dificultad, data.id_dificultad)
+  });
+  
 });
