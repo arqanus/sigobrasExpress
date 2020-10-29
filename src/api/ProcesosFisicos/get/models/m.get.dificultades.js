@@ -1,9 +1,9 @@
 const pool = require('../../../../db/connection');
 
 module.exports = {
-    getDificultades(if_ficha) {
+    getDificultades(if_ficha,tipo) {
         return new Promise((resolve, reject) => {
-            pool.query("SELECT dificultades.*, DATE_FORMAT(residente_fechaInicio, '%Y-%m-%d') residente_fechaInicio, DATE_FORMAT(residente_fechaFinal, '%Y-%m-%d') residente_fechaFinal, DATE_FORMAT(supervisor_fechaVisto, '%Y-%m-%d') supervisor_fechaVisto FROM dificultades WHERE fichas_id_ficha = ?", [if_ficha], (error, res) => {
+            pool.query("SELECT dificultades.*, DATE_FORMAT(fecha_registro, '%Y-%m-%d') fecha_registro,DATE_FORMAT(fecha_inicio, '%Y-%m-%d') fecha_inicio, DATE_FORMAT(fecha_final, '%Y-%m-%d') fecha_final FROM dificultades WHERE fichas_id_ficha = ? AND tipo = ?", [if_ficha,tipo], (error, res) => {
                 if (error) {
                     reject(error);
                 }
@@ -12,32 +12,9 @@ module.exports = {
         })
 
     },
-    getDificultadesHabilitado(id) {
+    postDificultades(data) {
         return new Promise((resolve, reject) => {
-            pool.query("select habilitado from dificultades where  id = ?", [id], (error, res) => {
-                if (error) {
-                    reject(error);
-                }
-                resolve(res[0])
-            })
-        })
-
-    },
-    postDificultadesResidente(data) {
-        return new Promise((resolve, reject) => {
-            pool.query("INSERT INTO dificultades ( id, residente_descripcion,residente_documento,residente_documentoLink,residente_fechaInicio,residente_duracion, residente_tipoDuracion,residente_fechaFinal,fichas_id_ficha) VALUES (?,?,?,?,?,?,?,?,?) ON DUPLICATE key UPDATE residente_descripcion = VALUES(residente_descripcion), residente_documento = VALUES(residente_documento), residente_documentoLink = VALUES(residente_documentoLink), residente_fechaInicio = VALUES(residente_fechaInicio), residente_duracion = VALUES(residente_duracion), residente_tipoDuracion = VALUES(residente_tipoDuracion), residente_fechaFinal = VALUES(residente_fechaFinal)", [data.id, data.residente_descripcion, data.residente_documento, data.residente_documentoLink, data.residente_fechaInicio, data.residente_duracion, data.residente_tipoDuracion, data.residente_fechaFinal, data.fichas_id_ficha], (error, res) => {
-                if (error) {
-                    reject(error);
-                }
-                resolve(res)
-            })
-        })
-
-    },
-    postDificultadesSupervisor(data, habilitado) {
-        console.log("habilitado", habilitado);
-        return new Promise((resolve, reject) => {
-            pool.query("INSERT INTO dificultades ( id,supervisor_fechaVisto,supervisor_visto,supervisor_comentario,fichas_id_ficha,habilitado) VALUES (?,?,?,?,?,?) ON DUPLICATE key UPDATE supervisor_fechaVisto = VALUES(supervisor_fechaVisto),supervisor_visto = VALUES(supervisor_visto), supervisor_comentario = VALUES(supervisor_comentario),habilitado = VALUES(habilitado)", [data.id, data.supervisor_fechaVisto, data.supervisor_visto, data.supervisor_comentario, data.fichas_id_ficha, habilitado], (error, res) => {
+            pool.query(" INSERT INTO dificultades (descripcion, fecha_inicio, fecha_final, duracion, duracion_tipo, fichas_id_ficha, tipo, autor, cargo,asiento_obra) VALUES (?,?,?,?,?,?,?,?,?,?);", [data.descripcion, data.fecha_inicio, data.fecha_final, data.duracion, data.duracion_tipo, data.fichas_id_ficha, data.tipo, data.autor, data.cargo, data.asiento_obra], (error, res) => {
                 if (error) {
                     reject(error);
                 }
@@ -49,22 +26,11 @@ module.exports = {
     //consultas
     getConsultas(if_ficha) {
         return new Promise((resolve, reject) => {
-            pool.query("SELECT consultas.*, DATE_FORMAT(fecha, '%Y-%m-%d') fecha, DATE_FORMAT(supervisor_fechaVisto, '%Y-%m-%d') supervisor_fechaVisto FROM consultas WHERE fichas_id_ficha = ?;", [if_ficha], (error, res) => {
+            pool.query("SELECT dificultades.*,DATE_FORMAT(fecha_registro, '%Y-%m-%d') fecha_registro, DATE_FORMAT(fecha_inicio, '%Y-%m-%d') fecha_inicio, DATE_FORMAT(fecha_final, '%Y-%m-%d') fecha_final FROM dificultades WHERE fichas_id_ficha = ? AND tipo = 'CONSULTA'", [if_ficha], (error, res) => {
                 if (error) {
                     reject(error);
                 }
                 resolve(res)
-            })
-        })
-
-    },
-    getConsultasHabilitado(id) {
-        return new Promise((resolve, reject) => {
-            pool.query("SELECT habilitado FROM consultas WHERE id = ?;", [id], (error, res) => {
-                if (error) {
-                    reject(error);
-                }
-                resolve(res[0])
             })
         })
 
@@ -80,21 +46,10 @@ module.exports = {
         })
 
     },
-    postConsultaSupervisor(data) {
-        return new Promise((resolve, reject) => {
-            pool.query("update consultas set supervisor_fechaVisto = ?,supervisor_respuesta = ?,supervisor_comentario = ?,habilitado=?  where id = ?", [data.supervisor_fechaVisto, data.supervisor_respuesta, data.supervisor_comentario, false, data.id], (error, res) => {
-                if (error) {
-                    reject(error);
-                }
-                resolve(res)
-            })
-        })
-
-    },
     //observaciones
     getObservaciones(if_ficha) {
         return new Promise((resolve, reject) => {
-            pool.query("SELECT observaciones.*, DATE_FORMAT(fecha, '%Y-%m-%d') fecha, DATE_FORMAT(respuesta_fecha, '%Y-%m-%d') respuesta_fecha FROM observaciones WHERE fichas_id_ficha = ?;", [if_ficha], (error, res) => {
+            pool.query("SELECT dificultades.*,DATE_FORMAT(fecha_registro, '%Y-%m-%d') fecha_registro, DATE_FORMAT(fecha_inicio, '%Y-%m-%d') fecha_inicio, DATE_FORMAT(fecha_final, '%Y-%m-%d') fecha_final FROM dificultades WHERE fichas_id_ficha = ? AND tipo = 'OBSERVACION'", [if_ficha], (error, res) => {
                 if (error) {
                     reject(error);
                 }
@@ -136,5 +91,56 @@ module.exports = {
             })
         })
 
+    },
+    getDificultadesComentarios(dificultades_id) {
+        return new Promise((resolve, reject) => {
+            pool.query("SELECT DATE_FORMAT(dificultades_comentarios.fecha_registro, '%d-%m-%Y %H:%i') fecha_registro, comentario, cargos.nombre cargo_nombre, '' cargo_imagen, usuarios.nombre usuario_nombre FROM dificultades_comentarios LEFT JOIN accesos ON accesos.id_acceso = dificultades_comentarios.accesos_id_acceso LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo LEFT JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario WHERE dificultades_id = ?;", [dificultades_id], (error, res) => {
+                if (error) {
+                    reject(error);
+                }
+                resolve(res)
+            })
+        })
+
+    },
+    postDificultadesComentarios(comentario, dificultades_id, accesos_id_acceso) {
+        return new Promise((resolve, reject) => {
+            pool.query("INSERT INTO dificultades_comentarios (comentario, dificultades_id, accesos_id_acceso) VALUES (?,?,?);", [comentario, dificultades_id, accesos_id_acceso], (err, res) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve(res)
+            })
+        })
+    },
+    getDificultadesComentariosNoVistos(id_acceso, id_dificultad) {
+        return new Promise((resolve, reject) => {
+            pool.query("SELECT dificultades_comentarios.* FROM dificultades_comentarios LEFT JOIN dificultades_comentarios_visto ON dificultades_comentarios_visto.dificultades_comentarios_id = dificultades_comentarios.id AND dificultades_comentarios_visto.accesos_id_acceso = ? WHERE dificultades_comentarios.dificultades_id = ? AND dificultades_comentarios_visto.id IS NULL;", [id_acceso, id_dificultad], (err, res) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve(res)
+            })
+        })
+    },
+    postDificultadesComentariosVistos(data) {
+        return new Promise((resolve, reject) => {
+            pool.query("INSERT INTO dificultades_comentarios_visto(accesos_id_acceso, dificultades_comentarios_id) VALUES ?;", [data], (err, res) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve(res)
+            })
+        })
+    },
+    getDificultadesComentariosNoVistosFicha(id_acceso, id_ficha, tipo) {
+        return new Promise((resolve, reject) => {
+            pool.query("SELECT dificultades.id, SUM(IF(dificultades_comentarios_mod.id IS NOT NULL, 1, 0)) mensajes FROM dificultades LEFT JOIN (SELECT dificultades_comentarios.* FROM dificultades_comentarios LEFT JOIN dificultades_comentarios_visto ON dificultades_comentarios_visto.dificultades_comentarios_id = dificultades_comentarios.id AND dificultades_comentarios_visto.accesos_id_acceso = ? WHERE dificultades_comentarios_visto.id IS NULL) dificultades_comentarios_mod ON dificultades_comentarios_mod.dificultades_id = dificultades.id WHERE dificultades.fichas_id_ficha = ? and dificultades.tipo = ? GROUP BY dificultades.id;", [id_acceso, id_ficha, tipo], (err, res) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve(res)
+            })
+        })
     },
 }
