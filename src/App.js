@@ -77,6 +77,7 @@ require('./api/ProcesosGerenciales/get/routes/r.get.comunicados')(app);
 require('./api/ProcesosGerenciales/get/routes/r.get.recursospersonal')(app);
 require('./api/ProcesosGerenciales/get/routes/r.get.infobras')(app);
 require('./api/ProcesosGerenciales/get/routes/r.get.plazos')(app);
+require('./api/ProcesosGerenciales/get/routes/r.get.curvaS')(app);
 //defecto
 const server = app.listen(app.get('port'), () => {
   console.log('running in port', PORT);
