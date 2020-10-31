@@ -68,5 +68,38 @@ module.exports = {
         })
 
     },
+    putFinancieroCurvaS(id,financiero_monto) {
+        return new Promise((resolve, reject) => {
+            pool.query("UPDATE curva_s SET financiero_monto = ? WHERE id = ?", [financiero_monto,id], (error, res) => {
+                if (error) {
+                    reject(error);
+                }
+                resolve(res)
+            })
+        })
+
+    },
+    getFechaFinalCurvaS(fecha_inicial) {
+        return new Promise((resolve, reject) => {
+            pool.query("SELECT DATE_FORMAT(fecha_inicial, '%Y-%m-%d') fecha_final FROM curva_s WHERE curva_s.fecha_inicial > ? LIMIT 1", [fecha_inicial], (error, res) => {
+                if (error) {
+                    reject(error);
+                }
+                resolve(res)
+            })
+        })
+
+    },
+    putEjecutadoCurvaS(ejecutado_monto,fecha_inicial) {
+        return new Promise((resolve, reject) => {
+            pool.query("UPDATE curva_s SET ejecutado_monto = ? WHERE fecha_inicial = ?", [ejecutado_monto,fecha_inicial], (error, res) => {
+                if (error) {
+                    reject(error);
+                }
+                resolve(res)
+            })
+        })
+
+    },
 }
 
