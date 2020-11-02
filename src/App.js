@@ -13,6 +13,7 @@ var https = require('https');
 const express = require('express');
 var app = express();
 const PORT = process.env.PORT || 9000
+var compression = require('compression');
 app.use(cors())
 //settings
 app.set('port', PORT);
@@ -23,6 +24,8 @@ app.use(morgan('dev'));
 app.use(bodyParser.json({ limit: '50mb' }));
 morganBody(app);
 
+//use compression 
+app.use(compression()); 
 //static
 app.use('/static', express.static(__dirname + '/public'));
 
