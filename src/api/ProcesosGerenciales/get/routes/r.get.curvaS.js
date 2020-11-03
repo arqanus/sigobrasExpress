@@ -5,7 +5,8 @@ module.exports = (app) => {
             var data = await User.getAnyosEjecutados(req.body.id_ficha)
             res.json(data)
         } catch (error) {
-            res.status(200).json(error)
+            console.log(error);
+            res.status(204).json({ error: error.code })
         }
     });
     app.post('/getPeriodosEjecutados', async (req, res) => {
@@ -39,7 +40,7 @@ module.exports = (app) => {
 
         } catch (error) {
             console.log(error);
-            res.status(200).json(error)
+            res.status(204).json({ error: error.code })
         }
     });
     app.post('/postDataCurvaS', async (req, res) => {
@@ -53,7 +54,8 @@ module.exports = (app) => {
                     element.ejecutado_monto,
                     element.observacion,
                     element.estado_codigo,
-                    element.fichas_id_ficha
+                    element.fichas_id_ficha,
+                    element.tipo || "PERIODO"
                 ])
             });
             var data = await User.postDataCurvaS(dataProcesada)
@@ -65,7 +67,7 @@ module.exports = (app) => {
             }
         } catch (error) {
             console.log(error);
-            res.status(200).json(error)
+            res.status(204).json({ error: error.code })
         }
     });
     app.post('/getDataCurvaS', async (req, res) => {
@@ -74,7 +76,8 @@ module.exports = (app) => {
             var data = await User.getDataCurvaS(req.body.id_ficha)
             res.json(data)
         } catch (error) {
-            res.status(200).json(error)
+            console.log(error);
+            res.status(204).json({ error: error.code })
         }
     });
     app.post('/putFinancieroCurvaS', async (req, res) => {
@@ -82,7 +85,17 @@ module.exports = (app) => {
             var data = await User.putFinancieroCurvaS(req.body.id, req.body.financiero_monto)
             res.json(data)
         } catch (error) {
-            res.status(200).json(error)
+            console.log(error);
+            res.status(204).json({ error: error.code })
+        }
+    });
+    app.post('/putProgramadoCurvaSbyId', async (req, res) => {
+        try {
+            var data = await User.putProgramadoCurvaSbyId(req.body.id, req.body.programado_monto)
+            res.json(data)
+        } catch (error) {
+            console.log(error);
+            res.status(204).json({ error: error.code })
         }
     });
     app.post('/putEjecutadoMonto', async (req, res) => {
@@ -101,11 +114,29 @@ module.exports = (app) => {
             //se obtiene el monto ejecutado de ese periodo
             req_montoEjecutado = await User.getMontoEjecutadoPeriodo(req.body.fecha_inicial, fecha_final, req.body.id_ficha)
             //se actualiza el monto ejecutado en la curva s
-            req_updataeMontoEjecutado = await User.putEjecutadoCurvaS(req_montoEjecutado[0].ejecutado_monto,req.body.fecha_inicial)
+            req_updataeMontoEjecutado = await User.putEjecutadoCurvaS(req_montoEjecutado[0].ejecutado_monto, req.body.fecha_inicial,req.body.id_ficha)
             res.json(req_montoEjecutado[0])
         } catch (error) {
             console.log(error);
-            res.status(200).json(error)
+            res.status(204).json({ error: error.code })
+        }
+    });
+    app.post('/getRegistroNoUbicados', async (req, res) => {
+        try {
+            var data = await User.getRegistroNoUbicados(req.body.id_ficha)
+            res.json(data)
+        } catch (error) {
+            console.log(error);
+            res.status(204).json({ error: error.code })
+        }
+    });
+    app.post('/getAnyosNoRegistradosCurvaS', async (req, res) => {
+        try {
+            var data = await User.getAnyosNoRegistradosCurvaS(req.body.id_ficha)
+            res.json(data)
+        } catch (error) {
+            console.log(error);
+            res.status(204).json({ error: error.code })
         }
     });
 }

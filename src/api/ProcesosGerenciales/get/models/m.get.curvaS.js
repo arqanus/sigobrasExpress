@@ -3,7 +3,7 @@ const pool = require('../../../../db/connection');
 module.exports = {
     getAnyosEjecutados(id_ficha) {
         return new Promise((resolve, reject) => {
-            pool.query("SELECT YEAR(avanceactividades.fecha) anyo FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.Fichas_id_ficha = fichas.id_ficha AND historialestados.fecha_inicial <= avanceactividades.fecha AND avanceactividades.fecha < historialestados.fecha_final LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND fichas.id_ficha = ? AND estados.codigo != 'A' AND COALESCE(avanceactividades.valor, 0) != 0 GROUP BY YEAR(avanceactividades.fecha) ORDER BY YEAR(avanceactividades.fecha)", [id_ficha], (error, res) => {
+            pool.query("SELECT YEAR(avanceactividades.fecha) anyo FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.Fichas_id_ficha = fichas.id_ficha AND historialestados.fecha_inicial <= avanceactividades.fecha AND avanceactividades.fecha < historialestados.fecha_final LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND fichas.id_ficha = ? AND estados.codigo != 'A' AND COALESCE(avanceactividades.valor, 0) != 0 AND YEAR(avanceactividades.fecha) not IN (SELECT YEAR(curva_s.fecha_inicial) anyo FROM curva_s WHERE fichas_id_ficha = ? GROUP BY YEAR(curva_s.fecha_inicial)) GROUP BY YEAR(avanceactividades.fecha) ORDER BY YEAR(avanceactividades.fecha)", [id_ficha, id_ficha], (error, res) => {
                 if (error) {
                     reject(error);
                 }
@@ -26,7 +26,7 @@ module.exports = {
 
     postDataCurvaS(data) {
         return new Promise((resolve, reject) => {
-            pool.query("insert into curva_s (fecha_inicial,programado_monto,financiero_monto,ejecutado_monto,observacion,estado_codigo,fichas_id_ficha) values ?", [data], (error, res) => {
+            pool.query("insert into curva_s (fecha_inicial,programado_monto,financiero_monto,ejecutado_monto,observacion,estado_codigo,fichas_id_ficha,tipo) values ?", [data], (error, res) => {
                 if (error) {
                     reject(error);
                 }
@@ -37,7 +37,7 @@ module.exports = {
     },
     getDataCurvaS(id_ficha) {
         return new Promise((resolve, reject) => {
-            pool.query("SELECT curva_s.*, DATE_FORMAT(fecha_inicial, '%Y-%m-%d') fecha_inicial FROM curva_s WHERE fichas_id_ficha = ? ORDER BY fecha_inicial", [id_ficha], (error, res) => {
+            pool.query("SELECT curva_s.*, DATE_FORMAT(fecha_inicial, '%Y-%m-%d') fecha_inicial FROM curva_s WHERE fichas_id_ficha = ? ORDER BY fecha_inicial,tipo desc", [id_ficha], (error, res) => {
                 if (error) {
                     reject(error);
                 }
@@ -46,9 +46,9 @@ module.exports = {
         })
 
     },
-    getMontoEjecutadoPeriodo(fecha_inicial,fecha_final,id_ficha) {
+    getMontoEjecutadoPeriodo(fecha_inicial, fecha_final, id_ficha) {
         return new Promise((resolve, reject) => {
-            pool.query("SELECT SUM(valor) ejecutado_monto FROM (SELECT partidas.id_partida, CAST(SUM(avanceactividades.valor) AS DECIMAL (20 , 10 )) * costo_unitario valor FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.fecha >= ? AND avanceactividades.fecha < ? AND historialactividades.estado IS NULL AND componentes.fichas_id_ficha = ? GROUP BY partidas.id_partida) periodo", [fecha_inicial,fecha_final,id_ficha], (error, res) => {
+            pool.query("SELECT SUM(valor) ejecutado_monto FROM (SELECT partidas.id_partida, CAST(SUM(avanceactividades.valor) AS DECIMAL (20 , 10 )) * costo_unitario valor FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE avanceactividades.fecha >= ? AND avanceactividades.fecha < ? AND historialactividades.estado IS NULL AND componentes.fichas_id_ficha = ? GROUP BY partidas.id_partida) periodo", [fecha_inicial, fecha_final, id_ficha], (error, res) => {
                 if (error) {
                     reject(error);
                 }
@@ -57,9 +57,9 @@ module.exports = {
         })
 
     },
-    getRegistrosAnyoCurvaS(fecha_inicial,id_ficha) {
+    getRegistrosAnyoCurvaS(fecha_inicial, id_ficha) {
         return new Promise((resolve, reject) => {
-            pool.query("SELECT id FROM curva_s WHERE YEAR(fecha_inicial) = ? AND fichas_id_ficha = ?;", [fecha_inicial,id_ficha], (error, res) => {
+            pool.query("SELECT id FROM curva_s WHERE YEAR(fecha_inicial) = ? AND fichas_id_ficha = ?;", [fecha_inicial, id_ficha], (error, res) => {
                 if (error) {
                     reject(error);
                 }
@@ -68,9 +68,20 @@ module.exports = {
         })
 
     },
-    putFinancieroCurvaS(id,financiero_monto) {
+    putFinancieroCurvaS(id, financiero_monto) {
         return new Promise((resolve, reject) => {
-            pool.query("UPDATE curva_s SET financiero_monto = ? WHERE id = ?", [financiero_monto,id], (error, res) => {
+            pool.query("UPDATE curva_s SET financiero_monto = ? WHERE id = ?", [financiero_monto, id], (error, res) => {
+                if (error) {
+                    reject(error);
+                }
+                resolve(res)
+            })
+        })
+
+    },
+    putProgramadoCurvaSbyId(id, programado_monto) {
+        return new Promise((resolve, reject) => {
+            pool.query("UPDATE curva_s SET programado_monto = ? WHERE id = ?", [programado_monto, id], (error, res) => {
                 if (error) {
                     reject(error);
                 }
@@ -90,9 +101,31 @@ module.exports = {
         })
 
     },
-    putEjecutadoCurvaS(ejecutado_monto,fecha_inicial) {
+    putEjecutadoCurvaS(ejecutado_monto, fecha_inicial,id_ficha) {
         return new Promise((resolve, reject) => {
-            pool.query("UPDATE curva_s SET ejecutado_monto = ? WHERE fecha_inicial = ?", [ejecutado_monto,fecha_inicial], (error, res) => {
+            pool.query("UPDATE curva_s SET ejecutado_monto = ? WHERE fecha_inicial = ? and fichas_id_ficha = ?", [ejecutado_monto, fecha_inicial,id_ficha], (error, res) => {
+                if (error) {
+                    reject(error);
+                }
+                resolve(res)
+            })
+        })
+
+    },
+    getRegistroNoUbicados(id_ficha) {
+        return new Promise((resolve, reject) => {
+            pool.query("SELECT count(avanceactividades.id_AvanceActividades) registros FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE fichas_id_ficha = 119 AND avanceactividades.fecha < (SELECT MIN(fecha_inicial) fecha_inicial FROM historialestados WHERE Fichas_id_ficha = ?)", [id_ficha], (error, res) => {
+                if (error) {
+                    reject(error);
+                }
+                resolve(res)
+            })
+        })
+
+    },
+    getAnyosNoRegistradosCurvaS(id_ficha) {
+        return new Promise((resolve, reject) => {
+            pool.query("SELECT YEAR(avanceactividades.fecha) anyo FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.Fichas_id_ficha = fichas.id_ficha AND historialestados.fecha_inicial <= avanceactividades.fecha AND avanceactividades.fecha < historialestados.fecha_final LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND fichas.id_ficha = ? AND estados.codigo != 'A' AND COALESCE(avanceactividades.valor, 0) != 0 AND YEAR(avanceactividades.fecha) not IN (SELECT YEAR(curva_s.fecha_inicial) anyo FROM curva_s WHERE fichas_id_ficha = ? GROUP BY YEAR(curva_s.fecha_inicial)) GROUP BY YEAR(avanceactividades.fecha) ORDER BY YEAR(avanceactividades.fecha)", [id_ficha,id_ficha], (error, res) => {
                 if (error) {
                     reject(error);
                 }
