@@ -114,7 +114,7 @@ module.exports = {
     },
     getRegistroNoUbicados(id_ficha) {
         return new Promise((resolve, reject) => {
-            pool.query("SELECT count(avanceactividades.id_AvanceActividades) registros FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE fichas_id_ficha = 119 AND avanceactividades.fecha < (SELECT MIN(fecha_inicial) fecha_inicial FROM historialestados WHERE Fichas_id_ficha = ?)", [id_ficha], (error, res) => {
+            pool.query("SELECT count(avanceactividades.id_AvanceActividades) registros FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE fichas_id_ficha = ? AND avanceactividades.fecha < (SELECT MIN(fecha_inicial) fecha_inicial FROM historialestados WHERE Fichas_id_ficha = ?)", [id_ficha,id_ficha], (error, res) => {
                 if (error) {
                     reject(error);
                 }
