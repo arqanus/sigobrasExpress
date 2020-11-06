@@ -134,5 +134,16 @@ module.exports = {
         })
 
     },
+    getDataObra(id_ficha) {
+        return new Promise((resolve, reject) => {
+            pool.query("SELECT id_ficha, fichas.g_total_presu, SUM(componentes.presupuesto) costo_directo FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha WHERE componentes.fichas_id_ficha = ? ", [id_ficha], (error, res) => {
+                if (error) {
+                    reject(error);
+                }
+                resolve(res)
+            })
+        })
+
+    },
 }
 

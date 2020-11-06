@@ -139,4 +139,13 @@ module.exports = (app) => {
             res.status(204).json({ error: error.code })
         }
     });
+    app.post('/getDataObra', async (req, res) => {
+        try {
+            var data = await User.getDataObra(req.body.id_ficha)
+            res.json(data[0])
+        } catch (error) {
+            console.log(error);
+            res.status(204).json({ error: error.code })
+        }
+    });
 }
