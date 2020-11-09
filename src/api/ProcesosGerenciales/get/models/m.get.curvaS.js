@@ -145,5 +145,16 @@ module.exports = {
         })
 
     },
+    deletePeriodoCurvaS(id) {
+        return new Promise((resolve, reject) => {
+            pool.query("DELETE FROM curva_s WHERE ejecutado_monto = 0 AND id = ?", [id], (error, res) => {
+                if (error) {
+                    reject(error);
+                }
+                resolve(res)
+            })
+        })
+
+    },
 }
 
