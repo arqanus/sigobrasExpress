@@ -4,24 +4,10 @@ const tools = require('../../../../tools/format')
 let userModel = {};
 userModel.getObras = (id_acceso) => {
   return new Promise((resolve, reject) => {
-    pool.query("SELECT costo_directo.presupuesto costo_directo, fichas.id_ficha, fichas.g_meta, fichas.g_total_presu, SUM(avanceactividades.valor * partidas.costo_unitario) presu_avance, SUM(avanceactividades.valor * partidas.costo_unitario) / costo_directo.presupuesto * 100 porcentaje_avance, fichas.codigo, estado.nombre estado_nombre, tipoobras.nombre tipo_obra, financiero.avance avance_financiero, financiero.avance/ costo_directo.presupuesto * 100 porcentaje_financiero,  MAX(IF(avanceactividades.valor IS NULL, '1990-01-01', avanceactividades.fecha)) ultima_fecha_avance, fichas.confirmacion_super_inf FROM fichas LEFT JOIN tipoobras ON tipoobras.id_tipoObra = fichas.tipoObras_id_tipoObra LEFT JOIN (SELECT cronogramamensual.fichas_id_ficha, SUM(financieroEjecutado) avance FROM cronogramamensual GROUP BY cronogramamensual.fichas_id_ficha) financiero ON financiero.fichas_id_ficha = fichas.id_ficha LEFT JOIN (SELECT componentes.fichas_id_ficha, SUM(componentes.presupuesto) presupuesto FROM componentes GROUP BY componentes.fichas_id_ficha) costo_directo ON costo_directo.fichas_id_ficha = fichas.id_ficha LEFT JOIN (SELECT Fichas_id_ficha, nombre, codigo FROM historialestados INNER JOIN (SELECT MAX(id_historialEstado) id_historialEstado FROM historialestados GROUP BY fichas_id_ficha) historial ON historial.id_historialEstado = historialestados.id_historialEstado LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado) estado ON estado.Fichas_id_ficha = fichas.id_ficha LEFT JOIN componentes ON componentes.Fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN fichas_has_accesos ON fichas_has_accesos.Fichas_id_ficha = fichas.id_ficha LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE fichas_has_accesos.Accesos_id_acceso = ? AND historialactividades.estado IS NULL GROUP BY fichas.id_ficha  order by ultima_fecha_avance desc", [id_acceso], (err, res) => {
+    pool.query("SELECT costo_directo.presupuesto costo_directo, fichas.id_ficha, fichas.g_meta, fichas.g_total_presu, SUM(avanceactividades.valor * partidas.costo_unitario) presu_avance, SUM(avanceactividades.valor * partidas.costo_unitario) / costo_directo.presupuesto * 100 porcentaje_avance, fichas.codigo, estado.nombre estado_nombre, tipoobras.nombre tipo_obra, MAX(IF(avanceactividades.valor IS NULL, '1990-01-01', avanceactividades.fecha)) ultima_fecha_avance, fichas.confirmacion_super_inf FROM fichas LEFT JOIN tipoobras ON tipoobras.id_tipoObra = fichas.tipoObras_id_tipoObra LEFT JOIN (SELECT componentes.fichas_id_ficha, SUM(componentes.presupuesto) presupuesto FROM componentes GROUP BY componentes.fichas_id_ficha) costo_directo ON costo_directo.fichas_id_ficha = fichas.id_ficha LEFT JOIN (SELECT Fichas_id_ficha, nombre, codigo FROM historialestados INNER JOIN (SELECT MAX(id_historialEstado) id_historialEstado FROM historialestados GROUP BY fichas_id_ficha) historial ON historial.id_historialEstado = historialestados.id_historialEstado LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado) estado ON estado.Fichas_id_ficha = fichas.id_ficha LEFT JOIN componentes ON componentes.Fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN fichas_has_accesos ON fichas_has_accesos.Fichas_id_ficha = fichas.id_ficha LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE  fichas_has_accesos.habilitado AND fichas_has_accesos.Accesos_id_acceso = ? AND historialactividades.estado IS NULL GROUP BY fichas.id_ficha ORDER BY ultima_fecha_avance DESC", [id_acceso], (err, res) => {
       if (err) {
         reject(err);
       }
-      else if (res.length == 0) {
-        reject("vacio");
-      } else {
-        for (let i = 0; i < res.length; i++) {
-          const fila = res[i];
-          // fila.g_total_presu = tools.formatoSoles(fila.g_total_presu)
-          fila.presu_avance = tools.formatoSoles(fila.presu_avance)
-          fila.porcentaje_avance = tools.formatoSoles(fila.porcentaje_avance)
-          fila.costo_directo = tools.formatoSoles(fila.costo_directo)
-          // fila.avance_financiero = tools.formatoSoles(fila.avance_financiero)
-          // fila.porcentaje_financiero = tools.formatoSoles(fila.porcentaje_financiero)
-        }
-      }
-
       resolve(res);
     })
   })
@@ -85,29 +71,21 @@ userModel.getComponentesPgerenciales = (id_ficha) => {
 }
 userModel.getCargosById_ficha = (id_ficha) => {
   return new Promise((resolve, reject) => {
-    pool.query("SELECT cargos.nombre cargo_nombre,cargos.id_cargo FROM fichas_has_accesos LEFT JOIN accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso inner JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo WHERE fichas_has_accesos.Fichas_id_ficha = ? GROUP BY cargos.id_Cargo order by cargos.nivel", [id_ficha], (err, res) => {
+    pool.query("SELECT cargos.nombre cargo_nombre, cargos.id_cargo FROM fichas_has_accesos LEFT JOIN accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso INNER JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo WHERE fichas_has_accesos.Fichas_id_ficha = ? AND cargos_tipo_id = 3 GROUP BY cargos.id_Cargo ORDER BY cargos.nivel", [id_ficha], (err, res) => {
       if (err) {
         reject(err);
       }
-      else if (res.length == 0) {
-        reject("vacio");
-      } else {
-        resolve(res);
-      }
+      resolve(res);
     })
   })
 }
-userModel.getUsuariosByCargo = (id_ficha, id_cargo) => {
+userModel.getUsuariosByCargo = (id_ficha, id_cargo,estado = true) => {
   return new Promise((resolve, reject) => {
-    pool.query("SELECT CONCAT(usuarios.apellido_paterno, ' ', usuarios.apellido_materno, ' ', usuarios.nombre) nombre_usuario, usuarios.celular, usuarios.direccion, usuarios.dni, usuarios.email, usuarios.cpt, profesiones.nombre nombre_profesion, usuarios.imagen, usuarios.imagenAlt FROM fichas LEFT JOIN fichas_has_accesos ON fichas_has_accesos.Fichas_id_ficha = fichas.id_ficha LEFT JOIN accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso INNER JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario LEFT JOIN usuarios_has_profesiones ON usuarios_has_profesiones.Usuarios_id_usuario = Usuarios.id_usuario LEFT JOIN profesiones ON profesiones.id_profesion = usuarios_has_profesiones.profesiones_id_profesion WHERE fichas_has_accesos.Fichas_id_ficha = ? AND accesos.Cargos_id_Cargo = ?", [id_ficha, id_cargo], (err, res) => {
+    pool.query("SELECT CONCAT(usuarios.apellido_paterno, ' ', usuarios.apellido_materno, ' ', usuarios.nombre) nombre_usuario, usuarios.celular, usuarios.direccion, usuarios.dni, usuarios.email, usuarios.cpt, profesiones.nombre nombre_profesion, usuarios.imagen, usuarios.imagenAlt, fichas_has_accesos.memorandum, accesos.id_acceso FROM fichas LEFT JOIN fichas_has_accesos ON fichas_has_accesos.Fichas_id_ficha = fichas.id_ficha LEFT JOIN accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso INNER JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario LEFT JOIN usuarios_has_profesiones ON usuarios_has_profesiones.Usuarios_id_usuario = Usuarios.id_usuario LEFT JOIN profesiones ON profesiones.id_profesion = usuarios_has_profesiones.profesiones_id_profesion WHERE fichas_has_accesos.Fichas_id_ficha = ? AND accesos.Cargos_id_Cargo = ? AND fichas_has_accesos.habilitado = ? ORDER BY accesos.id_acceso DESC", [id_ficha, id_cargo,estado], (err, res) => {
       if (err) {
         reject(err);
       }
-      else if (res.length == 0) {
-        reject("vacio");
-      } else {
-        resolve(res);
-      }
+      resolve(res);
     })
   })
 }
@@ -195,6 +173,46 @@ userModel.getcronogramaInicio = (corte, id_ficha, fecha_inicial) => {
     })
   })
 
+}
+userModel.postUsuario = (data) => {
+  return new Promise((resolve, reject) => {
+    pool.query("INSERT INTO usuarios (nombre, apellido_paterno, apellido_materno, dni, direccion, email, celular, cpt) VALUES (?,?,?,?,?,?,?,?);", [data.nombre, data.apellido_paterno, data.apellido_materno, data.dni, data.direccion, data.email, data.celular, data.cpt], (error, res) => {
+      if (error) {
+        reject(error);
+      }
+      resolve(res)
+    })
+  })
+}
+userModel.postAcceso = (id_cargo, id_usuario) => {
+  return new Promise((resolve, reject) => {
+    pool.query("INSERT INTO accesos (usuario, password, estado, Cargos_id_Cargo, Usuarios_id_usuario) VALUES ('USER', 'USER123', 1, ?,?);", [id_cargo, id_usuario], (error, res) => {
+      if (error) {
+        reject(error);
+      }
+      resolve(res)
+    })
+  })
+}
+userModel.postAccesoFicha = (id_ficha, id_acceso) => {
+  return new Promise((resolve, reject) => {
+    pool.query("INSERT INTO `fichas_has_accesos` (`Fichas_id_ficha`, `Accesos_id_acceso`) VALUES (?,?)", [id_ficha, id_acceso], (error, res) => {
+      if (error) {
+        reject(error);
+      }
+      resolve(res)
+    })
+  })
+}
+userModel.putUsuarioMemo = (memorandum, id_acceso,id_ficha) => {
+  return new Promise((resolve, reject) => {
+    pool.query("UPDATE fichas_has_accesos SET memorandum = ? WHERE fichas_has_accesos.Accesos_id_acceso = ? AND fichas_has_accesos.Fichas_id_ficha = ?", [memorandum, id_acceso,id_ficha], (error, res) => {
+      if (error) {
+        reject(error);
+      }
+      resolve(res)
+    })
+  })
 }
 
 
