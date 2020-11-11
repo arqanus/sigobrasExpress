@@ -397,7 +397,7 @@ module.exports = {
             })
         })
     },
-    getPartidacomentariosNoVistos(id_componente, id_acceso) {
+    getComponenteComentariosNoVistos(id_componente, id_acceso) {
         return new Promise((resolve, reject) => {
             pool.query("SELECT partidas.id_partida, SUM(IF(partida_comentarios_mod.id IS NOT NULL, 1, 0)) mensajes FROM partidas LEFT JOIN (SELECT partida_comentarios.* FROM partida_comentarios LEFT JOIN partida_comentarios_visto ON partida_comentarios_visto.partida_comentarios_id = partida_comentarios.id AND partida_comentarios_visto.accesos_id = ? WHERE partida_comentarios_visto.id IS NULL) partida_comentarios_mod ON partida_comentarios_mod.id_partida = partidas.id_partida WHERE partidas.componentes_id_componente = ? GROUP BY partidas.id_partida", [id_acceso, id_componente], (err, res) => {
                 if (err) {
@@ -430,6 +430,16 @@ module.exports = {
     getComponentesComentarios(id_acceso, id_ficha) {
         return new Promise((resolve, reject) => {
             pool.query("SELECT componentes.numero, partidas.componentes_id_componente id_componente, SUM(IF(partida_comentarios_mod.id IS NOT NULL, 1, 0)) mensajes FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN (SELECT partida_comentarios.* FROM partida_comentarios LEFT JOIN partida_comentarios_visto ON partida_comentarios_visto.partida_comentarios_id = partida_comentarios.id AND partida_comentarios_visto.accesos_id = ? WHERE partida_comentarios_visto.id IS NULL) partida_comentarios_mod ON partida_comentarios_mod.id_partida = partidas.id_partida WHERE componentes.fichas_id_ficha = ? AND partidas.componentes_id_componente IS NOT NULL GROUP BY partidas.componentes_id_componente", [id_acceso, id_ficha], (err, res) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve(res)
+            })
+        })
+    },
+    getPartidaComentariosNoVistos(id_partida, id_acceso) {
+        return new Promise((resolve, reject) => {
+            pool.query("SELECT partidas.id_partida, SUM(IF(partida_comentarios_mod.id IS NOT NULL, 1, 0)) mensajes FROM partidas LEFT JOIN (SELECT partida_comentarios.* FROM partida_comentarios LEFT JOIN partida_comentarios_visto ON partida_comentarios_visto.partida_comentarios_id = partida_comentarios.id AND partida_comentarios_visto.accesos_id = ? WHERE partida_comentarios_visto.id IS NULL) partida_comentarios_mod ON partida_comentarios_mod.id_partida = partidas.id_partida WHERE partidas.componentes_id_componente = ? GROUP BY partidas.id_partida", [id_acceso, id_componente], (err, res) => {
                 if (err) {
                     reject(err);
                 }

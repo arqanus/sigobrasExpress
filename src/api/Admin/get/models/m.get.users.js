@@ -34,6 +34,16 @@ userModel.getCargos = ()=>{
         }) 
     })
 }
+userModel.getCargosLimitado = ()=>{
+    return new Promise((resolve, reject) => {
+        pool.query('SELECT * FROM cargos WHERE cargos_tipo_id = 3;', (error,res)=>{
+            if(error){ reject(error);  }
+            else{
+                resolve(res);
+            }
+        }) 
+    })
+}
 userModel.getUsuariosAcceso = ()=>{
     return new Promise((resolve, reject) => {
         pool.query("SELECT usuarios.id_usuario, usuarios.nombre, usuarios.apellido_paterno, usuarios.apellido_materno, usuarios.dni, usuarios.direccion, usuarios.email, usuarios.celular, usuarios.cpt FROM usuarios INNER JOIN accesos ON accesos.Usuarios_id_usuario = usuarios.id_usuario", (error,res)=>{

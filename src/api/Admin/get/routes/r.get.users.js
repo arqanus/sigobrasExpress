@@ -25,6 +25,14 @@ module.exports = function(app){
 			res.status(400).json(error)
 		}
 	})
+	app.get('/listaCargosLimitado',async(req,res)=>{
+		try {
+			var getCargos = await User.getCargosLimitado()
+        	res.json(getCargos);
+		} catch (error) {
+			res.status(400).json(error)
+		}
+	})
 	app.get('/getUsuariosAcceso',async(req,res)=>{
 		try {
 			var getUsuariosAcceso = await User.getUsuariosAcceso()

@@ -1,21 +1,12 @@
 const User = require('../models/m.get.Inicio');
-const tools = require('../../../../tools/format')
+const Tools = require('../../../../Tools/format')
 const User2 = require('../../../ProcesosFisicos/get/models/m.get.valGeneral');
-
+var fs = require('fs');
+var formidable = require('formidable');
 module.exports = (app) => {
 	app.post('/PGlistaObras', async (req, res) => {
 		try {
 			var obras = await User.getObras(req.body.id_acceso)
-			for (let i = 0; i < obras.length; i++) {
-				const obra = obras[i];
-				var avance_financiero = await User.getAvanceFinancieroCortes(obra.id_ficha)
-				avance_financiero = avance_financiero.avance_financiero
-				obra.avance_financiero = obra.avance_financiero + avance_financiero
-				obra.porcentaje_financiero = obra.avance_financiero / obra.g_total_presu * 100
-				obra.g_total_presu = tools.formatoSoles(obra.g_total_presu)
-				obra.avance_financiero = tools.formatoSoles(obra.avance_financiero)
-				obra.porcentaje_financiero = tools.formatoPorcentaje(obra.porcentaje_financiero)
-			}
 			res.json(obras)
 		} catch (error) {
 			res.status(200).json(error)
@@ -29,6 +20,7 @@ module.exports = (app) => {
 			res.status(200).json(error)
 		}
 	});
+	//desfasado
 	app.post('/getCargosById', async (req, res) => {
 		try {
 			var cargos = await User.getCargosById_ficha(req.body.id_ficha)
@@ -42,79 +34,78 @@ module.exports = (app) => {
 			res.status(200).json(error)
 		}
 	});
-	app.post('/getcronogramaInicio', async (req, res) => {
+	app.post('/getCargosById2', async (req, res) => {
 		try {
-			if(req.body.id_ficha == null){
-				throw "null"
-			}
-			var periodos = await User2.getValGeneralPeriodos(req.body.id_ficha, 101, "TRUE")
-			//buscamos corte
-			var periodoCorte = null
-			for (let i = periodos.length - 1; i >= 0; i--) {
-				const periodo = periodos[i];
-				if (periodo.codigo == "C") {
-					periodoCorte = periodo
-					break;
-				}
-			}
-			var valorizacionCorte = null
-			var corte = {}
-			var avance_Acumulado = 0
-			if (periodoCorte) {
-				valorizacionCorte = await User2.getValGeneralResumenPeriodo(req.body.id_ficha, periodoCorte.fecha_inicial, periodoCorte.fecha_final, false)
-				var financiero_monto = await User.getFinancieroMonto(req.body.id_ficha)
-				console.log(req.body.id_ficha, financiero_monto);
-				
-				corte.id_historialEstado = financiero_monto.id_historialEstado
-				corte.codigo = "CORTE"
-				corte.fecha = tools.fechaLargaCorta(new Date(periodoCorte.fecha_final))
-				corte.mes = periodoCorte.mes + "."
-				corte.anyo = periodoCorte.anyo
-				corte.programado_monto = valorizacionCorte.valor_total
-				corte.programado_porcentaje = valorizacionCorte.porcentaje_total
-				corte.fisico_monto = valorizacionCorte.valor_total
-				corte.fisico_porcentaje = valorizacionCorte.porcentaje_total
-				corte.financiero_monto = financiero_monto.financiero_monto
-				corte.financiero_porcentaje = financiero_monto.financiero_porcentaje
-				avance_Acumulado = valorizacionCorte.valor_total
-			} else {
-				corte = "vacio"
-				periodoCorte = {}
-				periodoCorte.fecha_final = periodos[0].fecha_inicial
-			}
-			console.log(corte, req.body.id_ficha, periodoCorte.fecha_final);
-			
-			var cronograma = await User.getcronogramaInicio(corte, req.body.id_ficha, periodoCorte.fecha_final)
-
-			console.log("cronograma", cronograma);
-			
-			if (cronograma == "vacio") {
-				cronograma = {}
-				cronograma.programado_monto_total = 0
-				cronograma.programado_porcentaje_total = 0
-				cronograma.fisico_monto_total = 0
-				cronograma.fisico_porcentaje_total = 0
-				cronograma.financiero_monto_total = 0
-				cronograma.financiero_porcentaje_total = 0
-				cronograma.grafico_programado = []
-				cronograma.grafico_fisico = []
-				cronograma.grafico_financiero = []
-				cronograma.grafico_periodos = []
-				cronograma.data = []
-				fecha_final = tools.fechaLargaCorta(new Date(periodoCorte.fecha_final))
-			} else {
-				fecha_final = cronograma.data[cronograma.data.length - 1].fecha
-			}
-			cronograma.fecha_inicial = tools.fechaLargaCorta(new Date(periodoCorte.fecha_final))
-			cronograma.fecha_final = fecha_final
-			cronograma.avance_Acumulado = avance_Acumulado
-			cronograma.fechaActual = tools.fechaActual()
-			res.json(
-				cronograma
-			)
+			var cargos = await User.getCargosById_ficha(req.body.id_ficha)
+			res.json(cargos)
+		} catch (error) {
+			res.status(200).json(error)
+		}
+	});
+	app.post('/getUsuariosByCargo', async (req, res) => {
+		try {
+			var cargos = await User.getUsuariosByCargo(req.body.id_ficha, req.body.id_cargo, req.body.estado)
+			res.json(cargos)
+		} catch (error) {
+			res.status(200).json(error)
+		}
+	});
+	app.post('/postUsuarioObra', async (req, res) => {
+		try {
+			var responseUsuario = await User.postUsuario(req.body)
+			var responseAcceso = await User.postAcceso(req.body.id_cargo, responseUsuario.insertId)
+			var responseAccesoFicha = await User.postAccesoFicha(req.body.id_ficha, responseAcceso.insertId)
+			res.json({
+				message: "registro exitoso"
+			})
 		} catch (error) {
 			console.log(error);
-			res.status(204).json(error)
+			res.status(204).json(error.code)
+		}
+	})
+	app.post('/putUsuarioMemo', async (req, res) => {
+		try {
+			var dir = __dirname + '/../../../../public/'
+			//crear ruta si no existe
+			if (!fs.existsSync(dir)) {
+				fs.mkdirSync(dir);
+			}
+			var form = new formidable.IncomingForm();
+			//se configura la ruta de guardar
+			form.uploadDir = dir;
+
+			var formFiles = await new Promise((resolve, reject) => {
+				form.parse(req, (err, fields, files) => {
+					if (err) {
+						return reject(err);
+					}
+					return resolve({ fields, files: files.memorandum });
+				});
+			});
+			console.log(formFiles.fields);
+			//se genera el nombre del archivo
+			var link = ""
+			if (formFiles.files) {
+				var extensionArchivo = "." + formFiles.files.name.split('.').pop()
+				var archivo_name = "memorandum" + extensionArchivo
+				//se verifica y crea las carpetas de obra 
+				var obraFolder = formFiles.fields.obra_codigo + "/PERSONAL/TECNICOS/" + formFiles.fields.id_acceso + "/"
+				if (!fs.existsSync(dir + obraFolder)) {
+					fs.mkdirSync(dir + obraFolder, { recursive: true });
+				}
+				obraFolder += archivo_name
+				// renombre y mueve de lugar el archivo
+				fs.rename(formFiles.files.path, dir + obraFolder, (err) => { })
+				link = "/static/" + obraFolder
+			}
+			var request = await User.putUsuarioMemo(link, formFiles.fields.id_acceso, formFiles.fields.id_ficha)
+			console.log(request);
+			res.json({
+				message: "registro exitoso"
+			})
+		} catch (error) {
+			console.log(error);
+			res.status(204).json(error.code)
 		}
 	})
 }

@@ -162,9 +162,9 @@ module.exports = (app) => {
             res.status(204).json(error)
         }
     })
-    app.post('/getPartidacomentariosNoVistos', async (req, res) => {
+    app.post('/getComponenteComentariosNoVistos', async (req, res) => {
         try {
-            var data = await User.getPartidacomentariosNoVistos(req.body.id_componente, req.body.id_acceso)
+            var data = await User.getComponenteComentariosNoVistos(req.body.id_componente, req.body.id_acceso)
             res.json(data)
         } catch (error) {
             console.log(error)

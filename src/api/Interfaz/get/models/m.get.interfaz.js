@@ -29,7 +29,7 @@ function formatoPorcentaje(data){
 //idacceso en login
 userModel.getId_acceso = (data)=>{
     return new Promise((resolve, reject) => {
-        pool.query("SELECT accesos.id_acceso,accesos.usuario, cargos.nombre nombre_cargo, usuarios.nombre nombre_usuario,fichas.id_ficha,usuarios.imagen,usuarios.imagenAlt FROM accesos LEFT JOIN cargos ON accesos.Cargos_id_Cargo = cargos.id_Cargo LEFT JOIN usuarios ON accesos.Usuarios_id_usuario = usuarios.id_usuario LEFT JOIN fichas_has_accesos ON fichas_has_accesos.Accesos_id_acceso = accesos.id_acceso LEFT JOIN fichas ON fichas.id_ficha = fichas_has_accesos.Fichas_id_ficha WHERE usuario ='"+data.usuario+"' AND password = '"+data.password+"' order by accesos.id_acceso desc limit 1",(error,res)=>{
+        pool.query("SELECT accesos.id_acceso, accesos.usuario, cargos.nombre nombre_cargo, usuarios.nombre nombre_usuario, fichas.id_ficha, usuarios.imagen, usuarios.imagenAlt FROM accesos LEFT JOIN cargos ON accesos.Cargos_id_Cargo = cargos.id_Cargo LEFT JOIN usuarios ON accesos.Usuarios_id_usuario = usuarios.id_usuario LEFT JOIN fichas_has_accesos ON fichas_has_accesos.Accesos_id_acceso = accesos.id_acceso LEFT JOIN fichas ON fichas.id_ficha = fichas_has_accesos.Fichas_id_ficha WHERE estado = 1 AND usuario = '"+data.usuario+"' AND password = '"+data.password+"' ORDER BY accesos.id_acceso DESC LIMIT 1",(error,res)=>{
         if(error) {
             reject(error);
         }

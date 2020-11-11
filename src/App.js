@@ -29,6 +29,9 @@ app.use(compression());
 //static
 app.use('/static', express.static(__dirname + '/public'));
 
+//apis reusables
+require('./api/Reusable/r.avances')(app);
+
 //interf gerencial
 require('./api/InterfazGerencial/get/routes/r.get.InterfazGerencial')(app);
 //routes 
