@@ -1,5 +1,5 @@
 const User = require('../models/m.get.Inicio');
-const Tools = require('../../../../Tools/format')
+const Tools = require('../../../../tools/format')
 const User2 = require('../../../ProcesosFisicos/get/models/m.get.valGeneral');
 var fs = require('fs');
 var formidable = require('formidable');
