@@ -185,7 +185,7 @@ userModel.getCargoPersonal = (id_ficha,cargo_nombre)=>{
     return new Promise((resolve, reject) => { 
         console.log(id_ficha,cargo_nombre);
         
-        pool.query("SELECT CONCAT(usuarios.nombre, ' ', usuarios.apellido_paterno, ' ', usuarios.apellido_materno) usuario FROM fichas_has_accesos LEFT JOIN accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso LEFT JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo WHERE  fichas_has_accesos.Fichas_id_ficha = ? and cargos.nombre = ? ",[id_ficha,cargo_nombre], (error,res)=>{
+        pool.query("SELECT CONCAT(usuarios.nombre, ' ', usuarios.apellido_paterno, ' ', usuarios.apellido_materno) usuario FROM fichas_has_accesos LEFT JOIN accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso LEFT JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo WHERE  fichas_has_accesos.Fichas_id_ficha = ? and cargos.nombre = ? ORDER BY accesos.id_acceso DESC",[id_ficha,cargo_nombre], (error,res)=>{
             if(error){
                 reject(error.code);
             }
