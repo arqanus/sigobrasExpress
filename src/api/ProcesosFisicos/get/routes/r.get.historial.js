@@ -107,6 +107,9 @@ module.exports = function (app) {
             return fecha_temp.toLocaleDateString("es-ES", options)
         }
         try {
+            if(!req.body.id_ficha||!req.body.anyo||!req.body.mes){
+                throw "datos incompletos"
+            }
             var mes = req.body.mes - 1
             var d = new Date(req.body.anyo, mes, 1),
                 month = mes,

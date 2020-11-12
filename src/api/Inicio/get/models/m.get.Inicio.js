@@ -79,9 +79,9 @@ userModel.getCargosById_ficha = (id_ficha) => {
     })
   })
 }
-userModel.getUsuariosByCargo = (id_ficha, id_cargo,estado = true) => {
+userModel.getUsuariosByCargo = (id_ficha, id_cargo, estado = true) => {
   return new Promise((resolve, reject) => {
-    pool.query("SELECT CONCAT(usuarios.apellido_paterno, ' ', usuarios.apellido_materno, ' ', usuarios.nombre) nombre_usuario, usuarios.celular, usuarios.direccion, usuarios.dni, usuarios.email, usuarios.cpt, profesiones.nombre nombre_profesion, usuarios.imagen, usuarios.imagenAlt, fichas_has_accesos.memorandum, accesos.id_acceso FROM fichas LEFT JOIN fichas_has_accesos ON fichas_has_accesos.Fichas_id_ficha = fichas.id_ficha LEFT JOIN accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso INNER JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario LEFT JOIN usuarios_has_profesiones ON usuarios_has_profesiones.Usuarios_id_usuario = Usuarios.id_usuario LEFT JOIN profesiones ON profesiones.id_profesion = usuarios_has_profesiones.profesiones_id_profesion WHERE fichas_has_accesos.Fichas_id_ficha = ? AND accesos.Cargos_id_Cargo = ? AND fichas_has_accesos.habilitado = ? ORDER BY accesos.id_acceso DESC", [id_ficha, id_cargo,estado], (err, res) => {
+    pool.query("SELECT usuarios.*, CONCAT(usuarios.apellido_paterno, ' ', usuarios.apellido_materno, ' ', usuarios.nombre) nombre_usuario, cargos.nombre cargo_nombre, fichas_has_accesos.memorandum, accesos.id_acceso FROM fichas LEFT JOIN fichas_has_accesos ON fichas_has_accesos.Fichas_id_ficha = fichas.id_ficha LEFT JOIN accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso INNER JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo WHERE fichas_has_accesos.Fichas_id_ficha = ? AND (0 = ? OR accesos.Cargos_id_Cargo = ?) AND fichas_has_accesos.habilitado = ?  AND cargos_tipo_id = 3 ORDER BY cargos.nivel , accesos.id_acceso DESC", [id_ficha, id_cargo, id_cargo, estado], (err, res) => {
       if (err) {
         reject(err);
       }
@@ -204,9 +204,9 @@ userModel.postAccesoFicha = (id_ficha, id_acceso) => {
     })
   })
 }
-userModel.putUsuarioMemo = (memorandum, id_acceso,id_ficha) => {
+userModel.putUsuarioMemo = (memorandum, id_acceso, id_ficha) => {
   return new Promise((resolve, reject) => {
-    pool.query("UPDATE fichas_has_accesos SET memorandum = ? WHERE fichas_has_accesos.Accesos_id_acceso = ? AND fichas_has_accesos.Fichas_id_ficha = ?", [memorandum, id_acceso,id_ficha], (error, res) => {
+    pool.query("UPDATE fichas_has_accesos SET memorandum = ? WHERE fichas_has_accesos.Accesos_id_acceso = ? AND fichas_has_accesos.Fichas_id_ficha = ?", [memorandum, id_acceso, id_ficha], (error, res) => {
       if (error) {
         reject(error);
       }
