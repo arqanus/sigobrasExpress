@@ -179,6 +179,23 @@ module.exports = {
         })
 
     },
+    getHistorialAnyosResumen3(id_ficha, anyo, mes_inicial, mes_final) {
+        return new Promise((resolve, reject) => {
+            var query = "SELECT componentes.numero, componentes.nombre, componentes.presupuesto,SUM(avanceactividades.valor * partidas.costo_unitario) valor,"
+            for (let index = mes_inicial; index <= mes_final; index++) {
+                query += `SUM(IF(MONTH(avanceactividades.fecha) = ${index}, avanceactividades.valor * partidas.costo_unitario, 0)) m${index},`
+            }
+            query = query.slice(0, -1)
+            query += " FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND COALESCE(avanceactividades.valor, 0) != 0 AND fichas.id_ficha = ? AND YEAR(avanceactividades.fecha) = ? GROUP BY componentes.id_componente";
+            pool.query(query, [id_ficha, anyo], (err, res) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve(res);
+            })
+        })
+
+    },
     getHistorialMeses(id_ficha, anyo) {
         return new Promise((resolve, reject) => {
             pool.query("SELECT DATE_FORMAT(avanceactividades.fecha, '%Y-%m-01') fecha, MONTHNAME(avanceactividades.fecha) mes FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.Fichas_id_ficha = fichas.id_ficha AND historialestados.fecha_inicial <= avanceactividades.fecha AND avanceactividades.fecha < historialestados.fecha_final LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND COALESCE(avanceactividades.valor, 0) != 0 AND fichas.id_ficha = ? and year(avanceactividades.fecha)= ? GROUP BY DATE_FORMAT(avanceactividades.fecha, '%Y-%b') order by DATE_FORMAT(avanceactividades.fecha, '%Y-%m-01')", [id_ficha, anyo], (err, res) => {
@@ -199,15 +216,9 @@ module.exports = {
         return new Promise((resolve, reject) => {
             pool.query("SELECT DATE_FORMAT(avanceactividades.fecha, '%Y-%m-01') fecha, MONTH(avanceactividades.fecha) mes FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialestados ON historialestados.Fichas_id_ficha = fichas.id_ficha AND historialestados.fecha_inicial <= avanceactividades.fecha AND avanceactividades.fecha < historialestados.fecha_final LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND COALESCE(avanceactividades.valor, 0) != 0 AND fichas.id_ficha = ? and year(avanceactividades.fecha)= ? GROUP BY DATE_FORMAT(avanceactividades.fecha, '%Y-%b') order by DATE_FORMAT(avanceactividades.fecha, '%Y-%m-01')", [id_ficha, anyo], (err, res) => {
                 if (err) {
-                    console.log(err);
                     reject(err.code);
                 }
-                else if (res.length == 0) {
-                    reject("vacio");
-
-                } else {
-                    resolve(res);
-                }
+                resolve(res);
             })
         })
     },
@@ -305,6 +316,32 @@ module.exports = {
             })
         })
     },
+    getDiasEjecutadosMes(id_ficha, anyo, mes) {
+        return new Promise((resolve, reject) => {
+            pool.query("SELECT DAY(avanceactividades.fecha) dia FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND COALESCE(avanceactividades.valor, 0) != 0 AND fichas.id_ficha = ? AND YEAR(avanceactividades.fecha) = ? AND MONTH(avanceactividades.fecha) = ? GROUP BY DAY(avanceactividades.fecha) ORDER BY DAY(avanceactividades.fecha)", [id_ficha, anyo, mes], (err, res) => {
+                if (err) {
+                    reject(err.code);
+                }
+                resolve(res)
+            })
+        })
+    },
+    getHistorialResumenMensual(id_ficha, anyo, mes, diasEjecutados) {
+        return new Promise((resolve, reject) => {
+            var query = "SELECT componentes.*, SUM(avanceactividades.valor * partidas.costo_unitario) valor, SUM(avanceactividades.valor * partidas.costo_unitario) / componentes.presupuesto * 100 porcentaje,"
+            for (let i = diasEjecutados[0].dia; i <= diasEjecutados[diasEjecutados.length - 1].dia; i++) {
+                query += `SUM(IF(DAY(avanceactividades.fecha) = ${i}, avanceactividades.valor * partidas.costo_unitario, 0)) d${i},`
+            };
+            query = query.slice(0, -1)
+            query += " FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND COALESCE(avanceactividades.valor, 0) != 0 AND fichas.id_ficha = ? AND YEAR(avanceactividades.fecha) = ? AND MONTH(avanceactividades.fecha) = ? GROUP BY componentes.id_componente ORDER BY componentes.id_componente"
+            pool.query(query, [id_ficha, anyo, mes], (err, res) => {
+                if (err) {
+                    reject(err.code);
+                }
+                resolve(res);
+            })
+        })
+    },
     getHistorialComponentes(id_ficha, fecha) {
         return new Promise((resolve, reject) => {
             pool.query("/*************** por componentes********************/ SELECT componentes.id_componente, componentes.numero, componentes.nombre nombre_componente, SUM(avanceactividades.valor * partidas.costo_unitario) componente_total_soles, SUM(avanceactividades.valor * partidas.costo_unitario) / componentes.presupuesto * 100 componente_total_porcentaje FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND COALESCE(avanceactividades.valor, 0) != 0 AND fichas.id_ficha = ? AND DATE_FORMAT(avanceactividades.fecha, '%Y-%m-01') = DATE_FORMAT(?, '%Y-%m-01') GROUP BY componentes.id_componente", [id_ficha, fecha], (err, res) => {
@@ -320,6 +357,16 @@ module.exports = {
                     }
                     resolve(res);
                 }
+            })
+        })
+    },
+    getHistorialComponentes2(id_ficha, anyo, mes) {
+        return new Promise((resolve, reject) => {
+            pool.query("SELECT componentes.id_componente, componentes.numero, componentes.nombre nombre_componente, SUM(avanceactividades.valor * partidas.costo_unitario) componente_total_soles, SUM(avanceactividades.valor * partidas.costo_unitario) / componentes.presupuesto * 100 componente_total_porcentaje FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND COALESCE(avanceactividades.valor, 0) != 0 AND fichas.id_ficha = ? AND YEAR(avanceactividades.fecha) = ? AND MONTH(avanceactividades.fecha) = ? GROUP BY componentes.id_componente", [id_ficha, anyo, mes], (err, res) => {
+                if (err) {
+                    reject(err.code);
+                }
+                resolve(res)
             })
         })
     },
@@ -342,6 +389,17 @@ module.exports = {
         })
 
     },
+    getHistorialFechas2(anyo, mes, id_componente) {
+        return new Promise((resolve, reject) => {
+            pool.query("SELECT avanceactividades.fecha, SUM(avanceactividades.valor * partidas.costo_unitario) fecha_total_soles, SUM(avanceactividades.valor * partidas.costo_unitario) / presupuesto_costo_directo.presupuesto * 100 fecha_total_porcentaje, DATE_FORMAT(avanceactividades.fecha, '%Y-%m-%d') fecha FROM fichas LEFT JOIN (SELECT componentes.fichas_id_ficha id_ficha, SUM(presupuesto) presupuesto FROM componentes GROUP BY componentes.fichas_id_ficha) presupuesto_costo_directo ON presupuesto_costo_directo.id_ficha = fichas.id_ficha LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE COALESCE(avanceactividades.valor, 0) != 0 AND YEAR(avanceactividades.fecha) = ? AND MONTH(avanceactividades.fecha) = ? AND componentes.id_componente = ? GROUP BY DATE_FORMAT(avanceactividades.fecha, '%Y-%m-%d')", [anyo, mes, id_componente], (err, res) => {
+                if (err) {
+                    reject(err.code);
+                }
+                resolve(res);
+            })
+        })
+
+    },
     getHistorialDias(id_componente, fecha) {
         return new Promise((resolve, reject) => {
             pool.query("/*COALESCE(parcial_negativo / parcial_positivo, 0) + 1 porcentaje_negatividad_ajustado*/ SELECT partidas.item, partidas.descripcion descripcion_partida, TRIM(BOTH '/DIA' FROM partidas.unidad_medida) unidad_medida, actividades.nombre nombre_actividad, avanceactividades.descripcion descripcion_actividad, avanceactividades.observacion, (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) * avanceactividades.valor valor, partidas.costo_unitario, (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) * avanceactividades.valor * partidas.costo_unitario parcial FROM fichas LEFT JOIN (SELECT componentes.fichas_id_ficha id_ficha, SUM(presupuesto) presupuesto FROM componentes GROUP BY componentes.fichas_id_ficha) tb_presupuesto ON tb_presupuesto.id_ficha = fichas.id_ficha LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_positivo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE actividades.parcial > 0 GROUP BY partidas.id_partida) p1 ON p1.id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_negativo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE actividades.parcial < 0 GROUP BY partidas.id_partida) p2 ON p2.id_partida = partidas.id_partida LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND COALESCE(avanceactividades.valor, 0) != 0 AND componentes.id_componente = ? AND DATE_FORMAT(avanceactividades.fecha, '%Y-%m-%d') = DATE_FORMAT(?, '%Y-%m-%d')", [id_componente, fecha], (err, res) => {
@@ -357,6 +415,17 @@ module.exports = {
                     }
                     resolve(res);
                 }
+            })
+        })
+    },
+    getHistorialDias2(id_componente, fecha) {
+        return new Promise((resolve, reject) => {
+            pool.query("/*COALESCE(parcial_negativo / parcial_positivo, 0) + 1 porcentaje_negatividad_ajustado*/ SELECT partidas.item, partidas.descripcion descripcion_partida, TRIM(BOTH '/DIA' FROM partidas.unidad_medida) unidad_medida, actividades.nombre nombre_actividad, avanceactividades.descripcion descripcion_actividad, avanceactividades.observacion, (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) * avanceactividades.valor valor, partidas.costo_unitario, (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) * avanceactividades.valor * partidas.costo_unitario parcial FROM fichas LEFT JOIN (SELECT componentes.fichas_id_ficha id_ficha, SUM(presupuesto) presupuesto FROM componentes GROUP BY componentes.fichas_id_ficha) tb_presupuesto ON tb_presupuesto.id_ficha = fichas.id_ficha LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_positivo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE actividades.parcial > 0 GROUP BY partidas.id_partida) p1 ON p1.id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_negativo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE actividades.parcial < 0 GROUP BY partidas.id_partida) p2 ON p2.id_partida = partidas.id_partida LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND COALESCE(avanceactividades.valor, 0) != 0 AND componentes.id_componente = ? AND DATE_FORMAT(avanceactividades.fecha, '%Y-%m-%d') = DATE_FORMAT(?, '%Y-%m-%d')", [id_componente, fecha], (err, res) => {
+                if (err) {
+                    reject(err.code);
+                }
+                resolve(res);
+
             })
         })
     },
@@ -498,7 +567,67 @@ module.exports = {
     },
     getHistorialSemanalDias(id_componente, fecha) {
         return new Promise((resolve, reject) => {
-            pool.query("SELECT partidas.id_partida, partidas.item, partidas.descripcion descripcion_partida, TRIM(BOTH '/DIA' FROM partidas.unidad_medida) unidad_medida, actividades.nombre nombre_actividad, avanceactividades.descripcion descripcion_actividad, avanceactividades.observacion, avanceactividades.valor, partidas.costo_unitario, avanceactividades.valor * partidas.costo_unitario parcial, partidas.rendimiento FROM componentes LEFT JOIN (SELECT componentes.fichas_id_ficha id_ficha, SUM(presupuesto) presupuesto FROM componentes GROUP BY componentes.fichas_id_ficha) tb_presupuesto ON tb_presupuesto.id_ficha = componentes.fichas_id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE COALESCE(avanceactividades.valor, 0) != 0 AND componentes.id_componente = ? AND DATE_FORMAT(avanceactividades.fecha, '%Y-%m-%d') = DATE_FORMAT(?, '%Y-%m-%d') ", [id_componente, fecha],
+            pool.query("SELECT avanceactividades.id_AvanceActividades, partidas.id_partida, partidas.item, partidas.descripcion descripcion_partida, TRIM(BOTH '/DIA' FROM partidas.unidad_medida) unidad_medida, actividades.nombre nombre_actividad, avanceactividades.descripcion descripcion_actividad, avanceactividades.observacion, avanceactividades.valor, partidas.costo_unitario, avanceactividades.valor * partidas.costo_unitario parcial, partidas.rendimiento FROM componentes LEFT JOIN (SELECT componentes.fichas_id_ficha id_ficha, SUM(presupuesto) presupuesto FROM componentes GROUP BY componentes.fichas_id_ficha) tb_presupuesto ON tb_presupuesto.id_ficha = componentes.fichas_id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE COALESCE(avanceactividades.valor, 0) != 0 AND componentes.id_componente = ? AND DATE_FORMAT(avanceactividades.fecha, '%Y-%m-%d') = DATE_FORMAT(?, '%Y-%m-%d') ", [id_componente, fecha],
+                (error, res) => {
+                    if (error) {
+                        reject(error);
+                    }
+                    resolve(res)
+                })
+        })
+
+    },
+    getEstadoRevisadoFecha(fecha, id_ficha) {
+        return new Promise((resolve, reject) => {
+            pool.query("SELECT count(*) revisado FROM fechas_revisadas WHERE fecha_revisada = ? and fichas_id_ficha = ?;", [fecha, id_ficha],
+                (error, res) => {
+                    if (error) {
+                        reject(error);
+                    }
+                    resolve(res[0])
+                })
+        })
+
+    },
+    postEstadoRevisadoFecha(fecha, id_ficha) {
+        return new Promise((resolve, reject) => {
+            pool.query("INSERT INTO fechas_revisadas (fecha_revisada, fichas_id_ficha) VALUES (?,?);", [fecha, id_ficha],
+                (error, res) => {
+                    if (error) {
+                        reject(error);
+                    }
+                    resolve(res)
+                })
+        })
+
+    },
+    putAvanceActividades(valor, id_AvanceActividades) {
+        return new Promise((resolve, reject) => {
+            pool.query("UPDATE avanceactividades SET valor = ? WHERE id_AvanceActividades = ?", [valor, id_AvanceActividades],
+                (error, res) => {
+                    if (error) {
+                        reject(error);
+                    }
+                    resolve(res)
+                })
+        })
+
+    },
+    getAvanceActividades(id_AvanceActividades) {
+        return new Promise((resolve, reject) => {
+            pool.query("select * from avanceactividades where id_AvanceActividades = ?;", [id_AvanceActividades],
+                (error, res) => {
+                    if (error) {
+                        reject(error);
+                    }
+                    resolve(res[0])
+                })
+        })
+
+    },
+    postAvanceActividadesLog(accion, valor_old, valor_new, id_acceso, id_AvanceActividades) {
+        return new Promise((resolve, reject) => {
+            pool.query("INSERT INTO avanceactividades_log (accion, valor_old, valor_new, accesos_id_acceso, id_AvanceActividades) VALUES (?,?,?,?,?);", [accion, valor_old, valor_new, id_acceso, id_AvanceActividades],
                 (error, res) => {
                     if (error) {
                         reject(error);
