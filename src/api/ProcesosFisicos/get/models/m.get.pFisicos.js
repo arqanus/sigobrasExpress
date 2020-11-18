@@ -437,13 +437,13 @@ module.exports = {
             })
         })
     },
-    getPartidaComentariosNoVistos(id_partida, id_acceso) {
+    getPartidaComentariosNoVistos(id_acceso, id_partida) {
         return new Promise((resolve, reject) => {
-            pool.query("SELECT partidas.id_partida, SUM(IF(partida_comentarios_mod.id IS NOT NULL, 1, 0)) mensajes FROM partidas LEFT JOIN (SELECT partida_comentarios.* FROM partida_comentarios LEFT JOIN partida_comentarios_visto ON partida_comentarios_visto.partida_comentarios_id = partida_comentarios.id AND partida_comentarios_visto.accesos_id = ? WHERE partida_comentarios_visto.id IS NULL) partida_comentarios_mod ON partida_comentarios_mod.id_partida = partidas.id_partida WHERE partidas.componentes_id_componente = ? GROUP BY partidas.id_partida", [id_acceso, id_componente], (err, res) => {
+            pool.query("SELECT COUNT(partida_comentarios.id) comentarios_novistos FROM partida_comentarios LEFT JOIN partida_comentarios_visto ON partida_comentarios_visto.partida_comentarios_id = partida_comentarios.id AND partida_comentarios_visto.accesos_id = ? WHERE partida_comentarios.id_partida = ? AND partida_comentarios_visto.id IS NULL", [id_acceso, id_partida], (err, res) => {
                 if (err) {
                     reject(err);
                 }
-                resolve(res)
+                resolve(res[0])
             })
         })
     },
