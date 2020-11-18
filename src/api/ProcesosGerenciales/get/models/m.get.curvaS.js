@@ -156,5 +156,27 @@ module.exports = {
         })
 
     },
+    getCurvaSPin(id_ficha,anyo) {
+        return new Promise((resolve, reject) => {
+            pool.query("SELECT * FROM curva_s_pin WHERE fichas_id_ficha = ? AND anyo = ?;", [id_ficha,anyo], (error, res) => {
+                if (error) {
+                    reject(error);
+                }
+                resolve(res[0])
+            })
+        })
+
+    },
+    postCurvaSPin(data) {
+        return new Promise((resolve, reject) => {
+            pool.query("INSERT INTO curva_s_pin (fichas_id_ficha,anyo,monto ) VALUES ? on duplicate key update monto = VALUES(monto);", [data], (error, res) => {
+                if (error) {
+                    reject(error);
+                }
+                resolve(res)
+            })
+        })
+
+    },
 }
 
