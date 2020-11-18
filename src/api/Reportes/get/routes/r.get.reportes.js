@@ -4,6 +4,8 @@ const User3 = require('../../../Interfaz/get/models/m.get.interfaz');
 const User4 = require('../../../ProcesosFisicos/get/models/m.get.historial');
 const User5 = require('../../../Inicio/get/models/m.get.Inicio');
 const tools = require('../../../../tools/format')
+var fs = require('fs');
+var request = require('request').defaults({ encoding: null });
 module.exports = function (app) {
 	//cabecera
 	app.post('/getAnyoReportes', async (req, res) => {
@@ -275,9 +277,36 @@ module.exports = function (app) {
 	});
 	app.post('/getImagenesCurvaS', async (req, res) => {
 		try {
+
 			var data = await User.getImagenesCurvaS(req.body.id_ficha)
-			console.log(data);
-			res.json(data)
+			var img = await new Promise((resolve, reject) => {
+				request.get('http://api.sigobras.com'+data[0].imagen,  (error, response, body)=> {
+					if (!error && response.statusCode == 200) {
+						var res = "data:" + response.headers["content-type"] + ";base64," + Buffer.from(body).toString('base64');
+						resolve(res);
+					}
+					reject("")
+				});
+			})
+			var img2 = await new Promise((resolve, reject) => {
+				request.get('http://api.sigobras.com'+data[0].imagen,  (error, response, body)=> {
+					if (!error && response.statusCode == 200) {
+						var res = "data:" + response.headers["content-type"] + ";base64," + Buffer.from(body).toString('base64');
+						resolve(res);
+					}
+					reject("")
+				});
+			})
+			res.json([
+				{
+					imgb64:img,
+					descripcion:data[0].descripcionObservacion
+				},
+				{
+					imgb64:img2,
+					descripcion:data[1].descripcionObservacion
+				}
+			])
 		} catch (error) {
 			res.status(400).json(error)
 		}
