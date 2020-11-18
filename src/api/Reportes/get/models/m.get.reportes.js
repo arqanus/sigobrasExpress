@@ -694,7 +694,16 @@ userModel.getAvancesCabezera = (id_ficha,fecha_inicial,fecha_final,formated)=>{
                 
     })
 }
-
+userModel.getImagenesCurvaS = (id_ficha)=>{
+    return new Promise((resolve, reject) => {
+        pool.query("SELECT partidasimagenes.* FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente INNER JOIN partidasimagenes ON partidasimagenes.partidas_id_partida = partidas.id_partida WHERE componentes.fichas_id_ficha = ? ORDER BY id_partidaImagen DESC LIMIT 2",[id_ficha],(err,res)=>{ 
+            if(err){
+                reject(err)
+            }
+            resolve(res)
+        })
+    })
+}
 
 
 
