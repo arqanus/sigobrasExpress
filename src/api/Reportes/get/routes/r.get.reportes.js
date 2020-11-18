@@ -16,7 +16,7 @@ module.exports = function (app) {
 	})
 	app.post('/getPeriodsByAnyo', async (req, res) => {
 		try {
-			var periodos = await User2.getValGeneralPeriodos(req.body.id_ficha, req.body.anyo,"FALSE")
+			var periodos = await User2.getValGeneralPeriodos(req.body.id_ficha, req.body.anyo, "FALSE")
 			res.json(periodos)
 		} catch (error) {
 			res.status(400).json(error)
@@ -25,12 +25,12 @@ module.exports = function (app) {
 	app.post('/getInformeDataGeneral', async (req, res) => {
 		try {
 			var InformeDataGeneral = await User.getInformeDataGeneral(req.body.id_ficha, req.body.fecha_inicial)
-			
+
 			// var avance_actual = await User3.getAvanceActual(req.body.id_ficha, req.body.fecha_inicial, req.body.fecha_final)
 			// var avance_acumulado = await User3.getAvanceActual(req.body.id_ficha, "2000-01-01 00:00:00", req.body.fecha_final)
 			var residente = await User3.getCargoPersonal(req.body.id_ficha, "residente")
 			var supervisor = await User3.getCargoPersonal(req.body.id_ficha, "supervisor")
-			var avances = await User.getAvancesCabezera(req.body.id_ficha,req.body.fecha_inicial,req.body.fecha_final,true)
+			var avances = await User.getAvancesCabezera(req.body.id_ficha, req.body.fecha_inicial, req.body.fecha_final, true)
 
 			InformeDataGeneral.costo_directo = avances.presupuesto
 			// InformeDataGeneral.avance_actual = avance_actual.metrado
@@ -190,8 +190,8 @@ module.exports = function (app) {
 				cronograma.grafico_financiero = []
 				cronograma.grafico_periodos = []
 				cronograma.data = []
-			}else{
-				fecha_final = cronograma.data[cronograma.data.length-1].fecha
+			} else {
+				fecha_final = cronograma.data[cronograma.data.length - 1].fecha
 			}
 			cronograma.fecha_inicial = fecha_inicial
 			cronograma.fecha_final = fecha_final
@@ -199,7 +199,7 @@ module.exports = function (app) {
 			cronograma.fechaActual = tools.fechaActual()
 			res.json(cronograma)
 		} catch (error) {
-			console.log(error);			
+			console.log(error);
 			res.status(400).json(error)
 		}
 	})
@@ -233,8 +233,8 @@ module.exports = function (app) {
 				cronograma.grafico_financiero = []
 				cronograma.grafico_periodos = []
 				cronograma.data = []
-			}else{
-				fecha_final = cronograma.data[cronograma.data.length-1].fecha
+			} else {
+				fecha_final = cronograma.data[cronograma.data.length - 1].fecha
 			}
 			cronograma.fecha_inicial = fecha_inicial
 			cronograma.fecha_final = fecha_final
@@ -242,13 +242,13 @@ module.exports = function (app) {
 			cronograma.fechaActual = tools.fechaActual()
 			res.json(cronograma)
 		} catch (error) {
-			console.log(error);			
+			console.log(error);
 			res.status(400).json(error)
 		}
 	})
 	//6.11 proyeccion de trabajos prosxioms mes cronograma
 	//6.12 informe mensual
-	app.post('/informeControlEjecucionObras', async(req, res) => {
+	app.post('/informeControlEjecucionObras', async (req, res) => {
 		try {
 			var data = await User.getinformeControlEjecucionObras(req.body.id_ficha)
 			res.json(data)
@@ -268,6 +268,14 @@ module.exports = function (app) {
 	app.post('/getInformeImagen', (req, res) => {
 		try {
 			var data = User.getInformeImagen(req.body.id_ficha)
+			res.json(data)
+		} catch (error) {
+			res.status(400).json(error)
+		}
+	});
+	app.post('/getImagenesCurvaS', (req, res) => {
+		try {
+			var data = User.getImagenesCurvaS(req.body.id_ficha)
 			res.json(data)
 		} catch (error) {
 			res.status(400).json(error)
