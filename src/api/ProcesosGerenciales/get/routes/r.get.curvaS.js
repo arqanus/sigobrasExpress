@@ -157,4 +157,32 @@ module.exports = (app) => {
             res.status(204).json({ error: error.code })
         }
     });
+    app.post('/getCurvaSPin', async (req, res) => {
+        try {
+            var data = await User.getCurvaSPin(req.body.id_ficha,req.body.anyo)
+            res.json(data)
+        } catch (error) {
+            console.log(error);
+            res.status(204).json({ error: error.code })
+        }
+    });
+    app.post('/postCurvaSPin', async (req, res) => {
+        try {
+            var dataTemp = []
+            req.body.forEach(element => {
+                dataTemp.push(
+                    [
+                        element.id_ficha,
+                        element.anyo,
+                        element.monto
+                    ]
+                )
+            });
+            var data = await User.postCurvaSPin(dataTemp)
+            res.json(data)
+        } catch (error) {
+            console.log(error);
+            res.status(204).json({ error: error.code })
+        }
+    });
 }
