@@ -114,6 +114,7 @@ io.on('connection', (socket) => {
   socket.on("partidas_comentarios_post", (data) => {
     console.log("data", data);
     socket.broadcast.emit("partidas_comentarios_get-" + data.id_partida, data.id_partida)
+    socket.broadcast.emit("partidas_comentarios_novistos_get-" + data.id_partida, data.id_partida)
   });
   socket.on("partidas_comentarios_notificacion_post", (data) => {
     console.log("data", data);
