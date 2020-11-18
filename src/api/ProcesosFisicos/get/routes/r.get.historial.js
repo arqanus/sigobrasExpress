@@ -177,11 +177,6 @@ module.exports = function (app) {
 
     })
     app.post('/getHistorialSemanas', async (req, res) => {
-        function shortDate(fecha) {
-            var fecha_temp = (fecha)
-            var options = { year: 'numeric', month: "2-digit", day: "2-digit" };
-            return fecha_temp.toLocaleDateString("es-ES", options)
-        }
         try {
             if (!req.body.id_ficha || !req.body.anyo || !req.body.mes) {
                 throw "datos incompletos"
@@ -197,7 +192,7 @@ module.exports = function (app) {
             }
 
             // Get all the other Mondays in the month
-            var fecha_inicial = shortDate(new Date(req.body.anyo, mes, 0))
+            var fecha_inicial = Tools.fechaLargaCorta(new Date(req.body.anyo, mes, 0))
             var semana = 1
             while (d.getMonth() === month) {
                 mondays.push(new Date(d.getTime()));
@@ -207,7 +202,7 @@ module.exports = function (app) {
                 periodos.push(
                     {
                         "fecha_inicial": fecha_inicial,
-                        "fecha_final": shortDate(new Date(d.getTime())),
+                        "fecha_final": Tools.fechaLargaCorta(new Date(d.getTime())),
                         "semana": semana
                     }
                 )
@@ -218,7 +213,7 @@ module.exports = function (app) {
             periodos.push(
                 {
                     "fecha_inicial": periodos[periodos.length - 1].fecha_final,
-                    "fecha_final": shortDate(new Date(req.body.anyo, mes + 1, 0)),
+                    "fecha_final": Tools.fechaLargaCorta(new Date(req.body.anyo, mes + 1, 0)),
                     "semana": semana
                 }
             )
