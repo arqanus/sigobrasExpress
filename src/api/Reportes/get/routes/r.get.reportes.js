@@ -256,26 +256,27 @@ module.exports = function (app) {
 			res.status(400).json(error)
 		}
 	})
-	app.post('/getcronograma', (req, res) => {
+	app.post('/getcronograma', async (req, res) => {
 		try {
-			var data = User.getcronograma(req.body.id_ficha)
+			var data = await User.getcronograma(req.body.id_ficha)
 			res.json(data)
 		} catch (error) {
 			res.status(400).json(error)
 		}
 
 	})
-	app.post('/getInformeImagen', (req, res) => {
+	app.post('/getInformeImagen', async (req, res) => {
 		try {
-			var data = User.getInformeImagen(req.body.id_ficha)
+			var data = await User.getInformeImagen(req.body.id_ficha)
 			res.json(data)
 		} catch (error) {
 			res.status(400).json(error)
 		}
 	});
-	app.post('/getImagenesCurvaS', (req, res) => {
+	app.post('/getImagenesCurvaS', async (req, res) => {
 		try {
-			var data = User.getImagenesCurvaS(req.body.id_ficha)
+			var data = await User.getImagenesCurvaS(req.body.id_ficha)
+			console.log(data);
 			res.json(data)
 		} catch (error) {
 			res.status(400).json(error)
