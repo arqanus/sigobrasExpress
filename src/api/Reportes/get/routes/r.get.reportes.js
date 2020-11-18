@@ -289,7 +289,7 @@ module.exports = function (app) {
 				});
 			})
 			var img2 = await new Promise((resolve, reject) => {
-				request.get('http://api.sigobras.com'+data[0].imagen,  (error, response, body)=> {
+				request.get('http://api.sigobras.com'+data[1].imagen,  (error, response, body)=> {
 					if (!error && response.statusCode == 200) {
 						var res = "data:" + response.headers["content-type"] + ";base64," + Buffer.from(body).toString('base64');
 						resolve(res);
