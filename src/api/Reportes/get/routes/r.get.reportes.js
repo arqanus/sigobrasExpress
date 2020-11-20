@@ -279,36 +279,44 @@ module.exports = function (app) {
 		try {
 
 			var data = await User.getImagenesCurvaS(req.body.id_ficha)
-			var img = await new Promise((resolve, reject) => {
-				request.get('http://api.sigobras.com'+data[0].imagen,  (error, response, body)=> {
-					if (!error && response.statusCode == 200) {
-						var res = "data:" + response.headers["content-type"] + ";base64," + Buffer.from(body).toString('base64');
-						resolve(res);
-					}
-					reject("")
-				});
-			})
-			var img2 = await new Promise((resolve, reject) => {
-				request.get('http://api.sigobras.com'+data[1].imagen,  (error, response, body)=> {
-					if (!error && response.statusCode == 200) {
-						var res = "data:" + response.headers["content-type"] + ";base64," + Buffer.from(body).toString('base64');
-						resolve(res);
-					}
-					reject("")
-				});
-			})
+			var img = ""
+			if (data[0]) {
+				img = await new Promise((resolve, reject) => {
+					request.get('http://api.sigobras.com' + data[0].imagen, (error, response, body) => {
+						if (!error && response.statusCode == 200) {
+							var res = "data:" + response.headers["content-type"] + ";base64," + Buffer.from(body).toString('base64');
+							resolve(res);
+						}
+						reject("")
+					});
+				})
+			}
+			var img2 = ""
+			if (data[1]) {
+				img2 = await new Promise((resolve, reject) => {
+					request.get('http://api.sigobras.com' + data[1].imagen, (error, response, body) => {
+						if (!error && response.statusCode == 200) {
+							var res = "data:" + response.headers["content-type"] + ";base64," + Buffer.from(body).toString('base64');
+							resolve(res);
+						}
+						reject("")
+					});
+				})
+			}
+
 			res.json([
 				{
-					imgb64:img,
-					descripcion:data[0].descripcionObservacion
+					imgb64: img,
+					descripcion: data[0] ? data[0].descripcionObservacion : ""
 				},
 				{
-					imgb64:img2,
-					descripcion:data[1].descripcionObservacion
+					imgb64: img2,
+					descripcion: data[1] ? data[1].descripcionObservacion : ""
 				}
 			])
 		} catch (error) {
-			res.status(400).json(error)
+			console.log(error);
+			res.status(204).json(error.code)
 		}
 	});
 }
