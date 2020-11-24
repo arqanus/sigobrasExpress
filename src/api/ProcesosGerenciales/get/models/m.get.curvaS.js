@@ -162,7 +162,7 @@ module.exports = {
                 if (error) {
                     reject(error);
                 }
-                resolve(res[0])
+                resolve(res?res[0]:{})
             })
         })
 
