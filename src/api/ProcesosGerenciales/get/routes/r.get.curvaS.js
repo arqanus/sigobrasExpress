@@ -100,17 +100,18 @@ module.exports = (app) => {
     });
     app.post('/putEjecutadoMonto', async (req, res) => {
         try {
-            var req_fecha_final = await User.getFechaFinalCurvaS(req.body.fecha_inicial)
+            var req_fecha_final = await User.getFechaFinalCurvaS(req.body.fecha_inicial,req.body.id_ficha)
             // se genera fecha final
             var fecha_final = ""
+            console.log("req_fecha_final",req_fecha_final);
             if (req_fecha_final[0]) {
                 fecha_final = req_fecha_final[0].fecha_final
             } else {
                 var fecha = req.body.fecha_inicial.split("-")
                 var anyo = fecha[0]
-                console.log("anyo", anyo);
                 fecha_final = (Number(anyo) + 1) + "-01-01"
             }
+            console.log("fechas:",req.body.fecha_inicial, fecha_final);
             //se obtiene el monto ejecutado de ese periodo
             req_montoEjecutado = await User.getMontoEjecutadoPeriodo(req.body.fecha_inicial, fecha_final, req.body.id_ficha)
             //se actualiza el monto ejecutado en la curva s
