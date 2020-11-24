@@ -299,11 +299,13 @@ module.exports = function (app) {
 			res.json([
 				{
 					imgb64:img,
-					descripcion:data[0].descripcionObservacion
+					descripcion:data[0].descripcion,
+					fecha:data[0].fecha,
 				},
 				{
 					imgb64:img2,
-					descripcion:data[1].descripcionObservacion
+					descripcion:data[1].descripcion,
+					fecha:data[1].fecha,
 				}
 			])
 		} catch (error) {
