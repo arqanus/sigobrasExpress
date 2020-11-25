@@ -31,6 +31,7 @@ app.use('/static', express.static(__dirname + '/public'));
 
 //apis reusables
 require('./api/Reusable/r.avances')(app);
+require('./api/Reusable/r.datosGenerales')(app);
 
 //interf gerencial
 require('./api/InterfazGerencial/get/routes/r.get.InterfazGerencial')(app);

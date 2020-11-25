@@ -7,7 +7,51 @@ module.exports = {
                 if (error) {
                     reject(error);
                 }
-                resolve(res[0])
+                resolve(res?res[0]:{})
+            })
+        })
+
+    },
+    getFisico(id_ficha) {
+        return new Promise((resolve, reject) => {
+            pool.query("SELECT SUM(avanceactividades.valor * partidas.costo_unitario) avance FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND componentes.fichas_id_ficha = ?", [id_ficha], (error, res) => {
+                if (error) {
+                    reject(error);
+                }
+                resolve(res ? res[0] : {})
+            })
+        })
+
+    },
+    getFisicoComponente(id_componente) {
+        return new Promise((resolve, reject) => {
+            pool.query("SELECT SUM(avanceactividades.valor * partidas.costo_unitario) avance FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND partidas.componentes_id_componente = ?", [id_componente], (error, res) => {
+                if (error) {
+                    reject(error);
+                }
+                resolve(res ? res[0] : {})
+            })
+        })
+
+    },
+    getUltimoEjecutadoCurvaS(id_ficha) {
+        return new Promise((resolve, reject) => {
+            pool.query("SELECT * FROM curva_s WHERE fichas_id_ficha = ? AND tipo = 'PERIODO' AND ejecutado_monto != 0 ORDER BY fecha_inicial DESC LIMIT 1;", [id_ficha, id_ficha], (error, res) => {
+                if (error) {
+                    reject(error);
+                }
+                resolve(res ? res[0] : {})
+            })
+        })
+
+    },
+    getUltimoDiaMetrado(id_ficha) {
+        return new Promise((resolve, reject) => {
+            pool.query("SELECT DATE_FORMAT(MAX(avanceactividades.fecha), '%Y-%m-%d') fecha FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND componentes.fichas_id_ficha = ?", [id_ficha, id_ficha], (error, res) => {
+                if (error) {
+                    reject(error);
+                }
+                resolve(res ? res[0] : {})
             })
         })
 
