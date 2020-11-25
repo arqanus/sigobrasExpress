@@ -12,6 +12,14 @@ module.exports = (app) => {
 			res.status(200).json(error)
 		}
 	});
+	app.post('/listaObrasByIdAcceso', async (req, res) => {
+		try {
+			var obras = await User.listaObrasByIdAcceso(req.body)
+			res.json(obras)
+		} catch (error) {
+			res.status(200).json(error)
+		}
+	});
 	app.post('/getComponentesPgerenciales', async (req, res) => {
 		try {
 			var data = await User.getComponentesPgerenciales(req.body.id_ficha)

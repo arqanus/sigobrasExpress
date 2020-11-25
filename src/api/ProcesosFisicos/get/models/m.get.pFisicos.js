@@ -72,7 +72,7 @@ module.exports = {
                 if (error) {
                     reject(error);
                 }
-                resolve(res[0])
+                resolve(res ? res[0] : {})
             })
         })
     },
@@ -148,7 +148,7 @@ module.exports = {
                 if (error) {
                     reject(error);
                 }
-                resolve(res[0])
+                resolve(res ? res[0] : {})
             })
         })
     },
@@ -167,7 +167,7 @@ module.exports = {
                         fila.metrados_costo_saldo = formato(fila.metrados_costo_saldo)
                         fila.porcentaje = formato(fila.porcentaje)
                     }
-                    resolve(res[0]);
+                    resolve(res ? res[0] : {});
                 }
             })
         })
@@ -240,7 +240,7 @@ module.exports = {
                 if (error) {
                     reject(error);
                 }
-                resolve(res[0])
+                resolve(res ? res[0] : {})
             })
         })
     },
@@ -489,7 +489,7 @@ module.exports = {
                 if (err) {
                     reject(err);
                 }
-                resolve(res[0])
+                resolve(res ? res[0] : {})
             })
         })
     },

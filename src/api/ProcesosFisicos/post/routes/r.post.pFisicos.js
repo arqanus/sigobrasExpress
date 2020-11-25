@@ -150,6 +150,28 @@ module.exports = function (app) {
       }
     });
   })
+  app.post('/postActividad2', async (req, res) => {
+    try {
+      var fecha_revisada = await User.getFechasRevisadas(req.body)
+      var message = ""
+      var response = ""
+      if (fecha_revisada.total == 0) {
+        response = await User.postActividad2(req.body)
+        if (response.affectedRows > 0) {
+          message = "registro exitoso"
+        } else {
+          message = "hubo un problema al momento del registro"
+        }
+      } else {
+        message = "la fecha que ingresó ya fue verificada por el supervisor"
+      }
+      res.json({ message })
+    } catch (error) {
+      console.log(error)
+      var message = "hubo un problema al momento del registro"
+      res.json({ message })
+    }
+  })
   app.post('/avanceActividadCorte', (req, res) => {
     console.log("avanceActividadCorte");
     var dir = __dirname + '/../../../../public/'
@@ -301,9 +323,9 @@ module.exports = function (app) {
               if (err) { res.status(204).json(err); }
               else {
                 var partidas = await User2.getPartidas(null, fields.Actividades_id_actividad)
-                console.log("partidas",partidas);
+                console.log("partidas", partidas);
                 var actividades = await User2.getActividades(partidas[0].id_partida)
-                console.log("actividades",actividades);
+                console.log("actividades", actividades);
                 mayorMetrado = await User2.getPartidasMayorMetradoAvance(partidas[0].id_partida)
                 mayorMetrado = mayorMetrado || {}
                 res.json(
@@ -518,7 +540,7 @@ module.exports = function (app) {
   })
 
   app.post('/agregarCostoIndirecto', async (req, res) => {
-    
+
     try {
       var data = await User.agregarCostoIndirecto(req.body)
       res.json(

@@ -2,12 +2,17 @@ const User = require('../models/m.get.pFisicos');
 module.exports = (app) => {
     app.post('/getComponentes', async (req, res) => {
         try {
-            if (req.body.id_ficha == null || req.body.id_ficha == "null" || req.body.id_ficha == "") {
-                res.json("null");
-            } else {
-                var componentes = await User.getComponentes(req.body.id_ficha)
-                res.json(componentes);
-            }
+            var componentes = await User.getComponentes(req.body.id_ficha)
+            res.json(componentes);
+        } catch (error) {
+            console.log(error)
+            res.status(204).json(error)
+        }
+    })
+    app.post('/getTotalConteoPartidas', async (req, res) => {
+        try {
+            var partidas = await User.getTotalConteoPartidas(req.body.id_componente)
+            res.json(partidas)
         } catch (error) {
             console.log(error)
             res.status(204).json(error)
@@ -21,6 +26,25 @@ module.exports = (app) => {
                 var partidas = await User.getPartidas(req.body.id_componente, null)
                 res.json(partidas)
             }
+        } catch (error) {
+            console.log(error)
+            res.status(204).json(error)
+        }
+    })
+
+    app.post('/getPartidas2', async (req, res) => {
+        try {
+            var partidas = await User.getPartidas2(req.body.id_componente, req.body.inicio, req.body.fin)
+            res.json(partidas)
+        } catch (error) {
+            console.log(error)
+            res.status(204).json(error)
+        }
+    })
+    app.post('/getAvancePartida', async (req, res) => {
+        try {
+            var partidas = await User.getAvancePartida(req.body.id_partida)
+            res.json(partidas)
         } catch (error) {
             console.log(error)
             res.status(204).json(error)
@@ -52,6 +76,25 @@ module.exports = (app) => {
             res.status(204).json(error)
         }
     })
+    app.post('/getActividades2', async (req, res) => {
+        try {
+            var req = await User.getActividades2(req.body.id_partida)
+            res.json(req)
+        } catch (error) {
+            console.log(error)
+            res.status(204).json(error)
+        }
+    })
+    app.post('/getAvanceActividad', async (req, res) => {
+        try {
+            var req = await User.getAvanceActividad(req.body.id_actividad)
+            res.json(req)
+        } catch (error) {
+            console.log(error)
+            res.status(204).json(error)
+        }
+    })
+
     app.post('/getComponentesPNuevas', async (req, res) => {
         try {
             if (req.body.id_ficha == null) {

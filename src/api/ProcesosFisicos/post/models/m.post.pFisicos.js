@@ -180,8 +180,8 @@ userModel.postRecursosNuevos = (data) => {
 }
 userModel.agregarCostoIndirecto = (data) => {
     return new Promise((resolve, reject) => {
-        
-        pool.query("insert into costosindirectos (id,nombre,monto,fichas_id_ficha,fecha_inicial,fecha_final) values (?,?,?,?,?,?) on duplicate key update nombre = values (nombre), monto = values(monto);", [data.id,data.nombre,data.monto,data.fichas_id_ficha,data.fecha_inicial,data.fecha_final], (error, res) => {
+
+        pool.query("insert into costosindirectos (id,nombre,monto,fichas_id_ficha,fecha_inicial,fecha_final) values (?,?,?,?,?,?) on duplicate key update nombre = values (nombre), monto = values(monto);", [data.id, data.nombre, data.monto, data.fichas_id_ficha, data.fecha_inicial, data.fecha_final], (error, res) => {
             if (error) {
                 reject(error);
             } else {
@@ -193,7 +193,7 @@ userModel.agregarCostoIndirecto = (data) => {
 
 userModel.getCostosIndirectos = (data) => {
     return new Promise((resolve, reject) => {
-        pool.query("SELECT * FROM costosindirectos WHERE fichas_id_ficha = ? AND fecha_inicial = ? ", [data.fichas_id_ficha,data.fecha_inicial], (error, res) => {
+        pool.query("SELECT * FROM costosindirectos WHERE fichas_id_ficha = ? AND fecha_inicial = ? ", [data.fichas_id_ficha, data.fecha_inicial], (error, res) => {
             if (error) {
                 reject(error);
             } else {
@@ -211,6 +211,27 @@ userModel.eliminarCostosIndirectos = (data) => {
             } else {
                 resolve(res);
             }
+        })
+    })
+}
+//cambios nuevos de apis
+userModel.getFechasRevisadas = ({ id_ficha, fecha }) => {
+    return new Promise((resolve, reject) => {
+        pool.query("SELECT COUNT(fecha_revisada) total FROM fechas_revisadas WHERE fichas_id_ficha = ? AND fechas_revisadas.fecha_revisada = ?;", [id_ficha, fecha], (error, res) => {
+            if (error) {
+                reject(error);
+            }
+            resolve(res?res[0]:{})
+        })
+    })
+}
+userModel.postActividad2 = ({ fecha, valor, descripcion, id_actividad, id_acceso }) => {
+    return new Promise((resolve, reject) => {
+        pool.query("INSERT INTO avanceactividades (fecha, valor, descripcion, Actividades_id_actividad, accesos_id_acceso) VALUES (?,?,?,?,?)", [fecha, valor, descripcion, id_actividad, id_acceso], (error, res) => {
+            if (error) {
+                reject(error);
+            }
+            resolve(res)
         })
     })
 }

@@ -12,6 +12,16 @@ userModel.getObras = (id_acceso) => {
     })
   })
 }
+userModel.listaObrasByIdAcceso = ({ id_acceso, id_tipoObra }) => {
+  return new Promise((resolve, reject) => {
+    pool.query("SELECT  fichas.id_ficha, fichas.codigo, fichas.g_meta, id_tipoObra FROM fichas LEFT JOIN tipoobras ON tipoobras.id_tipoObra = fichas.tipoObras_id_tipoObra LEFT JOIN fichas_has_accesos ON fichas_has_accesos.Fichas_id_ficha = fichas.id_ficha WHERE fichas_has_accesos.habilitado AND fichas_has_accesos.Accesos_id_acceso = ? AND (0 = ? OR id_tipoObra = ?)", [id_acceso, id_tipoObra, id_tipoObra], (err, res) => {
+      if (err) {
+        reject(err);
+      }
+      resolve(res);
+    })
+  })
+}
 userModel.getAvanceFinancieroCortes = (id_ficha) => {
   return new Promise((resolve, reject) => {
     pool.query("SELECT SUM(monto) avance_financiero FROM historialestados WHERE historialestados.Fichas_id_ficha = ? GROUP BY historialestados.Fichas_id_ficha", [id_ficha], (error, res) => {
