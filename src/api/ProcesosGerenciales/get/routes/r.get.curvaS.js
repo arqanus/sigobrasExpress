@@ -100,10 +100,9 @@ module.exports = (app) => {
     });
     app.post('/putEjecutadoMonto', async (req, res) => {
         try {
-            var req_fecha_final = await User.getFechaFinalCurvaS(req.body.fecha_inicial,req.body.id_ficha)
+            var req_fecha_final = await User.getFechaFinalCurvaS(req.body.fecha_inicial, req.body.id_ficha)
             // se genera fecha final
             var fecha_final = ""
-            console.log("req_fecha_final",req_fecha_final);
             if (req_fecha_final[0]) {
                 fecha_final = req_fecha_final[0].fecha_final
             } else {
@@ -111,11 +110,15 @@ module.exports = (app) => {
                 var anyo = fecha[0]
                 fecha_final = (Number(anyo) + 1) + "-01-01"
             }
-            console.log("fechas:",req.body.fecha_inicial, fecha_final);
             //se obtiene el monto ejecutado de ese periodo
             req_montoEjecutado = await User.getMontoEjecutadoPeriodo(req.body.fecha_inicial, fecha_final, req.body.id_ficha)
             //se actualiza el monto ejecutado en la curva s
-            req_updataeMontoEjecutado = await User.putEjecutadoCurvaS(req_montoEjecutado[0].ejecutado_monto, req.body.fecha_inicial,req.body.id_ficha)
+            req_updataeMontoEjecutado = await User.putEjecutadoCurvaS(req_montoEjecutado[0].ejecutado_monto, req.body.fecha_inicial, req.body.id_ficha)
+            var fechaTemp = req.body.fecha_inicial.split("-")
+            var currDate = new Date();
+            if (fechaTemp[0] != currDate.getFullYear() || fechaTemp[1] != (currDate.getMonth()+1)) {
+                req_updataeMontoEjecutado = await User.putProgramadoCurvaS(req_montoEjecutado[0].ejecutado_monto, req.body.fecha_inicial, req.body.id_ficha)
+            }
             res.json(req_montoEjecutado[0])
         } catch (error) {
             console.log(error);
@@ -160,7 +163,7 @@ module.exports = (app) => {
     });
     app.post('/getCurvaSPin', async (req, res) => {
         try {
-            var data = await User.getCurvaSPin(req.body.id_ficha,req.body.anyo)
+            var data = await User.getCurvaSPin(req.body.id_ficha, req.body.anyo)
             res.json(data)
         } catch (error) {
             console.log(error);
