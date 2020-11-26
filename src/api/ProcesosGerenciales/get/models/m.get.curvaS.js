@@ -92,7 +92,7 @@ module.exports = {
     },
     getFechaFinalCurvaS(fecha_inicial,id_ficha) {
         return new Promise((resolve, reject) => {
-            pool.query("SELECT DATE_FORMAT(fecha_inicial, '%Y-%m-%d') fecha_final FROM curva_s WHERE curva_s.fecha_inicial > ? AND curva_s.fichas_id_ficha = ? LIMIT 1", [fecha_inicial,id_ficha], (error, res) => {
+            pool.query("SELECT DATE_FORMAT(fecha_inicial, '%Y-%m-%d') fecha_final FROM curva_s WHERE curva_s.fecha_inicial > ? AND curva_s.fichas_id_ficha = ? ORDER BY fecha_inicial LIMIT 1", [fecha_inicial,id_ficha], (error, res) => {
                 if (error) {
                     reject(error);
                 }
