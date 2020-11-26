@@ -301,11 +301,15 @@ module.exports = function (app) {
 					imgb64:img,
 					descripcion:data[0].descripcion,
 					fecha:data[0].fecha,
+					item:data[0].item,
+					partida_descripcion:data[0].partida_descripcion
 				},
 				{
 					imgb64:img2,
 					descripcion:data[1].descripcion,
 					fecha:data[1].fecha,
+					item:data[1].item,
+					partida_descripcion:data[1].partida_descripcion
 				}
 			])
 		} catch (error) {
