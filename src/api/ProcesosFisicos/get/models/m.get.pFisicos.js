@@ -66,9 +66,23 @@ module.exports = {
             })
         })
     },
-    getTotalConteoPartidas(id_componente) {
+    getTotalConteoPartidas({ id_componente,id_prioridad, id_iconoCategoria, texto_buscar }) {
+        var query = "SELECT COUNT(partidas.id_partida) total FROM partidas WHERE partidas.componentes_id_componente = ?"
+        var condiciones = []
+        if (id_prioridad != 0) {
+            condiciones.push(`(partidas.prioridades_id_prioridad = ${id_prioridad})`)
+        }
+        if (id_iconoCategoria != 0) {
+            condiciones.push(`(partidas.iconosCategorias_id_iconoCategoria =  ${id_iconoCategoria})`)
+        }
+        if (texto_buscar != "") {
+            condiciones.push(`(partidas.item like \'%${texto_buscar}%\' || partidas.descripcion like \'%${texto_buscar}%\')`)
+        }
+        if (condiciones.length > 0) {
+            query += " AND " + condiciones.join(" AND ")
+        }
         return new Promise((resolve, reject) => {
-            pool.query("SELECT COUNT(partidas.id_partida) total FROM partidas WHERE partidas.componentes_id_componente = ?;", [id_componente], (error, res) => {
+            pool.query(query, [id_componente], (error, res) => {
                 if (error) {
                     reject(error);
                 }
@@ -132,13 +146,38 @@ module.exports = {
             })
         })
     },
-    getPartidas2(id_componente, inicio = 0, fin = 0) {
+    getPartidas2({ id_componente, inicio, fin, id_prioridad, id_iconoCategoria, texto_buscar }) {
+        var query = "SELECT * FROM partidas WHERE partidas.componentes_id_componente = ?"
+        var condiciones = []
+        if (id_prioridad != 0) {
+            condiciones.push(`(partidas.prioridades_id_prioridad = ${id_prioridad})`)
+        }
+        if (id_iconoCategoria != 0) {
+            condiciones.push(`(partidas.iconosCategorias_id_iconoCategoria =  ${id_iconoCategoria})`)
+        }
+        if (texto_buscar != "") {
+            condiciones.push(`(partidas.item like \'%${texto_buscar}%\' || partidas.descripcion like \'%${texto_buscar}%\')`)
+        }
+        if (condiciones.length > 0) {
+            query += " AND " + condiciones.join(" AND ")
+        }
+        query += " ORDER BY partidas.item LIMIT ? , ?"
         return new Promise((resolve, reject) => {
-            pool.query("SELECT * FROM partidas WHERE partidas.componentes_id_componente = ?  order by partidas.item limit ?,?", [id_componente, inicio, fin], (error, res) => {
+            pool.query(query, [id_componente, inicio, fin], (error, res) => {
                 if (error) {
                     reject(error);
                 }
                 resolve(res)
+            })
+        })
+    },
+    getPartidaById({ id_partida }) {
+        return new Promise((resolve, reject) => {
+            pool.query("select * from partidas where id_partida = ?", [id_partida], (error, res) => {
+                if (error) {
+                    reject(error);
+                }
+                resolve(res ? res[0] : {})
             })
         })
     },

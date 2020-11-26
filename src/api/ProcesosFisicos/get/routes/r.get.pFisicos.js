@@ -11,7 +11,7 @@ module.exports = (app) => {
     })
     app.post('/getTotalConteoPartidas', async (req, res) => {
         try {
-            var partidas = await User.getTotalConteoPartidas(req.body.id_componente)
+            var partidas = await User.getTotalConteoPartidas(req.body)
             res.json(partidas)
         } catch (error) {
             console.log(error)
@@ -34,8 +34,17 @@ module.exports = (app) => {
 
     app.post('/getPartidas2', async (req, res) => {
         try {
-            var partidas = await User.getPartidas2(req.body.id_componente, req.body.inicio, req.body.fin)
+            var partidas = await User.getPartidas2(req.body)
             res.json(partidas)
+        } catch (error) {
+            console.log(error)
+            res.status(204).json(error)
+        }
+    })
+    app.post('/getPartidaById', async (req, res) => {
+        try {
+            var data = await User.getPartidaById(req.body)
+            res.json(data)
         } catch (error) {
             console.log(error)
             res.status(204).json(error)
