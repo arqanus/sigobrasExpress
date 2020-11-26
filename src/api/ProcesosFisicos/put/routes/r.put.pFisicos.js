@@ -1,10 +1,10 @@
 const User = require('../models/m.put.pFisicos');
-var formidable = require('formidable');    
+var formidable = require('formidable');
 // var util = require('util');
 var fs = require('fs');
 // var path = require('path');
 
-function fecha(){
+function fecha() {
   var today = new Date();
   var dd = today.getDate();
   var mm = today.getMonth() + 1; //January is 0!
@@ -20,72 +20,82 @@ function fecha(){
 
   return mm + '-' + dd + '-' + yyyy;
 }
-function datetime(){
+function datetime() {
   var today = new Date();
-  var date = today.getDate()+'-'+(today.getMonth()+1)+'-'+today.getFullYear();
+  var date = today.getDate() + '-' + (today.getMonth() + 1) + '-' + today.getFullYear();
   var time = today.getHours() + "-" + today.getMinutes() + "-" + today.getSeconds();
-  return date+'_'+time;
+  return date + '_' + time;
 }
 
-module.exports = function(app){
- 
-	app.put('/putPrioridad',(req,res)=>{	
+module.exports = function (app) {
+
+  app.put('/putPrioridad', (req, res) => {
     console.log(req.body);
-    		
-		User.putPrioridad(req.body.id_partida,req.body.id_prioridad,(err,data)=>{							
-			if(err){ res.status(204).json(err);}
-			else{
-        User.getPrioridad(req.body.id_partida,(err,prioridad)=>{							
-          if(err){ res.status(204).json(err);}
-          else{
+
+    User.putPrioridad(req.body.id_partida, req.body.id_prioridad, (err, data) => {
+      if (err) { res.status(204).json(err); }
+      else {
+        User.getPrioridad(req.body.id_partida, (err, prioridad) => {
+          if (err) { res.status(204).json(err); }
+          else {
             res.json(prioridad)
           }
         })
-			}
-		})
+      }
+    })
   })
-  app.put('/putIconocategoria',(req,res)=>{	
+  app.put('/putIconocategoria', (req, res) => {
     console.log(req.body);
-    		
-		User.putIconocategoria(req.body.id_partida,req.body.id_iconoCategoria,(err,data)=>{							
-			if(err){ res.status(204).json(err);}
-			else{
-        User.getIconocategoria(req.body.id_partida,(err,prioridad)=>{							
-          if(err){ res.status(204).json(err);}
-          else{
+
+    User.putIconocategoria(req.body.id_partida, req.body.id_iconoCategoria, (err, data) => {
+      if (err) { res.status(204).json(err); }
+      else {
+        User.getIconocategoria(req.body.id_partida, (err, prioridad) => {
+          if (err) { res.status(204).json(err); }
+          else {
             res.json(prioridad)
           }
         })
-			}
-		})
+      }
+    })
   })
-  app.put('/putPrioridadRecurso',(req,res)=>{	
-		User.putPrioridadRecurso(req.body.id_partida,req.body.id_prioridad,(err,data)=>{							
-			if(err){ res.status(204).json(err);}
-			else{
-        User.getPrioridadRecurso(req.body.id_partida,(err,prioridad)=>{							
-          if(err){ res.status(204).json(err);}
-          else{
+  app.post('/putCategoriaPrioridad', async(req, res) => {
+    try {
+      var fisico = await User.putCategoriaPrioridad(req.body)
+      res.json(fisico)
+    } catch (error) {
+      console.log(error);
+      res.status(204).json({ error: error.code })
+    }
+  })
+
+  app.put('/putPrioridadRecurso', (req, res) => {
+    User.putPrioridadRecurso(req.body.id_partida, req.body.id_prioridad, (err, data) => {
+      if (err) { res.status(204).json(err); }
+      else {
+        User.getPrioridadRecurso(req.body.id_partida, (err, prioridad) => {
+          if (err) { res.status(204).json(err); }
+          else {
             res.json(prioridad)
           }
         })
-			}
-		})
+      }
+    })
   })
-  app.put('/putIconocategoriaRecurso',(req,res)=>{	
+  app.put('/putIconocategoriaRecurso', (req, res) => {
     console.log(req.body);
-    		
-		User.putIconocategoriaRecurso(req.body.id_partida,req.body.id_iconoCategoria,(err,data)=>{							
-			if(err){ res.status(204).json(err);}
-			else{
-        User.getIconocategoriaRecurso(req.body.id_partida,(err,prioridad)=>{							
-          if(err){ res.status(204).json(err);}
-          else{
+
+    User.putIconocategoriaRecurso(req.body.id_partida, req.body.id_iconoCategoria, (err, data) => {
+      if (err) { res.status(204).json(err); }
+      else {
+        User.getIconocategoriaRecurso(req.body.id_partida, (err, prioridad) => {
+          if (err) { res.status(204).json(err); }
+          else {
             res.json(prioridad)
           }
         })
-			}
-		})
+      }
+    })
   })
   app.put('/putRecursoNuevo', async (req, res) => {
     try {
@@ -96,5 +106,5 @@ module.exports = function(app){
       res.status(400).json(error)
     }
   })
-  
+
 }

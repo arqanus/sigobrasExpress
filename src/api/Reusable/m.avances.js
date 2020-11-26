@@ -36,7 +36,7 @@ module.exports = {
     },
     getUltimoEjecutadoCurvaS(id_ficha) {
         return new Promise((resolve, reject) => {
-            pool.query("SELECT * FROM curva_s WHERE fichas_id_ficha = ? AND tipo = 'PERIODO' AND ejecutado_monto != 0 ORDER BY fecha_inicial DESC LIMIT 1;", [id_ficha, id_ficha], (error, res) => {
+            pool.query("SELECT curva_s.*, MONTH(fecha_inicial) mes FROM curva_s WHERE fichas_id_ficha = ? AND tipo = 'PERIODO' AND ejecutado_monto != 0 ORDER BY fecha_inicial DESC LIMIT 1;", [id_ficha, id_ficha], (error, res) => {
                 if (error) {
                     reject(error);
                 }

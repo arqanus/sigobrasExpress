@@ -61,7 +61,7 @@ module.exports = {
                 if (error) {
                     reject(error);
                 }
-                if (res[0] ) {
+                if (res&&res[0] ) {
                     var json = JSON.parse(res[0].menu)
                     var estado = res[0].estado_nombre
                     var cargo = res[0].cargo_nombre
