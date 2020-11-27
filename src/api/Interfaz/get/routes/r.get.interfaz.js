@@ -23,7 +23,7 @@ module.exports = function (app) {
 		try {
 			var request = await User.getIdAcceso(req.body)
 			if (request.length > 0) {
-				res.json({ id_acceso: request[0].id_acceso, message: "usuario autorizado" });
+				res.status(200).json({ id_acceso: request[0].id_acceso, message: "usuario autorizado" });
 			} else {
 				res.status(401).json({ message: "usuario no autorizado" });
 			}
