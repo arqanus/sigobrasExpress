@@ -268,5 +268,14 @@ module.exports = (app) => {
             res.status(204).json(error)
         }
     })
+    app.post('/getPartidaComentariosTotales', async (req, res) => {
+        try {
+            var data = await User.getPartidaComentariosTotales(req.body)
+            res.json(data)
+        } catch (error) {
+            console.log(error)
+            res.status(204).json(error)
+        }
+    })
 
 }

@@ -66,7 +66,7 @@ module.exports = {
             })
         })
     },
-    getTotalConteoPartidas({ id_componente,id_prioridad, id_iconoCategoria, texto_buscar }) {
+    getTotalConteoPartidas({ id_componente, id_prioridad, id_iconoCategoria, texto_buscar }) {
         var query = "SELECT COUNT(partidas.id_partida) total FROM partidas WHERE partidas.componentes_id_componente = ?"
         var condiciones = []
         if (id_prioridad != 0) {
@@ -525,6 +525,16 @@ module.exports = {
     getPartidaComentariosNoVistos(id_acceso, id_partida) {
         return new Promise((resolve, reject) => {
             pool.query("SELECT COUNT(partida_comentarios.id) comentarios_novistos FROM partida_comentarios LEFT JOIN partida_comentarios_visto ON partida_comentarios_visto.partida_comentarios_id = partida_comentarios.id AND partida_comentarios_visto.accesos_id = ? WHERE partida_comentarios.id_partida = ? AND partida_comentarios_visto.id IS NULL", [id_acceso, id_partida], (err, res) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve(res ? res[0] : {})
+            })
+        })
+    },
+    getPartidaComentariosTotales({ id_partida }) {
+        return new Promise((resolve, reject) => {
+            pool.query("SELECT COUNT(partida_comentarios.id) comentarios_total FROM partida_comentarios WHERE partida_comentarios.id_partida = ?", [id_partida], (err, res) => {
                 if (err) {
                     reject(err);
                 }
