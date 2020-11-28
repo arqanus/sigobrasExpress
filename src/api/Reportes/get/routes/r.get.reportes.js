@@ -277,41 +277,8 @@ module.exports = function (app) {
 	});
 	app.post('/getImagenesCurvaS', async (req, res) => {
 		try {
-			var data = await User.getImagenesCurvaS(req.body.id_ficha)
-			var img = await new Promise((resolve, reject) => {
-				request.get('http://api.sigobras.com'+data[0].imagen,  (error, response, body)=> {
-					if (!error && response.statusCode == 200) {
-						var res = "data:" + response.headers["content-type"] + ";base64," + Buffer.from(body).toString('base64');
-						resolve(res);
-					}
-					reject("")
-				});
-			})
-			var img2 = await new Promise((resolve, reject) => {
-				request.get('http://api.sigobras.com'+data[1].imagen,  (error, response, body)=> {
-					if (!error && response.statusCode == 200) {
-						var res = "data:" + response.headers["content-type"] + ";base64," + Buffer.from(body).toString('base64');
-						resolve(res);
-					}
-					reject("")
-				});
-			})
-			res.json([
-				{
-					imgb64:img,
-					descripcion:data[0].descripcion,
-					fecha:data[0].fecha,
-					item:data[0].item,
-					partida_descripcion:data[0].partida_descripcion
-				},
-				{
-					imgb64:img2,
-					descripcion:data[1].descripcion,
-					fecha:data[1].fecha,
-					item:data[1].item,
-					partida_descripcion:data[1].partida_descripcion
-				}
-			])
+			var data = await User.getImagenesCurvaS(req.body)
+			res.status(200).json(data)
 		} catch (error) {
 			console.log(error);
 			res.status(204).json(error.code)
