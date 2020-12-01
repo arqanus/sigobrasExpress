@@ -54,6 +54,36 @@ module.exports = {
             })
         })
     },
+    getIdAccesoAdmin({ usuario, password }) {
+        return new Promise((resolve, reject) => {
+            pool.query("SELECT accesos.id_acceso FROM accesos LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo WHERE nivel = 1 AND estado = 1 AND usuario = ? AND password = ? ORDER BY accesos.id_acceso DESC LIMIT 1", [usuario, password], (error, res) => {
+                if (error) {
+                    reject(error);
+                }
+                resolve(res)
+            })
+        })
+    },
+    getCargoByIdAcceso({ id_acceso }) {
+        return new Promise((resolve, reject) => {
+            pool.query("select Cargos_id_Cargo cargo from accesos where id_acceso = ? limit 1", [id_acceso], (error, res) => {
+                if (error) {
+                    reject(error);
+                }
+                resolve(res ? res[0] : {})
+            })
+        })
+    },
+    getTipoAdministracion({ id_ficha }) {
+        return new Promise((resolve, reject) => {
+            pool.query("SELECT COUNT(fichas.id_ficha) estado FROM fichas WHERE fichas.fichas_tipo_administracion_id = 2 AND fichas.id_ficha = ?;", [id_ficha], (error, res) => {
+                if (error) {
+                    reject(error);
+                }
+                resolve(res ? res[0] : {})
+            })
+        })
+    },
     //revisar
     getMenu({ id_ficha, id_acceso }) {
         return new Promise((resolve, reject) => {
@@ -61,7 +91,7 @@ module.exports = {
                 if (error) {
                     reject(error);
                 }
-                if (res&&res[0] ) {
+                if (res && res[0]) {
                     var json = JSON.parse(res[0].menu)
                     var estado = res[0].estado_nombre
                     var cargo = res[0].cargo_nombre
@@ -110,7 +140,7 @@ module.exports = {
 
                     }
                     resolve(json)
-                }else{
+                } else {
                     reject("no data")
                 }
             })
@@ -122,7 +152,17 @@ module.exports = {
                 if (error) {
                     reject(error);
                 }
-                resolve(res[0] ? JSON.parse(res[0].menu) : [])
+                resolve(res ? res[0] : {})
+            })
+        })
+    },
+    getMenuDefecto() {
+        return new Promise((resolve, reject) => {
+            pool.query("SELECT * FROM master_menus limit 1", (error, res) => {
+                if (error) {
+                    reject(error);
+                }
+                resolve(res ? res[0] : {})
             })
         })
     },
@@ -217,9 +257,29 @@ module.exports = {
             })
         })
     },
-    getTipoObras({id_acceso}) {
+    getTipoObras1() {
+        return new Promise((resolve, reject) => {
+            pool.query("SELECT tipoobras.* FROM tipoobras", (error, res) => {
+                if (error) {
+                    reject(error);
+                }
+                resolve(res);
+            })
+        })
+    },
+    getTipoObras({ id_acceso }) {
         return new Promise((resolve, reject) => {
             pool.query("SELECT tipoobras.* FROM fichas_has_accesos LEFT JOIN fichas ON fichas.id_ficha = fichas_has_accesos.Fichas_id_ficha LEFT JOIN tipoobras ON tipoobras.id_tipoObra = fichas.tipoObras_id_tipoObra where fichas_has_accesos.Accesos_id_acceso = ? GROUP BY tipoobras.id_tipoObra", id_acceso, (error, res) => {
+                if (error) {
+                    reject(error);
+                }
+                resolve(res);
+            })
+        })
+    },
+    getTipoObrasAdmin() {
+        return new Promise((resolve, reject) => {
+            pool.query("SELECT * FROM tipoobras", (error, res) => {
                 if (error) {
                     reject(error);
                 }

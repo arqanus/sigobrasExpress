@@ -32,6 +32,19 @@ module.exports = function (app) {
 			res.status(204).json(error);
 		}
 	})
+	app.post('/loginAdmin', soloLetras, async (req, res) => {
+		try {
+			var request = await User.getIdAccesoAdmin(req.body)
+			if (request.length > 0) {
+				res.status(200).json({ id_acceso: request[0].id_acceso, message: "usuario autorizado" });
+			} else {
+				res.status(401).json({ message: "usuario no autorizado" });
+			}
+		} catch (error) {
+			console.log(error);
+			res.status(204).json(error);
+		}
+	})
 	app.post('/getMenu', async (req, res) => {
 		try {
 			var request = await User.getMenu(req.body)
@@ -43,8 +56,25 @@ module.exports = function (app) {
 	})
 	app.post('/getMenu2', async (req, res) => {
 		try {
-			var request = await User.getMenu2(req.body)
-			res.status(200).json(request);
+			var reqCargo = await User.getCargoByIdAcceso(req.body)
+			var reqMenu = ""
+			if (reqCargo.cargo == 1) {
+				reqMenu = await User.getMenu2(req.body)
+			} else {
+				reqMenu = await User.getMenuDefecto()
+			}
+			var menu = JSON.parse(reqMenu.menu)
+			//tipo administracion
+			var reqTipoAdministracion = await User.getTipoAdministracion(req.body)
+			if(reqTipoAdministracion.estado){
+				var submenus = menu[0].submenus
+				const index = submenus.findIndex((item) =>
+					item.nombreMenu == "Recursos"
+				);
+				submenus.splice(index,1);
+				menu[0].submenus = submenus;
+			}
+			res.status(200).json(menu);
 		} catch (error) {
 			console.log(error);
 			res.status(204).json(error);
@@ -61,12 +91,29 @@ module.exports = function (app) {
 			// res.status(400).json(error)
 		}
 	})
-	app.post('/getTipoObras', async (req, res) => {
+	app.get('/getTipoObras', async (req, res) => {
 		try {
-			var getTipoObras = await User.getTipoObras(req.body)
-			res.json(getTipoObras)
+			var data = await User.getTipoObras1()
+			res.json(data)
 		} catch (error) {
 			res.status(204).json(error)
+		}
+	})
+	app.post('/getTipoObras', async (req, res) => {
+		try {
+			var data = await User.getTipoObras(req.body)
+			res.json(data)
+		} catch (error) {
+			res.status(204).json(error)
+		}
+	})
+	app.get('/getTipoObrasAdmin', async (req, res) => {
+		try {
+			var data = await User.getTipoObrasAdmin()
+			res.json(data)
+		} catch (error) {
+			console.log(error);
+			res.status(204).json(error.code)
 		}
 	})
 }

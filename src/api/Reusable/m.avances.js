@@ -7,7 +7,7 @@ module.exports = {
                 if (error) {
                     reject(error);
                 }
-                resolve(res?res[0]:{})
+                resolve(res ? res[0] : {})
             })
         })
 

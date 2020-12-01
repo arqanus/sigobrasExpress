@@ -133,7 +133,7 @@ userModel.postActividades = (data) => {
 	return new Promise((resolve, reject) => {
 		pool.query('insert into actividades  (tipo, nombre, veces, largo, ancho, alto, parcial, Partidas_id_partida) values ?', [data], (error, res) => {
 			if (error) { 
-				reject(error.code); 
+				reject(error); 
 			}
 			else {
 				resolve(res.insertId);

@@ -2,9 +2,9 @@ const pool = require('../../../../db/connection');
 const tools = require('../../../../tools/format')
 
 let userModel = {};
-userModel.getObras = () => {
+userModel.getObras = ({ id_tipoObra }) => {
     return new Promise((resolve, reject) => {
-        pool.query('select *from fichas left join (SELECT historialestados.Fichas_id_ficha, estados.nombre estado_nombre FROM historialestados INNER JOIN (SELECT MAX(historialestados.id_historialEstado) id_historialEstado FROM historialestados LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado GROUP BY historialestados.Fichas_id_ficha) he ON he.id_historialEstado = historialestados.id_historialEstado INNER JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado) estado ON estado.Fichas_id_ficha = fichas.id_ficha', (err, res) => {
+        pool.query('SELECT fichas.id_ficha, fichas.codigo, fichas.g_meta, id_tipoObra FROM fichas LEFT JOIN tipoobras ON tipoobras.id_tipoObra = fichas.tipoObras_id_tipoObra LEFT JOIN fichas_has_accesos ON fichas_has_accesos.Fichas_id_ficha = fichas.id_ficha WHERE (0 = ? OR id_tipoObra = ?) group by fichas.id_ficha', [id_tipoObra, id_tipoObra], (err, res) => {
             if (err) reject(err);
             resolve(res);
         })
@@ -14,7 +14,17 @@ userModel.getObra = (id_ficha) => {
     return new Promise((resolve, reject) => {
         pool.query('select *from fichas where id_ficha = ?', [id_ficha], (err, res) => {
             if (err) reject(err);
-            resolve(res[0]);
+            resolve(res ? res[0] : {});
+        })
+    })
+}
+userModel.getComponentesPartidasTotal = ({id_componente}) => {
+    return new Promise((resolve, reject) => {
+        pool.query("SELECT COUNT(partidas.id_partida) partidas_total FROM partidas WHERE partidas.componentes_id_componente = ?", id_componente, (error, res) => {
+            if (error) {
+                reject(error);
+            }
+            resolve(res?res[0]:{});
         })
     })
 }
@@ -38,10 +48,9 @@ userModel.getComponentesById = (id_ficha) => {
         })
     })
 }
-
-userModel.getTipoObras = () => {
+userModel.getUnidadEjecutora = () => {
     return new Promise((resolve, reject) => {
-        pool.query("select * from tipoobras", (err, res) => {
+        pool.query("select * from UnidadEjecutoras", (err, res) => {
             if (err) {
                 reject(err.code);
             } else {
@@ -50,10 +59,9 @@ userModel.getTipoObras = () => {
         })
     })
 }
-
-userModel.getUnidadEjecutora = () => {
+userModel.getTipoAdministracion = () => {
     return new Promise((resolve, reject) => {
-        pool.query("select * from UnidadEjecutoras", (err, res) => {
+        pool.query("select * from fichas_tipo_administracion", (err, res) => {
             if (err) {
                 reject(err.code);
             } else {
@@ -299,9 +307,9 @@ userModel.getResoluciones = (id_ficha) => {
         })
     })
 }
-userModel.getHistorialByFechas = (id_componente,fecha_ini,fecha_fin) => {
+userModel.getHistorialByFechas = (id_componente, fecha_ini, fecha_fin) => {
     return new Promise((resolve, reject) => {
-        pool.query("SELECT item, avanceactividades.* FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE id_componente = ? AND DATE_FORMAT(?, '%Y-%m-%d') <= DATE_FORMAT(avanceactividades.fecha, '%Y-%m-%d') AND DATE_FORMAT(avanceactividades.fecha, '%Y-%m-%d') <= DATE_FORMAT(?, '%Y-%m-%d')", [id_componente,fecha_ini,fecha_fin], (err, res) => {
+        pool.query("SELECT item, avanceactividades.* FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE id_componente = ? AND DATE_FORMAT(?, '%Y-%m-%d') <= DATE_FORMAT(avanceactividades.fecha, '%Y-%m-%d') AND DATE_FORMAT(avanceactividades.fecha, '%Y-%m-%d') <= DATE_FORMAT(?, '%Y-%m-%d')", [id_componente, fecha_ini, fecha_fin], (err, res) => {
             if (err) {
                 reject(err.code);
             } else {
