@@ -14,7 +14,7 @@ userModel.getObras = (id_acceso) => {
 }
 userModel.listaObrasByIdAcceso = ({ id_acceso, id_tipoObra }) => {
   return new Promise((resolve, reject) => {
-    pool.query("SELECT  fichas.id_ficha, fichas.codigo, fichas.g_meta, id_tipoObra FROM fichas LEFT JOIN tipoobras ON tipoobras.id_tipoObra = fichas.tipoObras_id_tipoObra LEFT JOIN fichas_has_accesos ON fichas_has_accesos.Fichas_id_ficha = fichas.id_ficha WHERE fichas_has_accesos.habilitado AND fichas_has_accesos.Accesos_id_acceso = ? AND (0 = ? OR id_tipoObra = ?)", [id_acceso, id_tipoObra, id_tipoObra], (err, res) => {
+    pool.query("SELECT fichas.id_ficha, fichas.codigo, fichas.g_meta, id_tipoObra, DATE_FORMAT(MAX(avanceactividades.fecha), '%Y-%m-%d') ultima_fecha FROM fichas LEFT JOIN tipoobras ON tipoobras.id_tipoObra = fichas.tipoObras_id_tipoObra LEFT JOIN fichas_has_accesos ON fichas_has_accesos.Fichas_id_ficha = fichas.id_ficha LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE fichas_has_accesos.habilitado AND historialactividades.estado IS NULL AND fichas_has_accesos.Accesos_id_acceso = ? AND (0 = ? OR id_tipoObra = ?) group by fichas.id_ficha ORDER BY 5 desc", [id_acceso, id_tipoObra, id_tipoObra], (err, res) => {
       if (err) {
         reject(err);
       }
@@ -99,90 +99,43 @@ userModel.getUsuariosByCargo = (id_ficha, id_cargo, estado = true) => {
     })
   })
 }
-userModel.getFinancieroMonto = (id_ficha) => {
+userModel.getUsuariosByCargoAdmin = ({ id_ficha, id_cargo, estado, cargos_tipo_id }) => {
+  var query = "SELECT usuarios.*, CONCAT(usuarios.apellido_paterno, ' ', usuarios.apellido_materno, ' ', usuarios.nombre) nombre_usuario, cargos.nombre cargo_nombre, fichas_has_accesos.memorandum, accesos.id_acceso FROM fichas LEFT JOIN fichas_has_accesos ON fichas_has_accesos.Fichas_id_ficha = fichas.id_ficha LEFT JOIN accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso INNER JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo"
+  var condiciones = []
+  if (id_ficha != 0) {
+    condiciones.push(`(fichas_has_accesos.Fichas_id_ficha = ${id_ficha})`)
+  }
+  if (id_cargo != 0) {
+    condiciones.push(`(accesos.Cargos_id_Cargo =  ${id_cargo})`)
+  }
+  if (estado != "") {
+    condiciones.push(`(fichas_has_accesos.habilitado =  ${estado})`)
+  }
+  if (cargos_tipo_id != 0) {
+    condiciones.push(`(cargos_tipo_id =   ${cargos_tipo_id})`)
+  }
+  if (condiciones.length > 0) {
+    query += " WHERE " + condiciones.join(" AND ")
+  }
+  query += " ORDER BY cargos.nivel , accesos.id_acceso DESC"
   return new Promise((resolve, reject) => {
-    pool.query("SELECT historialestados.monto financiero_monto, historialestados.monto / fichas.g_total_presu * 100 financiero_porcentaje,historialestados.id_historialEstado FROM historialestados LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado LEFT JOIN fichas ON fichas.id_ficha = historialestados.Fichas_id_ficha WHERE estados.codigo = 'C' AND historialestados.Fichas_id_ficha = ? LIMIT 1", [id_ficha], (error, res) => {
-      if (error) {
-        reject(error);
-      } else if (res.length == 0) {
-        resolve("vacio");
-      } else {
-        resolve(res[0]);
+    pool.query(query, (err, res) => {
+      if (err) {
+        reject(err);
       }
+      resolve(res);
     })
   })
 }
-userModel.getcronogramaInicio = (corte, id_ficha, fecha_inicial) => {
+userModel.getExisteUsuario = ({ usuario }) => {
   return new Promise((resolve, reject) => {
-    pool.query("SELECT 'E' codigo, DATE_FORMAT(cronogramamensual.mes, '%Y-%m-%d') fecha, DATE_FORMAT(cronogramamensual.mes, '%b.') mes, DATE_FORMAT(cronogramamensual.mes, '%Y') anyo, programado programado_monto, programado / tb_presupuesto.presupuesto * 100 programado_porcentaje, COALESCE(tb_fisico.fisico_monto, 0) fisico_monto, COALESCE(tb_fisico.fisico_monto, 0) / tb_presupuesto.presupuesto * 100 fisico_porcentaje, COALESCE(financieroEjecutado, 0) financiero_monto, COALESCE(financieroEjecutado, 0) / fichas.g_total_presu * 100 financiero_porcentaje FROM cronogramamensual LEFT JOIN (SELECT componentes.fichas_id_ficha, avanceactividades.fecha, DATE_FORMAT(avanceactividades.fecha, '%m ') mes, DATE_FORMAT(avanceactividades.fecha, '%Y ') anyo, SUM(avanceactividades.valor * partidas.costo_unitario) fisico_monto FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND avanceactividades.fecha >= ? GROUP BY componentes.fichas_id_ficha , DATE_FORMAT(avanceactividades.fecha, '%m %Y') ORDER BY avanceactividades.fecha) tb_fisico ON tb_fisico.fichas_id_ficha = cronogramamensual.fichas_id_ficha AND DATE_FORMAT(tb_fisico.fecha, '%m %Y') = DATE_FORMAT(cronogramamensual.mes, '%m %Y') LEFT JOIN (SELECT componentes.fichas_id_ficha, SUM(componentes.presupuesto) presupuesto FROM componentes GROUP BY componentes.fichas_id_ficha) tb_presupuesto ON tb_presupuesto.fichas_id_ficha = cronogramamensual.fichas_id_ficha left join fichas on fichas.id_ficha = cronogramamensual.fichas_id_ficha WHERE cronogramamensual.fichas_id_ficha = ? AND DATE_FORMAT(cronogramamensual.mes, '%Y-%m-01') >= DATE_FORMAT(?, '%Y-%m-01') AND cronogramamensual.programado != 0", [fecha_inicial, id_ficha, fecha_inicial], (error, res) => {
+    pool.query("select count(accesos.id_acceso)acceso from accesos where accesos.usuario = ?", [usuario], (error, res) => {
       if (error) {
         reject(error);
-      } else if (res.length == 0 && corte == "vacio") {
-        resolve("vacio");
-      } else {
-        if (corte != "vacio") {
-          delete corte.fecha_inicial
-          delete corte.fecha_final
-          res.unshift(corte)
-        }
-        // resolve(res)
-        var programado_acumulado = 0
-        var fisico_acumulado = 0
-        var financiero_acumulado = 0
-        var programado_monto = 0
-        var fisico_monto = 0
-        var financiero_monto = 0
-        var grafico_programado = []
-        var grafico_fisico = []
-        var grafico_financiero = []
-        var periodos = []
-        for (let i = 0; i < res.length; i++) {
-          const fila = res[i];
-          programado_acumulado += fila.programado_porcentaje
-          fisico_acumulado += fila.fisico_porcentaje
-          financiero_acumulado += fila.financiero_porcentaje
-          programado_monto += fila.programado_monto
-          fisico_monto += fila.fisico_monto
-          financiero_monto += fila.financiero_monto
-          fila.programado_acumulado = programado_acumulado
-          fila.fisico_acumulado = fisico_acumulado
-          fila.financiero_acumulado = financiero_acumulado
-          fila.periodo = fila.mes + " " + fila.anyo
-          // delete fila.codigo
-          delete fila.mes
-          delete fila.anyo
-          grafico_programado.push(Number(tools.formatoSoles(programado_acumulado)))
-          grafico_fisico.push(Number(tools.formatoSoles(fisico_acumulado)))
-          grafico_financiero.push(Number(tools.formatoSoles(financiero_acumulado)))
-          periodos.push(fila.periodo)
-          //format
-          fila.programado_monto = tools.formatoSoles(fila.programado_monto)
-          fila.programado_porcentaje = tools.formatoSoles(fila.programado_porcentaje)
-          fila.fisico_monto = tools.formatoSoles(fila.fisico_monto)
-          fila.fisico_porcentaje = tools.formatoSoles(fila.fisico_porcentaje)
-          fila.financiero_monto = tools.formatoSoles(fila.financiero_monto)
-          fila.financiero_porcentaje = tools.formatoSoles(fila.financiero_porcentaje)
-          fila.programado_acumulado = tools.formatoSoles(fila.programado_acumulado)
-          fila.fisico_acumulado = tools.formatoSoles(fila.fisico_acumulado)
-          fila.financiero_acumulado = tools.formatoSoles(fila.financiero_acumulado)
-        }
-        resolve({
-          "programado_monto_total": tools.formatoSoles(programado_monto),
-          "programado_porcentaje_total": tools.formatoSoles(programado_acumulado),
-          "fisico_monto_total": tools.formatoSoles(fisico_monto),
-          "fisico_porcentaje_total": tools.formatoSoles(fisico_acumulado),
-          "financiero_monto_total": tools.formatoSoles(financiero_monto),
-          "financiero_porcentaje_total": tools.formatoSoles(financiero_acumulado),
-          "grafico_programado": grafico_programado,
-          "grafico_fisico": grafico_fisico,
-          "grafico_financiero": grafico_financiero,
-          "grafico_periodos": periodos,
-          "data": res
-        });
       }
+      resolve(res ? res[0] : {})
     })
   })
-
 }
 userModel.postUsuario = (data) => {
   return new Promise((resolve, reject) => {
@@ -194,9 +147,9 @@ userModel.postUsuario = (data) => {
     })
   })
 }
-userModel.postAcceso = (id_cargo, id_usuario) => {
+userModel.postAcceso = (id_cargo, id_usuario, usuario = 'USER', password = 'USER123') => {
   return new Promise((resolve, reject) => {
-    pool.query("INSERT INTO accesos (usuario, password, estado, Cargos_id_Cargo, Usuarios_id_usuario) VALUES ('USER', 'USER123', 1, ?,?);", [id_cargo, id_usuario], (error, res) => {
+    pool.query("INSERT INTO accesos (usuario, password, estado, Cargos_id_Cargo, Usuarios_id_usuario) VALUES (?,?, 1, ?,?);", [usuario, password, id_cargo, id_usuario], (error, res) => {
       if (error) {
         reject(error);
       }

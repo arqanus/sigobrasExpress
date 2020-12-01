@@ -252,8 +252,8 @@ module.exports = (app) => {
     })
     app.post('/getComponentesComentarios', async (req, res) => {
         try {
-            var getComponentesComentarios = await User.getComponentesComentarios(req.body.id_acceso, req.body.id_ficha)
-            res.json(getComponentesComentarios)
+            var data = await User.getComponentesComentarios(req.body)
+            res.json(data)
         } catch (error) {
             console.log(error)
             res.status(204).json(error)

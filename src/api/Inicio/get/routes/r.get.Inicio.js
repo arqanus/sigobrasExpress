@@ -58,10 +58,29 @@ module.exports = (app) => {
 			res.status(200).json(error)
 		}
 	});
+	app.post('/getUsuariosByCargoAdmin', async (req, res) => {
+		try {
+			var cargos = await User.getUsuariosByCargoAdmin(req.body)
+			res.json(cargos)
+		} catch (error) {
+			res.status(200).json(error)
+		}
+	});
 	app.post('/postUsuarioObra', async (req, res) => {
 		try {
+			if (req.body.usuario != "") {
+				var resUsuario = await User.getExisteUsuario(req.body)
+				if (resUsuario.acceso) {
+					res.json({
+						message: "Usuario ya registrado"
+					})
+					return 
+				}
+			}
 			var responseUsuario = await User.postUsuario(req.body)
-			var responseAcceso = await User.postAcceso(req.body.id_cargo, responseUsuario.insertId)
+			var usuario = req.body.usuario || "randUser" + responseUsuario.insertId
+			var password = req.body.password || "randUser" + responseUsuario.insertId
+			var responseAcceso = await User.postAcceso(req.body.id_cargo, responseUsuario.insertId, usuario, password)
 			var responseAccesoFicha = await User.postAccesoFicha(req.body.id_ficha, responseAcceso.insertId)
 			res.json({
 				message: "registro exitoso"
