@@ -411,7 +411,7 @@ userModel.getResumenRecursos = ({ id_ficha, tipo }) => {
         });
     });
 };
-userModel.getResumenRecursosCantidadByTipo = ({ id_ficha, descripcion }) => {
+userModel.getResumenRecursosCantidadByDescripcion = ({ id_ficha, descripcion }) => {
     return new Promise((resolve, reject) => {
         pool.query("SELECT SUM(recursos.cantidad * avanceactividades.valor) avance FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN recursos ON recursos.partidas_id_partida = partidas.id_partida LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE componentes.fichas_id_ficha = ? AND recursos.descripcion = ?", [id_ficha, descripcion], (error, res) => {
             if (error) {
