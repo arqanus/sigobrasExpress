@@ -112,7 +112,7 @@ module.exports = function (app) {
 	app.post('/getmaterialesResumenEjecucionRealCodigosData', async (req, res) => {
 		try {
 			var data = await User.getmaterialesResumenEjecucionReal(req.body.id_ficha, req.body.tipo, true, req.body.codigo, false, req.body.id_tipoDocumentoAdquisicion, false)
-			var dataRecursoNuevo = await User.getRecursosNuevosCodigosData(req.body.id_ficha,req.body.codigo,req.body.id_tipoDocumentoAdquisicion)
+			var dataRecursoNuevo = await User.getRecursosNuevosCodigosData(req.body.id_ficha, req.body.codigo, req.body.id_tipoDocumentoAdquisicion)
 			data = data.concat(dataRecursoNuevo)
 			var id_documentoAdquisicion = data[0].documentosAdquisicion_id_documentoAdquisicion
 			var documentoAdquisicion = await User.getdocumentosadquisicion(id_documentoAdquisicion)
@@ -129,10 +129,10 @@ module.exports = function (app) {
 			}
 			documentoAdquisicion.recursos = data
 			res.json(
-				documentoAdquisicion		
+				documentoAdquisicion
 			)
 		} catch (error) {
-			console.log(error);			
+			console.log(error);
 			res.status(400).json(error);
 		}
 	})
@@ -227,5 +227,21 @@ module.exports = function (app) {
 			res.status(400).json(error);
 		}
 	})
-
+	app.post('/getResumenRecursos', async (req, res) => {
+		try {
+			var data = await User.getResumenRecursos(req.body)
+			res.json(data);
+		} catch (error) {
+			res.status(400).json(error);
+		}
+	})
+	app.post('/getResumenRecursosCantidadByTipo', async (req, res) => {
+		try {
+			var data = await User.getResumenRecursosCantidadByTipo(req.body)
+			res.json(data);
+		} catch (error) {
+			console.log(error);
+			res.status(400).json(error.code);
+		}
+	})
 }
