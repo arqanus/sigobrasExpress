@@ -235,9 +235,9 @@ module.exports = function (app) {
 			res.status(400).json(error);
 		}
 	})
-	app.post('/getResumenRecursosCantidadByTipo', async (req, res) => {
+	app.post('/getResumenRecursosCantidadByDescripcion', async (req, res) => {
 		try {
-			var data = await User.getResumenRecursosCantidadByTipo(req.body)
+			var data = await User.getResumenRecursosCantidadByDescripcion(req.body)
 			res.json(data);
 		} catch (error) {
 			console.log(error);
