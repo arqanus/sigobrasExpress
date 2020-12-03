@@ -401,9 +401,51 @@ userModel.getRecursosNuevosCodigosData = (id_ficha, codigo, id_tipoDocumentoAdqu
         });
     });
 };
-userModel.getResumenRecursos = ({ id_ficha, tipo }) => {
+userModel.getResumenRecursosConteoDatos = ({ id_ficha, tipo, texto_buscar, inicio, cantidad_datos }) => {
+    var query = "SELECT COUNT(*) total FROM (SELECT recursos.* FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN recursos ON recursos.partidas_id_partida = partidas.id_partida"
+    var condiciones = []
+    if (id_ficha != 0) {
+        condiciones.push(`(componentes.fichas_id_ficha = ${id_ficha})`)
+    }
+    if (tipo != "") {
+        condiciones.push(`(recursos.tipo =  \'${tipo}\')`)
+    }
+    if (texto_buscar != "") {
+        condiciones.push(`(recursos.descripcion like \'%${texto_buscar}%\' || recursos.unidad like \'%${texto_buscar}%\')`)
+    }
+    if (condiciones.length > 0) {
+        query += " WHERE " + condiciones.join(" AND ")
+    }
+    query += ` GROUP BY recursos.descripcion LIMIT ${inicio} , ${cantidad_datos}) temp`
+    // return query
     return new Promise((resolve, reject) => {
-        pool.query("SELECT recursos.*, SUM(IF(recursos.unidad = '%MO' OR recursos.unidad = '%PU', 0, recursos.cantidad * partidas.metrado)) recurso_cantidad FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN recursos ON recursos.partidas_id_partida = partidas.id_partida WHERE componentes.fichas_id_ficha = ? AND recursos.tipo = ? GROUP BY recursos.descripcion", [id_ficha, tipo], (error, res) => {
+        pool.query(query, (error, res) => {
+            if (error) {
+                reject(error);
+            }
+            resolve(res?res[0]:{});
+        });
+    });
+};
+userModel.getResumenRecursos = ({ id_ficha, tipo, texto_buscar, inicio, cantidad_datos }) => {
+    var query = "SELECT recursos.*, SUM(IF(recursos.unidad = '%MO' OR recursos.unidad = '%PU', 0, recursos.cantidad * partidas.metrado)) recurso_cantidad FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN recursos ON recursos.partidas_id_partida = partidas.id_partida"
+    var condiciones = []
+    if (id_ficha != 0) {
+        condiciones.push(`(componentes.fichas_id_ficha = ${id_ficha})`)
+    }
+    if (tipo != "") {
+        condiciones.push(`(recursos.tipo =  \'${tipo}\')`)
+    }
+    if (texto_buscar != "") {
+        condiciones.push(`(recursos.descripcion like \'%${texto_buscar}%\' || recursos.unidad like \'%${texto_buscar}%\')`)
+    }
+    if (condiciones.length > 0) {
+        query += " WHERE " + condiciones.join(" AND ")
+    }
+    query += ` GROUP BY recursos.descripcion LIMIT ${inicio} , ${cantidad_datos}`
+    // return query
+    return new Promise((resolve, reject) => {
+        pool.query(query, (error, res) => {
             if (error) {
                 reject(error);
             }
