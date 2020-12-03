@@ -227,6 +227,14 @@ module.exports = function (app) {
 			res.status(400).json(error);
 		}
 	})
+	app.post('/getResumenRecursosConteoDatos', async (req, res) => {
+		try {
+			var data = await User.getResumenRecursosConteoDatos(req.body)
+			res.json(data);
+		} catch (error) {
+			res.status(400).json(error);
+		}
+	})
 	app.post('/getResumenRecursos', async (req, res) => {
 		try {
 			var data = await User.getResumenRecursos(req.body)
