@@ -401,7 +401,7 @@ userModel.getRecursosNuevosCodigosData = (id_ficha, codigo, id_tipoDocumentoAdqu
         });
     });
 };
-userModel.getResumenRecursosConteoDatos = ({ id_ficha, tipo, texto_buscar, inicio, cantidad_datos }) => {
+userModel.getResumenRecursosConteoDatos = ({ id_ficha, tipo, texto_buscar }) => {
     var query = "SELECT COUNT(*) total FROM (SELECT recursos.* FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN recursos ON recursos.partidas_id_partida = partidas.id_partida"
     var condiciones = []
     if (id_ficha != 0) {
@@ -416,7 +416,7 @@ userModel.getResumenRecursosConteoDatos = ({ id_ficha, tipo, texto_buscar, inici
     if (condiciones.length > 0) {
         query += " WHERE " + condiciones.join(" AND ")
     }
-    query += ` GROUP BY recursos.descripcion LIMIT ${inicio} , ${cantidad_datos}) temp`
+    query += ` GROUP BY recursos.descripcion) temp`
     // return query
     return new Promise((resolve, reject) => {
         pool.query(query, (error, res) => {
