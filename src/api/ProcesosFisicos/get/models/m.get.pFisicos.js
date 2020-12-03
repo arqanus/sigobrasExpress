@@ -161,7 +161,7 @@ module.exports = {
         if (condiciones.length > 0) {
             query += " AND " + condiciones.join(" AND ")
         }
-        query += " ORDER BY partidas.item LIMIT ? , ?"
+        query += " ORDER BY INET_ATON(SUBSTRING_INDEX(CONCAT(item,'.0.0.0'),'.',4)) LIMIT ? , ?"
         return new Promise((resolve, reject) => {
             pool.query(query, [id_componente, inicio, fin], (error, res) => {
                 if (error) {
