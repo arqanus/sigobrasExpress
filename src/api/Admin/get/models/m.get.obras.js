@@ -2,9 +2,22 @@ const pool = require('../../../../db/connection');
 const tools = require('../../../../tools/format')
 
 let userModel = {};
-userModel.getObras = ({ id_tipoObra }) => {
+userModel.getObras = ({ id_tipoObra, textoBuscado }) => {
+    var query = "SELECT fichas.id_ficha, fichas.codigo, fichas.g_meta, id_tipoObra FROM fichas LEFT JOIN tipoobras ON tipoobras.id_tipoObra = fichas.tipoObras_id_tipoObra LEFT JOIN fichas_has_accesos ON fichas_has_accesos.Fichas_id_ficha = fichas.id_ficha"
+    var condiciones = []
+    if (id_tipoObra != 0) {
+        condiciones.push(`(id_tipoObra = ${id_tipoObra})`)
+    }
+    if (textoBuscado != "" && textoBuscado != undefined) {
+        condiciones.push(`(g_meta like \'%${textoBuscado}%\') || (fichas.codigo like \'%${textoBuscado}%\')`)
+    }
+    if (condiciones.length > 0) {
+        query += " WHERE " + condiciones.join(" AND ")
+    }
+    query += " group by fichas.id_ficha "
+    // return query
     return new Promise((resolve, reject) => {
-        pool.query('SELECT fichas.id_ficha, fichas.codigo, fichas.g_meta, id_tipoObra FROM fichas LEFT JOIN tipoobras ON tipoobras.id_tipoObra = fichas.tipoObras_id_tipoObra LEFT JOIN fichas_has_accesos ON fichas_has_accesos.Fichas_id_ficha = fichas.id_ficha WHERE (0 = ? OR id_tipoObra = ?) group by fichas.id_ficha', [id_tipoObra, id_tipoObra], (err, res) => {
+        pool.query(query, [id_tipoObra, id_tipoObra], (err, res) => {
             if (err) reject(err);
             resolve(res);
         })
@@ -18,13 +31,13 @@ userModel.getObra = (id_ficha) => {
         })
     })
 }
-userModel.getComponentesPartidasTotal = ({id_componente}) => {
+userModel.getComponentesPartidasTotal = ({ id_componente }) => {
     return new Promise((resolve, reject) => {
         pool.query("SELECT COUNT(partidas.id_partida) partidas_total FROM partidas WHERE partidas.componentes_id_componente = ?", id_componente, (error, res) => {
             if (error) {
                 reject(error);
             }
-            resolve(res?res[0]:{});
+            resolve(res ? res[0] : {});
         })
     })
 }
@@ -331,6 +344,30 @@ userModel.prueba = () => {
         })
     })
 }
+userModel.updateActividadesParcial = ({ metrado, id_actividad }) => {
+    return new Promise((resolve, reject) => {
+        pool.query("UPDATE actividades SET parcial = ? WHERE (id_actividad = ?);", [metrado, id_actividad], (err, res) => {
+            if (err) {
+                reject(err.code);
+            } else {
+                resolve(res)
+            }
+        })
+    })
+}
+userModel.updatePartidasMetrado = ({ id_partida }) => {
+    return new Promise((resolve, reject) => {
+        pool.query("UPDATE partidas INNER JOIN (SELECT SUM(actividades.parcial) metrado_actividad, actividades.* FROM actividades WHERE actividades.Partidas_id_partida = ?) actividad ON actividad.Partidas_id_partida = partidas.id_partida SET partidas.metrado = actividad.metrado_actividad WHERE partidas.id_partida = ?;", [id_partida, id_partida], (err, res) => {
+            if (err) {
+                reject(err.code);
+            } else {
+                resolve(res)
+            }
+        })
+    })
+}
+
+
 
 
 

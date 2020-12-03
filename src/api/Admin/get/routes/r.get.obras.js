@@ -6,7 +6,8 @@ module.exports = function (app) {
 			var obras = await User.getObras(req.body)
 			res.json(obras);
 		} catch (error) {
-			res.status(400).json(error)
+			console.log(error);
+			res.status(400).json(error.code)
 		}
 	})
 	app.post('/getObra', async (req, res) => {
@@ -137,6 +138,15 @@ module.exports = function (app) {
 
 			var data = await User.prueba()
 			res.json(data)
+		} catch (error) {
+			res.status(400).json(error)
+		}
+	})
+	app.post('/updateActividadesParcial', async (req, res) => {
+		try {
+			var data = await User.updateActividadesParcial(req.body)
+			var data2 = await User.updatePartidasMetrado(req.body)
+			res.json(data2)
 		} catch (error) {
 			res.status(400).json(error)
 		}
