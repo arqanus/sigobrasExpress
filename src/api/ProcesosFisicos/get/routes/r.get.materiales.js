@@ -252,4 +252,13 @@ module.exports = function (app) {
 			res.status(400).json(error.code);
 		}
 	})
+	app.post('/getResumenRecursosRealesByDescripcion', async (req, res) => {
+		try {
+			var data = await User.getResumenRecursosRealesByDescripcion(req.body)
+			res.json(data);
+		} catch (error) {
+			console.log(error);
+			res.status(400).json(error.code);
+		}
+	})
 }
