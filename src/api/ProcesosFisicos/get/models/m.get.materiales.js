@@ -463,5 +463,15 @@ userModel.getResumenRecursosCantidadByDescripcion = ({ id_ficha, descripcion }) 
         });
     });
 };
+userModel.getResumenRecursosRealesByDescripcion = ({ id_ficha, descripcion }) => {
+    return new Promise((resolve, reject) => {
+        pool.query("SELECT * FROM recursos_ejecucionreal WHERE recursos_ejecucionreal.fichas_id_ficha = ? AND recursos_ejecucionreal.descripcion = ?", [id_ficha, descripcion], (error, res) => {
+            if (error) {
+                reject(error);
+            }
+            resolve(res ? res[0] : {});
+        });
+    });
+};
 
 module.exports = userModel;
