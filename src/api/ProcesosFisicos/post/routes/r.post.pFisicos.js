@@ -576,4 +576,39 @@ module.exports = function (app) {
       res.status(400).json(error)
     }
   })
+  //recursos edicion
+  app.post('/updateRecursoAvance', async (req, res) => {
+    try {
+      var data = await User.updateRecursoAvance(req.body)
+      res.json(
+        data
+      )
+    } catch (error) {
+      console.log(error)
+      res.status(400).json(error.code)
+    }
+  })
+  app.post('/updateRecursoPrecio', async (req, res) => {
+    try {
+      var data = await User.updateRecursoPrecio(req.body)
+      res.json(
+        data
+      )
+    } catch (error) {
+      console.log(error)
+      res.status(400).json(error.code)
+    }
+  })
+  app.post('/updateRecursoDocumentoAdquisicion', async (req, res) => {
+    try {
+      var data = await User.updateRecursoDocumentoAdquisicion(req.body)
+      res.json(
+        data
+      )
+    } catch (error) {
+      console.log(error)
+      res.status(400).json(error.code)
+    }
+  })
+
 }

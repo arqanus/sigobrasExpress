@@ -221,13 +221,44 @@ userModel.getFechasRevisadas = ({ id_ficha, fecha }) => {
             if (error) {
                 reject(error);
             }
-            resolve(res?res[0]:{})
+            resolve(res ? res[0] : {})
         })
     })
 }
 userModel.postActividad2 = ({ fecha, valor, descripcion, id_actividad, id_acceso }) => {
     return new Promise((resolve, reject) => {
         pool.query("INSERT INTO avanceactividades (fecha, valor, descripcion, Actividades_id_actividad, accesos_id_acceso) VALUES (?,?,?,?,?)", [fecha, valor, descripcion, id_actividad, id_acceso], (error, res) => {
+            if (error) {
+                reject(error);
+            }
+            resolve(res)
+        })
+    })
+}
+//recruso edicion
+userModel.updateRecursoAvance = ({ id_ficha, tipo, descripcion, cantidad }) => {
+    return new Promise((resolve, reject) => {
+        pool.query("INSERT INTO recursos_ejecucionreal (fichas_id_ficha,tipo,descripcion,cantidad) VALUES (?,?,?,?) ON DUPLICATE key UPDATE cantidad = VALUES(cantidad)", [id_ficha, tipo, descripcion, cantidad], (error, res) => {
+            if (error) {
+                reject(error);
+            }
+            resolve(res)
+        })
+    })
+}
+userModel.updateRecursoPrecio = ({ id_ficha, tipo, descripcion, precio }) => {
+    return new Promise((resolve, reject) => {
+        pool.query("INSERT INTO recursos_ejecucionreal (fichas_id_ficha,tipo,descripcion,precio) VALUES (?,?,?,?) ON DUPLICATE key UPDATE precio = VALUES(precio)", [id_ficha, tipo, descripcion, precio], (error, res) => {
+            if (error) {
+                reject(error);
+            }
+            resolve(res)
+        })
+    })
+}
+userModel.updateRecursoDocumentoAdquisicion = ({ id_ficha, tipo, descripcion, codigo, id_tipoDocumentoAdquisicion }) => {
+    return new Promise((resolve, reject) => {
+        pool.query("INSERT INTO recursos_ejecucionreal (fichas_id_ficha,tipo,descripcion,codigo,tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion) VALUES (?,?,?,?,?) ON DUPLICATE key UPDATE codigo = VALUES(codigo), tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion = VALUES(tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion)", [id_ficha, tipo, descripcion, codigo, id_tipoDocumentoAdquisicion], (error, res) => {
             if (error) {
                 reject(error);
             }
