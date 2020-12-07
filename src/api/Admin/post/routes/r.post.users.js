@@ -70,11 +70,18 @@ module.exports = function (app) {
 	})
 
 	app.post('/asignarObra', async (req, res) => {
+	
 		try {
-			var postObraUsuario = await User.postObraUsuario(req.body)
-			res.json(postObraUsuario);
+			var message = "asignado con exito"
+			var data = await User.asignarObra(req.body)
+			res.json({message});
 		} catch (error) {
-			res.status(400).json(error)
+			var message = " error "
+			console.log(error);
+			if(error.code == "ER_DUP_ENTRY"){
+				message = "La obra ya esta asignada"
+			}
+			res.status(400).json({message})
 		}
 	})
 	app.post('/postUserImageDefault', async (req, res) => {

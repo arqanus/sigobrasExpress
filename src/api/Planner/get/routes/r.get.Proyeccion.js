@@ -135,16 +135,16 @@ module.exports = (app) => {
         }
     })
 
-    app.post('/listaobras',async(peticion,respuesta)=>{
-        try {
-           var datos_listaobras  = await User.listaobrasModelo()
-           //console.log(peticion.body) //son para ver como trabaja la daTa si llega o no
-            respuesta.json(datos_listaobras) //devuelve a la interfaz (se puede mandar en otros formatos.txt )
-        } catch (error) {
-            console.log(error);
-            respuesta.status(204).json(error)
-        } 
-    })
+    // app.post('/listaobras',async(peticion,respuesta)=>{
+    //     try {
+    //        var datos_listaobras  = await User.listaobrasModelo()
+    //        //console.log(peticion.body) //son para ver como trabaja la daTa si llega o no
+    //         respuesta.json(datos_listaobras) //devuelve a la interfaz (se puede mandar en otros formatos.txt )
+    //     } catch (error) {
+    //         console.log(error);
+    //         respuesta.status(204).json(error)
+    //     } 
+    // })
 
     app.post('/putproyecciones',async(peticion,respuesta)=>{
         try {
