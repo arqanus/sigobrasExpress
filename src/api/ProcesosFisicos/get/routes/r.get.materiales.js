@@ -262,18 +262,18 @@ module.exports = function (app) {
 		}
 	})
 
-	app.post('/getTipoDocumentoAdquisionTotal', async (req, res) => {
+	app.post('/getTipoDocumentoAdquisicionTotal', async (req, res) => {
 		try {
-			var data = await User.getTipoDocumentoAdquisionTotal(req.body)
+			var data = await User.getTipoDocumentoAdquisicionTotal(req.body)
 			res.json(data);
 		} catch (error) {
 			console.log(error);
 			res.status(400).json(error.code);
 		}
 	})
-	app.post('/getRecursosEjecucionRealByTipoDocumentoAdquision', async (req, res) => {
+	app.post('/getRecursosEjecucionRealByTipoDocumentoAdquisicion', async (req, res) => {
 		try {
-			var data = await User.getRecursosEjecucionRealByTipoDocumentoAdquision(req.body)
+			var data = await User.getRecursosEjecucionRealByTipoDocumentoAdquisicion(req.body)
 			res.json(data);
 		} catch (error) {
 			console.log(error);
