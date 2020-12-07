@@ -99,8 +99,8 @@ userModel.getUsuariosByCargo = (id_ficha, id_cargo, estado = true) => {
     })
   })
 }
-userModel.getUsuariosByCargoAdmin = ({ id_ficha, id_cargo, estado, cargos_tipo_id }) => {
-  var query = "SELECT usuarios.*, CONCAT(usuarios.apellido_paterno, ' ', usuarios.apellido_materno, ' ', usuarios.nombre) nombre_usuario, cargos.nombre cargo_nombre, fichas_has_accesos.memorandum, accesos.id_acceso FROM fichas LEFT JOIN fichas_has_accesos ON fichas_has_accesos.Fichas_id_ficha = fichas.id_ficha LEFT JOIN accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso INNER JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo"
+userModel.getUsuariosByCargoAdmin = ({ id_ficha, id_cargo, estado, cargos_tipo_id, textoBuscado }) => {
+  var query = "SELECT usuarios.*, CONCAT(usuarios.apellido_paterno, ' ', usuarios.apellido_materno, ' ', usuarios.nombre) nombre_usuario, cargos.nombre cargo_nombre, accesos.id_acceso FROM  usuarios LEFT JOIN accesos ON accesos.Usuarios_id_usuario = usuarios.id_usuario LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo LEFT JOIN fichas_has_accesos ON fichas_has_accesos.Accesos_id_acceso = accesos.id_acceso"
   var condiciones = []
   if (id_ficha != 0) {
     condiciones.push(`(fichas_has_accesos.Fichas_id_ficha = ${id_ficha})`)
@@ -108,16 +108,20 @@ userModel.getUsuariosByCargoAdmin = ({ id_ficha, id_cargo, estado, cargos_tipo_i
   if (id_cargo != 0) {
     condiciones.push(`(accesos.Cargos_id_Cargo =  ${id_cargo})`)
   }
-  if (estado != "") {
-    condiciones.push(`(fichas_has_accesos.habilitado =  ${estado})`)
-  }
+  // if (estado != "") {
+  //   condiciones.push(`(fichas_has_accesos.habilitado =  ${estado})`)
+  // }
   if (cargos_tipo_id != 0) {
     condiciones.push(`(cargos_tipo_id =   ${cargos_tipo_id})`)
+  }
+  if (textoBuscado != "") {
+    condiciones.push(`((usuarios.nombre like \'%${textoBuscado}%\') || (usuarios.apellido_paterno like \'%${textoBuscado}%\')  || (usuarios.apellido_materno like \'%${textoBuscado}%\'))`)
   }
   if (condiciones.length > 0) {
     query += " WHERE " + condiciones.join(" AND ")
   }
-  query += " ORDER BY cargos.nivel , accesos.id_acceso DESC"
+  query += " GROUP BY accesos.id_acceso ORDER BY accesos.id_acceso  "
+  // return query
   return new Promise((resolve, reject) => {
     pool.query(query, (err, res) => {
       if (err) {

@@ -74,14 +74,16 @@ module.exports = (app) => {
 					res.json({
 						message: "Usuario ya registrado"
 					})
-					return 
+					return
 				}
 			}
 			var responseUsuario = await User.postUsuario(req.body)
 			var usuario = req.body.usuario || "randUser" + responseUsuario.insertId
 			var password = req.body.password || "randUser" + responseUsuario.insertId
 			var responseAcceso = await User.postAcceso(req.body.id_cargo, responseUsuario.insertId, usuario, password)
-			var responseAccesoFicha = await User.postAccesoFicha(req.body.id_ficha, responseAcceso.insertId)
+			if (req.body.id_ficha != 0) {
+				var responseAccesoFicha = await User.postAccesoFicha(req.body.id_ficha, responseAcceso.insertId)
+			}
 			res.json({
 				message: "registro exitoso"
 			})
