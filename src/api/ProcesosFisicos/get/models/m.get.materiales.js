@@ -473,7 +473,7 @@ userModel.getResumenRecursosRealesByDescripcion = ({ id_ficha, descripcion }) =>
         });
     });
 };
-userModel.getTipoDocumentoAdquisionTotal = ({ id_ficha, id_tipoDocumentoAdquisicion }) => {
+userModel.getTipoDocumentoAdquisicionTotal = ({ id_ficha, id_tipoDocumentoAdquisicion }) => {
     return new Promise((resolve, reject) => {
         pool.query("SELECT COUNT(*) n_elementos FROM recursos_ejecucionreal WHERE recursos_ejecucionreal.fichas_id_ficha = ? AND tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion = ?;", [id_ficha, id_tipoDocumentoAdquisicion], (error, res) => {
             if (error) {
@@ -483,7 +483,7 @@ userModel.getTipoDocumentoAdquisionTotal = ({ id_ficha, id_tipoDocumentoAdquisic
         });
     });
 };
-userModel.getRecursosEjecucionRealByTipoDocumentoAdquision = ({ id_ficha, id_tipoDocumentoAdquisicion }) => {
+userModel.getRecursosEjecucionRealByTipoDocumentoAdquisicion = ({ id_ficha, id_tipoDocumentoAdquisicion }) => {
     return new Promise((resolve, reject) => {
         pool.query("SELECT codigo, COUNT(codigo) n_elementos FROM recursos_ejecucionreal WHERE recursos_ejecucionreal.fichas_id_ficha = ? AND tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion = ? GROUP BY codigo", [id_ficha, id_tipoDocumentoAdquisicion], (error, res) => {
             if (error) {
