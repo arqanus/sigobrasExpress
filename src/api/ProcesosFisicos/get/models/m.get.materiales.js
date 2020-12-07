@@ -423,7 +423,7 @@ userModel.getResumenRecursosConteoDatos = ({ id_ficha, tipo, texto_buscar }) => 
             if (error) {
                 reject(error);
             }
-            resolve(res?res[0]:{});
+            resolve(res ? res[0] : {});
         });
     });
 };
@@ -470,6 +470,36 @@ userModel.getResumenRecursosRealesByDescripcion = ({ id_ficha, descripcion }) =>
                 reject(error);
             }
             resolve(res ? res[0] : {});
+        });
+    });
+};
+userModel.getTipoDocumentoAdquisionTotal = ({ id_ficha, id_tipoDocumentoAdquisicion }) => {
+    return new Promise((resolve, reject) => {
+        pool.query("SELECT COUNT(*) n_elementos FROM recursos_ejecucionreal WHERE recursos_ejecucionreal.fichas_id_ficha = ? AND tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion = ?;", [id_ficha, id_tipoDocumentoAdquisicion], (error, res) => {
+            if (error) {
+                reject(error);
+            }
+            resolve(res ? res[0] : {});
+        });
+    });
+};
+userModel.getRecursosEjecucionRealByTipoDocumentoAdquision = ({ id_ficha, id_tipoDocumentoAdquisicion }) => {
+    return new Promise((resolve, reject) => {
+        pool.query("SELECT codigo, COUNT(codigo) n_elementos FROM recursos_ejecucionreal WHERE recursos_ejecucionreal.fichas_id_ficha = ? AND tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion = ? GROUP BY codigo", [id_ficha, id_tipoDocumentoAdquisicion], (error, res) => {
+            if (error) {
+                reject(error);
+            }
+            resolve(res);
+        });
+    });
+};
+userModel.getRecursosEjecucionRealByTipoAndCodigo = ({ id_ficha, id_tipoDocumentoAdquisicion, codigo }) => {
+    return new Promise((resolve, reject) => {
+        pool.query("SELECT * FROM recursos_ejecucionreal WHERE recursos_ejecucionreal.fichas_id_ficha = ? AND tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion = ? AND codigo = ?", [id_ficha, id_tipoDocumentoAdquisicion, codigo], (error, res) => {
+            if (error) {
+                reject(error);
+            }
+            resolve(res);
         });
     });
 };
