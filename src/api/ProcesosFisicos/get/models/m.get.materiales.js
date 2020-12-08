@@ -503,5 +503,25 @@ userModel.getRecursosEjecucionRealByTipoAndCodigo = ({ id_ficha, id_tipoDocument
         });
     });
 };
+userModel.getDocumentoAdquisicionDetalles = ({ id_ficha, id_tipoDocumentoAdquisicion, codigo }) => {
+    return new Promise((resolve, reject) => {
+        pool.query("SELECT * FROM documentosadquisicion WHERE fichas_id_ficha = ? AND id_documentoAdquisicion = ? AND codigo = ? ;", [id_ficha, id_tipoDocumentoAdquisicion, codigo], (error, res) => {
+            if (error) {
+                reject(error);
+            }
+            resolve(res ? res[0] : {});
+        });
+    });
+};
+userModel.postDocumentoAdquisicionDetalles = ({ id_tipoDocumentoAdquisicion, fichas_id_ficha, codigo, razonSocial, RUC, SIAF, NCP,id_clasificador_presupuestario }) => {
+    return new Promise((resolve, reject) => {
+        pool.query("INSERT INTO documentosadquisicion (id_tipoDocumentoAdquisicion, fichas_id_ficha, codigo,razonSocial,RUC,SIAF,NCP,id_clasificador_presupuestario) VALUES (?,?,?,?,?,?,?,?) ON DUPLICATE key UPDATE razonSocial = VALUES(razonSocial), RUC = VALUES(RUC), SIAF = VALUES(SIAF), NCP = VALUES(NCP), id_clasificador_presupuestario = VALUES(id_clasificador_presupuestario) ", [id_tipoDocumentoAdquisicion, fichas_id_ficha, codigo, razonSocial, RUC, SIAF, NCP,id_clasificador_presupuestario], (error, res) => {
+            if (error) {
+                reject(error);
+            }
+            resolve(res);
+        });
+    });
+};
 
 module.exports = userModel;
