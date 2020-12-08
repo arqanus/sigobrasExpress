@@ -289,4 +289,22 @@ module.exports = function (app) {
 			res.status(400).json(error.code);
 		}
 	})
+	app.post('/getDocumentoAdquisicionDetalles', async (req, res) => {
+		try {
+			var data = await User.getDocumentoAdquisicionDetalles(req.body)
+			res.json(data);
+		} catch (error) {
+			console.log(error);
+			res.status(400).json(error.code);
+		}
+	})
+	app.post('/postDocumentoAdquisicionDetalles', async (req, res) => {
+		try {
+			var data = await User.postDocumentoAdquisicionDetalles(req.body)
+			res.json(data);
+		} catch (error) {
+			console.log(error);
+			res.status(400).json(error.code);
+		}
+	})
 }
