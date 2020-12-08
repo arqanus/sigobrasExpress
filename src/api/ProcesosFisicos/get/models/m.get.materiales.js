@@ -495,7 +495,7 @@ userModel.getRecursosEjecucionRealByTipoDocumentoAdquisicion = ({ id_ficha, id_t
 };
 userModel.getRecursosEjecucionRealByTipoAndCodigo = ({ id_ficha, id_tipoDocumentoAdquisicion, codigo }) => {
     return new Promise((resolve, reject) => {
-        pool.query("SELECT * FROM recursos_ejecucionreal WHERE recursos_ejecucionreal.fichas_id_ficha = ? AND tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion = ? AND codigo = ?", [id_ficha, id_tipoDocumentoAdquisicion, codigo], (error, res) => {
+        pool.query("SELECT recursos.* FROM recursos_ejecucionreal LEFT JOIN recursos ON recursos.descripcion = recursos_ejecucionreal.descripcion AND recursos_ejecucionreal.fichas_id_ficha = ? WHERE recursos_ejecucionreal.fichas_id_ficha = ? AND tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion = ? AND recursos_ejecucionreal.codigo = ? GROUP BY recursos.descripcion", [id_ficha, id_ficha, id_tipoDocumentoAdquisicion, codigo], (error, res) => {
             if (error) {
                 reject(error);
             }
