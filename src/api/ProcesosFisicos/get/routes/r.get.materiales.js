@@ -320,7 +320,7 @@ module.exports = function (app) {
 			var cantidad = await User.getCantidadRecursosByDescripcion(req.body)
 			var message = ""
 			if(cantidad.total == 0){
-				var data = await User.getResumenRecursosNuevos(req.body)
+				var data = await User.postNuevoRecursoReal(req.body)
 				message = "ingreso exitoso"
 			}else{
 				message = "el recurso ya existe"
