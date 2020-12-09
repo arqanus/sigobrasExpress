@@ -469,7 +469,7 @@ userModel.getResumenRecursosNuevos = ({ id_ficha, tipo, texto_buscar, inicio, ca
         query += " WHERE " + condiciones.join(" AND ")
     }
     query += `LIMIT ${inicio} , ${cantidad_datos}`
-    return query
+    // return query
     return new Promise((resolve, reject) => {
         pool.query(query, (error, res) => {
             if (error) {
