@@ -453,6 +453,32 @@ userModel.getResumenRecursos = ({ id_ficha, tipo, texto_buscar, inicio, cantidad
         });
     });
 };
+userModel.getResumenRecursosNuevos = ({ id_ficha, tipo, texto_buscar, inicio, cantidad_datos }) => {
+    var query = "SELECT * FROM recursos_ejecucionreal"
+    var condiciones = []
+    if (id_ficha != 0) {
+        condiciones.push(`(fichas_id_ficha = ${id_ficha})`)
+    }
+    if (tipo != "") {
+        condiciones.push(`(tipo =  \'${tipo}\')`)
+    }
+    if (texto_buscar != "") {
+        condiciones.push(`(descripcion like \'%${texto_buscar}%\' || unidad like \'%${texto_buscar}%\')`)
+    }
+    if (condiciones.length > 0) {
+        query += " WHERE " + condiciones.join(" AND ")
+    }
+    query += `LIMIT ${inicio} , ${cantidad_datos}`
+    return query
+    return new Promise((resolve, reject) => {
+        pool.query(query, (error, res) => {
+            if (error) {
+                reject(error);
+            }
+            resolve(res);
+        });
+    });
+};
 userModel.getResumenRecursosCantidadByDescripcion = ({ id_ficha, descripcion }) => {
     return new Promise((resolve, reject) => {
         pool.query("SELECT SUM(recursos.cantidad * avanceactividades.valor) avance FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN recursos ON recursos.partidas_id_partida = partidas.id_partida LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad WHERE componentes.fichas_id_ficha = ? AND recursos.descripcion = ?", [id_ficha, descripcion], (error, res) => {
@@ -495,7 +521,7 @@ userModel.getRecursosEjecucionRealByTipoDocumentoAdquisicion = ({ id_ficha, id_t
 };
 userModel.getRecursosEjecucionRealByTipoAndCodigo = ({ id_ficha, id_tipoDocumentoAdquisicion, codigo }) => {
     return new Promise((resolve, reject) => {
-        pool.query("SELECT recursos.* FROM recursos_ejecucionreal LEFT JOIN recursos ON recursos.descripcion = recursos_ejecucionreal.descripcion AND recursos_ejecucionreal.fichas_id_ficha = ? WHERE recursos_ejecucionreal.fichas_id_ficha = ? AND tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion = ? AND recursos_ejecucionreal.codigo = ? GROUP BY recursos.descripcion", [id_ficha, id_ficha, id_tipoDocumentoAdquisicion, codigo], (error, res) => {
+        pool.query("SELECT recursos.* FROM recursos_ejecucionreal LEFT JOIN recursos ON recursos.descripcion = recursos_ejecucionreal.descripcion AND recursos_ejecucionreal.fichas_id_ficha = ? WHERE recursos_ejecucionreal.fichas_id_ficha = ? AND id_tipoDocumentoAdquisicion = ? AND recursos_ejecucionreal.codigo = ? GROUP BY recursos.descripcion", [id_ficha, id_ficha, id_tipoDocumentoAdquisicion, codigo], (error, res) => {
             if (error) {
                 reject(error);
             }
