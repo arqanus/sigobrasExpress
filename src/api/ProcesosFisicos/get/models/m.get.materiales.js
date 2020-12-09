@@ -511,7 +511,7 @@ userModel.getTipoDocumentoAdquisicionTotal = ({ id_ficha, id_tipoDocumentoAdquis
 };
 userModel.getRecursosEjecucionRealByTipoDocumentoAdquisicion = ({ id_ficha, id_tipoDocumentoAdquisicion }) => {
     return new Promise((resolve, reject) => {
-        pool.query("    ", [id_ficha, id_tipoDocumentoAdquisicion], (error, res) => {
+        pool.query("SELECT codigo, COUNT(codigo) n_elementos FROM recursos_ejecucionreal WHERE recursos_ejecucionreal.fichas_id_ficha = ? AND id_tipoDocumentoAdquisicion = ? GROUP BY codigo", [id_ficha, id_tipoDocumentoAdquisicion], (error, res) => {
             if (error) {
                 reject(error);
             }
