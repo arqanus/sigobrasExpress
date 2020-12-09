@@ -485,7 +485,7 @@ userModel.getTipoDocumentoAdquisicionTotal = ({ id_ficha, id_tipoDocumentoAdquis
 };
 userModel.getRecursosEjecucionRealByTipoDocumentoAdquisicion = ({ id_ficha, id_tipoDocumentoAdquisicion }) => {
     return new Promise((resolve, reject) => {
-        pool.query("SELECT codigo, COUNT(codigo) n_elementos FROM recursos_ejecucionreal WHERE recursos_ejecucionreal.fichas_id_ficha = ? AND tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion = ? GROUP BY codigo", [id_ficha, id_tipoDocumentoAdquisicion], (error, res) => {
+        pool.query("SELECT codigo, COUNT(codigo) n_elementos FROM recursos_ejecucionreal WHERE recursos_ejecucionreal.fichas_id_ficha = ? AND id_tipoDocumentoAdquisicion = ? GROUP BY codigo", [id_ficha, id_tipoDocumentoAdquisicion], (error, res) => {
             if (error) {
                 reject(error);
             }
@@ -513,9 +513,19 @@ userModel.getDocumentoAdquisicionDetalles = ({ id_ficha, id_tipoDocumentoAdquisi
         });
     });
 };
-userModel.postDocumentoAdquisicionDetalles = ({ id_tipoDocumentoAdquisicion, fichas_id_ficha, codigo, razonSocial, RUC, SIAF, NCP,id_clasificador_presupuestario }) => {
+userModel.postDocumentoAdquisicionDetalles = ({ id_tipoDocumentoAdquisicion, fichas_id_ficha, codigo, razonSocial, RUC, SIAF, NCP, id_clasificador_presupuestario }) => {
     return new Promise((resolve, reject) => {
-        pool.query("INSERT INTO documentosadquisicion (id_tipoDocumentoAdquisicion, fichas_id_ficha, codigo,razonSocial,RUC,SIAF,NCP,id_clasificador_presupuestario) VALUES (?,?,?,?,?,?,?,?) ON DUPLICATE key UPDATE razonSocial = VALUES(razonSocial), RUC = VALUES(RUC), SIAF = VALUES(SIAF), NCP = VALUES(NCP), id_clasificador_presupuestario = VALUES(id_clasificador_presupuestario) ", [id_tipoDocumentoAdquisicion, fichas_id_ficha, codigo, razonSocial, RUC, SIAF, NCP,id_clasificador_presupuestario], (error, res) => {
+        pool.query("INSERT INTO documentosadquisicion (id_tipoDocumentoAdquisicion, fichas_id_ficha, codigo,razonSocial,RUC,SIAF,NCP,id_clasificador_presupuestario) VALUES (?,?,?,?,?,?,?,?) ON DUPLICATE key UPDATE razonSocial = VALUES(razonSocial), RUC = VALUES(RUC), SIAF = VALUES(SIAF), NCP = VALUES(NCP), id_clasificador_presupuestario = VALUES(id_clasificador_presupuestario) ", [id_tipoDocumentoAdquisicion, fichas_id_ficha, codigo, razonSocial, RUC, SIAF, NCP, id_clasificador_presupuestario], (error, res) => {
+            if (error) {
+                reject(error);
+            }
+            resolve(res);
+        });
+    });
+};
+userModel.postNuevoRecuroReal = ({ fichas_id_ficha, tipo, id_tipoDocumentoAdquisicion, codigo, descripcion, unidad, cantidad, precio }) => {
+    return new Promise((resolve, reject) => {
+        pool.query("INSERT INTO recursos_ejecucionreal (fichas_id_ficha,tipo,id_tipoDocumentoAdquisicion, codigo, descripcion,unidad,cantidad ,precio) VALUES (?,?,?,?,?,?,?,?) ON DUPLICATE key UPDATE fichas_id_ficha =  values(fichas_id_ficha), tipo =  values(tipo), id_tipoDocumentoAdquisicion =  values(id_tipoDocumentoAdquisicion), codigo =  values(codigo), descripcion =  values(descripcion), unidad =  values(unidad), cantidad =  values(cantidad), precio =  values(precio) ", [fichas_id_ficha, tipo, id_tipoDocumentoAdquisicion, codigo, descripcion, unidad, cantidad, precio], (error, res) => {
             if (error) {
                 reject(error);
             }
