@@ -440,7 +440,7 @@ userModel.getResumenRecursos = ({ id_ficha, tipo, texto_buscar, inicio, cantidad
         condiciones.push(`(recursos.descripcion like \'%${texto_buscar}%\' || recursos.unidad like \'%${texto_buscar}%\')`)
     }
     if (condiciones.length > 0) {
-        query += " WHERE " + condiciones.join(" AND ")
+        query += " WHERE recurso_nuevo = 0 AND " + condiciones.join(" AND ")
     }
     query += ` GROUP BY recursos.descripcion LIMIT ${inicio} , ${cantidad_datos}`
     // return query
@@ -466,7 +466,7 @@ userModel.getResumenRecursosNuevos = ({ id_ficha, tipo, texto_buscar, inicio, ca
         condiciones.push(`(descripcion like \'%${texto_buscar}%\' || unidad like \'%${texto_buscar}%\')`)
     }
     if (condiciones.length > 0) {
-        query += " WHERE " + condiciones.join(" AND ")
+        query += " WHERE recurso_nuevo AND " + condiciones.join(" AND ")
     }
     query += `LIMIT ${inicio} , ${cantidad_datos}`
     // return query
@@ -549,9 +549,19 @@ userModel.postDocumentoAdquisicionDetalles = ({ id_tipoDocumentoAdquisicion, fic
         });
     });
 };
-userModel.postNuevoRecuroReal = ({ fichas_id_ficha, tipo, id_tipoDocumentoAdquisicion, codigo, descripcion, unidad, cantidad, precio }) => {
+userModel.getCantidadRecursosByDescripcion = ({ fichas_id_ficha, descripcion }) => {
     return new Promise((resolve, reject) => {
-        pool.query("INSERT INTO recursos_ejecucionreal (fichas_id_ficha,tipo,id_tipoDocumentoAdquisicion, codigo, descripcion,unidad,cantidad ,precio) VALUES (?,?,?,?,?,?,?,?) ON DUPLICATE key UPDATE fichas_id_ficha =  values(fichas_id_ficha), tipo =  values(tipo), id_tipoDocumentoAdquisicion =  values(id_tipoDocumentoAdquisicion), codigo =  values(codigo), descripcion =  values(descripcion), unidad =  values(unidad), cantidad =  values(cantidad), precio =  values(precio) ", [fichas_id_ficha, tipo, id_tipoDocumentoAdquisicion, codigo, descripcion, unidad, cantidad, precio], (error, res) => {
+        pool.query("SELECT COUNT(*) total FROM componentes LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN recursos ON recursos.Partidas_id_partida = partidas.id_partida WHERE componentes.fichas_id_ficha = ? AND recursos.descripcion = ?", [fichas_id_ficha, descripcion], (error, res) => {
+            if (error) {
+                reject(error);
+            }
+            resolve(res ? res[0] : {});
+        });
+    });
+};
+userModel.postNuevoRecursoReal = ({ fichas_id_ficha, tipo, id_tipoDocumentoAdquisicion, codigo, descripcion, unidad, cantidad, precio }) => {
+    return new Promise((resolve, reject) => {
+        pool.query("INSERT INTO recursos_ejecucionreal (fichas_id_ficha,tipo,id_tipoDocumentoAdquisicion, codigo, descripcion,unidad,cantidad ,precio,recurso_nuevo) VALUES (?,?,?,?,?,?,?,?,1) ON DUPLICATE key UPDATE fichas_id_ficha =  values(fichas_id_ficha), tipo =  values(tipo), id_tipoDocumentoAdquisicion =  values(id_tipoDocumentoAdquisicion), codigo =  values(codigo), descripcion =  values(descripcion), unidad =  values(unidad), cantidad =  values(cantidad), precio =  values(precio) ", [fichas_id_ficha, tipo, id_tipoDocumentoAdquisicion, codigo, descripcion, unidad, cantidad, precio], (error, res) => {
             if (error) {
                 reject(error);
             }

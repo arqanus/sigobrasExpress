@@ -315,10 +315,17 @@ module.exports = function (app) {
 			res.status(400).json(error.code);
 		}
 	})
-	app.post('/postNuevoRecuroReal', async (req, res) => {
+	app.post('/postNuevoRecursoReal', async (req, res) => {
 		try {
-			var data = await User.postNuevoRecuroReal(req.body)
-			res.json(data);
+			var cantidad = await User.getCantidadRecursosByDescripcion(req.body)
+			var message = ""
+			if(cantidad.total == 0){
+				var data = await User.getResumenRecursosNuevos(req.body)
+				message = "ingreso exitoso"
+			}else{
+				message = "el recurso ya existe"
+			}
+			res.json({message});
 		} catch (error) {
 			console.log(error);
 			res.status(400).json(error.code);
