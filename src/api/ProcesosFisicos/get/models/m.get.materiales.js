@@ -529,6 +529,16 @@ userModel.getRecursosEjecucionRealByTipoAndCodigo = ({ id_ficha, id_tipoDocument
         });
     });
 };
+userModel.getRecursosEjecucionRealNuevosByTipoAndCodigo = ({ id_ficha, id_tipoDocumentoAdquisicion, codigo }) => {
+    return new Promise((resolve, reject) => {
+        pool.query("SELECT * FROM recursos_ejecucionreal WHERE recurso_nuevo AND fichas_id_ficha = ? AND id_tipoDocumentoAdquisicion = ? AND recursos_ejecucionreal.codigo = ?", [id_ficha, id_tipoDocumentoAdquisicion, codigo], (error, res) => {
+            if (error) {
+                reject(error);
+            }
+            resolve(res);
+        });
+    });
+};
 userModel.getDocumentoAdquisicionDetalles = ({ id_ficha, id_tipoDocumentoAdquisicion, codigo }) => {
     return new Promise((resolve, reject) => {
         pool.query("SELECT * FROM documentosadquisicion WHERE fichas_id_ficha = ? AND id_tipoDocumentoAdquisicion = ? AND codigo = ? ", [id_ficha, id_tipoDocumentoAdquisicion, codigo], (error, res) => {
