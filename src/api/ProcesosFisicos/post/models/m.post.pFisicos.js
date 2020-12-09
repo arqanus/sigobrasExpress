@@ -258,7 +258,7 @@ userModel.updateRecursoPrecio = ({ id_ficha, tipo, descripcion, precio }) => {
 }
 userModel.updateRecursoDocumentoAdquisicion = ({ id_ficha, tipo, descripcion, codigo, id_tipoDocumentoAdquisicion }) => {
     return new Promise((resolve, reject) => {
-        pool.query("INSERT INTO recursos_ejecucionreal (fichas_id_ficha,tipo,descripcion,codigo,tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion) VALUES (?,?,?,?,?) ON DUPLICATE key UPDATE codigo = VALUES(codigo), tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion = VALUES(tipoDocumentoAdquisicion_id_tipoDocumentoAdquisicion)", [id_ficha, tipo, descripcion, codigo, id_tipoDocumentoAdquisicion], (error, res) => {
+        pool.query("INSERT INTO recursos_ejecucionreal (fichas_id_ficha,tipo,descripcion,codigo,id_tipoDocumentoAdquisicion) VALUES (?,?,?,?,?) ON DUPLICATE key UPDATE codigo = VALUES(codigo), id_tipoDocumentoAdquisicion = VALUES(id_tipoDocumentoAdquisicion)", [id_ficha, tipo, descripcion, codigo, id_tipoDocumentoAdquisicion], (error, res) => {
             if (error) {
                 reject(error);
             }
