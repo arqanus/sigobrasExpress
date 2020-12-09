@@ -440,7 +440,7 @@ userModel.getResumenRecursos = ({ id_ficha, tipo, texto_buscar, inicio, cantidad
         condiciones.push(`(recursos.descripcion like \'%${texto_buscar}%\' || recursos.unidad like \'%${texto_buscar}%\')`)
     }
     if (condiciones.length > 0) {
-        query += " WHERE recurso_nuevo = 0 AND " + condiciones.join(" AND ")
+        query += " WHERE " + condiciones.join(" AND ")
     }
     query += ` GROUP BY recursos.descripcion LIMIT ${inicio} , ${cantidad_datos}`
     // return query
