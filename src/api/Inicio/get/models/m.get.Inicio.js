@@ -99,7 +99,7 @@ userModel.getUsuariosByCargo = (id_ficha, id_cargo, estado = true) => {
     })
   })
 }
-userModel.getUsuariosByCargoAdmin = ({ id_ficha, id_cargo, estado, cargos_tipo_id, textoBuscado }) => {
+userModel.getUsuariosByCargoAdmin = ({ id_ficha, id_cargo }) => {
   var query = "SELECT usuarios.*, CONCAT(usuarios.apellido_paterno, ' ', usuarios.apellido_materno, ' ', usuarios.nombre) nombre_usuario, cargos.nombre cargo_nombre, accesos.id_acceso FROM  usuarios LEFT JOIN accesos ON accesos.Usuarios_id_usuario = usuarios.id_usuario LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo LEFT JOIN fichas_has_accesos ON fichas_has_accesos.Accesos_id_acceso = accesos.id_acceso"
   var condiciones = []
   if (id_ficha != 0) {
@@ -121,6 +121,38 @@ userModel.getUsuariosByCargoAdmin = ({ id_ficha, id_cargo, estado, cargos_tipo_i
     query += " WHERE " + condiciones.join(" AND ")
   }
   query += " GROUP BY accesos.id_acceso ORDER BY accesos.id_acceso  "
+  // return query
+  return new Promise((resolve, reject) => {
+    pool.query(query, (err, res) => {
+      if (err) {
+        reject(err);
+      }
+      resolve(res);
+    })
+  })
+}
+userModel.getUsuariosByFichas = ({ id_acceso, id_ficha, id_cargo }) => {
+  var query = "SELECT fichas_has_accesos.id, CONCAT(fichas.codigo, ' - ', cargos.nombre, ' - ', usuarios.apellido_paterno, ' ', usuarios.apellido_materno, ' ', usuarios.nombre) nombre FROM fichas_has_accesos fichas_has_accesos1 LEFT JOIN fichas ON fichas.id_ficha = fichas_has_accesos1.Fichas_id_ficha LEFT JOIN fichas_has_accesos ON fichas_has_accesos.Fichas_id_ficha = fichas.id_ficha LEFT JOIN accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso LEFT JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo"
+  var condiciones = []
+  if (true) {
+    condiciones.push(`(fichas_has_accesos.habilitado) and (accesos.estado)`)
+  }
+  if (true) {
+    condiciones.push(`(fichas_has_accesos1.Accesos_id_acceso = ${id_acceso})`)
+  }
+  if (true) {
+    condiciones.push(`(fichas_has_accesos.Accesos_id_acceso != ${id_acceso})`)
+  }
+  if (id_ficha.length > 0) {
+    condiciones.push(`(fichas.id_ficha IN (${id_ficha}))`)
+  }
+  if (id_cargo.length > 0) {
+    condiciones.push(`(cargos.id_Cargo IN (${id_cargo}))`)
+  }
+
+  if (condiciones.length > 0) {
+    query += " WHERE " + condiciones.join(" AND ")
+  }
   // return query
   return new Promise((resolve, reject) => {
     pool.query(query, (err, res) => {
