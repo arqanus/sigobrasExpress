@@ -28,7 +28,6 @@ morganBody(app);
 app.use(compression()); 
 //static
 app.use('/static', express.static(__dirname + '/public'));
-
 //apis reusables
 require('./api/Reusable/r.avances')(app);
 require('./api/Reusable/r.datosGenerales')(app);
@@ -59,6 +58,7 @@ require('./api/ProcesosFisicos/get/routes/r.get.pFisicos')(app);
 require('./api/ProcesosFisicos/get/routes/r.get.valGeneral')(app);
 require('./api/ProcesosFisicos/get/routes/r.get.gantt')(app);
 require('./api/ProcesosFisicos/get/routes/r.get.dificultades')(app);
+require('./api/ProcesosFisicos/Valorizaciones/routes/r.valorizacionPrincipal')(app);
 
 
 require('./api/ProcesosFisicos/post/routes/r.post.pFisicos')(app);
@@ -85,6 +85,8 @@ require('./api/ProcesosGerenciales/get/routes/r.get.recursospersonal')(app);
 require('./api/ProcesosGerenciales/get/routes/r.get.infobras')(app);
 require('./api/ProcesosGerenciales/get/routes/r.get.plazos')(app);
 require('./api/ProcesosGerenciales/get/routes/r.get.curvaS')(app);
+//gestion documentaria
+require('./api/GestionDocumentaria/routes/r.gestionDocumentaria')(app);
 //defecto
 const server = app.listen(app.get('port'), () => {
   console.log('running in port', PORT);
