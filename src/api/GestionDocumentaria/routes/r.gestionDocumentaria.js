@@ -36,7 +36,7 @@ module.exports = (app) => {
     })
     app.post('/gestiondocumentaria_mensajes_archivoAdjunto', async (req, res) => {
         try {
-            var dir = __dirname + '/../../../../public/'
+            var dir = __dirname + '/../../../public/'
             //crear ruta si no existe
             if (!fs.existsSync(dir)) {
                 fs.mkdirSync(dir);
@@ -85,7 +85,7 @@ module.exports = (app) => {
     })
     app.post('/gestiondocumentaria_mensajes_archivoAdjunto_respuesta', async (req, res) => {
         try {
-            var dir = __dirname + '/../../../../public/'
+            var dir = __dirname + '/../../../public/'
             //crear ruta si no existe
             if (!fs.existsSync(dir)) {
                 fs.mkdirSync(dir);

@@ -138,7 +138,13 @@ module.exports = {
                 gestiondocumentaria_archivosadjuntos.documento_link,
                 DATE_FORMAT(fecha_registro, '%Y-%m-%d') fecha,
                 gestiondocumentaria_archivosadjuntos.gestiondocumentaria_archivosadjuntos_tipos_id archivoAdjunto_id,
-                gestiondocumentaria_archivosadjuntos_tipos.tipo archivoAdjunto_tipo
+                gestiondocumentaria_archivosadjuntos_tipos.tipo archivoAdjunto_tipo,
+                cargos.nombre emisor_cargo,
+                CONCAT(usuarios.apellido_paterno,
+                                ' ',
+                                usuarios.apellido_materno,
+                                ' ',
+                                usuarios.nombre) emisor_nombre
             FROM
                 fichas_has_accesos
                     INNER JOIN
@@ -149,6 +155,12 @@ module.exports = {
                 gestiondocumentaria_archivosadjuntos ON gestiondocumentaria_archivosadjuntos.gestiondocumentaria_mensajes_id = gestiondocumentaria_mensajes.id
                     LEFT JOIN
                 gestiondocumentaria_archivosadjuntos_tipos ON gestiondocumentaria_archivosadjuntos_tipos.id = gestiondocumentaria_archivosadjuntos.gestiondocumentaria_archivosadjuntos_tipos_id
+                    LEFT JOIN
+                accesos ON accesos.id_acceso = gestiondocumentaria_mensajes.emisor_id
+                    LEFT JOIN
+                usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario
+                    LEFT JOIN
+                cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo
             WHERE
              fichas_has_accesos.Accesos_id_acceso = ${id_acceso}
                  AND fichas_has_accesos.Fichas_id_ficha = ${id_ficha}
@@ -165,7 +177,9 @@ module.exports = {
         return new Promise((resolve, reject) => {
             pool.query(`
             SELECT 
-                *
+            gestiondocumentaria_respuestas.*,
+            gestiondocumentaria_archivosadjuntos.*,
+            DATE_FORMAT(fecha_registro, '%Y-%m-%d') fecha
             FROM
                 gestiondocumentaria_respuestas
                     LEFT JOIN
