@@ -66,6 +66,15 @@ module.exports = (app) => {
 			res.status(200).json(error)
 		}
 	});
+	app.post('/getUsuariosByFichas', async (req, res) => {
+		try {
+			var cargos = await User.getUsuariosByFichas(req.body)
+			res.json(cargos)
+		} catch (error) {
+			console.log(error);
+			res.status(204).json(error)
+		}
+	});
 	app.post('/postUsuarioObra', async (req, res) => {
 		try {
 			if (req.body.usuario != "") {
