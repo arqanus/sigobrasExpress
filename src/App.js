@@ -34,13 +34,14 @@ require('./api/Reusable/r.datosGenerales')(app);
 
 //interf gerencial
 require('./api/InterfazGerencial/get/routes/r.get.InterfazGerencial')(app);
-//routes 
+//routes Admin
 require('./api/Admin/get/routes/r.get.obras')(app);
 require('./api/Admin/get/routes/r.get.users')(app);
 require('./api/Admin/post/routes/r.post.obras')(app);
 require('./api/Admin/post/routes/r.post.users')(app);
 require('./api/Admin/put/routes/r.put.users')(app);
 require('./api/Admin/delete/routes/r.delete.obras')(app);
+require('./api/Admin/routes/r.obra')(app);
 
 
 require('./api/Interfaz/post/routes/r.post.interfaz')(app);
