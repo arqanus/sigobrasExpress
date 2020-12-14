@@ -60,7 +60,7 @@ module.exports = (app) => {
                 // var extensionArchivo = "." + formFiles.files.archivoAdjunto.name.split('.').pop()
                 var archivo_name = "gdmi_" + formFiles.fields.gestiondocumentaria_mensajes_id + "-" + formFiles.files.archivoAdjunto.name
                 //se verifica y crea las carpetas de obra 
-                var obraFolder = formFiles.fields.obra_codigo + `/DOCUMENTOS/${formFiles.fields.tipoDocumento}/`
+                var obraFolder = `USUARIOS/${formFiles.fields.id_acceso}/DOCUMENTOS/${formFiles.fields.tipoDocumento}/`
                 if (!fs.existsSync(dir + obraFolder)) {
                     fs.mkdirSync(dir + obraFolder, { recursive: true });
                 }

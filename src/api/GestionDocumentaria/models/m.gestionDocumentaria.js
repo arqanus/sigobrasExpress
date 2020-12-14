@@ -22,7 +22,7 @@ module.exports = {
     },
     postgestiondocumentaria_receptores(data) {
         return new Promise((resolve, reject) => {
-            pool.query(`INSERT INTO gestiondocumentaria_receptores(gestiondocumentaria_mensajes_id, receptor_id) VALUES ?`, [data], (err, res) => {
+            pool.query(`INSERT INTO gestiondocumentaria_receptores(gestiondocumentaria_mensajes_id, receptor_id,cargos_id_Cargo) VALUES ?`, [data], (err, res) => {
                 if (err) {
                     return reject(err)
                 }
@@ -32,7 +32,8 @@ module.exports = {
     },
     getgestiondocumentaria_enviados({ id_acceso }) {
         return new Promise((resolve, reject) => {
-            pool.query(`SELECT 
+            pool.query(`
+        SELECT 
             gestiondocumentaria_mensajes.*,
             gestiondocumentaria_archivosadjuntos.documento_link,
             DATE_FORMAT(fecha_registro,"%Y-%m-%d") fecha
@@ -56,32 +57,22 @@ module.exports = {
     getgestiondocumentaria_enviados_usuarios({ id }) {
         return new Promise((resolve, reject) => {
             pool.query(`
-        SELECT
-            fichas_has_accesos.id, 
-            fichas.codigo,
-            cargos.nombre cargo_nombre,
-            CONCAT(usuarios.apellido_paterno,
-                    ' ',
-                    usuarios.apellido_materno,
-                    ' ',
-                    usuarios.nombre) usuario_nombre,
-            gestiondocumentaria_receptores.mensaje_visto
-        FROM
-            gestiondocumentaria_mensajes
-                LEFT JOIN
-            gestiondocumentaria_receptores ON gestiondocumentaria_receptores.gestiondocumentaria_mensajes_id = gestiondocumentaria_mensajes.id
-                LEFT JOIN
-            fichas_has_accesos ON fichas_has_accesos.id = gestiondocumentaria_receptores.receptor_id
-                LEFT JOIN
-            fichas ON fichas.id_ficha = fichas_has_accesos.Fichas_id_ficha
-                LEFT JOIN
-            accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso
-                LEFT JOIN
-            usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario
-                LEFT JOIN
-            cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo
-        WHERE
-            gestiondocumentaria_mensajes.id = ${id}`, (err, res) => {
+            SELECT 
+                fichas.id_ficha,
+                fichas.codigo,
+                cargos.nombre cargo_nombre,
+                gestiondocumentaria_receptores.mensaje_visto
+            FROM
+                gestiondocumentaria_mensajes
+                    LEFT JOIN
+                gestiondocumentaria_receptores ON gestiondocumentaria_receptores.gestiondocumentaria_mensajes_id = gestiondocumentaria_mensajes.id
+                    LEFT JOIN
+                fichas ON fichas.id_ficha = gestiondocumentaria_receptores.receptor_id
+                    LEFT JOIN
+                cargos ON cargos.id_Cargo = gestiondocumentaria_receptores.cargos_id_Cargo
+            WHERE
+                gestiondocumentaria_mensajes.id = ${id}
+            `, (err, res) => {
                 if (err) {
                     return reject(err)
                 }
@@ -95,13 +86,11 @@ module.exports = {
             SELECT 
                 gestiondocumentaria_receptores.mensaje_visto
             FROM
-                gestiondocumentaria_receptores
-                    LEFT JOIN
-                fichas_has_accesos ON fichas_has_accesos.id = gestiondocumentaria_receptores.receptor_id
+                gestiondocumentaria_receptores                    
             WHERE
-                Fichas_id_ficha = ${id_ficha}
-                    AND Accesos_id_acceso = ${id_acceso}
-                    and gestiondocumentaria_mensajes_id = ${gestiondocumentaria_mensajes_id} `,
+            receptor_id = ${id_ficha}
+            AND gestiondocumentaria_mensajes_id = ${gestiondocumentaria_mensajes_id}
+            `,
                 (err, res) => {
                     if (err) {
                         return reject(err)
@@ -110,18 +99,16 @@ module.exports = {
                 })
         })
     },
-    putgestiondocumentaria_receptores({ id_ficha, id_acceso, gestiondocumentaria_mensajes_id }) {
+    putgestiondocumentaria_receptores({ id_ficha, gestiondocumentaria_mensajes_id }) {
         return new Promise((resolve, reject) => {
-            pool.query(
-                `UPDATE gestiondocumentaria_receptores
-                LEFT JOIN
-            fichas_has_accesos ON fichas_has_accesos.id = gestiondocumentaria_receptores.receptor_id 
+            pool.query(`
+            UPDATE gestiondocumentaria_receptores 
             SET 
                 gestiondocumentaria_receptores.mensaje_visto = TRUE
             WHERE
-                Fichas_id_ficha = ${id_ficha}
-                    AND Accesos_id_acceso = ${id_acceso}
-                    AND gestiondocumentaria_mensajes_id = ${gestiondocumentaria_mensajes_id} `,
+                receptor_id = ${id_ficha}
+                    AND gestiondocumentaria_mensajes_id = ${gestiondocumentaria_mensajes_id}
+            `,
                 (err, res) => {
                     if (err) {
                         return reject(err)
@@ -130,7 +117,7 @@ module.exports = {
                 })
         })
     },
-    getgestiondocumentaria_recibidos({ id_acceso, id_ficha }) {
+    getgestiondocumentaria_recibidos({ id_ficha, id_acceso }) {
         return new Promise((resolve, reject) => {
             pool.query(`
             SELECT 
@@ -141,14 +128,17 @@ module.exports = {
                 gestiondocumentaria_archivosadjuntos_tipos.tipo archivoAdjunto_tipo,
                 cargos.nombre emisor_cargo,
                 CONCAT(usuarios.apellido_paterno,
-                                ' ',
-                                usuarios.apellido_materno,
-                                ' ',
-                                usuarios.nombre) emisor_nombre
+                        ' ',
+                        usuarios.apellido_materno,
+                        ' ',
+                        usuarios.nombre) emisor_nombre,
+                cargos_receptor.nombre receptor_cargo
             FROM
-                fichas_has_accesos
+                fichas
                     INNER JOIN
-                gestiondocumentaria_receptores ON gestiondocumentaria_receptores.receptor_id = fichas_has_accesos.id
+                gestiondocumentaria_receptores ON gestiondocumentaria_receptores.receptor_id = fichas.id_ficha
+                    LEFT JOIN
+                cargos cargos_receptor ON cargos_receptor.id_Cargo = gestiondocumentaria_receptores.cargos_id_Cargo
                     LEFT JOIN
                 gestiondocumentaria_mensajes ON gestiondocumentaria_mensajes.id = gestiondocumentaria_receptores.gestiondocumentaria_mensajes_id
                     LEFT JOIN
@@ -162,9 +152,9 @@ module.exports = {
                     LEFT JOIN
                 cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo
             WHERE
-             fichas_has_accesos.Accesos_id_acceso = ${id_acceso}
-                 AND fichas_has_accesos.Fichas_id_ficha = ${id_ficha}
-                 order by fecha_registro desc
+                fichas.id_ficha = ${id_ficha}
+                AND gestiondocumentaria_mensajes.emisor_id != ${id_acceso}
+            ORDER BY fecha_registro DESC
                  `, (err, res) => {
                 if (err) {
                     return reject(err)
@@ -217,7 +207,7 @@ module.exports = {
                 if (err) {
                     return reject(err)
                 }
-                return resolve(res?res[0]:{})
+                return resolve(res ? res[0] : {})
             })
         })
     },
