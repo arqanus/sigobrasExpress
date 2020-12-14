@@ -249,6 +249,43 @@ module.exports = {
             })
         })
     },
+    putgestiondocumentaria_mensajes_revisado({ id_mensaje, id_acceso, revisado }) {
+        return new Promise((resolve, reject) => {
+            var query = `
+            insert into gestiondocumentaria_mensajes_revisado 
+            (gestiondocumentaria_mensajes_id,accesos_id_acceso,revisado) 
+            values(${id_mensaje},${id_acceso},${revisado}) 
+            on duplicate key update revisado = values(revisado)
+            `
+            pool.query(query, (error, res) => {
+                if (error) {
+                    reject(error);
+                }
+                resolve(res)
+            })
+        })
+
+    },
+    getgestiondocumentaria_mensajes_revisado({ id_mensaje, id_acceso }) {
+        return new Promise((resolve, reject) => {
+            var query = `
+            SELECT 
+                *
+            FROM
+                gestiondocumentaria_mensajes_revisado
+            WHERE
+                gestiondocumentaria_mensajes_id = ${id_mensaje}
+                    AND accesos_id_acceso = ${id_acceso};
+            `
+            pool.query(query, (error, res) => {
+                if (error) {
+                    reject(error);
+                }
+                resolve(res?res[0]:{})
+            })
+        })
+
+    },
 
 
 }

@@ -99,7 +99,7 @@ userModel.getUsuariosByCargo = (id_ficha, id_cargo, estado = true) => {
     })
   })
 }
-userModel.getUsuariosByCargoAdmin = ({ id_ficha, id_cargo }) => {
+userModel.getUsuariosByCargoAdmin = ({ id_ficha, id_cargo, textoBuscado, estado }) => {
   var query = "SELECT usuarios.*, CONCAT(usuarios.apellido_paterno, ' ', usuarios.apellido_materno, ' ', usuarios.nombre) nombre_usuario, cargos.nombre cargo_nombre, accesos.id_acceso FROM  usuarios LEFT JOIN accesos ON accesos.Usuarios_id_usuario = usuarios.id_usuario LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo LEFT JOIN fichas_has_accesos ON fichas_has_accesos.Accesos_id_acceso = accesos.id_acceso"
   var condiciones = []
   if (id_ficha != 0) {
@@ -108,11 +108,8 @@ userModel.getUsuariosByCargoAdmin = ({ id_ficha, id_cargo }) => {
   if (id_cargo != 0) {
     condiciones.push(`(accesos.Cargos_id_Cargo =  ${id_cargo})`)
   }
-  // if (estado != "") {
-  //   condiciones.push(`(fichas_has_accesos.habilitado =  ${estado})`)
-  // }
-  if (cargos_tipo_id != 0) {
-    condiciones.push(`(cargos_tipo_id =   ${cargos_tipo_id})`)
+  if (estado != "") {
+    condiciones.push(`(fichas_has_accesos.habilitado =  ${estado})`)
   }
   if (textoBuscado != "") {
     condiciones.push(`((usuarios.nombre like \'%${textoBuscado}%\') || (usuarios.apellido_paterno like \'%${textoBuscado}%\')  || (usuarios.apellido_materno like \'%${textoBuscado}%\'))`)
@@ -121,7 +118,6 @@ userModel.getUsuariosByCargoAdmin = ({ id_ficha, id_cargo }) => {
     query += " WHERE " + condiciones.join(" AND ")
   }
   query += " GROUP BY accesos.id_acceso ORDER BY accesos.id_acceso  "
-  // return query
   return new Promise((resolve, reject) => {
     pool.query(query, (err, res) => {
       if (err) {
