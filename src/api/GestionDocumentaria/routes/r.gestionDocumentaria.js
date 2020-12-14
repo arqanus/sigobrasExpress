@@ -30,12 +30,24 @@ module.exports = (app) => {
                     var fichasAccesos = await Notificacion.getFichasHasAccesos({ id_ficha })
                     var dataTemp = []
                     fichasAccesos.forEach(item2 => {
-                        dataTemp.push(
-                            ["GestionDocumentaria", "ha enviado un documento en la gestion documentaria",
-                                usuarioData.cargo_nombre + " - " + usuarioData.usuario_nombre, 1, item2.id]
-                        )
+                        console.log("id ", item2.Accesos_id_acceso, req.body.mensaje.emisor_id);
+                        if (item2.Accesos_id_acceso != req.body.mensaje.emisor_id) {
+                            dataTemp.push(
+                                [
+                                    "GestionDocumentaria",
+                                    "ha enviado un documento en la gestion documentaria ",
+                                    usuarioData.cargo_nombre + " - " + usuarioData.usuario_nombre,
+                                    1,
+                                    item2.id,
+                                    req.body.mensaje.asunto
+                                ]
+                            )
+                        }
                     });
-                    Notificacion.postFichasNotificaciones(dataTemp)
+                    console.log("dataTemp", dataTemp);
+                    if (dataTemp.length > 0) {
+                        Notificacion.postFichasNotificaciones(dataTemp)
+                    }
                 });
             } else {
                 message = "problema con el registro"
