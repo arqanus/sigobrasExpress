@@ -1,4 +1,6 @@
 const User = require('../models/m.gestionDocumentaria');
+const Notificacion = require('../../Notificaciones/m.notificaciones');
+const Reusable = require('../../Reusable/m.datosGenerales');
 var fs = require('fs');
 var formidable = require('formidable');
 const { log } = require('console');
@@ -11,7 +13,7 @@ module.exports = (app) => {
                 req.body.receptores.forEach((item, i) => {
                     req.body.receptores[i].unshift(response.insertId)
                 });
-                console.log("receptrores", req.body.receptores);
+                console.log("receptores", req.body.receptores);
                 var response2 = await User.postgestiondocumentaria_receptores(req.body.receptores)
                 message = "registro exitoso"
                 res.status(200).json(
@@ -20,6 +22,21 @@ module.exports = (app) => {
                         insertId: response.insertId
                     }
                 )
+                console.log("receptores", req.body.receptores);
+                var usuarioData = await Reusable.getDatosUsuario(req.body.mensaje.emisor_id)
+                //ingreso a notificaciones
+                req.body.receptores.forEach(async item => {
+                    var id_ficha = item[1]
+                    var fichasAccesos = await Notificacion.getFichasHasAccesos({ id_ficha })
+                    var dataTemp = []
+                    fichasAccesos.forEach(item2 => {
+                        dataTemp.push(
+                            ["GestionDocumentaria", "ha enviado un documento en la gestion documentaria",
+                                usuarioData.cargo_nombre + " - " + usuarioData.usuario_nombre, 1, item2.id]
+                        )
+                    });
+                    Notificacion.postFichasNotificaciones(dataTemp)
+                });
             } else {
                 message = "problema con el registro"
                 res.status(204).json(
@@ -220,4 +237,22 @@ module.exports = (app) => {
             res.status(400).json({ error: error.code })
         }
     })
+    app.put('/gestiondocumentaria_mensajes_revisado', async (req, res) => {
+        try {
+            var data = await User.putgestiondocumentaria_mensajes_revisado(req.body)
+            res.json(data)
+        } catch (error) {
+            console.log(error);
+            res.status(404).json({ error: error.code || "error" })
+        }
+    });
+    app.get('/gestiondocumentaria_mensajes_revisado', async (req, res) => {
+        try {
+            var data = await User.getgestiondocumentaria_mensajes_revisado(req.query)
+            res.json(data)
+        } catch (error) {
+            console.log(error);
+            res.status(404).json({ error: error.code || "error" })
+        }
+    });
 }

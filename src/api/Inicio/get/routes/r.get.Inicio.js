@@ -63,7 +63,8 @@ module.exports = (app) => {
 			var cargos = await User.getUsuariosByCargoAdmin(req.body)
 			res.json(cargos)
 		} catch (error) {
-			res.status(200).json(error)
+			console.log(error);
+			res.status(400).json(error)
 		}
 	});
 	app.post('/getUsuariosByFichas', async (req, res) => {

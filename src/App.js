@@ -25,12 +25,15 @@ app.use(bodyParser.json({ limit: '50mb' }));
 morganBody(app);
 
 //use compression 
-app.use(compression()); 
+app.use(compression());
 //static
 app.use('/static', express.static(__dirname + '/public'));
 //apis reusables
 require('./api/Reusable/r.avances')(app);
 require('./api/Reusable/r.datosGenerales')(app);
+
+//apis notificacioanes
+require('./api/Notificaciones/r.notificaciones')(app);
 
 //interf gerencial
 require('./api/InterfazGerencial/get/routes/r.get.InterfazGerencial')(app);
@@ -131,5 +134,13 @@ io.on('connection', (socket) => {
     console.log("data", data);
     socket.broadcast.emit("dificultades_comentarios_get-" + data.id_dificultad, data.id_dificultad)
   });
-  
+  socket.on("gestion_documentaria_principal", (data) => {
+    console.log("data", data);
+    socket.broadcast.emit("gestion_documentaria_" + data.id_ficha)
+  });
+  socket.on("gestion_documentaria_mensaje_principal", (data) => {
+    console.log("data", data);
+    socket.broadcast.emit("gestion_documentaria_mensaje" + data.id_mensaje)
+  });
+
 });
