@@ -23,7 +23,10 @@ module.exports = {
                 documento_resolucion_estado, 
                 imagen, 
                 observacion, 
-                fichas_id_ficha) 
+                fichas_id_ficha,
+                n_dias,
+                plazo_aprobado
+                ) 
             VALUES 
             ? 
             ON DUPLICATE KEY UPDATE 
@@ -33,7 +36,9 @@ module.exports = {
             fecha_final = values(fecha_final), 
             documento_resolucion_estado = values(documento_resolucion_estado), 
             imagen = values(imagen), 
-            observacion = values(observacion) 
+            observacion = values(observacion),
+            n_dias = values(n_dias),
+            plazo_aprobado = values(plazo_aprobado) 
             `, [data], (err, res) => {
                 if (err) {
                     reject(err);
