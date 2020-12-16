@@ -11,7 +11,7 @@ module.exports = (app) => {
 	});
 	app.post('/getSectores', async (req, res) => {
 		try {
-			var data = await User.getSectores(req.body.id_acceso,req.body.id_unidadEjecutora)
+			var data = await User.getSectores(req.body)
 			res.json(data)
 		} catch (error) {
 			res.status(200).json(error)
