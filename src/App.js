@@ -90,6 +90,7 @@ require('./api/ProcesosGerenciales/get/routes/r.get.recursospersonal')(app);
 require('./api/ProcesosGerenciales/get/routes/r.get.infobras')(app);
 require('./api/ProcesosGerenciales/get/routes/r.get.plazos')(app);
 require('./api/ProcesosGerenciales/get/routes/r.get.curvaS')(app);
+require('./api/ProcesosGerenciales/PlazosHistorial/r.plazos')(app);
 //gestion documentaria
 require('./api/GestionDocumentaria/routes/r.gestionDocumentaria')(app);
 //defecto
