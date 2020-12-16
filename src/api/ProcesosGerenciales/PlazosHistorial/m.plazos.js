@@ -10,11 +10,45 @@ module.exports = {
             })
         })
     },
+    putPlazos(data) {
+        return new Promise((resolve, reject) => {
+            pool.query(`
+            INSERT INTO plazos_historial 
+            (
+                id, 
+                tipo, 
+                nivel,descripcion, 
+                fecha_inicio, 
+                fecha_final, 
+                documento_resolucion_estado, 
+                imagen, 
+                observacion, 
+                fichas_id_ficha) 
+            VALUES 
+            ? 
+            ON DUPLICATE KEY UPDATE 
+            tipo = values(tipo), 
+            descripcion = values(descripcion), 
+            fecha_inicio = values(fecha_inicio), 
+            fecha_final = values(fecha_final), 
+            documento_resolucion_estado = values(documento_resolucion_estado), 
+            imagen = values(imagen), 
+            observacion = values(observacion) 
+            `, [data], (err, res) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve(res)
+            })
+        })
+    },
     getPlazosPadres({ id_ficha }) {
         return new Promise((resolve, reject) => {
             pool.query(`
             SELECT 
-                plazos_historial.*, plazos_tipo.nombre tipo_nombre
+                plazos_historial.*, plazos_tipo.nombre tipo_nombre,
+                DATE_FORMAT(fecha_inicio,"%Y-%m-%d")fecha_inicio,
+                DATE_FORMAT(fecha_final,"%Y-%m-%d")fecha_final
             FROM
                 plazos_historial
                     LEFT JOIN
@@ -34,7 +68,9 @@ module.exports = {
         return new Promise((resolve, reject) => {
             pool.query(`
             SELECT 
-                plazos_historial.*, plazos_tipo.nombre tipo_nombre
+                plazos_historial.*, plazos_tipo.nombre tipo_nombre,
+                DATE_FORMAT(fecha_inicio,"%Y-%m-%d")fecha_inicio,
+                DATE_FORMAT(fecha_final,"%Y-%m-%d")fecha_final
             FROM
                 plazos_historial
                     LEFT JOIN

@@ -15,6 +15,33 @@ module.exports = (app) => {
             res.status(404).json({ error: err.code })
         }
     })
+    app.put('/plazos', async (req, res) => {
+        try {
+            var dataProcesada = [
+                req.body.id,
+                req.body.tipo,
+                req.body.nivel,
+                req.body.descripcion,
+                req.body.fecha_inicio,
+                req.body.fecha_final,
+                req.body.documento_resolucion_estado,
+                req.body.imagen,
+                req.body.observacion,
+                req.body.fichas_id_ficha
+            ]
+            console.log(dataProcesada);
+            var response = await User.putPlazos([dataProcesada])
+            if (response.affectedRows > 0) {
+                res.status(200).json({ message: "registro exitoso" })
+            }
+            else {
+                res.status(204).json({ message: "hubo un problema" })
+            }
+        } catch (err) {
+            console.log(err);
+            res.status(404).json({ error: err.code })
+        }
+    })
     app.get('/plazosPadres', async (req, res) => {
         try {
             var data = await User.getPlazosPadres(req.query)
