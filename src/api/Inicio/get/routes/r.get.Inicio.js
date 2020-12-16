@@ -14,10 +14,11 @@ module.exports = (app) => {
 	});
 	app.post('/listaObrasByIdAcceso', async (req, res) => {
 		try {
-			var obras = await User.listaObrasByIdAcceso(req.body)
-			res.json(obras)
+			var response = await User.listaObrasByIdAcceso(req.body)
+			res.json(response)
 		} catch (error) {
-			res.status(200).json(error)
+			console.log(error);
+			res.status(404).json({error:error.code})
 		}
 	});
 	app.post('/getComponentesPgerenciales', async (req, res) => {

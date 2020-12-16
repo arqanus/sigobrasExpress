@@ -12,9 +12,80 @@ userModel.getObras = (id_acceso) => {
     })
   })
 }
-userModel.listaObrasByIdAcceso = ({ id_acceso, id_tipoObra }) => {
+userModel.listaObrasByIdAcceso = ({ id_acceso, id_tipoObra, id_unidadEjecutora, idsectores, idmodalidad_ejecutora,Estados_id_Estado }) => {
   return new Promise((resolve, reject) => {
-    pool.query("SELECT fichas.id_ficha, fichas.codigo, fichas.g_meta, id_tipoObra, DATE_FORMAT(MAX(avanceactividades.fecha), '%Y-%m-%d') ultima_fecha FROM fichas LEFT JOIN tipoobras ON tipoobras.id_tipoObra = fichas.tipoObras_id_tipoObra LEFT JOIN fichas_has_accesos ON fichas_has_accesos.Fichas_id_ficha = fichas.id_ficha LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE fichas_has_accesos.habilitado AND historialactividades.estado IS NULL AND fichas_has_accesos.Accesos_id_acceso = ? AND (0 = ? OR id_tipoObra = ?) group by fichas.id_ficha ORDER BY 5 desc", [id_acceso, id_tipoObra, id_tipoObra], (err, res) => {
+    var query = `
+    SELECT 
+        fichas.id_ficha,
+        fichas.codigo,
+        fichas.g_meta,
+        id_tipoObra,
+        DATE_FORMAT(MAX(avanceactividades.fecha), '%Y-%m-%d') ultima_fecha,
+        unidadejecutoras.nombre unidad_ejecutora_nombre,
+        sectores.nombre sector_nombre,
+        modalidad_ejecutora.nombre modalidad_ejecutora_nombre,
+        estado.nombre estado_nombre,
+        DATE_FORMAT(fichas.fecha_inicial, '%Y-%m-%d') fecha_inicial
+    FROM
+        fichas
+            LEFT JOIN
+        tipoobras ON tipoobras.id_tipoObra = fichas.tipoObras_id_tipoObra
+            LEFT JOIN
+        unidadejecutoras ON unidadejecutoras.id_unidadEjecutora = fichas.unidadEjecutoras_id_unidadEjecutora
+            LEFT JOIN
+        sectores ON sectores.idsectores = fichas.sectores_idsectores
+            LEFT JOIN
+        modalidad_ejecutora ON modalidad_ejecutora.idmodalidad_ejecutora = fichas.modalidad_ejecutora
+            LEFT JOIN
+        (SELECT 
+            Fichas_id_ficha,
+                nombre,
+                codigo,
+                historialestados.Estados_id_Estado
+        FROM
+            historialestados
+        INNER JOIN (SELECT 
+            MAX(id_historialEstado) id_historialEstado
+        FROM
+            historialestados
+        GROUP BY fichas_id_ficha) historial ON historial.id_historialEstado = historialestados.id_historialEstado
+        LEFT JOIN estados ON estados.id_Estado = historialestados.Estados_id_Estado) estado ON estado.Fichas_id_ficha = fichas.id_ficha
+            LEFT JOIN
+        fichas_has_accesos ON fichas_has_accesos.Fichas_id_ficha = fichas.id_ficha
+            LEFT JOIN
+        componentes ON componentes.fichas_id_ficha = fichas.id_ficha
+            LEFT JOIN
+        partidas ON partidas.componentes_id_componente = componentes.id_componente
+            LEFT JOIN
+        actividades ON actividades.Partidas_id_partida = partidas.id_partida
+            LEFT JOIN
+        avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad
+    WHERE
+        fichas_has_accesos.habilitado
+            AND fichas_has_accesos.Accesos_id_acceso = ${id_acceso}
+    `
+    var condiciones = []
+    if (id_tipoObra != 0 && id_tipoObra != undefined) {
+      condiciones.push(`(id_tipoObra = ${id_tipoObra})`)
+    }
+    if (id_unidadEjecutora != 0 && id_unidadEjecutora != undefined) {
+      condiciones.push(`(id_unidadEjecutora = ${id_unidadEjecutora})`)
+    }
+    if (idsectores != 0 && idsectores != undefined) {
+      condiciones.push(`(idsectores = ${idsectores})`)
+    }
+    if (idmodalidad_ejecutora != 0 && idmodalidad_ejecutora != undefined) {
+      condiciones.push(`(idmodalidad_ejecutora = ${idmodalidad_ejecutora})`)
+    }
+    if (Estados_id_Estado != 0 && Estados_id_Estado != undefined) {
+      condiciones.push(`(Estados_id_Estado = ${Estados_id_Estado})`)
+    }
+    if (condiciones.length > 0) {
+      query += " AND " + condiciones.join(" AND ")
+    }
+    query += "GROUP BY fichas.unidadEjecutoras_id_unidadEjecutora , sectores_idsectores , id_ficha ORDER BY 5 DESC"
+    // resolve(query)
+    pool.query(query, (err, res) => {
       if (err) {
         reject(err);
       }
