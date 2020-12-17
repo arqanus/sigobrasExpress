@@ -29,7 +29,8 @@ module.exports = (app) => {
                 req.body.observacion,
                 req.body.fichas_id_ficha,
                 req.body.n_dias,
-                req.body.plazo_aprobado
+                req.body.plazo_aprobado,
+                req.body.fecha_aprobada
             ]
             console.log(dataProcesada);
             var response = await User.putPlazos([dataProcesada])
