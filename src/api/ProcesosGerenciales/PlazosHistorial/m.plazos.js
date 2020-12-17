@@ -25,7 +25,8 @@ module.exports = {
                 observacion, 
                 fichas_id_ficha,
                 n_dias,
-                plazo_aprobado
+                plazo_aprobado,
+                fecha_aprobada
                 ) 
             VALUES 
             ? 
@@ -38,7 +39,8 @@ module.exports = {
             imagen = values(imagen), 
             observacion = values(observacion),
             n_dias = values(n_dias),
-            plazo_aprobado = values(plazo_aprobado) 
+            plazo_aprobado = values(plazo_aprobado),
+            fecha_aprobada = values(fecha_aprobada)
             `, [data], (err, res) => {
                 if (err) {
                     reject(err);
@@ -53,7 +55,8 @@ module.exports = {
             SELECT 
                 plazos_historial.*, plazos_tipo.nombre tipo_nombre,
                 DATE_FORMAT(fecha_inicio,"%Y-%m-%d")fecha_inicio,
-                DATE_FORMAT(fecha_final,"%Y-%m-%d")fecha_final
+                DATE_FORMAT(fecha_final,"%Y-%m-%d")fecha_final,
+                DATE_FORMAT(fecha_aprobada,"%Y-%m-%d")fecha_aprobada
             FROM
                 plazos_historial
                     LEFT JOIN
@@ -75,7 +78,8 @@ module.exports = {
             SELECT 
                 plazos_historial.*, plazos_tipo.nombre tipo_nombre,
                 DATE_FORMAT(fecha_inicio,"%Y-%m-%d")fecha_inicio,
-                DATE_FORMAT(fecha_final,"%Y-%m-%d")fecha_final
+                DATE_FORMAT(fecha_final,"%Y-%m-%d")fecha_final,
+                DATE_FORMAT(fecha_aprobada,"%Y-%m-%d")fecha_aprobada
             FROM
                 plazos_historial
                     LEFT JOIN
