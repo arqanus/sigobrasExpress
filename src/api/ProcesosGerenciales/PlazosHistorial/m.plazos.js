@@ -92,6 +92,21 @@ module.exports = {
             })
         })
     },
+    deletePlazosPadresAndHijos({ id }) {
+        return new Promise((resolve, reject) => {
+            pool.query(`
+            DELETE FROM plazos_historial 
+            WHERE 
+            id = ${id}
+            `, (err, res) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve(res)
+            })
+        })
+    },
+
 };
 
 

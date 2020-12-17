@@ -62,4 +62,12 @@ module.exports = (app) => {
             res.status(404).json({ error: err.code })
         }
     })
+    app.delete('/plazosPadresAndHijos',async(req,res)=>{
+		try {
+			var data = await User.deletePlazosPadresAndHijos(req.body)
+			res.json(data);
+		} catch (error) {
+			res.status(400).json(error)
+		}
+	})
 }
