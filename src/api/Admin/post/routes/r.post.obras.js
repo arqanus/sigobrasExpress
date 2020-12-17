@@ -153,19 +153,19 @@ module.exports = (app) => {
             console.log("id_actividad", id_actividad);
             var id_recurso = await User.postRecursos(recursos)
             console.log("id_recurso", id_recurso);
-            if (estado != "oficial") {
-                var historialActividad = []
-                for (let i = 0; i < actividades.length; i++) {
-                    historialActividad.push(
-                        [
-                            'Partida Nueva',
-                            id_actividad
-                        ]
-                    )
-                    id_actividad++
-                }
-                var id_historialActividad = await User.posthistorialActividades(historialActividad)
-            }
+            // if (estado != "oficial") {
+            //     var historialActividad = []
+            //     for (let i = 0; i < actividades.length; i++) {
+            //         historialActividad.push(
+            //             [
+            //                 'Partida Nueva',
+            //                 id_actividad
+            //             ]
+            //         )
+            //         id_actividad++
+            //     }
+            //     var id_historialActividad = await User.posthistorialActividades(historialActividad)
+            // }
             res.json("exito")
         } catch (error) {
             console.log(error);
