@@ -62,7 +62,8 @@ userModel.listaObrasByIdAcceso = ({ id_acceso, id_tipoObra, id_unidadEjecutora, 
         avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad
     WHERE
         fichas_has_accesos.habilitado
-            AND fichas_has_accesos.Accesos_id_acceso = ${id_acceso}
+        AND avanceactividades.valor != 0
+        AND fichas_has_accesos.Accesos_id_acceso = ${id_acceso}
     `
     var condiciones = []
     if (id_tipoObra != 0 && id_tipoObra != undefined) {
