@@ -83,8 +83,11 @@ userModel.listaObrasByIdAcceso = ({ id_acceso, id_tipoObra, id_unidadEjecutora, 
     if (condiciones.length > 0) {
       query += " AND " + condiciones.join(" AND ")
     }
-    query += "GROUP BY fichas.unidadEjecutoras_id_unidadEjecutora , sectores_idsectores , id_ficha ORDER BY 5 DESC"
-    // resolve(query)
+    query += `
+    GROUP BY fichas.unidadEjecutoras_id_unidadEjecutora , sectores_idsectores , id_ficha 
+    ORDER BY fichas.unidadEjecutoras_id_unidadEjecutora , sectores_idsectores
+              `
+    console.log(query)
     pool.query(query, (err, res) => {
       if (err) {
         reject(err);
