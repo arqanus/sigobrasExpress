@@ -2,7 +2,7 @@ const User = require('./m.fichasLabels');
 module.exports = (app) => {
     app.get('/FichasLabels', async (req, res) => {
         try {
-            var data = await User.getFichasLabels()
+            var data = await User.getFichasLabels(req.query)
             res.json(data)
         } catch (error) {
             console.log(error);
