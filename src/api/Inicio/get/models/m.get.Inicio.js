@@ -19,6 +19,7 @@ userModel.listaObrasByIdAcceso = ({ id_acceso, id_tipoObra, id_unidadEjecutora, 
         fichas.id_ficha,
         fichas.codigo,
         fichas.g_meta,
+        fichas.g_total_presu,
         id_tipoObra,
         DATE_FORMAT(MAX(avanceactividades.fecha), '%Y-%m-%d') ultima_fecha,
         unidadejecutoras.nombre unidad_ejecutora_nombre,
@@ -60,9 +61,9 @@ userModel.listaObrasByIdAcceso = ({ id_acceso, id_tipoObra, id_unidadEjecutora, 
         actividades ON actividades.Partidas_id_partida = partidas.id_partida
             LEFT JOIN
         avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad
+            AND avanceactividades.valor != 0
     WHERE
         fichas_has_accesos.habilitado
-        AND avanceactividades.valor != 0
         AND fichas_has_accesos.Accesos_id_acceso = ${id_acceso}
     `
     var condiciones = []
@@ -88,7 +89,8 @@ userModel.listaObrasByIdAcceso = ({ id_acceso, id_tipoObra, id_unidadEjecutora, 
     GROUP BY fichas.unidadEjecutoras_id_unidadEjecutora , sectores_idsectores , id_ficha 
     ORDER BY fichas.unidadEjecutoras_id_unidadEjecutora , sectores_idsectores
               `
-    console.log(query)
+    // console.log(query)
+    // resolve(query)
     pool.query(query, (err, res) => {
       if (err) {
         reject(err);
