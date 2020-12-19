@@ -45,7 +45,9 @@ require('./api/Admin/post/routes/r.post.users')(app);
 require('./api/Admin/put/routes/r.put.users')(app);
 require('./api/Admin/delete/routes/r.delete.obras')(app);
 require('./api/Admin/routes/r.obra')(app);
+// COSTOS INDIRECTOS
 
+require('./api/CostosIndirectos/r.CostosIndirectos')(app);
 
 require('./api/Interfaz/post/routes/r.post.interfaz')(app);
 require('./api/Interfaz/get/routes/r.get.interfaz')(app);
@@ -95,6 +97,9 @@ require('./api/ProcesosGerenciales/PlazosHistorial/r.plazos')(app);
 //gestion documentaria
 require('./api/GestionDocumentaria/routes/r.gestionDocumentaria')(app);
 //defecto
+
+
+
 const server = app.listen(app.get('port'), () => {
   console.log('running in port', PORT);
 })
