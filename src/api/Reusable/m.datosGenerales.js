@@ -3,7 +3,7 @@ const pool = require('../../db/connection');
 module.exports = {
     getDatosGenerales2(id_ficha) {
         return new Promise((resolve, reject) => {
-            pool.query("SELECT fichas.*,DATE_FORMAT(fecha_inicial, '%Y-%m-%d') fecha_inicial FROM fichas WHERE fichas.id_ficha = ?", [id_ficha], (error, res) => {
+            pool.query("SELECT fichas.*,DATE_FORMAT(fecha_inicial, '%Y-%m-%d') fecha_inicial,DATE_FORMAT(resolucion_fecha, '%Y-%m-%d') resolucion_fecha FROM fichas WHERE fichas.id_ficha = ?", [id_ficha], (error, res) => {
                 if (error) {
                     reject(error.code);
                 }

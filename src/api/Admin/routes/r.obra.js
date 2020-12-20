@@ -67,4 +67,14 @@ module.exports = function (app) {
             res.status(404).json({ error: err.code })
         }
     })
+    app.get('/fichasMeta', async (req, res) => {
+        try {
+            var data = await User.getFichasMeta(req.query)
+            res.json(data)
+        } catch (err) {
+            console.log(err);
+            res.status(404).json({ error: err.code })
+        }
+    }
+    )
 }

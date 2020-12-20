@@ -49,6 +49,9 @@ require('./api/Admin/routes/r.obra')(app);
 
 require('./api/CostosIndirectos/r.CostosIndirectos')(app);
 
+//AMPLIACION PRESUPUESTAL
+require('./api/Reportes/r.ampliacionPresupuesto')(app);
+
 require('./api/Interfaz/post/routes/r.post.interfaz')(app);
 require('./api/Interfaz/get/routes/r.get.interfaz')(app);
 require('./api/Interfaz/put/routes/r.put.interfaz')(app);

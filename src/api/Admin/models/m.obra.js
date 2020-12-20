@@ -99,4 +99,21 @@ module.exports = {
             })
         })
     },
+    getFichasMeta({ id_ficha }) {
+        return new Promise((resolve, reject) => {
+            pool.query(`
+            SELECT
+                *            
+            FROM
+                fichas_meta
+            WHERE
+                (fichas_id_ficha =  ${id_ficha} );
+            `, (err, res) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve(res?res[0]:{})
+            })
+        })
+    },
 }
