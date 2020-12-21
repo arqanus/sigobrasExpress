@@ -100,7 +100,7 @@ require('./api/ProcesosGerenciales/PlazosHistorial/r.plazos')(app);
 //gestion documentaria
 require('./api/GestionDocumentaria/routes/r.gestionDocumentaria')(app);
 //defecto
-
+require('./api/Proyectos/r.proyectos')(app)
 
 
 const server = app.listen(app.get('port'), () => {
