@@ -54,4 +54,22 @@ module.exports = (app) => {
             res.status(204).json({ error: error.code })
         }
     })
+    app.get('/proyectoAvanceFisico', async (req, res) => {
+        try {
+            var data = await User.getProyectoAvanceFisico(req.query)
+            res.json(data)
+        } catch (error) {
+            console.log(error);
+            res.status(204).json({ error: error.code })
+        }
+    })
+    app.get('/proyectoEjecucionPresupuestal', async (req, res) => {
+        try {
+            var data = await User.getProyectoEjecucionPresupuestal(req.query)
+            res.json(data)
+        } catch (error) {
+            console.log(error);
+            res.status(204).json({ error: error.code })
+        }
+    })
 }

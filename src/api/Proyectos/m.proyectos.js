@@ -71,7 +71,7 @@ module.exports = {
                 if (error) {
                     reject(error);
                 }
-                resolve(res?res[0]:{})
+                resolve(res ? res[0] : {})
             })
         })
 
@@ -115,6 +115,44 @@ module.exports = {
                     reject(error);
                 }
                 resolve(res)
+            })
+        })
+
+    },
+    getProyectoAvanceFisico({ proyectos_id, anyo }) {
+        return new Promise((resolve, reject) => {
+            var query = `
+            SELECT 
+                *
+            FROM
+                proyectos_avancefisico
+            WHERE
+                proyectos_id = ${proyectos_id} AND anyo = ${anyo}
+            `
+            pool.query(query, (error, res) => {
+                if (error) {
+                    reject(error);
+                }
+                resolve(res)
+            })
+        })
+
+    },
+    getProyectoEjecucionPresupuestal({ proyectos_id, anyo }) {
+        return new Promise((resolve, reject) => {
+            var query = `
+            SELECT 
+                *
+            FROM
+                proyectos_ejecucionpresupuestal
+            WHERE
+                proyectos_id = ${proyectos_id} AND anyo = ${anyo}
+            `
+            pool.query(query, (error, res) => {
+                if (error) {
+                    reject(error);
+                }
+                resolve(res ? res[0] : {})
             })
         })
 
