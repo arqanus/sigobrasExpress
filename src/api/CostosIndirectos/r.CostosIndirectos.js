@@ -11,6 +11,16 @@ module.exports = function (app) {
             res.status(404).json({ error: err.code })
         }
     })
+    app.get('/costosIndirectosAdicionales', async (req, res) => {
+        try {
+            var response = await User.getAmpliacionPresupuesto(req.query)
+            var response2 = await User.getCostosIndirectosAdicionales(req.query,response)
+            res.json({cantidad:response.length,data:response2})
+        } catch (err) {
+            console.log(err);
+            res.status(404).json({ error: err.code })
+        }
+    })
     app.post('/costosIndirectos', async (req, res) => {
         try {
             var data = await User.postCostosIndirectos(req.body)
