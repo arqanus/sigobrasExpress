@@ -22,8 +22,9 @@ module.exports = {
             if (condiciones.length > 0) {
                 query += " WHERE " + condiciones.join(" AND ")
             }
-            query += ` GROUP BY fichas_has_labels.fichas_labels_id
+            query += ` GROUP BY fichas_labels.id
             ORDER BY 1 DESC , fichas_labels.id DESC`
+            // resolve(query);
             pool.query(
                 query
                 , (error, res) => {
