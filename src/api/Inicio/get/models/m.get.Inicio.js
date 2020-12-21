@@ -87,7 +87,7 @@ userModel.listaObrasByIdAcceso = ({ id_acceso, id_tipoObra, id_unidadEjecutora, 
     }
     query += `
     GROUP BY fichas.unidadEjecutoras_id_unidadEjecutora , sectores_idsectores , id_ficha 
-    ORDER BY fichas.unidadEjecutoras_id_unidadEjecutora , sectores_idsectores
+    ORDER BY unidadejecutoras.poblacion desc ,fichas.unidadEjecutoras_id_unidadEjecutora , sectores_idsectores
               `
     // console.log(query)
     // resolve(query)
