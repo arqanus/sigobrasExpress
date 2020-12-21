@@ -123,5 +123,78 @@ module.exports = {
                 })
         })
     },
+    getPrimerPlazo({ id_ficha }) {
+        return new Promise((resolve, reject) => {
+            pool.query(
+                `
+                SELECT 
+                    plazos_historial.*,
+                    DATE_FORMAT(fecha_inicio, '%Y-%m-%d')fecha_inicio,
+                    DATE_FORMAT(fecha_final, '%Y-%m-%d')fecha_final,
+                    DATE_FORMAT(fecha_aprobada, '%Y-%m-%d')fecha_aprobada
+                FROM
+                    plazos_historial
+                WHERE
+                    fichas_id_ficha = ${id_ficha}
+                LIMIT 1
+                `
+                , (error, res) => {
+                    if (error) {
+                        reject(error);
+                    }
+                    resolve(res ? res[0] : {})
+                })
+        })
+    },
+    getUltimoPlazoAprobado({ id_ficha }) {
+        return new Promise((resolve, reject) => {
+            pool.query(
+                `
+                SELECT 
+                    plazos_historial.*,
+                    DATE_FORMAT(fecha_inicio, '%Y-%m-%d')fecha_inicio,
+                    DATE_FORMAT(fecha_final, '%Y-%m-%d')fecha_final,
+                    DATE_FORMAT(fecha_aprobada, '%Y-%m-%d')fecha_aprobada
+                FROM
+                    plazos_historial
+                WHERE
+                    fichas_id_ficha = ${id_ficha}
+                    AND plazo_aprobado
+                ORDER BY id DESC
+                LIMIT 1
+                `
+                , (error, res) => {
+                    if (error) {
+                        reject(error);
+                    }
+                    resolve(res ? res[0] : {})
+                })
+        })
+    },
+    getUltimoPlazoSinAprobar({ id_ficha }) {
+        return new Promise((resolve, reject) => {
+            pool.query(
+                `
+                SELECT 
+                    plazos_historial.*,
+                    DATE_FORMAT(fecha_inicio, '%Y-%m-%d')fecha_inicio,
+                    DATE_FORMAT(fecha_final, '%Y-%m-%d')fecha_final,
+                    DATE_FORMAT(fecha_aprobada, '%Y-%m-%d')fecha_aprobada
+                FROM
+                    plazos_historial
+                WHERE
+                    fichas_id_ficha = ${id_ficha}
+                        AND COALESCE(plazo_aprobado, 0) = FALSE
+                ORDER BY id DESC
+                LIMIT 1
+                `
+                , (error, res) => {
+                    if (error) {
+                        reject(error);
+                    }
+                    resolve(res ? res[0] : {})
+                })
+        })
+    },
 }
 

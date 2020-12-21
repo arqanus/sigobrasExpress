@@ -62,4 +62,31 @@ module.exports = (app) => {
             res.status(404).json({ error: error.code })
         }
     });
+    app.get('/primerPlazo', async (req, res) => {
+        try {
+            var data = await User.getPrimerPlazo(req.query)
+            res.json(data)
+        } catch (error) {
+            console.log(error);
+            res.status(404).json({ error: error.code })
+        }
+    });
+    app.get('/ultimoPlazoAprobado', async (req, res) => {
+        try {
+            var data = await User.getUltimoPlazoAprobado(req.query)
+            res.json(data)
+        } catch (error) {
+            console.log(error);
+            res.status(404).json({ error: error.code })
+        }
+    });
+    app.get('/ultimoPlazoSinAprobar', async (req, res) => {
+        try {
+            var data = await User.getUltimoPlazoSinAprobar(req.query)
+            res.json(data)
+        } catch (error) {
+            console.log(error);
+            res.status(404).json({ error: error.code })
+        }
+    });
 }
