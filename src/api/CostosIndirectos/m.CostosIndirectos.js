@@ -97,15 +97,14 @@ module.exports = {
             })
         })
     },
-    putCostoIndirecto({ id, nombre, monto_expediente, monto_adicional }) {
+    putCostoIndirecto({ id, nombre, monto_expediente }) {
         return new Promise((resolve, reject) => {
             pool.query(`
             UPDATE 
                 fichas_costosindirectos 
             SET 
                 nombre = \'${nombre}\',
-                monto_expediente = ${monto_expediente},
-                monto_adicional = ${monto_adicional}
+                monto_expediente = ${monto_expediente}
             WHERE 
                 id = ${id}
             `, (err, res) => {
