@@ -89,4 +89,13 @@ module.exports = (app) => {
             res.status(404).json({ error: error.code })
         }
     });
+    app.get('/fotosCantidad', async (req, res) => {
+        try {
+            var data = await User.getFotosCantidad(req.query)
+            res.json(data)
+        } catch (error) {
+            console.log(error);
+            res.status(404).json({ error: error.code })
+        }
+    });
 }

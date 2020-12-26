@@ -12,7 +12,7 @@ userModel.getObras = (id_acceso) => {
     })
   })
 }
-userModel.listaObrasByIdAcceso = ({ id_acceso, id_tipoObra, id_unidadEjecutora, idsectores, idmodalidad_ejecutora,Estados_id_Estado }) => {
+userModel.listaObrasByIdAcceso = ({ id_acceso, id_tipoObra, id_unidadEjecutora, idsectores, idmodalidad_ejecutora, Estados_id_Estado }) => {
   return new Promise((resolve, reject) => {
     var query = `
     SELECT 
@@ -88,6 +88,52 @@ userModel.listaObrasByIdAcceso = ({ id_acceso, id_tipoObra, id_unidadEjecutora, 
     query += `
     GROUP BY fichas.unidadEjecutoras_id_unidadEjecutora , sectores_idsectores , id_ficha 
     ORDER BY unidadejecutoras.poblacion desc ,fichas.unidadEjecutoras_id_unidadEjecutora , sectores_idsectores
+              `
+    // console.log(query)
+    // resolve(query)
+    pool.query(query, (err, res) => {
+      if (err) {
+        reject(err);
+      }
+      resolve(res);
+    })
+  })
+}
+userModel.listaObrasSeguimientoByIdAcceso = ({ id_acceso }) => {
+  return new Promise((resolve, reject) => {
+    var query = `
+    SELECT 
+        fichas.id_ficha,
+        fichas.codigo,
+        DATE_FORMAT(MAX(plazos_historial.fecha_final),
+                '%Y-%m-%d') plazo_ultima_fecha,
+        DATE_FORMAT(MAX(curva_s.fecha_inicial), '%Y-%m-%d') programado_ultima_fecha,
+        DATE_FORMAT(MAX(IF(curva_s.financiero_monto > 0,
+                    curva_s.fecha_inicial,
+                    FALSE)),
+                '%Y-%m-%d') financiero_ultima_fecha
+    FROM
+        fichas
+            LEFT JOIN
+        plazos_historial ON plazos_historial.fichas_id_ficha = fichas.id_ficha
+            LEFT JOIN
+        curva_s ON curva_s.fichas_id_ficha = fichas.id_ficha
+            LEFT JOIN
+        fichas_has_accesos ON fichas_has_accesos.Fichas_id_ficha = fichas.id_ficha
+    WHERE
+        fichas_has_accesos.habilitado
+            AND fichas_has_accesos.Accesos_id_acceso = ${id_acceso}
+    
+    `
+    var condiciones = []
+    // if (Estados_id_Estado != 0 && Estados_id_Estado != undefined) {
+    //   condiciones.push(`(Estados_id_Estado = ${Estados_id_Estado})`)
+    // }
+    if (condiciones.length > 0) {
+      query += " AND " + condiciones.join(" AND ")
+    }
+    query += `
+    GROUP BY fichas.id_ficha
               `
     // console.log(query)
     // resolve(query)

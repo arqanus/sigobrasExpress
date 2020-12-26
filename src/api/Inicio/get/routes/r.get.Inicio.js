@@ -21,6 +21,15 @@ module.exports = (app) => {
 			res.status(404).json({error:error.code})
 		}
 	});
+	app.post('/listaObrasSeguimientoByIdAcceso', async (req, res) => {
+		try {
+			var response = await User.listaObrasSeguimientoByIdAcceso(req.body)
+			res.json(response)
+		} catch (error) {
+			console.log(error);
+			res.status(404).json({error:error.code})
+		}
+	});
 	app.post('/getComponentesPgerenciales', async (req, res) => {
 		try {
 			var data = await User.getComponentesPgerenciales(req.body.id_ficha)
