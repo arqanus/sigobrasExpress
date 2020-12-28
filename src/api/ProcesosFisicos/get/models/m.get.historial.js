@@ -181,13 +181,36 @@ module.exports = {
     },
     getHistorialAnyosResumen3(id_ficha, anyo, mes_inicial, mes_final) {
         return new Promise((resolve, reject) => {
-            var query = "SELECT componentes.numero, componentes.nombre, componentes.presupuesto,SUM(avanceactividades.valor * partidas.costo_unitario) valor,"
+            var query =`
+            SELECT 
+                componentes.numero,
+                componentes.nombre,
+                componentes.presupuesto,
+                SUM(avanceactividades.valor * partidas.costo_unitario) valor,
+            `
             for (let index = mes_inicial; index <= mes_final; index++) {
                 query += `SUM(IF(MONTH(avanceactividades.fecha) = ${index}, avanceactividades.valor * partidas.costo_unitario, 0)) m${index},`
             }
             query = query.slice(0, -1)
-            query += " FROM fichas LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND COALESCE(avanceactividades.valor, 0) != 0 AND fichas.id_ficha = ? AND YEAR(avanceactividades.fecha) = ? GROUP BY componentes.id_componente";
-            pool.query(query, [id_ficha, anyo], (err, res) => {
+            query += `
+            FROM
+                fichas
+                    LEFT JOIN
+                componentes ON componentes.fichas_id_ficha = fichas.id_ficha
+                    LEFT JOIN
+                partidas ON partidas.componentes_id_componente = componentes.id_componente
+                    LEFT JOIN
+                actividades ON actividades.Partidas_id_partida = partidas.id_partida
+                    LEFT JOIN
+                avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad
+                    AND COALESCE(avanceactividades.valor, 0) != 0
+                    AND YEAR(avanceactividades.fecha) = ${anyo}
+            WHERE
+                fichas.id_ficha = ${id_ficha}
+            GROUP BY componentes.id_componente
+            `;
+            // resolve(query) 
+            pool.query(query, (err, res) => {
                 if (err) {
                     reject(err);
                 }
