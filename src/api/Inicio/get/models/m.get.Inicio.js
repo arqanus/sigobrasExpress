@@ -26,7 +26,11 @@ userModel.listaObrasByIdAcceso = ({ id_acceso, id_tipoObra, id_unidadEjecutora, 
         sectores.nombre sector_nombre,
         modalidad_ejecutora.nombre modalidad_ejecutora_nombre,
         estado.nombre estado_nombre,
-        DATE_FORMAT(fichas.fecha_inicial, '%Y-%m-%d') fecha_inicial
+        DATE_FORMAT(fichas.fecha_inicial, '%Y-%m-%d') fecha_inicial,
+        fichas.codigo_unificado,
+        fichas.meta_final,
+        fichas.poblacion_beneficiaria,
+        fichas_tipo_administracion.nombre tipoadministracion_nombre
     FROM
         fichas
             LEFT JOIN
@@ -37,6 +41,8 @@ userModel.listaObrasByIdAcceso = ({ id_acceso, id_tipoObra, id_unidadEjecutora, 
         sectores ON sectores.idsectores = fichas.sectores_idsectores
             LEFT JOIN
         modalidad_ejecutora ON modalidad_ejecutora.idmodalidad_ejecutora = fichas.modalidad_ejecutora
+            LEFT JOIN
+        fichas_tipo_administracion ON fichas_tipo_administracion.id = fichas.fichas_tipo_administracion_id  
             LEFT JOIN
         (SELECT 
             Fichas_id_ficha,
