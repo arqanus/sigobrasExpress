@@ -161,15 +161,19 @@ module.exports = function (app) {
           message = "registro exitoso"
         } else {
           message = "hubo un problema al momento del registro"
+          res.status(400).json({ message })
+          return
         }
       } else {
         message = "la fecha que ingresó ya fue verificada por el supervisor"
+        res.status(400).json({ message })
+        return
       }
-      res.json({ message })
+      res.status(200).json({ message })
     } catch (error) {
       console.log(error)
       var message = "hubo un problema al momento del registro"
-      res.json({ message })
+      res.status(400).json({ message })
     }
   })
   app.post('/avanceActividadCorte', (req, res) => {
