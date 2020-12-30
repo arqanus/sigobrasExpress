@@ -33,7 +33,16 @@ userModel.getObra = (id_ficha) => {
 }
 userModel.getComponentesPartidasTotal = ({ id_componente }) => {
     return new Promise((resolve, reject) => {
-        pool.query("SELECT COUNT(partidas.id_partida) partidas_total FROM partidas WHERE partidas.componentes_id_componente = ?", id_componente, (error, res) => {
+        var query = `
+        SELECT 
+            COUNT(partidas.id_partida) partidas_total,
+            SUM(partidas.metrado * partidas.costo_unitario) presupuesto
+        FROM
+            partidas
+        WHERE
+            partidas.componentes_id_componente = ${id_componente}
+        `
+        pool.query(query, (error, res) => {
             if (error) {
                 reject(error);
             }
