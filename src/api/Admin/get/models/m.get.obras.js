@@ -40,7 +40,8 @@ userModel.getComponentesPartidasTotal = ({ id_componente }) => {
         FROM
             partidas
         WHERE
-            partidas.componentes_id_componente = ${id_componente}
+            partidas.tipo = 'partida'
+            AND partidas.componentes_id_componente = ${id_componente}
         `
         pool.query(query, (error, res) => {
             if (error) {
@@ -372,6 +373,27 @@ userModel.updatePartidasMetrado = ({ id_partida }) => {
             } else {
                 resolve(res)
             }
+        })
+    })
+}
+userModel.getpartidasAll = ({ id_ficha }) => {
+    return new Promise((resolve, reject) => {
+        var query = `
+        SELECT 
+            partidas.*
+        FROM
+            componentes
+                LEFT JOIN
+            partidas ON partidas.componentes_id_componente = componentes.id_componente
+        WHERE
+            fichas_id_ficha = ${id_ficha}
+        ORDER BY INET_ATON(SUBSTRING_INDEX(CONCAT(item,'.0.0.0'),'.',4))
+        `
+        pool.query(query, (err, res) => {
+            if (err) {
+                reject(err);
+            }
+            resolve(res)
         })
     })
 }
