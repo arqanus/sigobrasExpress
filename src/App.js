@@ -60,6 +60,7 @@ require('./api/Inicio/get/routes/r.get.Inicio')(app);
 require('./api/Inicio/post/routes/r.post.Inicio')(app);
 require('./api/Inicio/delete/routes/r.del.Inicio')(app);
 require('./api/Inicio/r.fichasLabels')(app);
+require('./api/Inicio/r.carouselObras')(app);
 
 
 require('./api/ProcesosFisicos/get/routes/r.get.historial')(app);
