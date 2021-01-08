@@ -160,6 +160,7 @@ module.exports = {
                     plazos_historial
                 WHERE
                     fichas_id_ficha = ${id_ficha}
+                    AND tipo = 3
                     AND plazo_aprobado
                 ORDER BY id DESC
                 LIMIT 1
@@ -185,7 +186,8 @@ module.exports = {
                     plazos_historial
                 WHERE
                     fichas_id_ficha = ${id_ficha}
-                        AND COALESCE(plazo_aprobado, 0) = FALSE
+                    AND tipo = 3
+                    AND COALESCE(plazo_aprobado, 0) = FALSE
                 ORDER BY id DESC
                 LIMIT 1
                 `
