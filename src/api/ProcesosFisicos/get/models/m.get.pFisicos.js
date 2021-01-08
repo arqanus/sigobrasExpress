@@ -161,7 +161,7 @@ module.exports = {
         if (condiciones.length > 0) {
             query += " AND " + condiciones.join(" AND ")
         }
-        query += " ORDER BY REPLACE(item, '.', '') LIMIT ? , ?"
+        query += " LIMIT ? , ?"
         return new Promise((resolve, reject) => {
             pool.query(query, [id_componente, inicio, fin], (error, res) => {
                 if (error) {
