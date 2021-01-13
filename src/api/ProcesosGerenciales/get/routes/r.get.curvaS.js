@@ -82,7 +82,7 @@ module.exports = (app) => {
     });
     app.post('/putFinancieroCurvaS', async (req, res) => {
         try {
-            var data = await User.putFinancieroCurvaS(req.body.id, req.body.financiero_monto)
+            var data = await User.putFinancieroCurvaS(req.body)
             res.json(data)
         } catch (error) {
             console.log(error);
