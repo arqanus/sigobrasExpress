@@ -121,6 +121,7 @@ userModel.listaObrasSeguimientoByIdAcceso = ({ id_acceso }) => {
     var query = `
     SELECT 
         fichas.id_ficha,
+        fichas.g_total_presu,
         fichas.codigo,
         DATE_FORMAT(MAX(plazos_historial.fecha_final),
                 '%Y-%m-%d') plazo_ultima_fecha,
@@ -137,6 +138,10 @@ userModel.listaObrasSeguimientoByIdAcceso = ({ id_acceso }) => {
         curva_s ON curva_s.fichas_id_ficha = fichas.id_ficha
             LEFT JOIN
         fichas_has_accesos ON fichas_has_accesos.Fichas_id_ficha = fichas.id_ficha
+          LEFT JOIN
+        unidadejecutoras ON unidadejecutoras.id_unidadEjecutora = fichas.unidadEjecutoras_id_unidadEjecutora
+            LEFT JOIN
+        sectores ON sectores.idsectores = fichas.sectores_idsectores
     WHERE
         fichas_has_accesos.habilitado
             AND fichas_has_accesos.Accesos_id_acceso = ${id_acceso}
@@ -151,6 +156,7 @@ userModel.listaObrasSeguimientoByIdAcceso = ({ id_acceso }) => {
     }
     query += `
     GROUP BY fichas.id_ficha
+    ORDER BY unidadejecutoras.poblacion desc ,fichas.unidadEjecutoras_id_unidadEjecutora , sectores_idsectores
               `;
     // console.log(query)
     // resolve(query)
