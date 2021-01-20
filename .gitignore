@@ -2,3 +2,8 @@ node_modules/
 pendientes.txt
 src/public/
 public/
+*.env
+coverage/
+logs/*
+!logs/.gitkeep
+*.zip
