@@ -192,6 +192,7 @@ module.exports = function (app) {
       if (fecha_revisada.total == 0) {
         response = await User.postActividad2(req.body);
         if (response.affectedRows > 0) {
+          User.actualizarAvanceFisicoAcumulado(req.body);
           message = "registro exitoso";
         } else {
           message = "hubo un problema al momento del registro";
