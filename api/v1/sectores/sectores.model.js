@@ -5,11 +5,11 @@ DB.obtenerTodosPublico = ({ id_unidadEjecutora }) => {
     SELECT
       sectores.*
     FROM
-        fichas
-            LEFT JOIN
-        sectores ON sectores.idsectores = fichas.sectores_idsectores
-            LEFT JOIN
-        unidadejecutoras ON unidadejecutoras.id_unidadEjecutora = fichas.unidadEjecutoras_id_unidadEjecutora
+      fichas
+          LEFT JOIN
+      unidadejecutoras ON unidadejecutoras.id_unidadEjecutora = fichas.unidadEjecutoras_id_unidadEjecutora
+          INNER JOIN
+      sectores ON sectores.idsectores = fichas.sectores_idsectores
     WHERE
         estado_publico
            `;
