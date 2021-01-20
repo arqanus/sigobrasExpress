@@ -310,6 +310,45 @@ userModel.postActividad2 = ({
     );
   });
 };
+userModel.actualizarAvanceFisicoAcumulado = ({ id_ficha }) => {
+  return new Promise(async (resolve, reject) => {
+    var query = `
+    SELECT
+        SUM(avanceactividades.valor * partidas.costo_unitario) avance
+    FROM
+        componentes
+            LEFT JOIN
+        partidas ON partidas.componentes_id_componente = componentes.id_componente
+            LEFT JOIN
+        actividades ON actividades.Partidas_id_partida = partidas.id_partida
+            LEFT JOIN
+        avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad
+    WHERE
+        componentes.fichas_id_ficha = ${id_ficha}
+    `;
+
+    var response = await pool.query(query, (error, res) => {
+      if (error) {
+        reject(error);
+      }
+      var avance = res[0].avance || 0;
+      console.log("response", res[0].avance);
+      var query2 = `
+      INSERT INTO fichas_datosautomaticos
+        (avancefisico_acumulado, fichas_id_ficha)
+      VALUES (${avance}, ${id_ficha})
+       ON DUPLICATE key UPDATE avancefisico_acumulado = VALUES(avancefisico_acumulado)
+      `;
+      pool.query(query2, (error, res) => {
+        if (error) {
+          reject(error);
+        }
+        console.log("res", res);
+        resolve(res);
+      });
+    });
+  });
+};
 //recruso edicion
 userModel.updateRecursoAvance = ({ id_ficha, tipo, descripcion, cantidad }) => {
   return new Promise((resolve, reject) => {

@@ -2,18 +2,44 @@ const DB = {};
 DB.obtenerTodosPublico = ({ id_unidadEjecutora, idsectores }) => {
   return new Promise((resolve, reject) => {
     var query = `
-    SELECT
-      fichas.*,
-      unidadejecutoras.nombre unidad_ejecutora_nombre,
-      sectores.nombre sector_nombre
+   SELECT
+        id_ficha,
+        fichas.codigo,
+        g_meta,
+        codigo_unificado,
+        g_total_presu,
+        unidadejecutoras.nombre unidad_ejecutora_nombre,
+        sectores.nombre sector_nombre,
+        fichas_datosautomaticos.presupuesto_costodirecto,
+        fichas_datosautomaticos.avancefisico_acumulado,
+        fichas_datosautomaticos.avancefinanciero_acumulado,
+        DATE_FORMAT(plazo_inicial.fecha_inicio, '%Y-%m-%d') plazoinicial_fecha,
+        DATE_FORMAT(plazoaprobado_ultimo.fecha_final,
+                '%Y-%m-%d') plazoaprobado_ultimo_fecha,
+        DATE_FORMAT(plazosinaprobar_ultimo.fecha_final,
+                '%Y-%m-%d') plazosinaprobar_ultimo_fecha,
+        estados.nombre estadoobra_nombre,
+        estados.color estadoobra_color
     FROM
-      fichas
-    LEFT JOIN
-      unidadejecutoras ON unidadejecutoras.id_unidadEjecutora = fichas.unidadEjecutoras_id_unidadEjecutora
-    LEFT JOIN
-      sectores ON sectores.idsectores = fichas.sectores_idsectores
+        fichas
+            LEFT JOIN
+        fichas_datosautomaticos ON fichas_datosautomaticos.fichas_id_ficha = fichas.id_ficha
+            LEFT JOIN
+        plazos_historial plazo_inicial ON plazo_inicial.id = fichas_datosautomaticos.plazoaprobado_inicial
+            LEFT JOIN
+        plazos_historial plazoaprobado_ultimo ON plazoaprobado_ultimo.id = fichas_datosautomaticos.plazoaprobado_ultimo
+            LEFT JOIN
+        plazos_historial plazosinaprobar_ultimo ON plazosinaprobar_ultimo.id = fichas_datosautomaticos.plazosinaprobar_ultimo
+            LEFT JOIN
+        historialestados ON historialestados.id_historialEstado = fichas_datosautomaticos.estado_obra
+            LEFT JOIN
+        estados ON estados.id_Estado = historialestados.Estados_id_Estado
+            LEFT JOIN
+        unidadejecutoras ON unidadejecutoras.id_unidadEjecutora = fichas.unidadEjecutoras_id_unidadEjecutora
+            LEFT JOIN
+        sectores ON sectores.idsectores = fichas.sectores_idsectores
     WHERE
-      estado_publico
+        estado_publico
     `;
     var condiciones = [];
     if (id_unidadEjecutora != 0 && id_unidadEjecutora != undefined) {
