@@ -227,4 +227,28 @@ module.exports = {
       );
     });
   },
+  getFotosCantidadTotal({ id_ficha }) {
+    return new Promise((resolve, reject) => {
+      pool.query(
+        `
+          SELECT
+              COUNT(partidasimagenes.id_partidaImagen) cantidad
+          FROM
+              componentes
+                  LEFT JOIN
+              partidas ON partidas.componentes_id_componente = componentes.id_componente
+                  LEFT JOIN
+              partidasimagenes ON partidasimagenes.partidas_id_partida = partidas.id_partida
+          WHERE
+              componentes.fichas_id_ficha = ${id_ficha}
+        `,
+        (error, res) => {
+          if (error) {
+            reject(error);
+          }
+          resolve(res ? res[0] : {});
+        }
+      );
+    });
+  },
 };
