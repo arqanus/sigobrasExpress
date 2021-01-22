@@ -99,9 +99,7 @@ DB.obtenerTodos = ({
             estados.color estadoobra_color,
             curva_s_pin.monto pim_anyoactual,
             DATE_FORMAT(MAX(curva_s.fecha_inicial), '%Y-%m-%d') programado_ultima_fecha,
-            DATE_FORMAT(MAX(IF(curva_s.financiero_monto > 0,
-                    curva_s.financiero_fecha_update,
-                    FALSE)),
+            DATE_FORMAT(MAX(curva_s.financiero_fecha_update),
                 '%Y-%m-%d') financiero_ultima_fecha
         FROM
             fichas
