@@ -52,6 +52,26 @@ module.exports = {
             reject(error);
           }
           resolve(res);
+          pool.query(
+            `
+             UPDATE fichas_datosautomaticos
+              SET
+                  avancefinanciero_acumulado = (SELECT
+                          SUM(financiero_monto) avancefisico_acumulado
+                      FROM
+                          curva_s
+                      WHERE
+                          fichas_id_ficha = ${id_ficha})
+              WHERE
+                  fichas_id_ficha = ${id_ficha}
+             `,
+            (error, res) => {
+              if (error) {
+                reject(error);
+              }
+              console.log("responses", res);
+            }
+          );
         }
       );
     });

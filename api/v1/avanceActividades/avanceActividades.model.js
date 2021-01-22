@@ -1,19 +1,17 @@
 const DB = {};
-DB.avanceObra = ({ id_ficha }) => {
+DB.obtenerAvanceByComponente = ({ id_componente }) => {
   return new Promise((resolve, reject) => {
     var query = `
     SELECT
         SUM(avanceactividades.valor * partidas.costo_unitario) avance
     FROM
-        componentes
-            LEFT JOIN
-        partidas ON partidas.componentes_id_componente = componentes.id_componente
+        partidas
             LEFT JOIN
         actividades ON actividades.Partidas_id_partida = partidas.id_partida
             LEFT JOIN
         avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad
     WHERE
-        componentes.fichas_id_ficha = ${id_ficha}
+        partidas.componentes_id_componente = ${id_componente}
            `;
     pool.query(query, (err, res) => {
       if (err) {

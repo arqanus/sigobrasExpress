@@ -3,14 +3,21 @@ const passport = require("passport");
 
 const validarEstructura = require("./avanceActividades.validate")
   .validarEstructura;
-const obrasController = require("./componentes.controller");
-const jwtAuthenticate = passport.authenticate("jwt", { session: false });
+const procesarErrores = require("../../libs/errorHandler").procesarErrores;
+const Controller = require("./avanceActividades.controller");
 
 const obrasRouter = express.Router();
 
-obrasRouter.get("/", [jwtAuthenticate], async (req, res) => {
-  var response = await obrasController.obtenerTodos(req.query);
-  res.json(response);
-});
+obrasRouter.get(
+  "/componente",
+  [
+    // jwtAuthenticate
+    validarEstructura,
+  ],
+  procesarErrores(async (req, res) => {
+    var response = await Controller.obtenerAvanceByComponente(req.query);
+    res.json(response);
+  })
+);
 
 module.exports = obrasRouter;

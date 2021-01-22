@@ -1,3 +1,5 @@
+const { log } = require("winston");
+
 module.exports = {
   postPlazos(data) {
     return new Promise((resolve, reject) => {
@@ -80,6 +82,47 @@ module.exports = {
             reject(err);
           }
           resolve(res);
+          console.log("test");
+          if (res.length > 0) {
+            var id_inicio = res[0].id;
+            var id_finalaprobado = null;
+            var id_finalsinaprobar = null;
+            for (let i = 0; i < res.length; i++) {
+              const element = res[i];
+              if (element.tipo == 3) {
+                if (element.plazo_aprobado) {
+                  id_finalaprobado = element.id;
+                } else {
+                  id_finalsinaprobar = element.id;
+                }
+              }
+            }
+
+            console.log(
+              "response actualizacion",
+              res[res.length - 1].id,
+              id_finalaprobado,
+              id_finalsinaprobar
+            );
+            pool.query(
+              `
+              INSERT INTO fichas_datosautomaticos
+              ( fichas_id_ficha, plazoaprobado_inicial,plazoaprobado_ultimo,plazosinaprobar_ultimo)
+              VALUES (${id_ficha},${id_inicio},${id_finalaprobado},${id_finalsinaprobar})
+              ON DUPLICATE key UPDATE
+              plazoaprobado_inicial = VALUES(plazoaprobado_inicial),
+              plazoaprobado_ultimo = VALUES(plazoaprobado_ultimo),
+              plazosinaprobar_ultimo = VALUES(plazosinaprobar_ultimo)
+            `,
+              (err, res) => {
+                if (err) {
+                  console.log("err", err);
+                  reject(err);
+                }
+                console.log("response de actualizacion", res);
+              }
+            );
+          }
         }
       );
     });

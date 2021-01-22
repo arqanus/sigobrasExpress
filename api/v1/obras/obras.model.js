@@ -64,7 +64,13 @@ DB.obtenerTodosPublico = ({ id_unidadEjecutora, idsectores }) => {
     });
   });
 };
-DB.obtenerTodos = ({ id_unidadEjecutora, idsectores, id_acceso, sort_by }) => {
+DB.obtenerTodos = ({
+  id_unidadEjecutora,
+  idsectores,
+  id_Estado,
+  id_acceso,
+  sort_by,
+}) => {
   return new Promise((resolve, reject) => {
     if (sort_by) {
       var sort_byData = sort_by.split("-");
@@ -92,7 +98,11 @@ DB.obtenerTodos = ({ id_unidadEjecutora, idsectores, id_acceso, sort_by }) => {
             estados.nombre estadoobra_nombre,
             estados.color estadoobra_color,
             curva_s_pin.monto pim_anyoactual,
-            DATE_FORMAT(MAX(curva_s.fecha_inicial), '%Y-%m-%d') programado_ultima_fecha
+            DATE_FORMAT(MAX(curva_s.fecha_inicial), '%Y-%m-%d') programado_ultima_fecha,
+            DATE_FORMAT(MAX(IF(curva_s.financiero_monto > 0,
+                    curva_s.financiero_fecha_update,
+                    FALSE)),
+                '%Y-%m-%d') financiero_ultima_fecha
         FROM
             fichas
                 LEFT JOIN
@@ -127,6 +137,9 @@ DB.obtenerTodos = ({ id_unidadEjecutora, idsectores, id_acceso, sort_by }) => {
     }
     if (idsectores != 0 && idsectores != undefined) {
       condiciones.push(`(idsectores = ${idsectores})`);
+    }
+    if (id_Estado != 0 && id_Estado != undefined) {
+      condiciones.push(`(id_Estado = ${id_Estado})`);
     }
     if (condiciones.length > 0) {
       query += " AND " + condiciones.join(" AND ");

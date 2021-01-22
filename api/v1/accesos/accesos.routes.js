@@ -20,10 +20,13 @@ function transformarBodyALowercase(req, res, next) {
   req.body.usuario && (req.body.usuario = req.body.usuario.toLowerCase());
   next();
 }
-accesosRouter.get("/", async (req, res) => {
-  var response = await accesoController.obtenerTodos();
-  res.json(response);
-});
+accesosRouter.get(
+  "/",
+  procesarErrores(async (req, res) => {
+    var response = await accesoController.obtenerTodos();
+    res.json(response);
+  })
+);
 accesosRouter.post(
   "/",
   [validarUsuario, transformarBodyALowercase],

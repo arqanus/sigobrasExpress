@@ -3,6 +3,7 @@ const log = require("../../../utils/logger");
 
 const blueprintSectoresPublicos = Joi.object().keys({
   id_unidadEjecutora: Joi.string().regex(/^\d+$/),
+  id_acceso: Joi.string(),
 });
 
 let validarEstructura = (req, res, next) => {
