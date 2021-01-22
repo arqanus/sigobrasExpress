@@ -1,3 +1,5 @@
+const { log } = require("winston");
+
 module.exports = {
   putFichas({
     id_ficha,
@@ -86,6 +88,7 @@ module.exports = {
       pool.query(
         `
             SELECT
+                id_historialEstado,
                 Estados_id_Estado,
                 DATE_FORMAT(fecha_inicial,"%Y-%m-%d")fecha_inicial,
                 Fichas_id_ficha
@@ -99,6 +102,24 @@ module.exports = {
             reject(err);
           }
           resolve(res);
+          //actualizacion de fichas_datas automaticas
+          if (res.length > 0) {
+            // console.log("actualizando", res[res.length - 1]);
+            pool.query(
+              `
+              INSERT INTO fichas_datosautomaticos
+              ( fichas_id_ficha, estado_obra)
+              VALUES (${id_ficha},${res[res.length - 1].id_historialEstado})
+              ON DUPLICATE key UPDATE estado_obra = VALUES(estado_obra)
+              `,
+              (err2, res2) => {
+                if (err) {
+                  reject(err2);
+                }
+                // console.log("respuesta actualizacion", res2);
+              }
+            );
+          }
         }
       );
     });

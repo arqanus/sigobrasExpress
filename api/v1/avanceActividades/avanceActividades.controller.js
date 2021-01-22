@@ -1,8 +1,8 @@
 const Model = require("./avanceActividades.model");
 
-function avanceObra(data) {
-  return Model.avanceObra(data);
+function obtenerAvanceByComponente(data) {
+  return Model.obtenerAvanceByComponente(data);
 }
 module.exports = {
-  avanceObra,
+  obtenerAvanceByComponente,
 };

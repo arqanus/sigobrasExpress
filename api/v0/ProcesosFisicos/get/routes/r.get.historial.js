@@ -42,7 +42,7 @@ module.exports = function (app) {
       );
       var categories = [];
       meses.forEach((element) => {
-        categories.push(Tools.monthNames[element.mes - 1]);
+        categories.push(tools.monthNames[element.mes - 1]);
       });
       var data = await User.getHistorialAnyosResumen2(
         req.body.id_ficha,
@@ -84,7 +84,7 @@ module.exports = function (app) {
       );
       var categories = [];
       meses.forEach((element) => {
-        categories.push(Tools.monthNames[element.mes - 1]);
+        categories.push(tools.monthNames[element.mes - 1]);
       });
       var data = await User.getHistorialAnyosResumen2(
         req.body.id_ficha,
@@ -263,7 +263,7 @@ module.exports = function (app) {
       }
 
       // Get all the other Mondays in the month
-      var fecha_inicial = Tools.fechaLargaCorta(
+      var fecha_inicial = tools.fechaLargaCorta(
         new Date(req.body.anyo, mes, 0)
       );
       var semana = 1;
@@ -274,7 +274,7 @@ module.exports = function (app) {
         }
         periodos.push({
           fecha_inicial: fecha_inicial,
-          fecha_final: Tools.fechaLargaCorta(new Date(d.getTime())),
+          fecha_final: tools.fechaLargaCorta(new Date(d.getTime())),
           semana: semana,
         });
         d.setDate(d.getDate() + 7);
@@ -282,7 +282,7 @@ module.exports = function (app) {
       }
       periodos.push({
         fecha_inicial: periodos[periodos.length - 1].fecha_final,
-        fecha_final: Tools.fechaLargaCorta(new Date(req.body.anyo, mes + 1, 0)),
+        fecha_final: tools.fechaLargaCorta(new Date(req.body.anyo, mes + 1, 0)),
         semana: semana,
       });
       if (
@@ -390,6 +390,9 @@ module.exports = function (app) {
         req.body.valor,
         req.body.id_AvanceActividades
       );
+      console.log("antes");
+      User.actualizarAvanceFisicoAcumulado(req.body);
+      console.log("despues");
       res.json(req_putAvanceActividades);
       // res.json("actualizacion con exito")
     } catch (error) {
