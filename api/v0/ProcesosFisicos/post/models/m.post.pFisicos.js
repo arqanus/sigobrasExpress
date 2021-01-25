@@ -377,7 +377,9 @@ userModel.updateRecursoAvance = ({ id_ficha, tipo, descripcion, cantidad }) => {
                         LEFT JOIN
                     avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad
                 WHERE
-                    componentes.fichas_id_ficha = ${id_ficha})
+                    componentes.fichas_id_ficha = ${id_ficha}
+                    and avanceactividades.valor >0
+                    )
         WHERE
             fichas_id_ficha = ${id_ficha}
        `,

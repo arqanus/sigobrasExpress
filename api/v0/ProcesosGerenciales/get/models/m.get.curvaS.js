@@ -61,7 +61,9 @@ module.exports = {
                       FROM
                           curva_s
                       WHERE
-                          fichas_id_ficha = ${id_ficha})
+                          fichas_id_ficha = ${id_ficha}
+                          AND curva_s.tipo = 'PERIODO'
+                          )
               WHERE
                   fichas_id_ficha = ${id_ficha}
              `,

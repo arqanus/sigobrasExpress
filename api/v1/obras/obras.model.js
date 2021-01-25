@@ -91,6 +91,7 @@ DB.obtenerTodos = ({
             fichas_datosautomaticos.avancefinanciero_acumulado,
             DATE_FORMAT(fichas_datosautomaticos.avancefisico_ultimafecha, '%Y-%m-%d') avancefisico_ultimafecha,
             DATE_FORMAT(plazo_inicial.fecha_inicio, '%Y-%m-%d') plazoinicial_fecha,
+            DATE_FORMAT(plazo_inicial.fecha_final, '%Y-%m-%d') plazoinicial_fechafinal,
             DATE_FORMAT(plazoaprobado_ultimo.fecha_final,
                     '%Y-%m-%d') plazoaprobado_ultimo_fecha,
             DATE_FORMAT(plazosinaprobar_ultimo.fecha_final,
