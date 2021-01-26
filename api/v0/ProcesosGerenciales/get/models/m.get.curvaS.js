@@ -114,8 +114,8 @@ module.exports = {
     return new Promise((resolve, reject) => {
       var query = `
         SELECT
-            SUM(curva_s.programado_monto) programado_acumulado,
-            SUM(curva_s.ejecutado_monto) ejecutado_acumulado,
+            SUM(curva_s.fisico_programado_monto) programado_acumulado,
+            SUM(curva_s.fisico_monto) ejecutado_acumulado,
             SUM(curva_s.financiero_monto) financiero_acumulado
         FROM
             curva_s
@@ -135,8 +135,9 @@ module.exports = {
       var query = `
        SELECT
           anyo,
-          SUM(curva_s.programado_monto) programado_monto,
-          SUM(curva_s.ejecutado_monto) ejecutado_monto,
+          SUM(curva_s.fisico_programado_monto) fisico_programado_monto,
+          SUM(curva_s.fisico_monto) fisico_monto,
+          SUM(curva_s.financiero_programado_monto) financiero_programado_monto,
           SUM(curva_s.financiero_monto) financiero_monto,
           "TOTAL" tipo
       FROM
@@ -158,8 +159,8 @@ module.exports = {
       var query = `
        SELECT
           anyo,
-          SUM(curva_s.programado_monto) programado_monto,
-          SUM(curva_s.ejecutado_monto) ejecutado_monto,
+          SUM(curva_s.fisico_programado_monto) fisico_programado_monto,
+          SUM(curva_s.fisico_monto) fisico_monto,
           SUM(curva_s.financiero_monto) financiero_monto,
           "TOTAL" tipo
       FROM
@@ -214,6 +215,34 @@ module.exports = {
       pool.query(
         "UPDATE curva_s SET financiero_monto = ?,ultimo_editor_idacceso = ?,financiero_fecha_update=?  WHERE id = ?",
         [financiero_monto, ultimo_editor_idacceso, financiero_fecha_update, id],
+        (error, res) => {
+          if (error) {
+            reject(error);
+          }
+          resolve(res);
+        }
+      );
+    });
+  },
+  putFinancieroProgramadoCurvaS({
+    id,
+    financiero_programado_monto,
+    ultimo_editor_idacceso,
+  }) {
+    return new Promise((resolve, reject) => {
+      var today = new Date();
+      var dd = String(today.getDate()).padStart(2, "0");
+      var mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
+      var yyyy = today.getFullYear();
+      var financiero_fecha_update = yyyy + "-" + mm + "-" + dd;
+      pool.query(
+        "UPDATE curva_s SET financiero_programado_monto = ?,ultimo_editor_idacceso = ?,financiero_fecha_update=?  WHERE id = ?",
+        [
+          financiero_programado_monto,
+          ultimo_editor_idacceso,
+          financiero_fecha_update,
+          id,
+        ],
         (error, res) => {
           if (error) {
             reject(error);
@@ -335,7 +364,8 @@ module.exports = {
     return new Promise((resolve, reject) => {
       var query = `
         SELECT
-            *
+            curva_s_pin.*,
+            fichas_id_ficha id_ficha
         FROM
             curva_s_pin
         WHERE
