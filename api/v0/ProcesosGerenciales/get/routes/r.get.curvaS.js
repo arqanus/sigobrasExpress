@@ -142,6 +142,15 @@ module.exports = (app) => {
       res.status(204).json({ error: error.code });
     }
   });
+  app.post("/putFinancieroProgramadoCurvaS", async (req, res) => {
+    try {
+      var data = await User.putFinancieroProgramadoCurvaS(req.body);
+      res.json(data);
+    } catch (error) {
+      console.log(error);
+      res.status(204).json({ error: error.code });
+    }
+  });
   app.post("/putProgramadoCurvaSbyId", async (req, res) => {
     try {
       var data = await User.putProgramadoCurvaSbyId(
