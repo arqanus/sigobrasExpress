@@ -31,7 +31,7 @@ module.exports = {
   postDataCurvaS(data) {
     return new Promise((resolve, reject) => {
       pool.query(
-        "insert into curva_s (fecha_inicial,programado_monto,financiero_monto,ejecutado_monto,observacion,estado_codigo,fichas_id_ficha,tipo,anyo,mes) values ?",
+        "insert into curva_s (fecha_inicial,fisico_programado_monto,financiero_monto,fisico_monto,observacion,estado_codigo,fichas_id_ficha,tipo,anyo,mes) values ?",
         [data],
         (error, res) => {
           if (error) {
