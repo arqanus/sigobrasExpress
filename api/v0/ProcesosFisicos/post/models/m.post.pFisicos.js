@@ -349,6 +349,39 @@ userModel.actualizarAvanceFisicoAcumulado = ({ id_ficha }) => {
     });
   });
 };
+userModel.actualizarAvanceFisicoAcumuladoCurvaS = ({ id_ficha, fecha }) => {
+  return new Promise(async (resolve, reject) => {
+    var anyo = fecha.split("-")[0];
+    var mes = fecha.split("-")[1];
+    var query = `
+   UPDATE curva_s
+    SET
+        fisico_monto = (SELECT
+                SUM(avanceactividades.valor * partidas.costo_unitario) avance
+            FROM
+                componentes
+                    LEFT JOIN
+                partidas ON partidas.componentes_id_componente = componentes.id_componente
+                    LEFT JOIN
+                actividades ON actividades.Partidas_id_partida = partidas.id_partida
+                    LEFT JOIN
+                avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad
+            WHERE
+                componentes.fichas_id_ficha = ${id_ficha}
+                    AND YEAR(avanceactividades.fecha) = ${anyo}
+                    AND MONTH(avanceactividades.fecha) = ${mes})
+    WHERE
+        fichas_id_ficha = ${id_ficha} AND anyo = ${anyo}
+            AND mes = ${mes}
+    `;
+    pool.query(query, (error, res) => {
+      if (error) {
+        reject(error);
+      }
+      resolve(res);
+    });
+  });
+};
 //recruso edicion
 userModel.updateRecursoAvance = ({ id_ficha, tipo, descripcion, cantidad }) => {
   return new Promise((resolve, reject) => {
