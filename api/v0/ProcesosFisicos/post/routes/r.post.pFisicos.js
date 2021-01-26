@@ -183,6 +183,7 @@ module.exports = function (app) {
         response = await User.postActividad2(req.body);
         if (response.affectedRows > 0) {
           User.actualizarAvanceFisicoAcumulado(req.body);
+          User.actualizarAvanceFisicoAcumuladoCurvaS(req.body);
           message = "registro exitoso";
         } else {
           message = "hubo un problema al momento del registro";
