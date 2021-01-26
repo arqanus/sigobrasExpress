@@ -31,7 +31,7 @@ module.exports = {
   postDataCurvaS(data) {
     return new Promise((resolve, reject) => {
       pool.query(
-        "insert into curva_s (fecha_inicial,programado_monto,financiero_monto,ejecutado_monto,observacion,estado_codigo,fichas_id_ficha,tipo) values ?",
+        "insert into curva_s (fecha_inicial,programado_monto,financiero_monto,ejecutado_monto,observacion,estado_codigo,fichas_id_ficha,tipo,anyo,mes) values ?",
         [data],
         (error, res) => {
           if (error) {
@@ -42,18 +42,31 @@ module.exports = {
       );
     });
   },
-  getDataCurvaS(id_ficha) {
+  getDataCurvaS({ id_ficha, anyo }) {
     return new Promise((resolve, reject) => {
-      pool.query(
-        "SELECT curva_s.*, DATE_FORMAT(fecha_inicial, '%Y-%m-%d') fecha_inicial FROM curva_s WHERE fichas_id_ficha = ? ORDER BY fecha_inicial,tipo desc",
-        [id_ficha],
-        (error, res) => {
-          if (error) {
-            reject(error);
-          }
-          resolve(res);
-          pool.query(
-            `
+      var query = `
+      SELECT
+          *
+      FROM
+          curva_s
+      WHERE
+          fichas_id_ficha = ${id_ficha}
+      `;
+      var condiciones = [];
+      if (anyo != 0 && anyo != undefined) {
+        condiciones.push(`(anyo = ${anyo})`);
+      }
+      if (condiciones.length) {
+        query += " AND " + condiciones.join(" AND ");
+      }
+      query += ` ORDER BY fecha_inicial`;
+      pool.query(query, (error, res) => {
+        if (error) {
+          reject(error);
+        }
+        resolve(res);
+        pool.query(
+          `
              UPDATE fichas_datosautomaticos
               SET
                   avancefinanciero_acumulado = (SELECT
@@ -67,15 +80,100 @@ module.exports = {
               WHERE
                   fichas_id_ficha = ${id_ficha}
              `,
-            (error, res) => {
-              if (error) {
-                reject(error);
-              }
-              console.log("responses", res);
+          (error, res) => {
+            if (error) {
+              reject(error);
             }
-          );
+            console.log("responses", res);
+          }
+        );
+      });
+    });
+  },
+  getDataCurvaSAnyos({ id_ficha }) {
+    return new Promise((resolve, reject) => {
+      var query = `
+        SELECT
+            anyo
+        FROM
+            curva_s
+        WHERE
+            fichas_id_ficha = ${id_ficha}
+        GROUP BY anyo
+        ORDER BY anyo DESC
+      `;
+      pool.query(query, (error, res) => {
+        if (error) {
+          reject(error);
         }
-      );
+        resolve(res);
+      });
+    });
+  },
+  getDataCurvaSAcumulados({ id_ficha, anyo }) {
+    return new Promise((resolve, reject) => {
+      var query = `
+        SELECT
+            SUM(curva_s.programado_monto) programado_acumulado,
+            SUM(curva_s.ejecutado_monto) ejecutado_acumulado,
+            SUM(curva_s.financiero_monto) financiero_acumulado
+        FROM
+            curva_s
+        WHERE
+            fichas_id_ficha = ${id_ficha} AND anyo <= ${anyo}
+      `;
+      pool.query(query, (error, res) => {
+        if (error) {
+          reject(error);
+        }
+        resolve(res ? res[0] : {});
+      });
+    });
+  },
+  getDataCurvaSAcumuladosByAnyo({ id_ficha, anyo }) {
+    return new Promise((resolve, reject) => {
+      var query = `
+       SELECT
+          anyo,
+          SUM(curva_s.programado_monto) programado_monto,
+          SUM(curva_s.ejecutado_monto) ejecutado_monto,
+          SUM(curva_s.financiero_monto) financiero_monto,
+          "TOTAL" tipo
+      FROM
+          curva_s
+      WHERE
+          fichas_id_ficha = ${id_ficha} AND anyo < ${anyo}
+      GROUP BY anyo
+      `;
+      pool.query(query, (error, res) => {
+        if (error) {
+          reject(error);
+        }
+        resolve(res);
+      });
+    });
+  },
+  getDataCurvaSAcumuladosByAnyo2({ id_ficha, anyo }) {
+    return new Promise((resolve, reject) => {
+      var query = `
+       SELECT
+          anyo,
+          SUM(curva_s.programado_monto) programado_monto,
+          SUM(curva_s.ejecutado_monto) ejecutado_monto,
+          SUM(curva_s.financiero_monto) financiero_monto,
+          "TOTAL" tipo
+      FROM
+          curva_s
+      WHERE
+          fichas_id_ficha = ${id_ficha} AND anyo = ${anyo}
+      GROUP BY anyo
+      `;
+      pool.query(query, (error, res) => {
+        if (error) {
+          reject(error);
+        }
+        resolve(res ? res[0] : {});
+      });
     });
   },
   getMontoEjecutadoPeriodo(fecha_inicial, fecha_final, id_ficha) {
@@ -226,6 +324,24 @@ module.exports = {
   deletePeriodoCurvaS(id) {
     return new Promise((resolve, reject) => {
       pool.query("DELETE FROM curva_s WHERE id = ?", [id], (error, res) => {
+        if (error) {
+          reject(error);
+        }
+        resolve(res);
+      });
+    });
+  },
+  getPimData({ id_ficha }) {
+    return new Promise((resolve, reject) => {
+      var query = `
+        SELECT
+            *
+        FROM
+            curva_s_pin
+        WHERE
+            fichas_id_ficha = ${id_ficha}
+      `;
+      pool.query(query, (error, res) => {
         if (error) {
           reject(error);
         }
