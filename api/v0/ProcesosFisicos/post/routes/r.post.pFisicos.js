@@ -184,6 +184,7 @@ module.exports = function (app) {
         if (response.affectedRows > 0) {
           User.actualizarAvanceFisicoAcumulado(req.body);
           User.actualizarAvanceFisicoAcumuladoCurvaS(req.body);
+          User.actualizarUltimoDiaMetrado(req.body);
           message = "registro exitoso";
         } else {
           message = "hubo un problema al momento del registro";

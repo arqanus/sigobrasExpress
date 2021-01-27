@@ -382,6 +382,35 @@ userModel.actualizarAvanceFisicoAcumuladoCurvaS = ({ id_ficha, fecha }) => {
     });
   });
 };
+userModel.actualizarUltimoDiaMetrado = ({ id_ficha }) => {
+  return new Promise(async (resolve, reject) => {
+    var query = `
+  UPDATE fichas_datosautomaticos
+    SET
+        avancefisico_ultimafecha = (SELECT
+                DATE_FORMAT(MAX(avanceactividades.fecha), '%Y-%m-%d') fecha
+            FROM
+                componentes
+                    LEFT JOIN
+                partidas ON partidas.componentes_id_componente = componentes.id_componente
+                    LEFT JOIN
+                actividades ON actividades.Partidas_id_partida = partidas.id_partida
+                    LEFT JOIN
+                avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad
+            WHERE
+                componentes.fichas_id_ficha = ${id_ficha}
+                    AND avanceactividades.valor > 0)
+    WHERE
+        fichas_id_ficha = ${id_ficha}
+    `;
+    pool.query(query, (error, res) => {
+      if (error) {
+        reject(error);
+      }
+      resolve(res);
+    });
+  });
+};
 //recruso edicion
 userModel.updateRecursoAvance = ({ id_ficha, tipo, descripcion, cantidad }) => {
   return new Promise((resolve, reject) => {
