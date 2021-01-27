@@ -255,7 +255,7 @@ module.exports = {
   putProgramadoCurvaSbyId(id, programado_monto) {
     return new Promise((resolve, reject) => {
       pool.query(
-        "UPDATE curva_s SET programado_monto = ? WHERE id = ?",
+        "UPDATE curva_s SET fisico_programado_monto = ? WHERE id = ?",
         [programado_monto, id],
         (error, res) => {
           if (error) {
