@@ -12,11 +12,25 @@ obrasRouter.get(
     res.json(response);
   })
 );
-obrasRouter.get(
-  "/obra",
+obrasRouter.put(
+  "/:id",
   procesarErrores(async (req, res) => {
-    var response = await Controller.obtenerTodosByObra(req.query);
+    var response = await Controller.actualizarTodo({
+      ...req.params,
+      ...req.body,
+    });
     res.json(response);
   })
 );
+obrasRouter.put(
+  "/:id/habilitado",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.actualizarHabilitadoObra({
+      ...req.params,
+      ...req.body,
+    });
+    res.json(response);
+  })
+);
+
 module.exports = obrasRouter;
