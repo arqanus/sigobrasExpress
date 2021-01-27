@@ -155,7 +155,7 @@ module.exports = (app) => {
     try {
       var data = await User.putProgramadoCurvaSbyId(
         req.body.id,
-        req.body.programado_monto
+        req.body.fisico_programado_monto
       );
       res.json(data);
     } catch (error) {
