@@ -89,13 +89,13 @@ module.exports = {
             var id_finalsinaprobar = null;
             for (let i = 0; i < res.length; i++) {
               const element = res[i];
-              if (element.tipo == 3) {
-                if (element.plazo_aprobado) {
-                  id_finalaprobado = element.id;
-                } else {
-                  id_finalsinaprobar = element.id;
-                }
+              // if (element.tipo == 3) {
+              if (element.plazo_aprobado) {
+                id_finalaprobado = element.id;
+              } else {
+                id_finalsinaprobar = element.id;
               }
+              // }
             }
 
             console.log(

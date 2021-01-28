@@ -1,51 +1,26 @@
-const User = require('../models/m.post.interfaz');
+const User = require("../models/m.post.interfaz");
 
-
-module.exports = function(app){
-    app.post('/ActualizarEstado',(req,res)=>{
-        User.ultimoEstadoObra(req.body.Fichas_id_ficha,(err,ultimoHistorialData)=>{							
-            if(err){ res.status(204).json(err);}
-            else{
-                if(ultimoHistorialData.Estados_id_Estado == req.body.Estados_id_estado){
-                    res.json("EstadoRepetido");	
-                }else{                    
-                    User.postFecha_finalHistorialEstados(ultimoHistorialData.id_historialEstado,(err,id_historial)=>{							
-                        if(err){ res.status(204).json(err);}
-                        else{	           
-                            User.postHistorialEstados(req.body,(err,id_historial)=>{							
-                                if(err){ res.status(204).json(err);}
-                                else{	           
-                                    User.getestadoIdHistorialEstados(id_historial,(err,estado)=>{							
-                                        if(err){ res.status(204).json(err);}
-                                        else{                                    
-                                            res.json(estado);	
-                                        }
-                    
-                                    })
-                                }
-                    
-                            })	
-                        }
-            
-                    })	
-                }
-                
-            }
-
-        })
-		
-		
-    })
-    app.post('/postHistorialEstadosObra',(req,res)=>{
-        User.postHistorialEstadosObra(req.body,(err,data)=>{							
-            if(err){ res.status(204).json(err);}
-            else{
-               res.json(data)
-                
-            }
-
-        })
-		
-		
-	})
-}
+module.exports = function (app) {
+  app.post("/ActualizarEstado", async (req, res) => {
+    try {
+      var id = await User.postHistorialEstados(req.body);
+      var response = await User.getestadoIdHistorialEstados(id);
+      req.body.id = id;
+      console.log("body", req.body);
+      await User.updateFichasDataAutomatica(req.body);
+      res.json(response);
+    } catch (error) {
+      console.log(error);
+      res.json(error.code);
+    }
+  });
+  app.post("/postHistorialEstadosObra", (req, res) => {
+    User.postHistorialEstadosObra(req.body, (err, data) => {
+      if (err) {
+        res.status(204).json(err);
+      } else {
+        res.json(data);
+      }
+    });
+  });
+};
