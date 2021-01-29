@@ -15,10 +15,14 @@ function obtenerUno(data) {
 function obtenerById(data) {
   return Accesos.obtenerById(data);
 }
+function asignarObra(data) {
+  return Accesos.asignarObra(data);
+}
 module.exports = {
   obtenerTodos,
   existe,
   crear,
   obtenerUno,
   obtenerById,
+  asignarObra,
 };

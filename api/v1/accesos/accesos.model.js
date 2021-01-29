@@ -36,13 +36,13 @@ DB.existe = ({ usuario }) => {
     });
   });
 };
-DB.crear = ({ usuario, hash, id_cargo, id_usuario }) => {
+DB.crear = ({ usuario, hash, id_cargo, id_usuario, estado = 1 }) => {
   return new Promise((resolve, reject) => {
     const query = `
     INSERT INTO accesos
-      (usuario, password, Cargos_id_Cargo, Usuarios_id_usuario)
+      (usuario, password, Cargos_id_Cargo, Usuarios_id_usuario,estado)
     VALUES
-      ('${usuario}', '${hash}', '${id_cargo}', '${id_usuario}')
+      ('${usuario}', '${hash}', '${id_cargo}', '${id_usuario}',${estado})
     `;
     pool.query(query, (err, res) => {
       if (err) {
@@ -90,6 +90,22 @@ DB.obtenerById = ({ id_acceso }) => {
         return;
       }
       resolve(res ? res[0] : {});
+    });
+  });
+};
+DB.asignarObra = ({ id_ficha, id_acceso }) => {
+  return new Promise((resolve, reject) => {
+    const query = `
+    INSERT INTO fichas_has_accesos
+    (Fichas_id_ficha, Accesos_id_acceso)
+    VALUES (${id_ficha},${id_acceso})
+    `;
+    pool.query(query, (err, res) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve(res);
     });
   });
 };

@@ -23,5 +23,16 @@ obrasRouter.get(
     res.json(response);
   })
 );
-
+obrasRouter.get(
+  "/:id",
+  [validarEstructura],
+  procesarErrores(async (req, res) => {
+    console.log("params", req.query);
+    var response = await obrasController.obtenerTodos({
+      ...req.query,
+      ...req.params,
+    });
+    res.json(response);
+  })
+);
 module.exports = obrasRouter;

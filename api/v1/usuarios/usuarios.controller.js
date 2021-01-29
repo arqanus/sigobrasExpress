@@ -9,8 +9,19 @@ function actualizarHabilitadoObra(data) {
 function actualizarTodo(data) {
   return Model.actualizarTodo(data);
 }
+function obtenerUsuarioByIdAcceso(data) {
+  return Model.obtenerUsuarioByIdAcceso(data);
+}
+function obtenerUsuarioByIdAcceso(data) {
+  return Model.obtenerUsuarioByIdAcceso(data);
+}
+function ingresarUsuario(data) {
+  return Model.ingresarUsuario(data);
+}
 module.exports = {
   obtenerTodos,
   actualizarHabilitadoObra,
   actualizarTodo,
+  obtenerUsuarioByIdAcceso,
+  ingresarUsuario,
 };

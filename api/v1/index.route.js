@@ -11,6 +11,7 @@ const obrasCostosIndirectos = require("./obrasCostosIndirectos/obrasCostosIndire
 const obrasLabels = require("./obrasLabels/obrasLabels.routes");
 const cargos = require("./cargos/cargos.routes");
 const usuarios = require("./usuarios/usuarios.routes");
+const partidas = require("./partidas/partidas.routes");
 
 const express = require("express");
 const router = express.Router();
@@ -28,5 +29,6 @@ router.use("/obrasCostosIndirectos", obrasCostosIndirectos);
 router.use("/obrasLabels", obrasLabels);
 router.use("/cargos", cargos);
 router.use("/usuarios", usuarios);
+router.use("/partidas", partidas);
 
 module.exports = router;
