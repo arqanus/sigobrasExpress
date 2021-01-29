@@ -59,6 +59,53 @@ DB.obtenerTodos = ({ id_ficha, id_cargo, habilitado, cargos_tipo_id }) => {
     });
   });
 };
+DB.obtenerUsuarioByIdAcceso = ({ id }) => {
+  return new Promise((resolve, reject) => {
+    var query = `
+            SELECT
+                cargos.nombre cargo_nombre, usuarios.nombre usuario_nombre
+            FROM
+                accesos
+                    LEFT JOIN
+                cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo
+                    LEFT JOIN
+                usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario
+            WHERE
+                id_acceso = ${id}
+            `;
+    pool.query(query, (error, res) => {
+      if (error) {
+        reject(error);
+      }
+      resolve(res ? res[0] : {});
+    });
+  });
+};
+DB.ingresarUsuario = ({
+  nombre,
+  apellido_paterno,
+  apellido_materno,
+  dni,
+  direccion,
+  email,
+  celular,
+  cpt,
+}) => {
+  return new Promise((resolve, reject) => {
+    var query = `
+            INSERT INTO usuarios
+            (nombre, apellido_paterno, apellido_materno, dni, direccion, email, celular, cpt)
+            VALUES ('${nombre}','${apellido_paterno}','${apellido_materno}','${dni}','${direccion}','${email}','${celular}','${cpt}');
+            `;
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
+      resolve(res);
+    });
+  });
+};
 DB.actualizarHabilitadoObra = ({ id, habilitado }) => {
   return new Promise((resolve, reject) => {
     var query = `

@@ -70,6 +70,7 @@ DB.obtenerTodos = ({
   id_Estado,
   id_acceso,
   sort_by,
+  id,
 }) => {
   return new Promise((resolve, reject) => {
     if (sort_by) {
@@ -131,6 +132,9 @@ DB.obtenerTodos = ({
             Accesos_id_acceso = ${id_acceso}
     `;
     var condiciones = [];
+    if (id != 0 && id != undefined) {
+      condiciones.push(`(fichas.id_ficha = ${id})`);
+    }
     if (id_unidadEjecutora != 0 && id_unidadEjecutora != undefined) {
       condiciones.push(`(id_unidadEjecutora = ${id_unidadEjecutora})`);
     }
@@ -156,7 +160,7 @@ DB.obtenerTodos = ({
         reject(err);
         return;
       }
-      resolve(res);
+      resolve(id ? res[0] : res);
     });
   });
 };
