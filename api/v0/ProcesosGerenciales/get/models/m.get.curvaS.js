@@ -364,10 +364,10 @@ module.exports = {
     return new Promise((resolve, reject) => {
       var query = `
         SELECT
-            curva_s_pin.*,
+            datos_anuales.*,
             fichas_id_ficha id_ficha
         FROM
-            curva_s_pin
+            datos_anuales
         WHERE
             fichas_id_ficha = ${id_ficha}
       `;
@@ -382,7 +382,7 @@ module.exports = {
   getCurvaSPin(id_ficha, anyo) {
     return new Promise((resolve, reject) => {
       pool.query(
-        "SELECT * FROM curva_s_pin WHERE fichas_id_ficha = ? AND anyo = ?;",
+        "SELECT * FROM datos_anuales WHERE fichas_id_ficha = ? AND anyo = ?;",
         [id_ficha, anyo],
         (error, res) => {
           if (error) {
@@ -396,7 +396,7 @@ module.exports = {
   postCurvaSPin(data) {
     return new Promise((resolve, reject) => {
       pool.query(
-        "INSERT INTO curva_s_pin (fichas_id_ficha,anyo,monto ) VALUES ? on duplicate key update monto = VALUES(monto);",
+        "INSERT INTO datos_anuales (fichas_id_ficha,anyo,pim ) VALUES ? on duplicate key update monto = VALUES(monto);",
         [data],
         (error, res) => {
           if (error) {
