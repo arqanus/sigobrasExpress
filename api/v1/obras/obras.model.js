@@ -99,7 +99,7 @@ DB.obtenerTodos = ({
                     '%Y-%m-%d') plazosinaprobar_ultimo_fecha,
             estados.nombre estadoobra_nombre,
             estados.color estadoobra_color,
-            curva_s_pin.monto pim_anyoactual,
+            datos_anuales.pim pim_anyoactual,
             DATE_FORMAT(MAX(curva_s.fecha_inicial), '%Y-%m-%d') programado_ultima_fecha,
             DATE_FORMAT(MAX(curva_s.financiero_fecha_update),
                 '%Y-%m-%d') financiero_ultima_fecha
@@ -108,8 +108,8 @@ DB.obtenerTodos = ({
                 LEFT JOIN
             fichas_has_accesos ON fichas_has_accesos.Fichas_id_ficha = fichas.id_ficha
                 LEFT JOIN
-            curva_s_pin ON curva_s_pin.fichas_id_ficha = fichas.id_ficha
-                AND curva_s_pin.anyo = 2021
+            datos_anuales ON datos_anuales.fichas_id_ficha = fichas.id_ficha
+                AND datos_anuales.anyo = 2021
                 LEFT JOIN
             curva_s ON curva_s.fichas_id_ficha = fichas.id_ficha
                 LEFT JOIN
@@ -161,6 +161,48 @@ DB.obtenerTodos = ({
         return;
       }
       resolve(id ? res[0] : res);
+    });
+  });
+};
+DB.obtenerTodosResumen = ({ id_acceso }) => {
+  return new Promise((resolve, reject) => {
+    var query = `
+        SELECT
+            id_ficha,
+            g_total_presu presupuesto,
+            estados.nombre estado_obra,
+            meta,
+            g_meta nombre_obra,
+            codigo_sial,
+            codigo_unificado codigo_ui,
+            g_snip codigo_snip,
+            codigo_infobras,
+            g_func funcion,
+            division_funcional,
+            g_subprog subprograma,
+            fecha_inaguracion,
+            presupuesto_costodirecto,
+            avancefisico_acumulado,
+            avancefinanciero_acumulado
+        FROM
+            fichas
+                LEFT JOIN
+            fichas_has_accesos ON fichas_has_accesos.Fichas_id_ficha = fichas.id_ficha
+                LEFT JOIN
+            fichas_datosautomaticos ON fichas_datosautomaticos.fichas_id_ficha = fichas.id_ficha
+                LEFT JOIN
+            historialestados ON historialestados.id_historialEstado = fichas_datosautomaticos.estado_obra
+                LEFT JOIN
+            estados ON estados.id_Estado = historialestados.Estados_id_Estado
+        WHERE
+            Accesos_id_acceso = ${id_acceso}
+    `;
+    pool.query(query, (err, res) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve(res);
     });
   });
 };
