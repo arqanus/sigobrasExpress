@@ -6,7 +6,11 @@ function obtenerTodosPublico(data) {
 function obtenerTodos(data) {
   return Model.obtenerTodos(data);
 }
+function obtenerTodosResumen(data) {
+  return Model.obtenerTodosResumen(data);
+}
 module.exports = {
   obtenerTodosPublico,
   obtenerTodos,
+  obtenerTodosResumen,
 };

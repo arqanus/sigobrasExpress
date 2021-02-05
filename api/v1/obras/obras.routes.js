@@ -18,8 +18,15 @@ obrasRouter.get(
   "/",
   [validarEstructura],
   procesarErrores(async (req, res) => {
-    console.log("params", req.query);
     var response = await obrasController.obtenerTodos(req.query);
+    res.json(response);
+  })
+);
+obrasRouter.get(
+  "/resumen",
+  [validarEstructura],
+  procesarErrores(async (req, res) => {
+    var response = await obrasController.obtenerTodosResumen(req.query);
     res.json(response);
   })
 );

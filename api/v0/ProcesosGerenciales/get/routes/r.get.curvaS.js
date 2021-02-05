@@ -266,7 +266,7 @@ module.exports = (app) => {
     try {
       var dataTemp = [];
       req.body.forEach((element) => {
-        dataTemp.push([element.id_ficha, element.anyo, element.monto]);
+        dataTemp.push([element.id_ficha, element.anyo, element.pim]);
       });
       var data = await User.postCurvaSPin(dataTemp);
       res.json(data);

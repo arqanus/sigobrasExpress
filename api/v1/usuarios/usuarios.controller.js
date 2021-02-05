@@ -18,10 +18,14 @@ function obtenerUsuarioByIdAcceso(data) {
 function ingresarUsuario(data) {
   return Model.ingresarUsuario(data);
 }
+function obtenerUsuariosByIdCargo(data) {
+  return Model.obtenerUsuariosByIdCargo(data);
+}
 module.exports = {
   obtenerTodos,
   actualizarHabilitadoObra,
   actualizarTodo,
   obtenerUsuarioByIdAcceso,
   ingresarUsuario,
+  obtenerUsuariosByIdCargo,
 };
