@@ -6,8 +6,12 @@ function obtenerTodos(data) {
 function obtenerTodosByObra(data) {
   return Model.obtenerTodosByObra(data);
 }
+function obtenerUltimoCargoById(data) {
+  return Model.obtenerUltimoCargoById(data);
+}
 
 module.exports = {
   obtenerTodos,
   obtenerTodosByObra,
+  obtenerUltimoCargoById,
 };

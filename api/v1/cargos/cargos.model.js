@@ -56,4 +56,34 @@ DB.obtenerTodosByObra = ({ id_ficha, cargos_tipo_id }) => {
     });
   });
 };
+DB.obtenerUltimoCargoById = ({ id, id_ficha }) => {
+  return new Promise((resolve, reject) => {
+    var query = `
+              SELECT
+                  fichas_has_accesos.id,
+                  usuarios.apellido_paterno,
+                  usuarios.apellido_materno,
+                  usuarios.nombre
+              FROM
+                  fichas_has_accesos
+                      LEFT JOIN
+                  accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso
+                      INNER JOIN
+                  cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo
+                      LEFT JOIN
+                  usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario
+              WHERE
+                  fichas_has_accesos.Fichas_id_ficha = ${id_ficha}
+                      AND id_Cargo = ${id}
+              ORDER BY fichas_has_accesos.id DESC
+              LIMIT 1
+            `;
+    pool.query(query, (error, res) => {
+      if (error) {
+        reject(error);
+      }
+      resolve(res ? res[0] : {});
+    });
+  });
+};
 module.exports = DB;

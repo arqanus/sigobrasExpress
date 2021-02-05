@@ -107,10 +107,18 @@ module.exports = {
             // console.log("actualizando", res[res.length - 1]);
             pool.query(
               `
-              INSERT INTO fichas_datosautomaticos
-              ( fichas_id_ficha, estado_obra)
-              VALUES (${id_ficha},${res[res.length - 1].id_historialEstado})
-              ON DUPLICATE key UPDATE estado_obra = VALUES(estado_obra)
+             UPDATE fichas_datosautomaticos
+              SET
+                  estado_obra = (SELECT
+                          id_historialEstado
+                      FROM
+                          historialestados
+                      WHERE
+                          Fichas_id_ficha = ${id_ficha}
+                      ORDER BY id_historialEstado DESC
+                      LIMIT 1)
+              WHERE
+                  fichas_datosautomaticos.fichas_id_ficha = ${id_ficha}
               `,
               (err2, res2) => {
                 if (err) {

@@ -66,5 +66,12 @@ obrasRouter.put(
     res.json(response);
   })
 );
+obrasRouter.get(
+  "/id_cargos",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.obtenerUsuariosByIdCargo(req.query);
+    res.json(response);
+  })
+);
 
 module.exports = obrasRouter;

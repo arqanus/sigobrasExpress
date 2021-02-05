@@ -396,7 +396,7 @@ module.exports = {
   postCurvaSPin(data) {
     return new Promise((resolve, reject) => {
       pool.query(
-        "INSERT INTO datos_anuales (fichas_id_ficha,anyo,pim ) VALUES ? on duplicate key update monto = VALUES(monto);",
+        "INSERT INTO datos_anuales (fichas_id_ficha,anyo,pim ) VALUES ? on duplicate key update pim = VALUES(pim);",
         [data],
         (error, res) => {
           if (error) {
