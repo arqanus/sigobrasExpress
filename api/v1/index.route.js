@@ -13,8 +13,9 @@ const cargos = require("./cargos/cargos.routes");
 const usuarios = require("./usuarios/usuarios.routes");
 const partidas = require("./partidas/partidas.routes");
 const obrasPlazos = require("./obrasPlazos/obrasPlazos.routes");
-const presupuesto = require("./presupuesto/presupuesto.routes");
+const datosAnuales = require("./datosAnuales/datosAnuales.routes");
 const analitico = require("./analitico/analitico.routes.js");
+const fuentesFinancieamiento = require("./fuentesFinancieamiento/fuentesFinancieamiento.routes.js");
 
 const express = require("express");
 const router = express.Router();
@@ -34,7 +35,8 @@ router.use("/cargos", cargos);
 router.use("/usuarios", usuarios);
 router.use("/partidas", partidas);
 router.use("/obrasPlazos", obrasPlazos);
-router.use("/presupuesto", presupuesto);
+router.use("/datosAnuales", datosAnuales);
 router.use("/analitico", analitico);
+router.use("/fuentesFinancieamiento", fuentesFinancieamiento);
 
 module.exports = router;

@@ -34,10 +34,19 @@ obrasRouter.get(
   "/:id",
   [validarEstructura],
   procesarErrores(async (req, res) => {
-    console.log("params", req.query);
     var response = await obrasController.obtenerTodos({
       ...req.query,
       ...req.params,
+    });
+    res.json(response);
+  })
+);
+obrasRouter.put(
+  "/:id",
+  procesarErrores(async (req, res) => {
+    var response = await obrasController.actualizarDatos({
+      ...req.params,
+      ...req.body,
     });
     res.json(response);
   })

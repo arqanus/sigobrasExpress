@@ -1,4 +1,4 @@
-const Model = require("./presupuesto.model");
+const Model = require("./datosAnuales.model");
 
 function obtenerTodos(data) {
   return Model.obtenerTodos(data);

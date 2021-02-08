@@ -1,6 +1,6 @@
 const express = require("express");
 
-const Controller = require("./presupuesto.controller");
+const Controller = require("./datosAnuales.controller");
 const procesarErrores = require("../../libs/errorHandler").procesarErrores;
 
 const obrasRouter = express.Router();
