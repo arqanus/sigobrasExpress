@@ -1,3 +1,4 @@
+const BaseModel = require("../../libs/baseModel");
 const DB = {};
 DB.obtenerTodosPublico = ({ id_unidadEjecutora, idsectores }) => {
   return new Promise((resolve, reject) => {
@@ -199,6 +200,37 @@ DB.obtenerTodosResumen = ({ id_acceso }) => {
     `;
     pool.query(query, (err, res) => {
       if (err) {
+        reject(err);
+        return;
+      }
+      resolve(res);
+    });
+  });
+};
+DB.actualizarDatos = ({
+  id,
+  codigo_snip,
+  funcion,
+  division_funcional,
+  subprograma,
+}) => {
+  return new Promise((resolve, reject) => {
+    var g_snip = codigo_snip;
+    var g_func = funcion;
+    var g_subprog = subprograma;
+    var query = BaseModel.update(
+      "fichas",
+      {
+        g_snip,
+        g_func,
+        division_funcional,
+        g_subprog,
+      },
+      [`id_ficha = ${id}`]
+    );
+    pool.query(query, (err, res) => {
+      if (err) {
+        console.log(err);
         reject(err);
         return;
       }

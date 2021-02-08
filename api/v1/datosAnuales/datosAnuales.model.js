@@ -19,13 +19,21 @@ DB.obtenerTodos = ({ id_ficha, anyo }) => {
     });
   });
 };
-DB.actualizarPresupuesto = ({ id, anyo, pim, pia, presupuesto_aprobado }) => {
+DB.actualizarPresupuesto = ({
+  id,
+  anyo,
+  pim,
+  pia,
+  presupuesto_aprobado,
+  meta,
+}) => {
   return new Promise((resolve, reject) => {
     var query = `
       INSERT INTO datos_anuales (fichas_id_ficha,anyo, `;
     if (pia) query += `pia,`;
     if (pim) query += `pim,`;
     if (presupuesto_aprobado) query += `presupuesto_aprobado,`;
+    if (meta) query += `meta,`;
     query = query.slice(0, -1);
     query += `)
       VALUES (${id},${anyo},
@@ -33,6 +41,7 @@ DB.actualizarPresupuesto = ({ id, anyo, pim, pia, presupuesto_aprobado }) => {
     if (pia) query += pia + ",";
     if (pim) query += pim + ",";
     if (presupuesto_aprobado) query += presupuesto_aprobado + ",";
+    if (meta) query += meta + ",";
     query = query.slice(0, -1);
     query += `
     )
@@ -41,9 +50,8 @@ DB.actualizarPresupuesto = ({ id, anyo, pim, pia, presupuesto_aprobado }) => {
     if (pim) query += `pim=values(pim),`;
     if (presupuesto_aprobado)
       query += `presupuesto_aprobado=values(presupuesto_aprobado),`;
+    if (meta) query += `meta=values(meta),`;
     query = query.slice(0, -1);
-    // resolve(query);
-    // return;
     pool.query(query, (error, res) => {
       if (error) {
         reject(error);
