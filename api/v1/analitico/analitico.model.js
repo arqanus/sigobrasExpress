@@ -1,10 +1,13 @@
+const BaseModel = require("../../libs/baseModel");
 const DB = {};
 
 DB.obtenerResumen = ({ id_ficha, anyo }) => {
   return new Promise((resolve, reject) => {
     var query = `
              SELECT
+                presupuesto_analitico_resumen.id,
                 presupuesto_analitico_resumen.nombre,
+                presupuesto_analitico_resumen.fichas_id_ficha,
                 analitico_resumen_avanceanual.presupuesto_aprobado presupuesto_aprobado_anterior,
                 analitico_resumen_avanceanual.financiero_ejecutado financiero_ejecutado_anterior,
                 analitico_actual.pim pim_actual,`;
@@ -36,6 +39,65 @@ DB.obtenerResumen = ({ id_ficha, anyo }) => {
             `;
     pool.query(query, (error, res) => {
       if (error) {
+        reject(error);
+      }
+      resolve(res);
+    });
+  });
+};
+DB.actualizarResumen = (data) => {
+  return new Promise((resolve, reject) => {
+    var query = BaseModel.updateOnDuplicateKey(
+      "presupuesto_analitico_resumen",
+      data
+    );
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
+      resolve(res);
+    });
+  });
+};
+DB.eliminarResumen = ({ id }) => {
+  return new Promise((resolve, reject) => {
+    var query = BaseModel.delete("presupuesto_analitico_resumen", [
+      `id = ${id}`,
+    ]);
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
+      resolve(res);
+    });
+  });
+};
+DB.actualizarResumenAnual = (data) => {
+  return new Promise((resolve, reject) => {
+    var query = BaseModel.updateOnDuplicateKey(
+      "analitico_resumen_avanceanual",
+      data
+    );
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
+      resolve(res);
+    });
+  });
+};
+DB.actualizarResumenMensual = (data) => {
+  return new Promise((resolve, reject) => {
+    var query = BaseModel.updateOnDuplicateKey(
+      "analitico_resumen_avancemensual",
+      data
+    );
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
         reject(error);
       }
       resolve(res);
