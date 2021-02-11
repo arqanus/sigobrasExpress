@@ -170,6 +170,7 @@ DB.obtenerTodosResumen = ({ id_acceso }) => {
     var query = `
         SELECT
             id_ficha,
+            fichas.codigo,
             g_total_presu presupuesto,
             estados.nombre estado_obra,
             meta,
