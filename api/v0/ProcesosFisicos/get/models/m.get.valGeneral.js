@@ -303,10 +303,10 @@ module.exports = {
                 fila.porcentaje_total = tools.formatoSoles(
                   fila.porcentaje_total
                 );
-                fila.metrado_saldo = tools.formatoSoles(fila.metrado_saldo);
-                fila.valor_saldo = tools.formatoSoles(fila.valor_saldo);
+                fila.metrado_saldo = tools.formatoSoles(fila.metrado_saldo,2,true);
+                fila.valor_saldo = tools.formatoSoles(fila.valor_saldo,2,true);
                 fila.porcentaje_saldo = tools.formatoSoles(
-                  fila.porcentaje_saldo
+                  fila.porcentaje_saldo,2,true
                 );
               }
             }
@@ -314,7 +314,7 @@ module.exports = {
               valor_anterior = tools.formatoSoles(valor_anterior);
               valor_actual = tools.formatoSoles(valor_actual);
               valor_total = tools.formatoSoles(valor_total);
-              valor_saldo = tools.formatoSoles(valor_saldo);
+              valor_saldo = tools.formatoSoles(valor_saldo,2,true);
               precio_parcial = tools.formatoSoles(precio_parcial);
               porcentaje_anterior = tools.formatoSoles(
                 (valor_anterior / precio_parcial) * 100
@@ -326,7 +326,7 @@ module.exports = {
                 (valor_total / precio_parcial) * 100
               );
               porcentaje_saldo = tools.formatoSoles(
-                (valor_saldo / precio_parcial) * 100
+                (valor_saldo / precio_parcial) * 100,2,true
               );
             } else {
               valor_anterior = valor_anterior;
