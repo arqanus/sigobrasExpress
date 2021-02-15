@@ -13,6 +13,13 @@ obrasRouter.get(
   })
 );
 obrasRouter.get(
+  "/obra",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.obtenerTodosByObra(req.query);
+    res.json(response);
+  })
+);
+obrasRouter.get(
   "/:id",
   procesarErrores(async (req, res) => {
     var response = await Controller.obtenerUltimoCargoById({
@@ -22,11 +29,5 @@ obrasRouter.get(
     res.json(response);
   })
 );
-obrasRouter.get(
-  "/obra",
-  procesarErrores(async (req, res) => {
-    var response = await Controller.obtenerTodosByObra(req.query);
-    res.json(response);
-  })
-);
+
 module.exports = obrasRouter;

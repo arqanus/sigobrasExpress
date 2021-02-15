@@ -5,12 +5,14 @@ DB.obtenerTodos = ({ id_ficha }) => {
     var query = `
               SELECT
                   plazos_tipo.nombre tipo_nombre,
+                  descripcion,
                   DATE_FORMAT(fecha_inicio, '%Y-%m-%d') fecha_inicial,
                   DATE_FORMAT(fecha_final, '%Y-%m-%d') fecha_final,
                   n_dias,
                   DATE_FORMAT(fecha_aprobada, '%Y-%m-%d') fecha_aprobada,
                   plazos_historial.documento_resolucion_estado,
-                  archivo
+                  archivo,
+                  plazo_aprobado
               FROM
                   plazos_historial
                       LEFT JOIN
