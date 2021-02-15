@@ -179,6 +179,7 @@ DB.obtenerUsuariosByIdCargo = ({ id_ficha, id_cargos }) => {
               WHERE
                   fichas_has_accesos.Fichas_id_ficha = ${id_ficha}
                       AND id_cargo IN (${id_cargos})
+                      AND fichas_has_accesos.habilitado
               GROUP BY cargos.id_Cargo) ultimos_asignados ON ultimos_asignados.id = fichas_has_accesos.id
                   LEFT JOIN
               accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso
