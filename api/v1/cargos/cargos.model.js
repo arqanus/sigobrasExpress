@@ -50,6 +50,7 @@ DB.obtenerTodosByObra = ({ id_ficha, cargos_tipo_id }) => {
     `;
     pool.query(query, (error, res) => {
       if (error) {
+        console.log(error);
         reject(error);
       }
       resolve(res);
@@ -80,6 +81,7 @@ DB.obtenerUltimoCargoById = ({ id, id_ficha }) => {
             `;
     pool.query(query, (error, res) => {
       if (error) {
+        console.log(error);
         reject(error);
       }
       resolve(res ? res[0] : {});
