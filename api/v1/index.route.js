@@ -16,6 +16,7 @@ const obrasPlazos = require("./obrasPlazos/obrasPlazos.routes");
 const datosAnuales = require("./datosAnuales/datosAnuales.routes");
 const analitico = require("./analitico/analitico.routes.js");
 const fuentesFinancieamiento = require("./fuentesFinancieamiento/fuentesFinancieamiento.routes.js");
+const designaciones = require("./designaciones/designaciones.routes.js");
 
 const express = require("express");
 const router = express.Router();
@@ -38,5 +39,5 @@ router.use("/obrasPlazos", obrasPlazos);
 router.use("/datosAnuales", datosAnuales);
 router.use("/analitico", analitico);
 router.use("/fuentesFinancieamiento", fuentesFinancieamiento);
-
+router.use("/designaciones", designaciones);
 module.exports = router;
