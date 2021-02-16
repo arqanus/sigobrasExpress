@@ -131,6 +131,7 @@ DB.obtenerTodos = ({
             sectores ON sectores.idsectores = fichas.sectores_idsectores
         WHERE
             Accesos_id_acceso = ${id_acceso}
+            AND fichas_has_accesos.habilitado
     `;
     var condiciones = [];
     if (id != 0 && id != undefined) {
