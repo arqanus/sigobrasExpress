@@ -52,4 +52,18 @@ BaseModel.delete = (tabla, condiciones) => {
   query += " WHERE " + condiciones.join(" AND ");
   return query;
 };
+BaseModel.insert = (tabla, data) => {
+  var columnas = "";
+  var values = "";
+
+  var keys = Object.keys(data);
+  for (let i = 0; i < keys.length; i++) {
+    const columna = keys[i];
+    columnas += `${columna},`;
+    values += `'${data[columna]}',`;
+  }
+  columnas = columnas.slice(0, -1);
+  values = values.slice(0, -1);
+  return `INSERT INTO ${tabla}(${columnas})VALUES(${values})`;
+};
 module.exports = BaseModel;

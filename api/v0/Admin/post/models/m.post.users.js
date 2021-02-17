@@ -36,7 +36,10 @@ userModel.postAcceso = (data) => {
 userModel.asignarObra = (data) => {
   return new Promise((resolve, reject) => {
     pool.query("INSERT INTO fichas_has_accesos SET ?", data, (error, res) => {
-      if (error) reject(error);
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
       resolve(res);
     });
   });

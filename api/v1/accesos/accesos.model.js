@@ -1,3 +1,4 @@
+const BaseModel = require("../../libs/baseModel");
 const DB = {};
 DB.obtenerTodos = () => {
   return new Promise((resolve, reject) => {
@@ -36,14 +37,9 @@ DB.existe = ({ usuario }) => {
     });
   });
 };
-DB.crear = ({ usuario, hash, id_cargo, id_usuario, estado = 1 }) => {
+DB.crear = (data) => {
   return new Promise((resolve, reject) => {
-    const query = `
-    INSERT INTO accesos
-      (usuario, password, Cargos_id_Cargo, Usuarios_id_usuario,estado)
-    VALUES
-      ('${usuario}', '${hash}', '${id_cargo}', '${id_usuario}',${estado})
-    `;
+    var query = BaseModel.insert("accesos", data);
     pool.query(query, (err, res) => {
       if (err) {
         reject(err);
@@ -93,19 +89,30 @@ DB.obtenerById = ({ id_acceso }) => {
     });
   });
 };
-DB.asignarObra = ({ id_ficha, id_acceso }) => {
+DB.asignarObra = (data) => {
+  return new Promise((resolve, reject) => {
+    var query = BaseModel.insert("fichas_has_accesos", data);
+    pool.query(query, (err, res) => {
+      if (err) {
+        console.log(err);
+        reject(err);
+        return;
+      }
+      resolve(res);
+    });
+  });
+};
+DB.obtenerLastId = () => {
   return new Promise((resolve, reject) => {
     const query = `
-    INSERT INTO fichas_has_accesos
-    (Fichas_id_ficha, Accesos_id_acceso)
-    VALUES (${id_ficha},${id_acceso})
+      select id_acceso id from accesos order by id_acceso desc limit 1
     `;
     pool.query(query, (err, res) => {
       if (err) {
         reject(err);
         return;
       }
-      resolve(res);
+      resolve(res ? res[0] : {});
     });
   });
 };

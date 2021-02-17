@@ -11,22 +11,17 @@ DB.obtenerTodos = ({ id_ficha, id_cargo, habilitado, cargos_tipo_id }) => {
                           ' ',
                           accesos.nombre) nombre_usuario,
                   cargos.nombre cargo_nombre,
-                  fichas_has_accesos.memorandum,
                   accesos.id_acceso,
                   fichas_has_accesos.habilitado,
                   celular,
                   dni,
                   email
               FROM
-                  fichas
+                  accesos
                       LEFT JOIN
-                  fichas_has_accesos ON fichas_has_accesos.Fichas_id_ficha = fichas.id_ficha
-                      LEFT JOIN
-                  accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso
+                  fichas_has_accesos ON fichas_has_accesos.Accesos_id_acceso = accesos.id_acceso
                       LEFT JOIN
                   cargos ON cargos.id_Cargo = fichas_has_accesos.Cargos_id_Cargo
-
-
             `;
     var condiciones = [];
     if (id_ficha != "" && id_ficha != undefined && id_ficha != 0) {
@@ -196,5 +191,29 @@ DB.obtenerUsuariosByIdCargo = ({ id_ficha, id_cargos }) => {
     });
   });
 };
-
+DB.obtenerUsuarioPorDNI = ({ dni }) => {
+  return new Promise((resolve, reject) => {
+    var query = `
+       SELECT
+          nombre,
+          apellido_paterno,
+          apellido_materno,
+          dni,
+          direccion,
+          email,
+          celular,
+          cpt
+      FROM
+          accesos
+      WHERE
+          dni = ${dni}
+            `;
+    pool.query(query, (error, res) => {
+      if (error) {
+        reject(error);
+      }
+      resolve(res ? res[0] : {});
+    });
+  });
+};
 module.exports = DB;

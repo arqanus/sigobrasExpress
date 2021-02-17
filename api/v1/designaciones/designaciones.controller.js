@@ -6,8 +6,11 @@ function obtenerTodosByCargo(data) {
 function actualizarById(data) {
   return Model.actualizarById(data);
 }
-
+function guardarDesignacion(data) {
+  return Model.guardarDesignacion(data);
+}
 module.exports = {
   obtenerTodosByCargo,
   actualizarById,
+  guardarDesignacion,
 };

@@ -21,6 +21,9 @@ function ingresarUsuario(data) {
 function obtenerUsuariosByIdCargo(data) {
   return Model.obtenerUsuariosByIdCargo(data);
 }
+function obtenerUsuarioPorDNI(data) {
+  return Model.obtenerUsuarioPorDNI(data);
+}
 module.exports = {
   obtenerTodos,
   actualizarHabilitadoObra,
@@ -28,4 +31,5 @@ module.exports = {
   obtenerUsuarioByIdAcceso,
   ingresarUsuario,
   obtenerUsuariosByIdCargo,
+  obtenerUsuarioPorDNI,
 };
