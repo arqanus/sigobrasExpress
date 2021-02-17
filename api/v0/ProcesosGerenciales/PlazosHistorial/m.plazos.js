@@ -56,23 +56,21 @@ module.exports = {
     return new Promise((resolve, reject) => {
       pool.query(
         `
-        SELECT
+         SELECT
             plazos_historial.*,
             plazos_tipo.nombre tipo_nombre,
             DATE_FORMAT(fecha_inicio, '%Y-%m-%d') fecha_inicio,
             DATE_FORMAT(fecha_final, '%Y-%m-%d') fecha_final,
             DATE_FORMAT(fecha_aprobada, '%Y-%m-%d') fecha_aprobada,
-            CONCAT(usuarios.nombre,
+            CONCAT(accesos.nombre,
                     ' ',
-                    usuarios.apellido_paterno) usuario_nombre
+                    accesos.apellido_paterno) usuario_nombre
         FROM
             plazos_historial
                 LEFT JOIN
             plazos_tipo ON plazos_tipo.idplazos_tipo = plazos_historial.tipo
                 LEFT JOIN
             accesos ON accesos.id_acceso = plazos_historial.archivo_editor
-                LEFT JOIN
-            usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario
         WHERE
           plazos_historial.nivel = 1
                 AND fichas_id_ficha = ${id_ficha}

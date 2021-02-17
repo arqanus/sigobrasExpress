@@ -54,10 +54,10 @@ DB.obtenerTodos = ({ id_ficha, id_cargo, habilitado, cargos_tipo_id }) => {
     });
   });
 };
-DB.obtenerUsuarioByIdAcceso = ({ id }) => {
+DB.obtenerUsuarioByIdAcceso = ({ id_acceso, id_ficha }) => {
   return new Promise((resolve, reject) => {
     var query = `
-            SELECT
+             SELECT
                 cargos.nombre cargo_nombre, accesos.nombre usuario_nombre
             FROM
                 fichas_has_accesos
@@ -66,7 +66,8 @@ DB.obtenerUsuarioByIdAcceso = ({ id }) => {
                     LEFT JOIN
                 accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso
             WHERE
-                id_acceso = ${id}
+                fichas_has_accesos.Accesos_id_acceso = ${id_acceso}
+                    AND fichas_has_accesos.Fichas_id_ficha = ${id_ficha}
             `;
     pool.query(query, (error, res) => {
       if (error) {
