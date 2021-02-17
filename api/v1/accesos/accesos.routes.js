@@ -7,6 +7,7 @@ const validarUsuario = require("./accesos.validate").validarUsuario;
 const validarPedidoDeLogin = require("./accesos.validate").validarPedidoDeLogin;
 const config = require("../../../config");
 const accesoController = require("./accesos.controller");
+const ControllerDesignaciones = require("../designaciones/designaciones.controller");
 
 const procesarErrores = require("../../libs/errorHandler").procesarErrores;
 const {
@@ -106,6 +107,29 @@ accesosRouter.put(
         hash,
       });
       res.status(201).send("Usuario creado exitósamente.");
+    }
+  })
+);
+accesosRouter.post(
+  "/asignarObra",
+  procesarErrores(async (req, res) => {
+    var fecha_inicio = req.body.fecha_inicio;
+    delete req.body.fecha_inicio;
+    var response = await accesoController.asignarObra(req.body);
+    if (response.affectedRows > 0) {
+      if (fecha_inicio) {
+        var objectDesignacion = {
+          fecha_inicio,
+          fichas_has_accesos_id: response.insertId,
+        };
+        var response2 = await ControllerDesignaciones.guardarDesignacion(
+          objectDesignacion
+        );
+        console.log("response2", response2);
+      }
+      res.json({ message: "exito" });
+    } else {
+      res.status(404).json("error");
     }
   })
 );
