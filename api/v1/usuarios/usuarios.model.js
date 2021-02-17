@@ -195,6 +195,7 @@ DB.obtenerUsuarioPorDNI = ({ dni }) => {
   return new Promise((resolve, reject) => {
     var query = `
        SELECT
+          id_acceso,
           nombre,
           apellido_paterno,
           apellido_materno,
