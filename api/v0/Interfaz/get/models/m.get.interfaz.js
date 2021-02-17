@@ -62,16 +62,28 @@ module.exports = {
   },
   getIdAccesoAdmin({ usuario, password }) {
     return new Promise((resolve, reject) => {
-      pool.query(
-        "SELECT accesos.id_acceso FROM accesos LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo WHERE nivel = 1 AND estado = 1 AND usuario = ? AND password = ? ORDER BY accesos.id_acceso DESC LIMIT 1",
-        [usuario, password],
-        (error, res) => {
-          if (error) {
-            reject(error);
-          }
-          resolve(res);
+      var query = `
+      SELECT
+          fichas_has_accesos.Accesos_id_acceso id_acceso
+      FROM
+          fichas_has_accesos
+              LEFT JOIN
+          cargos ON cargos.id_Cargo = fichas_has_accesos.Cargos_id_Cargo
+              LEFT JOIN
+          accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso
+      WHERE
+          nivel = 1 AND estado = 1
+              AND usuario = '${usuario}'
+              AND password = '${password}'
+      ORDER BY fichas_has_accesos.Accesos_id_acceso DESC
+      LIMIT 1
+      `;
+      pool.query(query, (error, res) => {
+        if (error) {
+          reject(error);
         }
-      );
+        resolve(res);
+      });
     });
   },
   getCargoByIdAcceso({ id_acceso }) {

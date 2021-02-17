@@ -13,7 +13,10 @@ DB.obtenerTodos = ({ id_ficha, id_cargo, habilitado, cargos_tipo_id }) => {
                   cargos.nombre cargo_nombre,
                   fichas_has_accesos.memorandum,
                   accesos.id_acceso,
-                  fichas_has_accesos.habilitado
+                  fichas_has_accesos.habilitado,
+                  celular,
+                  dni,
+                  email
               FROM
                   fichas
                       LEFT JOIN
