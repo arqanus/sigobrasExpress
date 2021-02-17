@@ -55,5 +55,15 @@ DB.actualizarById = ({ id, fecha_inicio, fecha_final, memorandum }) => {
     });
   });
 };
-
+DB.guardarDesignacion = (data) => {
+  return new Promise((resolve, reject) => {
+    var query = BaseModel.insert("designaciones", data);
+    pool.query(query, (error, res) => {
+      if (error) {
+        reject(error);
+      }
+      resolve(res);
+    });
+  });
+};
 module.exports = DB;

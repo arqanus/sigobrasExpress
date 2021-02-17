@@ -15,6 +15,13 @@ obrasRouter.get(
     res.json(response);
   })
 );
+obrasRouter.post(
+  "/",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.guardarDesignacion(req.body);
+    res.json(response);
+  })
+);
 obrasRouter.put(
   "/:id",
   procesarErrores(async (req, res) => {

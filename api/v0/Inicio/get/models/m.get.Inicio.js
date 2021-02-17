@@ -270,8 +270,25 @@ userModel.getUsuariosByCargoAdmin = ({
   textoBuscado,
   estado,
 }) => {
-  var query =
-    "SELECT usuarios.*, CONCAT(usuarios.apellido_paterno, ' ', usuarios.apellido_materno, ' ', usuarios.nombre) nombre_usuario, cargos.nombre cargo_nombre, accesos.id_acceso FROM  usuarios LEFT JOIN accesos ON accesos.Usuarios_id_usuario = usuarios.id_usuario LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo LEFT JOIN fichas_has_accesos ON fichas_has_accesos.Accesos_id_acceso = accesos.id_acceso";
+  var query = `
+    SELECT
+      accesos.*,
+      CONCAT(accesos.apellido_paterno,
+              ' ',
+              accesos.apellido_materno,
+              ' ',
+              accesos.nombre) nombre_usuario,
+      cargos.nombre cargo_nombre,
+      accesos.id_acceso,
+      cargos.id_cargo
+    FROM
+      fichas_has_accesos
+    LEFT JOIN
+      accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso
+    LEFT JOIN
+      cargos ON cargos.id_Cargo = fichas_has_accesos.cargos_id_Cargo
+    `;
+
   var condiciones = [];
   if (id_ficha != 0) {
     condiciones.push(`(fichas_has_accesos.Fichas_id_ficha = ${id_ficha})`);
@@ -284,13 +301,13 @@ userModel.getUsuariosByCargoAdmin = ({
   }
   if (textoBuscado != "") {
     condiciones.push(
-      `((usuarios.nombre like \'%${textoBuscado}%\') || (usuarios.apellido_paterno like \'%${textoBuscado}%\')  || (usuarios.apellido_materno like \'%${textoBuscado}%\'))`
+      `((accesos.nombre like \'%${textoBuscado}%\') || (accesos.apellido_paterno like \'%${textoBuscado}%\')  || (accesos.apellido_materno like \'%${textoBuscado}%\'))`
     );
   }
   if (condiciones.length > 0) {
     query += " WHERE " + condiciones.join(" AND ");
   }
-  query += " GROUP BY accesos.id_acceso ORDER BY accesos.id_acceso  ";
+  query += " GROUP BY accesos.id_acceso,id_cargo ORDER BY accesos.id_acceso  ";
   return new Promise((resolve, reject) => {
     pool.query(query, (err, res) => {
       if (err) {
