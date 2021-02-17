@@ -33,7 +33,7 @@ DB.obtenerTodosByObra = ({ id_ficha, cargos_tipo_id }) => {
                         LEFT JOIN
                     accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso
                         INNER JOIN
-                    cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo
+                    cargos ON cargos.id_Cargo = fichas_has_accesos.Cargos_id_Cargo
                 WHERE
                     fichas_has_accesos.Fichas_id_ficha = ${id_ficha}
             `;
