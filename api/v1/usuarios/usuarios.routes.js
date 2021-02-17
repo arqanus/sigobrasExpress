@@ -26,7 +26,7 @@ obrasRouter.get(
   })
 );
 obrasRouter.get(
-  "/acceso/:id",
+  "/obra/:id_ficha/acceso/:id_acceso",
   procesarErrores(async (req, res) => {
     var response = await Controller.obtenerUsuarioByIdAcceso(req.params);
     res.json(response);
