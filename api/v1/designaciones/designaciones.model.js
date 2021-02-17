@@ -5,20 +5,18 @@ DB.obtenerTodosByCargo = ({ id_ficha, id_cargo }) => {
   return new Promise((resolve, reject) => {
     var query = `
             SELECT
-              designaciones.id,
-              CONCAT(usuarios.apellido_paterno,
-              ' ',
-              usuarios.apellido_materno,
-              ' ',
-              usuarios.nombre) nombre,
-              DATE_FORMAT(fecha_inicio, '%Y-%m-%d') fecha_inicio,
-              DATE_FORMAT(fecha_final, '%Y-%m-%d') fecha_final,
-              designaciones.memorandum,
-              habilitado
+                designaciones.id,
+                CONCAT(accesos.apellido_paterno,
+                        ' ',
+                        accesos.apellido_materno,
+                        ' ',
+                        accesos.nombre) nombre,
+                DATE_FORMAT(fecha_inicio, '%Y-%m-%d') fecha_inicio,
+                DATE_FORMAT(fecha_final, '%Y-%m-%d') fecha_final,
+                designaciones.memorandum,
+                habilitado
             FROM
                 accesos
-                    LEFT JOIN
-                usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario
                     LEFT JOIN
                 fichas_has_accesos ON fichas_has_accesos.Accesos_id_acceso = accesos.id_acceso
                     LEFT JOIN

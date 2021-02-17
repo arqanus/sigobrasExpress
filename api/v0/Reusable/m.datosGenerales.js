@@ -41,18 +41,26 @@ module.exports = {
       );
     });
   },
-  getDatosUsuario(id_acceso) {
+  getDatosUsuario({ id_acceso, id_ficha }) {
     return new Promise((resolve, reject) => {
-      pool.query(
-        "SELECT cargos.nombre cargo_nombre, usuarios.nombre usuario_nombre FROM accesos LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo LEFT JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario WHERE id_acceso = ?",
-        [id_acceso],
-        (error, res) => {
-          if (error) {
-            reject(error);
-          }
-          resolve(res ? res[0] : {});
+      var query = `
+      SELECT
+          cargos.nombre cargo_nombre, accesos.nombre usuario_nombre
+      FROM
+          accesos
+              LEFT JOIN
+          fichas_has_accesos ON fichas_has_accesos.Accesos_id_acceso = accesos.id_acceso
+              LEFT JOIN
+          cargos ON cargos.id_Cargo = fichas_has_accesos.Cargos_id_Cargo
+      WHERE
+          id_acceso = ${id_acceso} AND Fichas_id_ficha = ${id_ficha}
+      `;
+      pool.query(query, (error, res) => {
+        if (error) {
+          reject(error);
         }
-      );
+        resolve(res ? res[0] : {});
+      });
     });
   },
 };

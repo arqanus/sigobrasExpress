@@ -34,9 +34,6 @@ module.exports = function (app) {
         req.body.id_ficha,
         req.body.fecha_inicial
       );
-
-      // var avance_actual = await User3.getAvanceActual(req.body.id_ficha, req.body.fecha_inicial, req.body.fecha_final)
-      // var avance_acumulado = await User3.getAvanceActual(req.body.id_ficha, "2000-01-01 00:00:00", req.body.fecha_final)
       var residente = await User3.getCargoPersonal(
         req.body.id_ficha,
         "residente"
