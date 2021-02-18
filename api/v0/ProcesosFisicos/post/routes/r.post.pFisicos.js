@@ -565,6 +565,7 @@ module.exports = function (app) {
             imagenAlt: fields.codigo_obra,
             descripcionObservacion: fields.descripcionObservacion,
             accesos_id_acceso: fields.accesos_id_acceso,
+            fecha: fields.fecha,
           };
           User.postavancePartidaImagen(avancePartida, (err, data) => {
             if (err) {
