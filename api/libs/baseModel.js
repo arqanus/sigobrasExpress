@@ -1,15 +1,20 @@
 let BaseModel = {};
-BaseModel.update = (tabla, valores, condiciones) => {
+BaseModel.update = (tabla, valores, condiciones, allNulls = false) => {
   var query = `UPDATE ${tabla} SET `;
   var keys = Object.keys(valores);
   for (let i = 0; i < keys.length; i++) {
     var columna = keys[i];
-    if (valores[columna] != undefined && valores[columna] != "") {
-      query += `${columna} = '${valores[columna]}',`;
+    if ((valores[columna] != undefined && valores[columna] != "") || allNulls) {
+      if (allNulls && valores[columna] == "") {
+        query += `${columna} = null,`;
+      } else {
+        query += `${columna} = '${valores[columna]}',`;
+      }
     }
   }
   query = query.slice(0, -1);
   query += " WHERE " + condiciones.join(" AND ");
+  console.log("query", query);
   return query;
 };
 BaseModel.updateOnDuplicateKey = (tabla, listData) => {
