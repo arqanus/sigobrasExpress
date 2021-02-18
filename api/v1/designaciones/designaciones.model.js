@@ -44,7 +44,8 @@ DB.actualizarById = ({ id, fecha_inicio, fecha_final, memorandum }) => {
         fecha_final,
         memorandum,
       },
-      [`id = ${id}`]
+      [`id = ${id}`],
+      true
     );
     pool.query(query, (error, res) => {
       if (error) {
