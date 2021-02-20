@@ -437,28 +437,28 @@ userModel.putUsuarioMemo = (memorandum, id_acceso, id_ficha) => {
 userModel.ultimoFinancieroData = ({ id_ficha }) => {
   return new Promise((resolve, reject) => {
     var query = `
-    SELECT
-        curva_s.*,
-        CONCAT(usuarios.nombre,
-                ' ',
-                usuarios.apellido_paterno) usuario_nombre,
-        cargos.nombre cargo_nombre
-    FROM
-        curva_s
-            LEFT JOIN
-        accesos ON accesos.id_acceso = curva_s.ultimo_editor_idacceso
-            LEFT JOIN
-        usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario
-            LEFT JOIN
-        cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo
+     SELECT
+    curva_s.*,
+    CONCAT(accesos.nombre,
+            ' ',
+            accesos.apellido_paterno) usuario_nombre,
+    cargos.nombre cargo_nombre
+FROM
+    curva_s
+        LEFT JOIN
+    accesos ON accesos.id_acceso = curva_s.ultimo_editor_idacceso
+        LEFT JOIN
+    fichas_has_accesos ON fichas_has_accesos.Accesos_id_acceso = accesos.id_acceso
+        LEFT JOIN
+    cargos ON cargos.id_Cargo = fichas_has_accesos.Cargos_id_Cargo
     WHERE
-        fichas_id_ficha = ${id_ficha}
+        fichas_has_accesos.fichas_id_ficha = ${id_ficha}
     ORDER BY financiero_fecha_update DESC
     LIMIT 1
     `;
-
     pool.query(query, (error, res) => {
       if (error) {
+        console.log(error);
         reject(error);
       }
       resolve(res ? res[0] : {});

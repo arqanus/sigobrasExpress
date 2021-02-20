@@ -184,6 +184,8 @@ module.exports = (app) => {
     try {
       var data = await User.ultimoFinancieroData(req.query);
       res.json(data);
-    } catch (error) {}
+    } catch (error) {
+      res.status(500).json({ message: "error" });
+    }
   });
 };
