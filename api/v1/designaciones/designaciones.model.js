@@ -19,7 +19,7 @@ DB.obtenerTodosByCargo = ({ id_ficha, id_cargo }) => {
                 accesos
                     LEFT JOIN
                 fichas_has_accesos ON fichas_has_accesos.Accesos_id_acceso = accesos.id_acceso
-                    LEFT JOIN
+                    INNER JOIN
                 designaciones ON designaciones.fichas_has_accesos_id = fichas_has_accesos.id
             WHERE
                 Fichas_id_ficha = ${id_ficha}
@@ -35,7 +35,13 @@ DB.obtenerTodosByCargo = ({ id_ficha, id_cargo }) => {
     });
   });
 };
-DB.actualizarById = ({ id, fecha_inicio, fecha_final, memorandum }) => {
+DB.actualizarById = ({
+  id,
+  tipoUndefined = false,
+  fecha_inicio,
+  fecha_final,
+  memorandum,
+}) => {
   return new Promise((resolve, reject) => {
     var query = BaseModel.update(
       "designaciones",
@@ -45,7 +51,7 @@ DB.actualizarById = ({ id, fecha_inicio, fecha_final, memorandum }) => {
         memorandum,
       },
       [`id = ${id}`],
-      true
+      tipoUndefined
     );
     pool.query(query, (error, res) => {
       if (error) {
