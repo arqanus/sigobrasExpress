@@ -77,7 +77,7 @@ obrasRouter.put(
       ...req.params,
       ...req.body,
     });
-    res.json(response);
+    res.json({ message: "Actualizacion exitosa" });
   })
 );
 obrasRouter.put(

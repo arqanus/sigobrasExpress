@@ -5,17 +5,23 @@ DB.obtenerTodos = ({ id_ficha, id_cargo, habilitado, cargos_tipo_id }) => {
     var query = `
               SELECT
                   fichas_has_accesos.id id_asignacion,
+                  accesos.id_acceso,
                   CONCAT(accesos.apellido_paterno,
                           ' ',
                           accesos.apellido_materno,
                           ' ',
                           accesos.nombre) nombre_usuario,
+                  accesos.apellido_paterno,
+                  accesos.apellido_materno,
+                  accesos.nombre,
+                  accesos.direccion,
                   cargos.nombre cargo_nombre,
                   accesos.id_acceso,
                   fichas_has_accesos.habilitado,
                   celular,
                   dni,
-                  email
+                  email,
+                  cpt
               FROM
                   accesos
                       LEFT JOIN
@@ -132,7 +138,7 @@ DB.actualizarTodo = ({
 }) => {
   return new Promise((resolve, reject) => {
     var query = `
-          UPDATE usuarios
+          UPDATE accesos
           SET
               nombre = '${nombre}',
               apellido_paterno = '${apellido_paterno}',
@@ -143,7 +149,7 @@ DB.actualizarTodo = ({
               celular = '${celular}',
               cpt = '${cpt}'
           WHERE
-              (id_usuario =${id})
+              (id_acceso =${id})
             `;
     pool.query(query, (error, res) => {
       if (error) {
