@@ -72,15 +72,8 @@ obrasRouter.put(
       fs.rename(formFiles.files.path, dir + obraFolder, (err) => {});
       link = "/static/" + obraFolder;
     }
-    // var request = await User.putUsuarioMemo(
-    //   link,
-    //   formFiles.fields.id,
-    //   formFiles.fields.id_ficha
-    // );
-
-    var response = await Controller.actualizarById({
+    await Controller.actualizarMemorandumById({
       ...req.params,
-      ...req.body,
       memorandum: link,
     });
     res.json({

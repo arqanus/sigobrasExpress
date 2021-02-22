@@ -9,8 +9,12 @@ function actualizarById(data) {
 function guardarDesignacion(data) {
   return Model.guardarDesignacion(data);
 }
+function actualizarMemorandumById(data) {
+  return Model.actualizarMemorandumById(data);
+}
 module.exports = {
   obtenerTodosByCargo,
   actualizarById,
   guardarDesignacion,
+  actualizarMemorandumById,
 };

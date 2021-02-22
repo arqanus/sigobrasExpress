@@ -35,23 +35,34 @@ DB.obtenerTodosByCargo = ({ id_ficha, id_cargo }) => {
     });
   });
 };
-DB.actualizarById = ({
-  id,
-  tipoUndefined = false,
-  fecha_inicio,
-  fecha_final,
-  memorandum,
-}) => {
+DB.actualizarById = ({ id, fecha_inicio, fecha_final }) => {
   return new Promise((resolve, reject) => {
     var query = BaseModel.update(
       "designaciones",
       {
         fecha_inicio,
         fecha_final,
-        memorandum,
       },
       [`id = ${id}`],
-      tipoUndefined
+      true
+    );
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
+      resolve(res);
+    });
+  });
+};
+DB.actualizarMemorandumById = ({ id, memorandum }) => {
+  return new Promise((resolve, reject) => {
+    var query = BaseModel.update(
+      "designaciones",
+      {
+        memorandum,
+      },
+      [`id = ${id}`]
     );
     pool.query(query, (error, res) => {
       if (error) {
