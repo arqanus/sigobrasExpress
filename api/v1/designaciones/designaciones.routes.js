@@ -77,18 +77,15 @@ obrasRouter.put(
     //   formFiles.fields.id,
     //   formFiles.fields.id_ficha
     // );
+
     var response = await Controller.actualizarById({
       ...req.params,
+      ...req.body,
       memorandum: link,
     });
     res.json({
       message: "registro exitoso",
     });
-    var response = await Controller.actualizarById({
-      ...req.params,
-      ...req.body,
-    });
-    res.json(response);
   })
 );
 
