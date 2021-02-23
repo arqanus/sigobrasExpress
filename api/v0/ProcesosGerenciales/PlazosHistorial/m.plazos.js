@@ -74,6 +74,7 @@ module.exports = {
         WHERE
           plazos_historial.nivel = 1
                 AND fichas_id_ficha = ${id_ficha}
+          ORDER BY plazos_historial.fecha_inicio
             `,
         (err, res) => {
           if (err) {
@@ -142,6 +143,7 @@ module.exports = {
                 plazos_historial.nivel = 2
                     AND fichas_id_ficha = ${id_ficha}
                     AND id_padre = ${id_padre}
+            ORDER BY plazos_historial.fecha_inicio
             `,
         (err, res) => {
           if (err) {

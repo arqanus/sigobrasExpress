@@ -15,10 +15,22 @@ function actualizarResumenAnual(data) {
 function actualizarResumenMensual(data) {
   return Model.actualizarResumenMensual(data);
 }
+function obtenerPresupuestAnalitico(data) {
+  return Model.obtenerPresupuestAnalitico(data);
+}
+function actualizarPresupuestAnalitico(data) {
+  return Model.actualizarPresupuestAnalitico(data);
+}
+function actualizarPresupuestAnaliticoMonto(data) {
+  return Model.actualizarPresupuestAnaliticoMonto(data);
+}
 module.exports = {
   obtenerResumen,
   actualizarResumen,
   eliminarResumen,
   actualizarResumenAnual,
   actualizarResumenMensual,
+  obtenerPresupuestAnalitico,
+  actualizarPresupuestAnalitico,
+  actualizarPresupuestAnaliticoMonto,
 };
