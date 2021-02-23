@@ -107,7 +107,10 @@ DB.actualizarResumenMensual = (data) => {
 
 DB.obtenerPresupuestAnalitico = ({ id_costo, presupuestosAprobados }) => {
   return new Promise((resolve, reject) => {
-    var listpresupuestosAprobados = presupuestosAprobados.split(",");
+    var listpresupuestosAprobados = [];
+    if (presupuestosAprobados != "") {
+      listpresupuestosAprobados = presupuestosAprobados.split(",");
+    }
     var query = `
     SELECT
         presupuesto_analitico.id,
@@ -115,8 +118,7 @@ DB.obtenerPresupuestAnalitico = ({ id_costo, presupuestosAprobados }) => {
         presupuestoanalitico_presupuestosaprobados.id id_presupuestoanalitico_presupuestosaprobados,
         presupuestos_aprobados_id,
         clasificador,
-        descripcion,
-        `;
+        descripcion,`;
     for (let i = 0; i < listpresupuestosAprobados.length; i++) {
       const item = listpresupuestosAprobados[i];
       query += `SUM(IF(presupuestos_aprobados_id = ${item},
@@ -138,8 +140,6 @@ DB.obtenerPresupuestAnalitico = ({ id_costo, presupuestosAprobados }) => {
     GROUP BY clasificadores_presupuestarios.id
     ORDER BY clasificadores_presupuestarios.id
     `;
-    // resolve(query);
-    // return;
     pool.query(query, (error, res) => {
       if (error) {
         console.log(error);
