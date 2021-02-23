@@ -554,16 +554,32 @@ module.exports = {
   },
   getPartidaComentarios(id_partida) {
     return new Promise((resolve, reject) => {
-      pool.query(
-        "SELECT comentario, DATE_FORMAT(partida_comentarios.fecha, '%d-%m-%Y %H:%i') fecha, cargos.nombre cargo_nombre, '' cargo_imagen, usuarios.nombre usuario_nombre, accesos.id_acceso FROM partida_comentarios LEFT JOIN accesos ON accesos.id_acceso = partida_comentarios.id_acceso LEFT JOIN cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo LEFT JOIN usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario WHERE id_partida = ? ;",
-        [id_partida],
-        (err, res) => {
-          if (err) {
-            reject(err);
-          }
-          resolve(res);
+      var query = `
+      SELECT
+          comentario,
+          DATE_FORMAT(partida_comentarios.fecha,
+                  '%d-%m-%Y %H:%i') fecha,
+          cargos.nombre cargo_nombre,
+          '' cargo_imagen,
+          accesos.nombre usuario_nombre,
+          accesos.id_acceso
+      FROM
+          partida_comentarios
+              LEFT JOIN
+          accesos ON accesos.id_acceso = partida_comentarios.id_acceso
+              LEFT JOIN
+          fichas_has_accesos ON fichas_has_accesos.Accesos_id_acceso = accesos.id_acceso
+              LEFT JOIN
+          cargos ON cargos.id_Cargo = fichas_has_accesos.Cargos_id_Cargo
+      WHERE
+          id_partida = ${id_partida}
+      `;
+      pool.query(query, [id_partida], (err, res) => {
+        if (err) {
+          reject(err);
         }
-      );
+        resolve(res);
+      });
     });
   },
   postPartidaComentario(comentario, id_partida, id_acceso) {
