@@ -20,6 +20,7 @@ DB.obtenerTodos = ({ id_ficha }) => {
               WHERE
                   plazos_historial.nivel = 1
                       AND fichas_id_ficha = ${id_ficha}
+              ORDER BY plazos_historial.fecha_inicio
             `;
     pool.query(query, (error, res) => {
       if (error) {

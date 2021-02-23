@@ -5,7 +5,7 @@ const ControllerAccesos = require("../accesos/accesos.controller");
 const procesarErrores = require("../../libs/errorHandler").procesarErrores;
 
 const obrasRouter = express.Router();
-
+//resumen
 obrasRouter.get(
   "/resumen",
   procesarErrores(async (req, res) => {
@@ -55,6 +55,30 @@ obrasRouter.put(
       return;
     }
     res.json("registro exitoso");
+  })
+);
+//general
+obrasRouter.get(
+  "/",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.obtenerPresupuestAnalitico(req.query);
+    res.json(response);
+  })
+);
+obrasRouter.put(
+  "/",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.actualizarPresupuestAnalitico(req.body);
+    res.json(response);
+  })
+);
+obrasRouter.put(
+  "/presupuesto",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.actualizarPresupuestAnaliticoMonto(
+      req.body
+    );
+    res.json(response);
   })
 );
 module.exports = obrasRouter;

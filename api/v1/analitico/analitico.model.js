@@ -104,4 +104,76 @@ DB.actualizarResumenMensual = (data) => {
     });
   });
 };
+
+DB.obtenerPresupuestAnalitico = ({ id_costo, presupuestosAprobados }) => {
+  return new Promise((resolve, reject) => {
+    var listpresupuestosAprobados = presupuestosAprobados.split(",");
+    var query = `
+    SELECT
+        presupuesto_analitico.id,
+        clasificadores_presupuestarios.id id_clasificador,
+        presupuestoanalitico_presupuestosaprobados.id id_presupuestoanalitico_presupuestosaprobados,
+        presupuestos_aprobados_id,
+        clasificador,
+        descripcion,
+        `;
+    for (let i = 0; i < listpresupuestosAprobados.length; i++) {
+      const item = listpresupuestosAprobados[i];
+      query += `SUM(IF(presupuestos_aprobados_id = ${item},
+            presupuestoanalitico_presupuestosaprobados.monto,
+            0)) presupuesto_${item},`;
+    }
+    query = query.slice(0, -1);
+    query += `
+    FROM
+        presupuestoanalitico_costosasignados
+            LEFT JOIN
+        presupuesto_analitico ON presupuesto_analitico.presupuestoanalitico_costosasignados_id = presupuestoanalitico_costosasignados.id
+            LEFT JOIN
+        clasificadores_presupuestarios ON clasificadores_presupuestarios.id = presupuesto_analitico.clasificadores_presupuestarios_id
+            LEFT JOIN
+        presupuestoanalitico_presupuestosaprobados ON presupuestoanalitico_presupuestosaprobados.presupuesto_analitico_id = presupuesto_analitico.id
+    WHERE
+        presupuestoanalitico_costosasignados.id = ${id_costo}
+    GROUP BY clasificadores_presupuestarios.id
+    ORDER BY clasificadores_presupuestarios.id
+    `;
+    // resolve(query);
+    // return;
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
+      resolve(res);
+    });
+  });
+};
+DB.actualizarPresupuestAnalitico = (data) => {
+  return new Promise((resolve, reject) => {
+    var query = BaseModel.updateOnDuplicateKey("presupuesto_analitico", data);
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
+      resolve(res);
+    });
+  });
+};
+DB.actualizarPresupuestAnaliticoMonto = (data) => {
+  return new Promise((resolve, reject) => {
+    var query = BaseModel.updateOnDuplicateKey(
+      "presupuestoanalitico_presupuestosaprobados",
+      data
+    );
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
+      resolve(res);
+    });
+  });
+};
 module.exports = DB;
