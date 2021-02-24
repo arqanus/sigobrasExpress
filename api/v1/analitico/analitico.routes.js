@@ -62,6 +62,22 @@ obrasRouter.get(
   "/",
   procesarErrores(async (req, res) => {
     var response = await Controller.obtenerPresupuestAnalitico(req.query);
+    var response2 = await Controller.obtenerPresupuestAnaliticoAnyos(req.query);
+    if (response2.length > 0) {
+      var response3 = await Controller.obtenerPresupuestAnaliticoAvanceAnual({
+        ...req.query,
+        anyos: response2,
+      });
+    }
+    var response4 = await Controller.obtenerPresupuestAnaliticoAvanceMensual(
+      req.query
+    );
+    for (let i = 0; i < response.length; i++) {
+      if (response2.length > 0) {
+        response[i] = { ...response[i], ...response3[i] };
+      }
+      response[i] = { ...response[i], ...response4[i] };
+    }
     res.json(response);
   })
 );
@@ -78,6 +94,20 @@ obrasRouter.put(
     var response = await Controller.actualizarPresupuestAnaliticoMonto(
       req.body
     );
+    res.json(response);
+  })
+);
+obrasRouter.put(
+  "/avanceAnual",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.actualizarAvanceAnualMonto(req.body);
+    res.json(response);
+  })
+);
+obrasRouter.put(
+  "/avanceMensual",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.actualizarAvanceMensualMonto(req.body);
     res.json(response);
   })
 );

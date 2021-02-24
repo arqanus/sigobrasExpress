@@ -24,6 +24,21 @@ function actualizarPresupuestAnalitico(data) {
 function actualizarPresupuestAnaliticoMonto(data) {
   return Model.actualizarPresupuestAnaliticoMonto(data);
 }
+function obtenerPresupuestAnaliticoAnyos(data) {
+  return Model.obtenerPresupuestAnaliticoAnyos(data);
+}
+function obtenerPresupuestAnaliticoAvanceAnual(data) {
+  return Model.obtenerPresupuestAnaliticoAvanceAnual(data);
+}
+function obtenerPresupuestAnaliticoAvanceMensual(data) {
+  return Model.obtenerPresupuestAnaliticoAvanceMensual(data);
+}
+function actualizarAvanceAnualMonto(data) {
+  return Model.actualizarAvanceAnualMonto(data);
+}
+function actualizarAvanceMensualMonto(data) {
+  return Model.actualizarAvanceMensualMonto(data);
+}
 module.exports = {
   obtenerResumen,
   actualizarResumen,
@@ -33,4 +48,9 @@ module.exports = {
   obtenerPresupuestAnalitico,
   actualizarPresupuestAnalitico,
   actualizarPresupuestAnaliticoMonto,
+  obtenerPresupuestAnaliticoAnyos,
+  obtenerPresupuestAnaliticoAvanceAnual,
+  obtenerPresupuestAnaliticoAvanceMensual,
+  actualizarAvanceAnualMonto,
+  actualizarAvanceMensualMonto,
 };
