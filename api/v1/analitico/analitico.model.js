@@ -128,17 +128,15 @@ DB.obtenerPresupuestAnalitico = ({ id_costo, presupuestosAprobados }) => {
     query = query.slice(0, -1);
     query += `
     FROM
-        presupuestoanalitico_costosasignados
-            LEFT JOIN
-        presupuesto_analitico ON presupuesto_analitico.presupuestoanalitico_costosasignados_id = presupuestoanalitico_costosasignados.id
-            LEFT JOIN
-        clasificadores_presupuestarios ON clasificadores_presupuestarios.id = presupuesto_analitico.clasificadores_presupuestarios_id
-            LEFT JOIN
-        presupuestoanalitico_presupuestosaprobados ON presupuestoanalitico_presupuestosaprobados.presupuesto_analitico_id = presupuesto_analitico.id
+      presupuesto_analitico
+          LEFT JOIN
+      clasificadores_presupuestarios ON clasificadores_presupuestarios.id = presupuesto_analitico.clasificadores_presupuestarios_id
+          LEFT JOIN
+      presupuestoanalitico_presupuestosaprobados ON presupuestoanalitico_presupuestosaprobados.presupuesto_analitico_id = presupuesto_analitico.id
     WHERE
-        presupuestoanalitico_costosasignados.id = ${id_costo}
-    GROUP BY clasificadores_presupuestarios.id
-    ORDER BY clasificadores_presupuestarios.id
+        presupuestoanalitico_costosasignados_id = ${id_costo}
+    GROUP BY presupuesto_analitico.id
+    ORDER BY clasificadores_presupuestarios_id
     `;
     pool.query(query, (error, res) => {
       if (error) {
@@ -165,6 +163,127 @@ DB.actualizarPresupuestAnaliticoMonto = (data) => {
   return new Promise((resolve, reject) => {
     var query = BaseModel.updateOnDuplicateKey(
       "presupuestoanalitico_presupuestosaprobados",
+      data
+    );
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
+      resolve(res);
+    });
+  });
+};
+DB.obtenerPresupuestAnaliticoAnyos = ({ anyo, id_ficha }) => {
+  return new Promise((resolve, reject) => {
+    var query = `
+    SELECT
+        anyo
+    FROM
+        presupuesto_analitico
+            INNER JOIN
+        presupuestoanalitico_avanceanual ON presupuestoanalitico_avanceanual.presupuesto_analitico_id = presupuesto_analitico.id
+            LEFT JOIN
+        presupuestoanalitico_costosasignados ON presupuestoanalitico_costosasignados.id = presupuesto_analitico.presupuestoanalitico_costosasignados_id
+    WHERE
+        presupuestoanalitico_costosasignados.fichas_id_ficha = ${id_ficha}
+            AND anyo < ${anyo}
+    GROUP BY anyo
+    `;
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
+      resolve(res);
+    });
+  });
+};
+DB.obtenerPresupuestAnaliticoAvanceAnual = ({ anyo, id_costo, anyos }) => {
+  return new Promise((resolve, reject) => {
+    var query = `
+      SELECT
+          presupuesto_analitico.id,
+          `;
+    for (let i = 0; i < anyos.length; i++) {
+      const anyo = anyos[i].anyo;
+      query += `
+        SUM(IF(presupuestoanalitico_avanceanual.anyo = ${anyo},
+              presupuestoanalitico_avanceanual.monto,
+              0)) avanceAnual_${anyo},`;
+    }
+    query = query.slice(0, -1);
+    query += `
+      FROM
+          presupuesto_analitico
+              LEFT JOIN
+          presupuestoanalitico_avanceanual ON presupuestoanalitico_avanceanual.presupuesto_analitico_id = presupuesto_analitico.id
+      WHERE
+          presupuestoanalitico_costosasignados_id = ${id_costo}
+      GROUP BY presupuesto_analitico.id
+      ORDER BY clasificadores_presupuestarios_id
+    `;
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
+      resolve(res);
+    });
+  });
+};
+DB.obtenerPresupuestAnaliticoAvanceMensual = ({ anyo, id_costo, anyos }) => {
+  return new Promise((resolve, reject) => {
+    var query = `
+        SELECT
+            presupuesto_analitico.id,
+        `;
+    for (let i = 1; i <= 12; i++) {
+      query += `
+        SUM(IF(presupuestoanalitico_avancemensual.anyo = ${anyo}
+            AND presupuestoanalitico_avancemensual.mes = ${i},
+        presupuestoanalitico_avancemensual.monto,
+        0)) avanceMensual_${anyo}_${i},`;
+    }
+    query = query.slice(0, -1);
+    query += `
+        FROM
+            presupuesto_analitico
+                LEFT JOIN
+            presupuestoanalitico_avancemensual ON presupuestoanalitico_avancemensual.presupuesto_analitico_id = presupuesto_analitico.id
+        WHERE
+            presupuestoanalitico_costosasignados_id = ${id_costo}
+        GROUP BY presupuesto_analitico.id
+        ORDER BY clasificadores_presupuestarios_id
+    `;
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
+      resolve(res);
+    });
+  });
+};
+DB.actualizarAvanceAnualMonto = (data) => {
+  return new Promise((resolve, reject) => {
+    var query = BaseModel.updateOnDuplicateKey(
+      "presupuestoanalitico_avanceanual",
+      data
+    );
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
+      resolve(res);
+    });
+  });
+};
+DB.actualizarAvanceMensualMonto = (data) => {
+  return new Promise((resolve, reject) => {
+    var query = BaseModel.updateOnDuplicateKey(
+      "presupuestoanalitico_avancemensual",
       data
     );
     pool.query(query, (error, res) => {
