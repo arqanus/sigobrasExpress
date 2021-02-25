@@ -1,7 +1,7 @@
 const BaseModel = require("../../libs/baseModel");
 const DB = {};
 
-DB.obtenerPresupuestosAprobados = ({ id_ficha }) => {
+DB.obtenerPresupuestosAprobados = ({ id_ficha, fecha }) => {
   return new Promise((resolve, reject) => {
     var query = `
     SELECT
@@ -14,6 +14,15 @@ DB.obtenerPresupuestosAprobados = ({ id_ficha }) => {
         presupuestos_aprobados
     WHERE
         fichas_id_ficha = ${id_ficha}
+        `;
+    var condiciones = [];
+    if (fecha) {
+      condiciones.push(`( fecha > '${fecha}')`);
+    }
+    if (condiciones.length > 0) {
+      query += " AND " + condiciones.join(" AND ");
+    }
+    query += `
     ORDER BY fecha
     `;
     pool.query(query, (error, res) => {

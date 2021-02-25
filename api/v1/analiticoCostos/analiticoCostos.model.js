@@ -18,6 +18,7 @@ DB.obtenerCostos = ({ id_ficha }) => {
     if (condiciones.length) {
       query += " WHERE " + condiciones.join(" AND ");
     }
+    query += ` GROUP BY presupuestoanalitico_costos.id`;
     pool.query(query, (error, res) => {
       if (error) {
         console.log(error);
