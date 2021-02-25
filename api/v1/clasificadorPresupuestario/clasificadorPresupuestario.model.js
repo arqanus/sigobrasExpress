@@ -1,6 +1,6 @@
 const BaseModel = require("../../libs/baseModel");
 const DB = {};
-DB.obtenerDatos = ({ textoBuscado, limit }) => {
+DB.obtenerDatos = ({ textoBuscado, limit, id_inicio, id_final }) => {
   return new Promise((resolve, reject) => {
     var query = `
     SELECT
@@ -15,6 +15,12 @@ DB.obtenerDatos = ({ textoBuscado, limit }) => {
           ""
         )}%' or descripcion like '%${textoBuscado}%')`
       );
+    }
+    if (id_inicio) {
+      condiciones.push(`(id >= ${id_inicio})`);
+    }
+    if (id_final) {
+      condiciones.push(`(id <= ${id_final})`);
     }
     if (condiciones.length) {
       query += " WHERE " + condiciones.join(" AND ");
