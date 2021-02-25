@@ -295,4 +295,26 @@ DB.actualizarAvanceMensualMonto = (data) => {
     });
   });
 };
+DB.getAllidsByObra = ({ id_ficha }) => {
+  return new Promise((resolve, reject) => {
+    var query = `
+    SELECT
+        presupuesto_analitico.id
+    FROM
+        presupuestoanalitico_costosasignados
+            INNER JOIN
+        presupuesto_analitico ON presupuesto_analitico.presupuestoanalitico_costosasignados_id = presupuestoanalitico_costosasignados.id
+    WHERE
+        fichas_id_ficha = ${id_ficha}
+    GROUP BY presupuesto_analitico.id
+    `;
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
+      resolve(res);
+    });
+  });
+};
 module.exports = DB;

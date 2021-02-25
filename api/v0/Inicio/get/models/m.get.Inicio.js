@@ -452,7 +452,7 @@ FROM
         LEFT JOIN
     cargos ON cargos.id_Cargo = fichas_has_accesos.Cargos_id_Cargo
     WHERE
-        fichas_has_accesos.fichas_id_ficha = ${id_ficha}
+        curva_s.fichas_id_ficha = ${id_ficha}
     ORDER BY financiero_fecha_update DESC
     LIMIT 1
     `;

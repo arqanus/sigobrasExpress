@@ -39,6 +39,9 @@ function actualizarAvanceAnualMonto(data) {
 function actualizarAvanceMensualMonto(data) {
   return Model.actualizarAvanceMensualMonto(data);
 }
+function getAllidsByObra(data) {
+  return Model.getAllidsByObra(data);
+}
 module.exports = {
   obtenerResumen,
   actualizarResumen,
@@ -53,4 +56,5 @@ module.exports = {
   obtenerPresupuestAnaliticoAvanceMensual,
   actualizarAvanceAnualMonto,
   actualizarAvanceMensualMonto,
+  getAllidsByObra,
 };

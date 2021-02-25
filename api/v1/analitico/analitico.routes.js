@@ -81,6 +81,13 @@ obrasRouter.get(
     res.json(response);
   })
 );
+obrasRouter.get(
+  "/id",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.getAllidsByObra(req.query);
+    res.json(response);
+  })
+);
 obrasRouter.put(
   "/",
   procesarErrores(async (req, res) => {
