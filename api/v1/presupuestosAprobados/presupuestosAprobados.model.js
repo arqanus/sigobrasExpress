@@ -14,6 +14,7 @@ DB.obtenerPresupuestosAprobados = ({ id_ficha }) => {
         presupuestos_aprobados
     WHERE
         fichas_id_ficha = ${id_ficha}
+    ORDER BY fecha
     `;
     pool.query(query, (error, res) => {
       if (error) {
