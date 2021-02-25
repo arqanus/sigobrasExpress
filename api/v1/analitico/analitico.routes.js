@@ -91,8 +91,11 @@ obrasRouter.get(
 obrasRouter.put(
   "/",
   procesarErrores(async (req, res) => {
-    var response = await Controller.actualizarPresupuestAnalitico(req.body);
-    res.json(response);
+    for (let index = 0; index < req.body.length; index++) {
+      const element = req.body[index];
+      var response = await Controller.actualizarPresupuestAnalitico([element]);
+    }
+    res.json("Resgistros exitosos");
   })
 );
 obrasRouter.put(
