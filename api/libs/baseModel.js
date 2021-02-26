@@ -71,4 +71,29 @@ BaseModel.insert = (tabla, data) => {
   values = values.slice(0, -1);
   return `INSERT INTO ${tabla}(${columnas})VALUES(${values})`;
 };
+BaseModel.select = (tabla, data, condiciones) => {
+  var columnas = "";
+  if (data != undefined && data.length > 0) {
+    for (let i = 0; i < data.length; i++) {
+      var columna = data[i].columna;
+      if (data[i].nombre) {
+        var nombre = data[i].nombre;
+      } else {
+        var nombre = columna;
+      }
+      if (data[i].format == "fecha") {
+        columna = `DATE_FORMAT(${columna}, '%Y-%m-%d')`;
+      }
+      columnas += `${columna} ${nombre},`;
+    }
+    columnas = columnas.slice(0, -1);
+  } else {
+    columnas = "*";
+  }
+  var query = `select  ${columnas} FROM ${tabla}`;
+  if (condiciones.length) {
+    query += " WHERE " + condiciones.join(" AND ");
+  }
+  return query;
+};
 module.exports = BaseModel;
