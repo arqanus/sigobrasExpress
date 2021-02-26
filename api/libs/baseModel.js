@@ -91,7 +91,7 @@ BaseModel.select = (tabla, data, condiciones) => {
     columnas = "*";
   }
   var query = `select  ${columnas} FROM ${tabla}`;
-  if (condiciones.length) {
+  if (condiciones && condiciones.length) {
     query += " WHERE " + condiciones.join(" AND ");
   }
   return query;
