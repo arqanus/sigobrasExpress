@@ -32,6 +32,55 @@ obrasRouter.get(
   "/informes",
   procesarErrores(async (req, res) => {
     var response = await Controller.obtenerDatos(req.query);
+    if (req.query.fecha_inicio) {
+      var anyoInicial = "";
+      var mesInicial = "";
+      var anyoActual = "";
+      var mesActual = "";
+      var { fecha_inicio } = req.query;
+      anyoInicial = Number(fecha_inicio.split("-")[0]);
+      mesInicial = Number(fecha_inicio.split("-")[1]);
+      anyoActual = new Date().getFullYear();
+      mesActual = new Date().getMonth() + 1;
+      var temp = [];
+      for (let anyo = anyoInicial; anyo <= anyoActual; anyo++) {
+        for (let mes = 1; mes <= 12; mes++) {
+          if (anyo == anyoInicial) {
+            if (mes >= mesInicial) {
+              temp.push({
+                anyo,
+                mes,
+              });
+            }
+          } else if (anyo == anyoActual) {
+            if (mes <= mesActual) {
+              temp.push({
+                anyo,
+                mes,
+              });
+            }
+          } else {
+            temp.push({
+              anyo,
+              mes,
+            });
+          }
+        }
+      }
+      for (let index = 0; index < response.length; index++) {
+        const element = response[index];
+        console.log("element anyo", element.anyo);
+        console.log("element mes", element.mes);
+        var indexFound = temp.findIndex(
+          (item, i) => item.anyo == element.anyo && item.mes == element.mes
+        );
+        console.log("indexFound", indexFound);
+        if (indexFound > -1) {
+          temp.splice(indexFound, 1);
+        }
+      }
+      response = temp;
+    }
     res.json(response);
   })
 );
@@ -41,14 +90,13 @@ obrasRouter.put(
   procesarErrores(async (req, res) => {
     var codigo = req.body.codigo;
     delete req.body.codigo;
-    var response = await Controller.actualizarDatos([
-      {
-        ...req.body,
-        archivo: req.file
-          ? `/static/${codigo}/infobras/${req.file.filename}`
-          : "",
-      },
-    ]);
+    if (req.body.estado_presentado) {
+      req.body.estado_presentado = req.body.estado_presentado == "true" ? 1 : 0;
+    }
+    if (req.file) {
+      req.body.archivo = `/static/${codigo}/infobras/${req.file.filename}`;
+    }
+    var response = await Controller.actualizarDatos([req.body]);
     res.json(response);
   })
 );
