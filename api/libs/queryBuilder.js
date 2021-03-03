@@ -8,6 +8,7 @@ function queryBuilder(tabla) {
   this.limitQuery;
   this.insertData;
   this.mergeEstado;
+  this.delEstado;
   this.select = (columnas) => {
     this.columnas = columnas;
     return this;
@@ -36,14 +37,16 @@ function queryBuilder(tabla) {
     this.limitQuery = limitQuery;
     return this;
   };
-
-  //insert
   this.insert = (insertData) => {
     this.insertData = insertData;
     return this;
   };
   this.merge = () => {
     this.mergeEstado = true;
+    return this;
+  };
+  this.del = () => {
+    this.delEstado = true;
     return this;
   };
   this.selectFunction = () => {
@@ -123,9 +126,27 @@ function queryBuilder(tabla) {
     VALUES ${listValues}
     on duplicate key update  ${duplicateKeys}`;
   };
+  this.deleteFunction = () => {
+    if (this.condiciones.length == 0) {
+      this.query = "";
+    } else {
+      var query = `DELETE FROM ${this.tabla}`;
+      if (this.condiciones) {
+        if (Array.isArray(this.condiciones)) {
+          query += " WHERE " + this.condiciones.join(" AND ");
+        } else {
+          query += " WHERE " + this.condiciones;
+        }
+      }
+    }
+    this.query = query;
+    return;
+  };
   this.toString = () => {
     if (this.mergeEstado) {
       this.onDuplicateKeyUpdateFunction();
+    } else if (this.delEstado) {
+      this.deleteFunction();
     } else {
       this.selectFunction();
     }

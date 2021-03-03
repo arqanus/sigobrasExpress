@@ -12,11 +12,21 @@ obrasRouter.get(
     res.json(response);
   })
 );
+obrasRouter.get(
+  "/list",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.obtenerTodosFuentesFinanaciamiento();
+    res.json(response);
+  })
+);
 obrasRouter.put(
   "/",
   procesarErrores(async (req, res) => {
-    var response = await Controller.actualizarDatosLista(req.body);
-    res.json(response);
+    for (let index = 0; index < req.body.length; index++) {
+      var element = req.body[index];
+      var response = await Controller.actualizarDatosLista([element]);
+    }
+    res.json({ message: "Registro exitoso" });
   })
 );
 obrasRouter.delete(

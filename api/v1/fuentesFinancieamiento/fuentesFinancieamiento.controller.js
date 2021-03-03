@@ -9,8 +9,12 @@ function actualizarDatosLista(data) {
 function eliminarById(data) {
   return Model.eliminarById(data);
 }
+function obtenerTodosFuentesFinanaciamiento(data) {
+  return Model.obtenerTodosFuentesFinanaciamiento(data);
+}
 module.exports = {
   obtenerTodos,
   actualizarDatosLista,
   eliminarById,
+  obtenerTodosFuentesFinanaciamiento,
 };
