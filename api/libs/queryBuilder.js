@@ -22,7 +22,11 @@ function queryBuilder(tabla) {
     return this;
   };
   this.where = (condiciones) => {
-    this.condiciones = condiciones;
+    if (Array.isArray(condiciones)) {
+      this.condiciones = condiciones.join(" AND ");
+    } else {
+      this.condiciones = condiciones;
+    }
     return this;
   };
   this.orderBy = (orderByQuery) => {
@@ -83,11 +87,7 @@ function queryBuilder(tabla) {
     var query = `select  ${columnas} FROM ${this.tabla}`;
     if (this.leftJoinQuery) query += " LEFT JOIN " + this.leftJoinQuery;
     if (this.condiciones) {
-      if (Array.isArray(this.condiciones)) {
-        query += " WHERE " + this.condiciones.join(" AND ");
-      } else {
-        query += " WHERE " + this.condiciones;
-      }
+      query += " WHERE " + this.condiciones;
     }
     if (this.orderByQuery) query += " ORDER BY " + this.orderByQuery;
     if (this.limitQuery) query += " LIMIT " + this.limitQuery;
@@ -132,11 +132,7 @@ function queryBuilder(tabla) {
     } else {
       var query = `DELETE FROM ${this.tabla}`;
       if (this.condiciones) {
-        if (Array.isArray(this.condiciones)) {
-          query += " WHERE " + this.condiciones.join(" AND ");
-        } else {
-          query += " WHERE " + this.condiciones;
-        }
+        query += " WHERE " + this.condiciones;
       }
     }
     this.query = query;

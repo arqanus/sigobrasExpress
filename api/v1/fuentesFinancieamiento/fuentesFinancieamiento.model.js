@@ -25,6 +25,7 @@ DB.obtenerTodos = ({ id_ficha, anyo }) => {
         "fuentesfinanciamiento on fuentesfinanciamiento.id = fuentesfinanciamiento_asignados.fuentesfinanciamiento_id"
       )
       .where([`  fichas_id_ficha = ${id_ficha}`, `anyo = ${anyo}`])
+      .orderBy("fuentesfinanciamiento.id")
       .toString();
     pool.query(query, (error, res) => {
       if (error) {
