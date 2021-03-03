@@ -23,6 +23,7 @@ const clasificadorPresupuestario = require("./clasificadorPresupuestario/clasifi
 const problemasObra = require("./problemasObra/problemasObra.routes.js");
 const infobras = require("./infobras/infobras.routes.js");
 const informesUbicaciones = require("./informesUbicaciones/informesUbicaciones.routes.js");
+const reporteGeneral = require("./reporteGeneral/reporteGeneral.routes.js");
 
 const express = require("express");
 const router = express.Router();
@@ -52,5 +53,6 @@ router.use("/clasificadorPresupuestario", clasificadorPresupuestario);
 router.use("/problemasObra", problemasObra);
 router.use("/infobras", infobras);
 router.use("/informesUbicaciones", informesUbicaciones);
+router.use("/reporteGeneral", reporteGeneral);
 
 module.exports = router;

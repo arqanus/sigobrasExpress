@@ -1,11 +1,13 @@
-function queryBuilder() {
+function queryBuilder(tabla) {
   this.columnas;
-  this.tabla;
+  this.tabla = tabla;
   this.leftJoinQuery;
   this.query;
   this.condiciones;
   this.orderByQuery;
   this.limitQuery;
+  this.insertData;
+  this.mergeEstado;
   this.select = (columnas) => {
     this.columnas = columnas;
     return this;
@@ -34,7 +36,17 @@ function queryBuilder() {
     this.limitQuery = limitQuery;
     return this;
   };
-  this.toString = () => {
+
+  //insert
+  this.insert = (insertData) => {
+    this.insertData = insertData;
+    return this;
+  };
+  this.merge = () => {
+    this.mergeEstado = true;
+    return this;
+  };
+  this.selectFunction = () => {
     var columnas = "";
     if (
       this.columnas == "*" ||
@@ -67,10 +79,57 @@ function queryBuilder() {
 
     var query = `select  ${columnas} FROM ${this.tabla}`;
     if (this.leftJoinQuery) query += " LEFT JOIN " + this.leftJoinQuery;
-    if (this.condiciones) query += " WHERE " + this.condiciones.join(" AND ");
+    if (this.condiciones) {
+      if (Array.isArray(this.condiciones)) {
+        query += " WHERE " + this.condiciones.join(" AND ");
+      } else {
+        query += " WHERE " + this.condiciones;
+      }
+    }
     if (this.orderByQuery) query += " ORDER BY " + this.orderByQuery;
     if (this.limitQuery) query += " LIMIT " + this.limitQuery;
-    return query;
+    this.query = query;
+  };
+  this.onDuplicateKeyUpdateFunction = () => {
+    var listValues = "";
+    var columnas = "";
+    var duplicateKeys = "";
+    console.log("this.insertData", this.insertData);
+    for (let i = 0; i < this.insertData.length; i++) {
+      const valores = this.insertData[i];
+      var keys = Object.keys(valores);
+
+      var values = "";
+      for (let j = 0; j < keys.length; j++) {
+        var columna = keys[j];
+        if (valores[columna] == undefined) {
+          values += `${valores[columna]},`;
+        } else {
+          values += `'${valores[columna]}',`;
+        }
+        if (i == 0) {
+          columnas += `${columna},`;
+          duplicateKeys += `${columna}=values(${columna}),`;
+        }
+      }
+      values = values.slice(0, -1);
+      listValues += `(${values}),`;
+    }
+    columnas = columnas.slice(0, -1);
+    duplicateKeys = duplicateKeys.slice(0, -1);
+    listValues = listValues.slice(0, -1);
+    this.query = `
+    INSERT INTO ${this.tabla} (${columnas} )
+    VALUES ${listValues}
+    on duplicate key update  ${duplicateKeys}`;
+  };
+  this.toString = () => {
+    if (this.mergeEstado) {
+      this.onDuplicateKeyUpdateFunction();
+    } else {
+      this.selectFunction();
+    }
+    return this.query;
   };
 }
 module.exports = queryBuilder;
