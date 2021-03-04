@@ -9,6 +9,7 @@ function queryBuilder(tabla) {
   this.insertData;
   this.mergeEstado;
   this.delEstado;
+  this.updateData;
   this.select = (columnas) => {
     this.columnas = columnas;
     return this;
@@ -43,6 +44,10 @@ function queryBuilder(tabla) {
   };
   this.insert = (insertData) => {
     this.insertData = insertData;
+    return this;
+  };
+  this.update = (updateData) => {
+    this.updateData = updateData;
     return this;
   };
   this.merge = () => {
@@ -93,11 +98,40 @@ function queryBuilder(tabla) {
     if (this.limitQuery) query += " LIMIT " + this.limitQuery;
     this.query = query;
   };
+  this.insertFuction = () => {
+    if (Array.isArray(this.insertData)) {
+      var valuesList = "";
+      var columnas = "";
+      for (let index = 0; index < this.insertData.length; index++) {
+        const element = this.insertData[index];
+        var values = "";
+        for (columna in element) {
+          if (index == 0) {
+            columnas += `${columna},`;
+          }
+          values += `'${element[columna]}',`;
+        }
+        values = values.slice(0, -1);
+        valuesList += `(${values}),`;
+      }
+      columnas = columnas.slice(0, -1);
+      valuesList = valuesList.slice(0, -1);
+      this.query = `INSERT INTO ${this.tabla}(${columnas})VALUES${valuesList}`;
+    } else {
+      var columnas = "";
+      var values = "";
+      for (columna in this.insertData) {
+        columnas += `${columna},`;
+      }
+      columnas = columnas.slice(0, -1);
+      values = values.slice(0, -1);
+      this.query = `INSERT INTO ${this.tabla}(${columnas})VALUES(${values})`;
+    }
+  };
   this.onDuplicateKeyUpdateFunction = () => {
     var listValues = "";
     var columnas = "";
     var duplicateKeys = "";
-    console.log("this.insertData", this.insertData);
     for (let i = 0; i < this.insertData.length; i++) {
       const valores = this.insertData[i];
       var keys = Object.keys(valores);
@@ -131,18 +165,38 @@ function queryBuilder(tabla) {
       this.query = "";
     } else {
       var query = `DELETE FROM ${this.tabla}`;
-      if (this.condiciones) {
-        query += " WHERE " + this.condiciones;
-      }
+      query += " WHERE " + this.condiciones;
     }
     this.query = query;
     return;
+  };
+  this.updateFunction = () => {
+    if (this.condiciones.length == 0) {
+      this.query = "";
+    } else {
+      var query = ` UPDATE ${this.tabla} SET `;
+      for (columna in this.updateData) {
+        if (
+          this.updateData[columna] != undefined &&
+          this.updateData[columna] != ""
+        ) {
+          query += `${columna} = '${this.updateData[columna]}',`;
+        }
+      }
+      query = query.slice(0, -1);
+      query += " WHERE " + this.condiciones;
+      this.query = query;
+    }
   };
   this.toString = () => {
     if (this.mergeEstado) {
       this.onDuplicateKeyUpdateFunction();
     } else if (this.delEstado) {
       this.deleteFunction();
+    } else if (this.updateData) {
+      this.updateFunction();
+    } else if (this.insertData) {
+      this.insertFuction();
     } else {
       this.selectFunction();
     }

@@ -168,7 +168,8 @@ DB.obtenerUsuariosByIdCargo = ({ id_ficha, id_cargos }) => {
                       ' ',
                       apellido_materno,
                       ' ',
-                      accesos.nombre) nombre_completo
+                      accesos.nombre) nombre_completo,
+              celular
           FROM
               fichas_has_accesos
                   INNER JOIN
