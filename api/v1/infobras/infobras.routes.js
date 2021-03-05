@@ -27,7 +27,6 @@ const ControllerAccesos = require("../accesos/accesos.controller");
 const procesarErrores = require("../../libs/errorHandler").procesarErrores;
 
 const obrasRouter = express.Router();
-//resumen
 obrasRouter.get(
   "/informes",
   procesarErrores(async (req, res) => {
@@ -81,6 +80,24 @@ obrasRouter.get(
     res.json(response);
   })
 );
+obrasRouter.put(
+  "/informes",
+  upload.single("archivo"),
+  procesarErrores(async (req, res) => {
+    var codigo = req.body.codigo;
+    delete req.body.codigo;
+    if (req.body.estado_presentado) {
+      req.body.estado_presentado = req.body.estado_presentado == "true" ? 1 : 0;
+    }
+    if (req.file) {
+      req.body.archivo = `/static/${codigo}/infobras/${req.file.filename}`;
+    }
+    var response = await Controller.actualizarDatos([req.body]);
+    var response2 = await Controller.obtenerDatos({ id: response.insertId });
+    res.json(response2[0]);
+  })
+);
+//descripcion
 obrasRouter.get(
   "/informes/descripcion",
   procesarErrores(async (req, res) => {
@@ -107,21 +124,6 @@ obrasRouter.delete(
   procesarErrores(async (req, res) => {
     var response = await Controller.eliminarDescripcion(req.params);
     res.json(response);
-  })
-);
-obrasRouter.put(
-  "/informes",
-  upload.single("archivo"),
-  procesarErrores(async (req, res) => {
-    var codigo = req.body.codigo;
-    delete req.body.codigo;
-    if (req.body.estado_presentado) {
-      req.body.estado_presentado = req.body.estado_presentado == "true" ? 1 : 0;
-    }
-    if (req.file) {
-      req.body.archivo = `/static/${codigo}/infobras/${req.file.filename}`;
-    }
-    var response = await Controller.actualizarDatos([req.body]);
   })
 );
 module.exports = obrasRouter;

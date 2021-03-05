@@ -1,7 +1,7 @@
 const BaseModel = require("../../libs/baseModel");
 const queryBuilder = require("../../libs/queryBuilder");
 const DB = {};
-DB.obtenerDatos = ({ id_ficha, anyo, limit, estado_presentado }) => {
+DB.obtenerDatos = ({ id_ficha, anyo, mes, limit, estado_presentado, id }) => {
   return new Promise((resolve, reject) => {
     var condiciones = [];
     if (id_ficha) {
@@ -9,6 +9,12 @@ DB.obtenerDatos = ({ id_ficha, anyo, limit, estado_presentado }) => {
     }
     if (anyo) {
       condiciones.push(`anyo = ${anyo}`);
+    }
+    if (id) {
+      condiciones.push(`infobras_informes.id = ${id}`);
+    }
+    if (mes) {
+      condiciones.push(`mes = ${mes}`);
     }
     if (estado_presentado) {
       condiciones.push(`estado_presentado = ${estado_presentado}`);
@@ -18,6 +24,7 @@ DB.obtenerDatos = ({ id_ficha, anyo, limit, estado_presentado }) => {
         "infobras_informes.*",
         ["fecha_recepcion", "fecha_recepcion", "date"],
         ["fecharegisto_infobras", "fecharegisto_infobras", "date"],
+        "abreviacion",
       ])
       .from("infobras_informes")
       .leftJoin(
