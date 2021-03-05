@@ -69,18 +69,43 @@ obrasRouter.get(
       }
       for (let index = 0; index < response.length; index++) {
         const element = response[index];
-        console.log("element anyo", element.anyo);
-        console.log("element mes", element.mes);
         var indexFound = temp.findIndex(
           (item, i) => item.anyo == element.anyo && item.mes == element.mes
         );
-        console.log("indexFound", indexFound);
         if (indexFound > -1) {
           temp.splice(indexFound, 1);
         }
       }
       response = temp;
     }
+    res.json(response);
+  })
+);
+obrasRouter.get(
+  "/informes/descripcion",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.obtenerDescripcion(req.query);
+    res.json(response);
+  })
+);
+obrasRouter.post(
+  "/informes/descripcion",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.guardarDescripcion(req.body);
+    res.json(response);
+  })
+);
+obrasRouter.put(
+  "/informes/descripcion",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.actualizarDescripcion(req.body);
+    res.json(response);
+  })
+);
+obrasRouter.delete(
+  "/informes/:id/descripcion",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.eliminarDescripcion(req.params);
     res.json(response);
   })
 );
@@ -97,7 +122,6 @@ obrasRouter.put(
       req.body.archivo = `/static/${codigo}/infobras/${req.file.filename}`;
     }
     var response = await Controller.actualizarDatos([req.body]);
-    res.json(response);
   })
 );
 module.exports = obrasRouter;
