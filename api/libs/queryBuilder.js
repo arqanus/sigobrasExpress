@@ -10,6 +10,7 @@ function queryBuilder(tabla) {
   this.mergeEstado;
   this.delEstado;
   this.updateData;
+  this.groupByQuery;
   this.select = (columnas) => {
     this.columnas = columnas;
     return this;
@@ -35,6 +36,14 @@ function queryBuilder(tabla) {
       this.orderByQuery = orderByQuery.join(",");
     } else if (typeof orderByQuery == "string") {
       this.orderByQuery = orderByQuery;
+    }
+    return this;
+  };
+  this.groupBy = (groupByQuery) => {
+    if (Array.isArray(groupByQuery)) {
+      this.groupByQuery = groupByQuery.join(",");
+    } else if (typeof groupByQuery == "string") {
+      this.groupByQuery = groupByQuery;
     }
     return this;
   };
@@ -94,6 +103,7 @@ function queryBuilder(tabla) {
     if (this.condiciones) {
       query += " WHERE " + this.condiciones;
     }
+    if (this.groupByQuery) query += " GROUP BY " + this.groupByQuery;
     if (this.orderByQuery) query += " ORDER BY " + this.orderByQuery;
     if (this.limitQuery) query += " LIMIT " + this.limitQuery;
     this.query = query;
@@ -129,36 +139,54 @@ function queryBuilder(tabla) {
     }
   };
   this.onDuplicateKeyUpdateFunction = () => {
-    var listValues = "";
-    var columnas = "";
-    var duplicateKeys = "";
-    for (let i = 0; i < this.insertData.length; i++) {
-      const valores = this.insertData[i];
-      var keys = Object.keys(valores);
+    if (Array.isArray(this.insertData)) {
+      var listValues = "";
+      var columnas = "";
+      var duplicateKeys = "";
+      for (let i = 0; i < this.insertData.length; i++) {
+        const valores = this.insertData[i];
+        var keys = Object.keys(valores);
 
-      var values = "";
-      for (let j = 0; j < keys.length; j++) {
-        var columna = keys[j];
-        if (valores[columna] == undefined) {
-          values += `${valores[columna]},`;
-        } else {
-          values += `'${valores[columna]}',`;
+        var values = "";
+        for (let j = 0; j < keys.length; j++) {
+          var columna = keys[j];
+          if (valores[columna] == undefined) {
+            values += `${valores[columna]},`;
+          } else {
+            values += `'${valores[columna]}',`;
+          }
+          if (i == 0) {
+            columnas += `${columna},`;
+            duplicateKeys += `${columna}=values(${columna}),`;
+          }
         }
-        if (i == 0) {
-          columnas += `${columna},`;
-          duplicateKeys += `${columna}=values(${columna}),`;
-        }
+        values = values.slice(0, -1);
+        listValues += `(${values}),`;
       }
-      values = values.slice(0, -1);
-      listValues += `(${values}),`;
-    }
-    columnas = columnas.slice(0, -1);
-    duplicateKeys = duplicateKeys.slice(0, -1);
-    listValues = listValues.slice(0, -1);
-    this.query = `
+      columnas = columnas.slice(0, -1);
+      duplicateKeys = duplicateKeys.slice(0, -1);
+      listValues = listValues.slice(0, -1);
+      this.query = `
     INSERT INTO ${this.tabla} (${columnas} )
     VALUES ${listValues}
     on duplicate key update  ${duplicateKeys}`;
+    } else {
+      var columnas = "";
+      var listValues = "";
+      var duplicateKeys = "";
+      for (key in this.insertData) {
+        columnas += `${key},`;
+        listValues += `${this.insertData[key]},`;
+        duplicateKeys += `${key}=values(${key}),`;
+      }
+      columnas = columnas.slice(0, -1);
+      listValues = listValues.slice(0, -1);
+      duplicateKeys = duplicateKeys.slice(0, -1);
+      this.query = `
+    INSERT INTO ${this.tabla} (${columnas} )
+    VALUES (${listValues})
+    on duplicate key update  ${duplicateKeys}`;
+    }
   };
   this.deleteFunction = () => {
     if (this.condiciones.length == 0) {

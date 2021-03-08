@@ -24,6 +24,7 @@ const problemasObra = require("./problemasObra/problemasObra.routes.js");
 const infobras = require("./infobras/infobras.routes.js");
 const informesUbicaciones = require("./informesUbicaciones/informesUbicaciones.routes.js");
 const reporteGeneral = require("./reporteGeneral/reporteGeneral.routes.js");
+const interfazPermisos = require("./interfazPermisos/interfazPermisos.routes.js");
 
 const express = require("express");
 const router = express.Router();
@@ -54,5 +55,6 @@ router.use("/problemasObra", problemasObra);
 router.use("/infobras", infobras);
 router.use("/informesUbicaciones", informesUbicaciones);
 router.use("/reporteGeneral", reporteGeneral);
+router.use("/interfazPermisos", interfazPermisos);
 
 module.exports = router;
