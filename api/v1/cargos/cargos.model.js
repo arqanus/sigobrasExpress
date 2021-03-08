@@ -13,7 +13,7 @@ DB.obtenerTodos = ({ id_ficha, cargos_tipo_id }) => {
       query += " WHERE " + condiciones.join(" AND ");
     }
     query += `
-      ORDER BY cargos.nivel
+      ORDER BY cargos.nivel,id_Cargo
     `;
     pool.query(query, (error, res) => {
       if (error) {
