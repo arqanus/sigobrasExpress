@@ -64,7 +64,7 @@ DB.obtenerUsuarioByIdAcceso = ({ id_acceso, id_ficha }) => {
   return new Promise((resolve, reject) => {
     var query = `
              SELECT
-                cargos.nombre cargo_nombre, accesos.nombre usuario_nombre
+                cargos.nombre cargo_nombre, accesos.nombre usuario_nombre,cargos_tipo_id
             FROM
                 fichas_has_accesos
                     LEFT JOIN
