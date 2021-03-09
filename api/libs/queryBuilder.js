@@ -131,7 +131,10 @@ function queryBuilder(tabla) {
       var columnas = "";
       var values = "";
       for (columna in this.insertData) {
-        columnas += `${columna},`;
+        if (this.insertData[columna]) {
+          columnas += `${columna},`;
+          values += `'${this.insertData[columna]}',`;
+        }
       }
       columnas = columnas.slice(0, -1);
       values = values.slice(0, -1);
