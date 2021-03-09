@@ -134,11 +134,16 @@ module.exports = {
                 plazos_historial.*, plazos_tipo.nombre tipo_nombre,
                 DATE_FORMAT(fecha_inicio,"%Y-%m-%d")fecha_inicio,
                 DATE_FORMAT(fecha_final,"%Y-%m-%d")fecha_final,
-                DATE_FORMAT(fecha_aprobada,"%Y-%m-%d")fecha_aprobada
+                DATE_FORMAT(fecha_aprobada,"%Y-%m-%d")fecha_aprobada,
+                 CONCAT(accesos.nombre,
+                    ' ',
+                    accesos.apellido_paterno) usuario_nombre
             FROM
                 plazos_historial
                     LEFT JOIN
                 plazos_tipo ON plazos_tipo.idplazos_tipo = plazos_historial.tipo
+                    LEFT JOIN
+                accesos ON accesos.id_acceso = plazos_historial.archivo_editor
             WHERE
                 plazos_historial.nivel = 2
                     AND fichas_id_ficha = ${id_ficha}
