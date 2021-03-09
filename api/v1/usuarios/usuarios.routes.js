@@ -70,6 +70,13 @@ obrasRouter.post(
     }
   })
 );
+obrasRouter.post(
+  "/asignarObra",
+  procesarErrores(async (req, res) => {
+    var response = await ControllerAccesos.asignarObra(req.body);
+    res.json({ id: response.insertId, message: "registro exitoso" });
+  })
+);
 obrasRouter.put(
   "/:id",
   procesarErrores(async (req, res) => {
@@ -97,5 +104,11 @@ obrasRouter.get(
     res.json(response);
   })
 );
-
+obrasRouter.post(
+  "/",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.guardarUsuario(req.body);
+    res.json({ id: response.insertId, message: "registro exitoso" });
+  })
+);
 module.exports = obrasRouter;

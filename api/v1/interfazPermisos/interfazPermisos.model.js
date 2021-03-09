@@ -65,7 +65,7 @@ DB.obtenerPermisoInterfaz = ({ id_ficha, id_acceso, nombres_clave }) => {
     var nombres_claveList = nombres_clave.split(",");
     var nombres_claveProcesada = [];
     for (let index = 0; index < nombres_claveList.length; index++) {
-      const nombre_clave = nombres_claveList[index];
+      const nombre_clave = nombres_claveList[index].trim();
       nombres_claveProcesada.push(
         `sum(if(nombre_clave='${nombre_clave}',activo,0) ) ${nombre_clave}`
       );

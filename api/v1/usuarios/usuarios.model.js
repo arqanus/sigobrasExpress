@@ -1,6 +1,15 @@
+const queryBuilder = require("../../libs/queryBuilder");
 const DB = {};
 
-DB.obtenerTodos = ({ id_ficha, id_cargo, habilitado, cargos_tipo_id }) => {
+DB.obtenerTodos = ({
+  id_ficha,
+  id_cargo,
+  habilitado,
+  cargos_tipo_id,
+  group_by,
+  sort_by,
+  textoBuscado,
+}) => {
   return new Promise((resolve, reject) => {
     var query = `
               SELECT
@@ -30,6 +39,11 @@ DB.obtenerTodos = ({ id_ficha, id_cargo, habilitado, cargos_tipo_id }) => {
                   cargos ON cargos.id_Cargo = fichas_has_accesos.Cargos_id_Cargo
             `;
     var condiciones = [];
+    if (textoBuscado) {
+      condiciones.push(
+        `(accesos.nombre like '%${textoBuscado}%'||accesos.apellido_paterno like '%${textoBuscado}%'||accesos.apellido_materno like '%${textoBuscado}%')`
+      );
+    }
     if (id_ficha != "" && id_ficha != undefined && id_ficha != 0) {
       condiciones.push(`(fichas_has_accesos.Fichas_id_ficha = ${id_ficha})`);
     }
@@ -49,9 +63,21 @@ DB.obtenerTodos = ({ id_ficha, id_cargo, habilitado, cargos_tipo_id }) => {
     if (condiciones.length > 0) {
       query += " WHERE " + condiciones.join(" AND ");
     }
-    query += `
-      ORDER BY cargos.nivel , accesos.id_acceso DESC
+    if (group_by) {
+      query += `
+      GROUP BY ${group_by}
     `;
+    }
+    if (sort_by) {
+      var sortProcesado = sort_by.split(",");
+      var querySortBy = "ORDER BY";
+      for (let index = 0; index < sortProcesado.length; index++) {
+        const element = sortProcesado[index];
+        querySortBy += ` ${element},`;
+      }
+      querySortBy = querySortBy.slice(0, -1);
+      query += querySortBy;
+    }
     pool.query(query, (error, res) => {
       if (error) {
         reject(error);
@@ -222,6 +248,17 @@ DB.obtenerUsuarioPorDNI = ({ dni }) => {
         reject(error);
       }
       resolve(res ? res[0] : {});
+    });
+  });
+};
+DB.guardarUsuario = (data) => {
+  return new Promise((resolve, reject) => {
+    var query = new queryBuilder("accesos").insert(data).toString();
+    pool.query(query, (error, res) => {
+      if (error) {
+        reject(error);
+      }
+      resolve(res);
     });
   });
 };
