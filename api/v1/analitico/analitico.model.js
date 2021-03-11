@@ -1,4 +1,5 @@
 const BaseModel = require("../../libs/baseModel");
+const queryBuilder = require("../../libs/queryBuilder");
 const DB = {};
 
 DB.obtenerResumen = ({ id_ficha, anyo }) => {
@@ -265,6 +266,27 @@ DB.obtenerPresupuestAnaliticoAvanceMensual = ({ anyo, id_costo, anyos }) => {
     });
   });
 };
+DB.obtenerPresupuestAnaliticoPimAsignado = ({ anyo, id_costo, anyos }) => {
+  return new Promise((resolve, reject) => {
+    var query = new queryBuilder("presupuesto_analitico")
+      .select([["monto", "pim"]])
+      .leftJoin(
+        `presupuestoanalitico_pim ON presupuestoanalitico_pim.presupuesto_analitico_id = presupuesto_analitico.id
+        AND anyo = ${anyo}`
+      )
+      .where(`presupuestoanalitico_costosasignados_id = ${id_costo}`)
+      .groupBy("presupuesto_analitico.id")
+      .orderBy("clasificadores_presupuestarios_id")
+      .toString();
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
+      resolve(res);
+    });
+  });
+};
 DB.actualizarAvanceAnualMonto = (data) => {
   return new Promise((resolve, reject) => {
     var query = BaseModel.updateOnDuplicateKey(
@@ -308,6 +330,21 @@ DB.getAllidsByObra = ({ id_ficha }) => {
         fichas_id_ficha = ${id_ficha}
     GROUP BY presupuesto_analitico.id
     `;
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
+      resolve(res);
+    });
+  });
+};
+DB.actualizarPim = (data) => {
+  return new Promise((resolve, reject) => {
+    var query = new queryBuilder("presupuestoanalitico_pim")
+      .insert(data)
+      .merge()
+      .toString();
     pool.query(query, (error, res) => {
       if (error) {
         console.log(error);

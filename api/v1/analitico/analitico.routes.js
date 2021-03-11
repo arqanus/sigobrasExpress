@@ -62,6 +62,7 @@ obrasRouter.get(
   "/",
   procesarErrores(async (req, res) => {
     var response = await Controller.obtenerPresupuestAnalitico(req.query);
+    //calculando avance anual
     var response2 = await Controller.obtenerPresupuestAnaliticoAnyos(req.query);
     if (response2.length > 0) {
       var response3 = await Controller.obtenerPresupuestAnaliticoAvanceAnual({
@@ -69,14 +70,21 @@ obrasRouter.get(
         anyos: response2,
       });
     }
+    // calculando avance mensual
     var response4 = await Controller.obtenerPresupuestAnaliticoAvanceMensual(
       req.query
     );
+    //calculando pim asignado
+    var response5 = await Controller.obtenerPresupuestAnaliticoPimAsignado(
+      req.query
+    );
+    // res.json(response5);
     for (let i = 0; i < response.length; i++) {
       if (response2.length > 0) {
         response[i] = { ...response[i], ...response3[i] };
       }
       response[i] = { ...response[i], ...response4[i] };
+      response[i] = { ...response[i], ...response5[i] };
     }
     res.json(response);
   })
@@ -118,6 +126,13 @@ obrasRouter.put(
   "/avanceMensual",
   procesarErrores(async (req, res) => {
     var response = await Controller.actualizarAvanceMensualMonto(req.body);
+    res.json(response);
+  })
+);
+obrasRouter.put(
+  "/pim",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.actualizarPim(req.body);
     res.json(response);
   })
 );
