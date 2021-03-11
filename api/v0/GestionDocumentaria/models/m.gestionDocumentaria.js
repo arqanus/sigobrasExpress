@@ -155,12 +155,11 @@ module.exports = {
                 DATE_FORMAT(fecha_registro, '%Y-%m-%d') fecha,
                 gestiondocumentaria_archivosadjuntos.gestiondocumentaria_archivosadjuntos_tipos_id archivoAdjunto_id,
                 gestiondocumentaria_archivosadjuntos_tipos.tipo archivoAdjunto_tipo,
-                cargos.nombre emisor_cargo,
-                CONCAT(usuarios.apellido_paterno,
+                CONCAT(accesos.apellido_paterno,
                         ' ',
-                        usuarios.apellido_materno,
+                        accesos.apellido_materno,
                         ' ',
-                        usuarios.nombre) emisor_nombre,
+                        accesos.nombre) emisor_nombre,
                 cargos_receptor.nombre receptor_cargo
             FROM
                 fichas
@@ -176,10 +175,6 @@ module.exports = {
                 gestiondocumentaria_archivosadjuntos_tipos ON gestiondocumentaria_archivosadjuntos_tipos.id = gestiondocumentaria_archivosadjuntos.gestiondocumentaria_archivosadjuntos_tipos_id
                     LEFT JOIN
                 accesos ON accesos.id_acceso = gestiondocumentaria_mensajes.emisor_id
-                    LEFT JOIN
-                usuarios ON usuarios.id_usuario = accesos.Usuarios_id_usuario
-                    LEFT JOIN
-                cargos ON cargos.id_Cargo = accesos.Cargos_id_Cargo
             WHERE
                 fichas.id_ficha = ${id_ficha}
                 AND gestiondocumentaria_mensajes.emisor_id != ${id_acceso}
