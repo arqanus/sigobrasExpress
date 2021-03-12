@@ -9,8 +9,12 @@ function guardarCostos(data) {
 function asignarCostosObra(data) {
   return Model.asignarCostosObra(data);
 }
+function predecirCostos(data) {
+  return Model.predecirCostos(data);
+}
 module.exports = {
   obtenerCostos,
   guardarCostos,
   asignarCostosObra,
+  predecirCostos,
 };

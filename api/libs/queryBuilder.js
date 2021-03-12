@@ -11,6 +11,7 @@ function queryBuilder(tabla) {
   this.delEstado;
   this.updateData;
   this.groupByQuery;
+  this.innerJoinQuery;
   this.select = (columnas) => {
     this.columnas = columnas;
     return this;
@@ -21,6 +22,10 @@ function queryBuilder(tabla) {
   };
   this.leftJoin = (leftJoinQuery) => {
     this.leftJoinQuery = leftJoinQuery;
+    return this;
+  };
+  this.innerJoin = (innerJoinQuery) => {
+    this.innerJoinQuery = innerJoinQuery;
     return this;
   };
   this.where = (condiciones) => {
@@ -100,6 +105,7 @@ function queryBuilder(tabla) {
 
     var query = `select  ${columnas} FROM ${this.tabla}`;
     if (this.leftJoinQuery) query += " LEFT JOIN " + this.leftJoinQuery;
+    if (this.innerJoinQuery) query += " INNER JOIN " + this.innerJoinQuery;
     if (this.condiciones) {
       query += " WHERE " + this.condiciones;
     }

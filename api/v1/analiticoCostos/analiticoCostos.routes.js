@@ -28,4 +28,11 @@ obrasRouter.post(
     res.json({ message: "Registro exitoso", id: response.insertId });
   })
 );
+obrasRouter.get(
+  "/predecir",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.predecirCostos(req.query);
+    res.json(response);
+  })
+);
 module.exports = obrasRouter;
