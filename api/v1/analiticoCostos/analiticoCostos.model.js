@@ -1,4 +1,5 @@
 const BaseModel = require("../../libs/baseModel");
+const queryBuilder = require("../../libs/queryBuilder");
 const DB = {};
 DB.obtenerCostos = ({ id_ficha }) => {
   return new Promise((resolve, reject) => {
@@ -49,6 +50,22 @@ DB.asignarCostosObra = (data) => {
         reject(error);
       }
       resolve(res);
+    });
+  });
+};
+DB.predecirCostos = ({ id }) => {
+  return new Promise((resolve, reject) => {
+    var query = new queryBuilder("presupuestoanalitico_costos")
+      .select(["id"])
+      .where(` id > ${id}`)
+      .limit("1")
+      .toString();
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
+      resolve(res ? res[0] : {});
     });
   });
 };
