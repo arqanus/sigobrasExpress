@@ -36,8 +36,21 @@ obrasRouter.delete(
 obrasRouter.get(
   "/especificas",
   procesarErrores(async (req, res) => {
-    var response = await Controller.obtenerTodosEspecificas(req.query);
-    res.json(response);
+    var response = await Controller.obtenerTodosEspecificasVariacionesPim(
+      req.query
+    );
+    var response2 = await Controller.obtenerTodosEspecificasVariacionesPimMonto(
+      { ...req.query, listVariacionesPim: response }
+    );
+
+    var response3 = await Controller.obtenerTodosEspecificas(req.query);
+    // res.json({ response2, response3 });
+    for (let i = 0; i < response2.length; i++) {
+      if (response2.length > 0) {
+        response3[i] = { ...response3[i], ...response2[i] };
+      }
+    }
+    res.json(response3);
   })
 );
 obrasRouter.post(
@@ -89,6 +102,46 @@ obrasRouter.delete(
   "/:id",
   procesarErrores(async (req, res) => {
     var response = await Controller.eliminarById(req.params);
+    res.json(response);
+  })
+);
+obrasRouter.get(
+  "/variacionesPim",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.obtenerTodosEspecificasVariacionesPim(
+      req.query
+    );
+    res.json(response);
+  })
+);
+obrasRouter.post(
+  "/variacionesPim",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.guardarVariacionesPim(req.body);
+    res.json(response);
+  })
+);
+obrasRouter.put(
+  "/variacionesPim/:id",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.actualizarVariacionesPim({
+      ...req.body,
+      ...req.params,
+    });
+    res.json(response);
+  })
+);
+obrasRouter.delete(
+  "/variacionesPim/:id",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.eliminarVariacionesPim(req.params);
+    res.json(response);
+  })
+);
+obrasRouter.put(
+  "/variacionesPimMonto",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.actualizarVariacionesPimMonto(req.body);
     res.json(response);
   })
 );
