@@ -54,6 +54,9 @@ function eliminarVariacionesPim(data) {
 function actualizarVariacionesPimMonto(data) {
   return Model.actualizarVariacionesPimMonto(data);
 }
+function asignarCosto(data) {
+  return Model.asignarCosto(data);
+}
 module.exports = {
   obtenerTodos,
   actualizarDatosLista,
@@ -73,4 +76,5 @@ module.exports = {
   actualizarVariacionesPim,
   eliminarVariacionesPim,
   actualizarVariacionesPimMonto,
+  asignarCosto,
 };

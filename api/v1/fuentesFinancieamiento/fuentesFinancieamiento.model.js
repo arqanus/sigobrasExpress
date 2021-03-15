@@ -45,6 +45,10 @@ DB.obtenerTodosEspecificas = ({ id, anyo }) => {
             AND mes = ${i},
         fuentesfinanciamiento_avancemensual.monto,
         0)) avanceMensual_${i}`);
+      avanceMensual.push(`SUM(IF(fuentesfinanciamiento_avancemensual.anyo = ${anyo}
+            AND mes = ${i},
+        fuentesfinanciamiento_avancemensual.programado,
+        0)) programadoMensual_${i}`);
     }
     var query = new queryBuilder("fuentesfinanciamiento_costosasignados")
       .select(
@@ -239,6 +243,7 @@ DB.actualizarAvanceMensual = (data) => {
     });
   });
 };
+//costos
 DB.actualizarCostos = (data) => {
   return new Promise((resolve, reject) => {
     var query = new queryBuilder("fuentesfinanciamiento_costosasignados")
@@ -259,6 +264,20 @@ DB.eliminarCostosById = ({ id }) => {
     var query = new queryBuilder("fuentesfinanciamiento_costosasignados")
       .del()
       .where(`id = ${id}`)
+      .toString();
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
+      resolve(res);
+    });
+  });
+};
+DB.asignarCosto = (data) => {
+  return new Promise((resolve, reject) => {
+    var query = new queryBuilder("fuentesfinanciamiento_costosasignados")
+      .insert(data)
       .toString();
     pool.query(query, (error, res) => {
       if (error) {
