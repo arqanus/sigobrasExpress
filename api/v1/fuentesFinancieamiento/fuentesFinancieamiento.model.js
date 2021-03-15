@@ -54,7 +54,7 @@ DB.obtenerTodosEspecificas = ({ id, anyo }) => {
           ["clasificadores_presupuestarios.id", "id_clasificador"],
           "clasificador",
           "descripcion",
-          "fuentesfinanciamiento_analitico.monto",
+          "fuentesfinanciamiento_analitico.pia",
         ].concat(avanceMensual)
       )
       .innerJoin(
@@ -68,9 +68,67 @@ DB.obtenerTodosEspecificas = ({ id, anyo }) => {
         `fuentesfinanciamiento_costosasignados.fuentesfinanciamiento_asignados_id = ${id}`
       )
       .groupBy("fuentesfinanciamiento_analitico.id")
+      .orderBy(
+        "fuentesfinanciamiento_costosasignados.id,clasificadores_presupuestarios_id"
+      )
       .toString();
     // resolve(query);
-    // return query;
+    // return;
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
+      resolve(res);
+    });
+  });
+};
+DB.obtenerTodosEspecificasVariacionesPim = ({ id_ficha, anyo }) => {
+  return new Promise((resolve, reject) => {
+    var query = new queryBuilder("variacionespim")
+      .where([`fichas_id_ficha = ${id_ficha}`, `anyo = ${anyo}`])
+      .toString();
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
+      resolve(res);
+    });
+  });
+};
+DB.obtenerTodosEspecificasVariacionesPimMonto = ({
+  id,
+  listVariacionesPim,
+}) => {
+  return new Promise((resolve, reject) => {
+    console.log("listVariacionesPim", listVariacionesPim);
+    var cols = [];
+    for (let i = 0; i < listVariacionesPim.length; i++) {
+      const item = listVariacionesPim[i];
+      cols.push(`SUM(IF(variacionespim_monto.variacionespim_id = ${item.id},
+        variacionespim_monto.monto,
+        0)) variacionPim_${item.id}`);
+    }
+    var query = new queryBuilder("fuentesfinanciamiento_costosasignados")
+      .select(
+        [["fuentesfinanciamiento_analitico.id", "id_fuentevariacion"]].concat(
+          cols
+        )
+      )
+      .innerJoin(
+        ` fuentesfinanciamiento_analitico ON fuentesfinanciamiento_analitico.fuentesfinanciamiento_costosasignados_id = fuentesfinanciamiento_costosasignados.id
+        LEFT JOIN
+    variacionespim_monto ON variacionespim_monto.fuentesfinanciamiento_analitico_id = fuentesfinanciamiento_analitico.id`
+      )
+      .where(
+        `fuentesfinanciamiento_costosasignados.fuentesfinanciamiento_asignados_id = ${id}`
+      )
+      .groupBy("fuentesfinanciamiento_analitico.id")
+      .orderBy(
+        "fuentesfinanciamiento_costosasignados.id,clasificadores_presupuestarios_id"
+      )
+      .toString();
     pool.query(query, (error, res) => {
       if (error) {
         console.log(error);
@@ -149,12 +207,12 @@ DB.ingresarEspecifica = (data) => {
 };
 DB.actualizarEspecificaById = ({
   id,
-  monto,
+  pia,
   clasificadores_presupuestarios_id,
 }) => {
   return new Promise((resolve, reject) => {
     var query = new queryBuilder("fuentesfinanciamiento_analitico")
-      .update({ monto, clasificadores_presupuestarios_id })
+      .update({ pia, clasificadores_presupuestarios_id })
       .where(`id = ${id}`)
       .toString();
     pool.query(query, (error, res) => {
@@ -216,6 +274,63 @@ DB.eliminarEspecificaById = ({ id }) => {
     var query = new queryBuilder("fuentesfinanciamiento_analitico")
       .del()
       .where(`id = ${id}`)
+      .toString();
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
+      resolve(res);
+    });
+  });
+};
+DB.guardarVariacionesPim = (data) => {
+  return new Promise((resolve, reject) => {
+    var query = new queryBuilder("variacionespim").insert(data).toString();
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
+      resolve(res);
+    });
+  });
+};
+DB.actualizarVariacionesPim = ({ id, nombre }) => {
+  return new Promise((resolve, reject) => {
+    var query = new queryBuilder("variacionespim")
+      .update({ nombre })
+      .where(`id = ${id}`)
+      .toString();
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
+      resolve(res);
+    });
+  });
+};
+DB.eliminarVariacionesPim = ({ id }) => {
+  return new Promise((resolve, reject) => {
+    var query = new queryBuilder("variacionespim")
+      .del()
+      .where(`id = ${id}`)
+      .toString();
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
+      resolve(res);
+    });
+  });
+};
+DB.actualizarVariacionesPimMonto = (data) => {
+  return new Promise((resolve, reject) => {
+    var query = new queryBuilder("variacionespim_monto")
+      .insert(data)
+      .merge()
       .toString();
     pool.query(query, (error, res) => {
       if (error) {

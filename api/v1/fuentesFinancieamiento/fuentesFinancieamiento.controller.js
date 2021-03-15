@@ -36,6 +36,24 @@ function eliminarCostosById(data) {
 function eliminarEspecificaById(data) {
   return Model.eliminarEspecificaById(data);
 }
+function obtenerTodosEspecificasVariacionesPim(data) {
+  return Model.obtenerTodosEspecificasVariacionesPim(data);
+}
+function obtenerTodosEspecificasVariacionesPimMonto(data) {
+  return Model.obtenerTodosEspecificasVariacionesPimMonto(data);
+}
+function guardarVariacionesPim(data) {
+  return Model.guardarVariacionesPim(data);
+}
+function actualizarVariacionesPim(data) {
+  return Model.actualizarVariacionesPim(data);
+}
+function eliminarVariacionesPim(data) {
+  return Model.eliminarVariacionesPim(data);
+}
+function actualizarVariacionesPimMonto(data) {
+  return Model.actualizarVariacionesPimMonto(data);
+}
 module.exports = {
   obtenerTodos,
   actualizarDatosLista,
@@ -49,4 +67,10 @@ module.exports = {
   actualizarCostos,
   eliminarCostosById,
   eliminarEspecificaById,
+  obtenerTodosEspecificasVariacionesPim,
+  obtenerTodosEspecificasVariacionesPimMonto,
+  guardarVariacionesPim,
+  actualizarVariacionesPim,
+  eliminarVariacionesPim,
+  actualizarVariacionesPimMonto,
 };
