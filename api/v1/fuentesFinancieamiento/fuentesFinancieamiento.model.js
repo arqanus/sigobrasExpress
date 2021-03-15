@@ -87,10 +87,10 @@ DB.obtenerTodosEspecificas = ({ id, anyo }) => {
     });
   });
 };
-DB.obtenerTodosEspecificasVariacionesPim = ({ id_ficha, anyo }) => {
+DB.obtenerTodosEspecificasVariacionesPim = ({ id, anyo }) => {
   return new Promise((resolve, reject) => {
     var query = new queryBuilder("variacionespim")
-      .where([`fichas_id_ficha = ${id_ficha}`, `anyo = ${anyo}`])
+      .where([`fuentesfinanciamiento_asignados_id = ${id}`, `anyo = ${anyo}`])
       .toString();
     pool.query(query, (error, res) => {
       if (error) {
