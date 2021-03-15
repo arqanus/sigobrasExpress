@@ -12,6 +12,21 @@ obrasRouter.get(
     res.json(response);
   })
 );
+obrasRouter.put(
+  "/",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.actualizarDatosLista(req.body);
+    res.json({ message: "Registro exitoso" });
+  })
+);
+obrasRouter.delete(
+  "/:id",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.eliminarById(req.params);
+    res.json(response);
+  })
+);
+//costos
 obrasRouter.get(
   "/costos",
   procesarErrores(async (req, res) => {
@@ -26,6 +41,13 @@ obrasRouter.put(
     res.json(response);
   })
 );
+obrasRouter.post(
+  "/costos",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.asignarCosto(req.body);
+    res.json(response);
+  })
+);
 obrasRouter.delete(
   "/costos/:id",
   procesarErrores(async (req, res) => {
@@ -33,6 +55,7 @@ obrasRouter.delete(
     res.json(response);
   })
 );
+//especificias
 obrasRouter.get(
   "/especificas",
   procesarErrores(async (req, res) => {
@@ -77,6 +100,7 @@ obrasRouter.delete(
     res.json(response);
   })
 );
+//avancemensual
 obrasRouter.put(
   "/avanceMensual",
   procesarErrores(async (req, res) => {
@@ -91,20 +115,8 @@ obrasRouter.get(
     res.json(response);
   })
 );
-obrasRouter.put(
-  "/",
-  procesarErrores(async (req, res) => {
-    var response = await Controller.actualizarDatosLista(req.body);
-    res.json({ message: "Registro exitoso" });
-  })
-);
-obrasRouter.delete(
-  "/:id",
-  procesarErrores(async (req, res) => {
-    var response = await Controller.eliminarById(req.params);
-    res.json(response);
-  })
-);
+
+//variaciones pim
 obrasRouter.get(
   "/variacionesPim",
   procesarErrores(async (req, res) => {
