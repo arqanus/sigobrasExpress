@@ -59,21 +59,19 @@ obrasRouter.delete(
 obrasRouter.get(
   "/especificas",
   procesarErrores(async (req, res) => {
-    var response = await Controller.obtenerTodosEspecificasVariacionesPim(
+    var response = await Controller.obtenerTodosEspecificas(req.query);
+    var response2 = await Controller.obtenerTodosEspecificasVariacionesPim(
       req.query
     );
-    var response2 = await Controller.obtenerTodosEspecificasVariacionesPimMonto(
-      { ...req.query, listVariacionesPim: response }
+    var response3 = await Controller.obtenerTodosEspecificasVariacionesPimMonto(
+      { ...req.query, listVariacionesPim: response2 }
     );
-
-    var response3 = await Controller.obtenerTodosEspecificas(req.query);
-    // res.json({ response2, response3 });
-    for (let i = 0; i < response2.length; i++) {
+    for (let i = 0; i < response.length; i++) {
       if (response2.length > 0) {
-        response3[i] = { ...response3[i], ...response2[i] };
+        response[i] = { ...response[i], ...response3[i] };
       }
     }
-    res.json(response3);
+    res.json(response);
   })
 );
 obrasRouter.post(
