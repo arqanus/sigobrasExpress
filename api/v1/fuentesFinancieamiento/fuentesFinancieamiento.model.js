@@ -13,21 +13,48 @@ DB.obtenerTodosFuentesFinanaciamiento = () => {
     });
   });
 };
-DB.obtenerTodosCostos = ({ id }) => {
+DB.obtenerTodosCostos = ({ id, anyo }) => {
   return new Promise((resolve, reject) => {
-    var query = new queryBuilder("fuentesfinanciamiento_costosasignados")
-      .select([
-        ["presupuestoanalitico_costos.id", "id_costo"],
-        " fuentesfinanciamiento_costosasignados.id",
-        "nombre",
-      ])
-      .leftJoin(
-        "presupuestoanalitico_costos ON presupuestoanalitico_costos.id = fuentesfinanciamiento_costosasignados.presupuestoanalitico_costos_id"
+    var avanceMensual = [];
+    for (let mes = 1; mes <= 12; mes++) {
+      avanceMensual.push(
+        `SUM(IF(fuentesfinanciamiento_avancemensual.anyo = ${anyo}
+            AND fuentesfinanciamiento_avancemensual.mes = ${mes},
+        fuentesfinanciamiento_avancemensual.monto,
+        0)) avanceMensual_${mes}`
+      );
+      avanceMensual.push(
+        `SUM(IF(fuentesfinanciamiento_avancemensual.anyo = ${anyo}
+            AND fuentesfinanciamiento_avancemensual.mes = ${mes},
+        fuentesfinanciamiento_avancemensual.programado,
+        0)) programadoMensual_${mes}`
+      );
+    }
+    var query = new queryBuilder("fuentesfinanciamiento_analitico")
+
+      .select(
+        [
+          "fuentesfinanciamiento_costoasignado.id",
+          ["fuentesfinanciamiento_analitico.id", "id_analitico"],
+          " presupuestoanalitico_costos.nombre",
+          ["presupuestoanalitico_costos.id", "id_costo"],
+        ].concat(avanceMensual)
+      )
+      .innerJoin(
+        `fuentesfinanciamiento_costoasignado ON fuentesfinanciamiento_costoasignado.fuentesfinanciamiento_analitico_id = fuentesfinanciamiento_analitico.id
+            LEFT JOIN
+        presupuestoanalitico_costos ON presupuestoanalitico_costos.id = fuentesfinanciamiento_costoasignado.presupuestoanalitico_costos_id
+            LEFT JOIN
+        fuentesfinanciamiento_avancemensual ON fuentesfinanciamiento_avancemensual.fuentesfinanciamiento_costoasignado_id = fuentesfinanciamiento_costoasignado.id`
       )
       .where(
-        `fuentesfinanciamiento_costosasignados.fuentesfinanciamiento_asignados_id = ${id}`
+        `fuentesfinanciamiento_analitico.fuentesfinanciamiento_asignados_id = ${id}`
       )
+      .groupBy("fuentesfinanciamiento_costoasignado.id")
+      .orderBy("fuentesfinanciamiento_costoasignado.id")
       .toString();
+    // resolve(query);
+    // return;
     pool.query(query, (error, res) => {
       if (error) {
         console.log(error);
@@ -37,47 +64,27 @@ DB.obtenerTodosCostos = ({ id }) => {
     });
   });
 };
-DB.obtenerTodosEspecificas = ({ id, anyo }) => {
+DB.obtenerTodosEspecificas = ({ id }) => {
   return new Promise((resolve, reject) => {
-    var avanceMensual = [];
-    for (let i = 1; i <= 12; i++) {
-      avanceMensual.push(`SUM(IF(fuentesfinanciamiento_avancemensual.anyo = ${anyo}
-            AND mes = ${i},
-        fuentesfinanciamiento_avancemensual.monto,
-        0)) avanceMensual_${i}`);
-      avanceMensual.push(`SUM(IF(fuentesfinanciamiento_avancemensual.anyo = ${anyo}
-            AND mes = ${i},
-        fuentesfinanciamiento_avancemensual.programado,
-        0)) programadoMensual_${i}`);
-    }
-    var query = new queryBuilder("fuentesfinanciamiento_costosasignados")
-      .select(
-        [
-          ["fuentesfinanciamiento_costosasignados.id", "id_costoasignado"],
-          "fuentesfinanciamiento_analitico.id",
-          ["clasificadores_presupuestarios.id", "id_clasificador"],
-          "clasificador",
-          "descripcion",
-          "fuentesfinanciamiento_analitico.pia",
-        ].concat(avanceMensual)
-      )
-      .innerJoin(
-        `fuentesfinanciamiento_analitico ON fuentesfinanciamiento_analitico.fuentesfinanciamiento_costosasignados_id = fuentesfinanciamiento_costosasignados.id
-            LEFT JOIN
-        clasificadores_presupuestarios ON clasificadores_presupuestarios.id = fuentesfinanciamiento_analitico.clasificadores_presupuestarios_id
-            LEFT JOIN
-        fuentesfinanciamiento_avancemensual ON fuentesfinanciamiento_avancemensual.fuentesfinanciamiento_analitico_id = fuentesfinanciamiento_analitico.id`
+    var query = new queryBuilder("fuentesfinanciamiento_analitico")
+      .select([
+        "fuentesfinanciamiento_analitico.id",
+        ["clasificadores_presupuestarios.id", "id_clasificador"],
+        "clasificador",
+        "descripcion",
+        "fuentesfinanciamiento_analitico.pia",
+      ])
+      .leftJoin(
+        `clasificadores_presupuestarios ON clasificadores_presupuestarios.id = fuentesfinanciamiento_analitico.clasificadores_presupuestarios_id`
       )
       .where(
-        `fuentesfinanciamiento_costosasignados.fuentesfinanciamiento_asignados_id = ${id}`
+        `fuentesfinanciamiento_analitico.fuentesfinanciamiento_asignados_id = ${id}`
       )
       .groupBy("fuentesfinanciamiento_analitico.id")
       .orderBy(
-        "fuentesfinanciamiento_costosasignados.id,clasificadores_presupuestarios_id"
+        "clasificadores_presupuestarios_id,fuentesfinanciamiento_analitico.id"
       )
       .toString();
-    // resolve(query);
-    // return;
     pool.query(query, (error, res) => {
       if (error) {
         console.log(error);
@@ -114,23 +121,21 @@ DB.obtenerTodosEspecificasVariacionesPimMonto = ({
         variacionespim_monto.monto,
         0)) variacionPim_${item.id}`);
     }
-    var query = new queryBuilder("fuentesfinanciamiento_costosasignados")
+    var query = new queryBuilder("fuentesfinanciamiento_analitico")
       .select(
         [["fuentesfinanciamiento_analitico.id", "id_fuentevariacion"]].concat(
           cols
         )
       )
-      .innerJoin(
-        ` fuentesfinanciamiento_analitico ON fuentesfinanciamiento_analitico.fuentesfinanciamiento_costosasignados_id = fuentesfinanciamiento_costosasignados.id
-        LEFT JOIN
-    variacionespim_monto ON variacionespim_monto.fuentesfinanciamiento_analitico_id = fuentesfinanciamiento_analitico.id`
+      .leftJoin(
+        ` variacionespim_monto ON variacionespim_monto.fuentesfinanciamiento_analitico_id = fuentesfinanciamiento_analitico.id`
       )
       .where(
-        `fuentesfinanciamiento_costosasignados.fuentesfinanciamiento_asignados_id = ${id}`
+        `fuentesfinanciamiento_analitico.fuentesfinanciamiento_asignados_id = ${id}`
       )
       .groupBy("fuentesfinanciamiento_analitico.id")
       .orderBy(
-        "fuentesfinanciamiento_costosasignados.id,clasificadores_presupuestarios_id"
+        "clasificadores_presupuestarios_id,fuentesfinanciamiento_analitico.id"
       )
       .toString();
     pool.query(query, (error, res) => {
@@ -246,7 +251,7 @@ DB.actualizarAvanceMensual = (data) => {
 //costos
 DB.actualizarCostos = (data) => {
   return new Promise((resolve, reject) => {
-    var query = new queryBuilder("fuentesfinanciamiento_costosasignados")
+    var query = new queryBuilder("fuentesfinanciamiento_costoasignado")
       .insert(data)
       .merge()
       .toString();
@@ -261,7 +266,7 @@ DB.actualizarCostos = (data) => {
 };
 DB.eliminarCostosById = ({ id }) => {
   return new Promise((resolve, reject) => {
-    var query = new queryBuilder("fuentesfinanciamiento_costosasignados")
+    var query = new queryBuilder("fuentesfinanciamiento_costoasignado")
       .del()
       .where(`id = ${id}`)
       .toString();
@@ -276,7 +281,7 @@ DB.eliminarCostosById = ({ id }) => {
 };
 DB.asignarCosto = (data) => {
   return new Promise((resolve, reject) => {
-    var query = new queryBuilder("fuentesfinanciamiento_costosasignados")
+    var query = new queryBuilder("fuentesfinanciamiento_costoasignado")
       .insert(data)
       .toString();
     pool.query(query, (error, res) => {
