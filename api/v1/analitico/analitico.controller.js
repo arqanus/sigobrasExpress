@@ -48,6 +48,9 @@ function obtenerPresupuestAnaliticoPimAsignado(data) {
 function actualizarPim(data) {
   return Model.actualizarPim(data);
 }
+function getDataEspecifica(data) {
+  return Model.getDataEspecifica(data);
+}
 module.exports = {
   obtenerResumen,
   actualizarResumen,
@@ -65,4 +68,5 @@ module.exports = {
   getAllidsByObra,
   obtenerPresupuestAnaliticoPimAsignado,
   actualizarPim,
+  getDataEspecifica,
 };

@@ -1,6 +1,7 @@
 const express = require("express");
 
 const Controller = require("./fuentesFinancieamiento.controller");
+const ControllerAnalitico = require("../analitico/analitico.controller");
 const procesarErrores = require("../../libs/errorHandler").procesarErrores;
 
 const obrasRouter = express.Router();
@@ -103,7 +104,33 @@ obrasRouter.put(
   "/avanceMensual",
   procesarErrores(async (req, res) => {
     var response = await Controller.actualizarAvanceMensual(req.body);
-    res.json(response);
+    //actualizamos avance mensual de presupuesto analitico
+    //se obtiene el id_costo e id_clasificador para poder conseguir el avance
+    var response2 = await Controller.getDataParaActualizarAvanceMensual(
+      req.body
+    );
+    //se obtiene el id de analitico para poder ingresar el avancemensual
+    var response3 = await ControllerAnalitico.getDataEspecifica({
+      id_ficha: response2.fichas_id_ficha,
+      id_costo: response2.presupuestoanalitico_costos_id,
+      id_clasificador: response2.clasificadores_presupuestarios_id,
+    });
+    //se obtiene el monto total
+    var response4 = await Controller.getMontoParaActualizarAvanceMensual({
+      id_ficha: response2.fichas_id_ficha,
+      id_costo: response2.presupuestoanalitico_costos_id,
+      id_clasificador: response2.clasificadores_presupuestarios_id,
+      anyo: req.body.anyo,
+      mes: req.body.mes,
+    });
+    //se ingresa el avance mensual
+    var response5 = await ControllerAnalitico.actualizarAvanceMensualMonto({
+      presupuesto_analitico_id: response3.id,
+      anyo: req.body.anyo,
+      mes: req.body.mes,
+      monto: response4.avance,
+    });
+    res.json({ message: "exito" });
   })
 );
 obrasRouter.get(

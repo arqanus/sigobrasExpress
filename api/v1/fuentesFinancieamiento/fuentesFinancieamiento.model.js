@@ -365,4 +365,75 @@ DB.actualizarVariacionesPimMonto = (data) => {
     });
   });
 };
+DB.getDataParaActualizarAvanceMensual = ({
+  fuentesfinanciamiento_costoasignado_id,
+}) => {
+  return new Promise((resolve, reject) => {
+    var query = new queryBuilder("fuentesfinanciamiento_asignados")
+      .select([
+        "fuentesfinanciamiento_asignados.fichas_id_ficha",
+        "fuentesfinanciamiento_costoasignado.presupuestoanalitico_costos_id",
+        "fuentesfinanciamiento_analitico.clasificadores_presupuestarios_id",
+      ])
+      .leftJoin(
+        `fuentesfinanciamiento_analitico ON fuentesfinanciamiento_analitico.fuentesfinanciamiento_asignados_id = fuentesfinanciamiento_asignados.id
+        INNER JOIN
+    fuentesfinanciamiento_costoasignado ON fuentesfinanciamiento_costoasignado.fuentesfinanciamiento_analitico_id = fuentesfinanciamiento_analitico.id`
+      )
+      .where(
+        `fuentesfinanciamiento_costoasignado.id = ${fuentesfinanciamiento_costoasignado_id}`
+      )
+      .toString();
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
+      resolve(res ? res[0] : {});
+    });
+  });
+};
+DB.getMontoParaActualizarAvanceMensual = ({
+  id_ficha,
+  anyo,
+  id_costo,
+  id_clasificador,
+  mes,
+}) => {
+  return new Promise((resolve, reject) => {
+    console.log("data entrante", {
+      id_ficha,
+      anyo,
+      id_costo,
+      id_clasificador,
+      mes,
+    });
+    var query = new queryBuilder("fuentesfinanciamiento_asignados")
+      .select([[" SUM(fuentesfinanciamiento_avancemensual.monto) ", "avance"]])
+      .leftJoin(
+        `fuentesfinanciamiento_analitico ON fuentesfinanciamiento_analitico.fuentesfinanciamiento_asignados_id = fuentesfinanciamiento_asignados.id
+        INNER JOIN
+    fuentesfinanciamiento_costoasignado ON fuentesfinanciamiento_costoasignado.fuentesfinanciamiento_analitico_id = fuentesfinanciamiento_analitico.id
+        LEFT JOIN
+    fuentesfinanciamiento_avancemensual ON fuentesfinanciamiento_avancemensual.fuentesfinanciamiento_costoasignado_id = fuentesfinanciamiento_costoasignado.id`
+      )
+      .where([
+        `fichas_id_ficha = ${id_ficha}`,
+        `fuentesfinanciamiento_avancemensual.anyo = ${anyo}`,
+        `presupuestoanalitico_costos_id = ${id_costo}`,
+        `clasificadores_presupuestarios_id = ${id_clasificador}`,
+        `mes = ${mes}`,
+      ])
+      .toString();
+    // resolve(query);
+    // return;
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
+      resolve(res ? res[0] : {});
+    });
+  });
+};
 module.exports = DB;
