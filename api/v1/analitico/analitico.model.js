@@ -304,10 +304,10 @@ DB.actualizarAvanceAnualMonto = (data) => {
 };
 DB.actualizarAvanceMensualMonto = (data) => {
   return new Promise((resolve, reject) => {
-    var query = BaseModel.updateOnDuplicateKey(
-      "presupuestoanalitico_avancemensual",
-      data
-    );
+    var query = new queryBuilder("presupuestoanalitico_avancemensual")
+      .insert(data)
+      .merge()
+      .toString();
     pool.query(query, (error, res) => {
       if (error) {
         console.log(error);
@@ -351,6 +351,28 @@ DB.actualizarPim = (data) => {
         reject(error);
       }
       resolve(res);
+    });
+  });
+};
+DB.getDataEspecifica = ({ id_ficha, id_costo, id_clasificador }) => {
+  return new Promise((resolve, reject) => {
+    var query = new queryBuilder("presupuestoanalitico_costosasignados")
+      .select(["presupuesto_analitico.*"])
+      .leftJoin(
+        ` presupuesto_analitico ON presupuesto_analitico.presupuestoanalitico_costosasignados_id = presupuestoanalitico_costosasignados.id`
+      )
+      .where([
+        ` fichas_id_ficha = ${id_ficha}`,
+        `presupuestoanalitico_costos_id = ${id_costo}`,
+        `clasificadores_presupuestarios_id = ${id_clasificador}`,
+      ])
+      .toString();
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
+      resolve(res ? res[0] : {});
     });
   });
 };

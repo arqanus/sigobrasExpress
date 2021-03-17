@@ -136,4 +136,11 @@ obrasRouter.put(
     res.json(response);
   })
 );
+obrasRouter.get(
+  "/especifica",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.getDataEspecifica(req.query);
+    res.json(response);
+  })
+);
 module.exports = obrasRouter;
