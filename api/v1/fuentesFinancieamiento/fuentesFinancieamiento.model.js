@@ -401,13 +401,6 @@ DB.getMontoParaActualizarAvanceMensual = ({
   mes,
 }) => {
   return new Promise((resolve, reject) => {
-    console.log("data entrante", {
-      id_ficha,
-      anyo,
-      id_costo,
-      id_clasificador,
-      mes,
-    });
     var query = new queryBuilder("fuentesfinanciamiento_asignados")
       .select([[" SUM(fuentesfinanciamiento_avancemensual.monto) ", "avance"]])
       .leftJoin(
@@ -427,6 +420,23 @@ DB.getMontoParaActualizarAvanceMensual = ({
       .toString();
     // resolve(query);
     // return;
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
+      resolve(res ? res[0] : {});
+    });
+  });
+};
+DB.predecirFuenteFinanciamiento = ({ id }) => {
+  return new Promise((resolve, reject) => {
+    var query = new queryBuilder("fuentesfinanciamiento")
+      .select(["id"])
+
+      .where(`id > ${id}`)
+      .limit(1)
+      .toString();
     pool.query(query, (error, res) => {
       if (error) {
         console.log(error);

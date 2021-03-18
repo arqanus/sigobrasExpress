@@ -115,29 +115,26 @@ obrasRouter.put(
       id_costo: response2.presupuestoanalitico_costos_id,
       id_clasificador: response2.clasificadores_presupuestarios_id,
     });
-    //se obtiene el monto total
-    var response4 = await Controller.getMontoParaActualizarAvanceMensual({
-      id_ficha: response2.fichas_id_ficha,
-      id_costo: response2.presupuestoanalitico_costos_id,
-      id_clasificador: response2.clasificadores_presupuestarios_id,
-      anyo: req.body.anyo,
-      mes: req.body.mes,
-    });
-    //se ingresa el avance mensual
-    var response5 = await ControllerAnalitico.actualizarAvanceMensualMonto({
-      presupuesto_analitico_id: response3.id,
-      anyo: req.body.anyo,
-      mes: req.body.mes,
-      monto: response4.avance,
-    });
+
+    if (response3) {
+      //se obtiene el monto total
+      var response4 = await Controller.getMontoParaActualizarAvanceMensual({
+        id_ficha: response2.fichas_id_ficha,
+        id_costo: response2.presupuestoanalitico_costos_id,
+        id_clasificador: response2.clasificadores_presupuestarios_id,
+        anyo: req.body.anyo,
+        mes: req.body.mes,
+      });
+      //se ingresa el avance mensual
+      var response5 = await ControllerAnalitico.actualizarAvanceMensualMonto({
+        presupuesto_analitico_id: response3.id,
+        anyo: req.body.anyo,
+        mes: req.body.mes,
+        monto: response4.avance,
+      });
+    }
+
     res.json({ message: "exito" });
-  })
-);
-obrasRouter.get(
-  "/list",
-  procesarErrores(async (req, res) => {
-    var response = await Controller.obtenerTodosFuentesFinanaciamiento();
-    res.json(response);
   })
 );
 
@@ -179,6 +176,21 @@ obrasRouter.put(
   "/variacionesPimMonto",
   procesarErrores(async (req, res) => {
     var response = await Controller.actualizarVariacionesPimMonto(req.body);
+    res.json(response);
+  })
+);
+//otros
+obrasRouter.get(
+  "/list",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.obtenerTodosFuentesFinanaciamiento();
+    res.json(response);
+  })
+);
+obrasRouter.get(
+  "/predecir",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.predecirFuenteFinanciamiento(req.query);
     res.json(response);
   })
 );

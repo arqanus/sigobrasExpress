@@ -53,11 +53,17 @@ DB.asignarCostosObra = (data) => {
     });
   });
 };
-DB.predecirCostos = ({ id }) => {
+DB.predecirCostos = ({ id, id_ficha }) => {
   return new Promise((resolve, reject) => {
-    var query = new queryBuilder("presupuestoanalitico_costos")
-      .select(["id"])
-      .where(` id > ${id}`)
+    var query = new queryBuilder("presupuestoanalitico_costosasignados")
+      .select(["presupuestoanalitico_costos.*"])
+      .leftJoin(
+        `presupuestoanalitico_costos ON presupuestoanalitico_costos.id = presupuestoanalitico_costosasignados.presupuestoanalitico_costos_id`
+      )
+      .where([
+        ` presupuestoanalitico_costos.id > ${id}`,
+        ` fichas_id_ficha = ${id_ficha}`,
+      ])
       .limit("1")
       .toString();
     pool.query(query, (error, res) => {
@@ -66,6 +72,39 @@ DB.predecirCostos = ({ id }) => {
         reject(error);
       }
       resolve(res ? res[0] : {});
+    });
+  });
+};
+DB.eliminarCosto = ({ id }) => {
+  return new Promise((resolve, reject) => {
+    var query = new queryBuilder("presupuestoanalitico_costosasignados")
+      .del()
+      .where(`id = ${id}`)
+      .toString();
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
+      resolve(res ? res[0] : {});
+    });
+  });
+};
+DB.obtenerCostosAnalitico = ({ id_ficha }) => {
+  return new Promise((resolve, reject) => {
+    var query = new queryBuilder("presupuestoanalitico_costosasignados")
+      .select(["presupuestoanalitico_costos.*"])
+      .leftJoin(
+        `presupuestoanalitico_costos ON presupuestoanalitico_costos.id = presupuestoanalitico_costosasignados.presupuestoanalitico_costos_id`
+      )
+      .where([` fichas_id_ficha = ${id_ficha}`])
+      .toString();
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
+      resolve(res);
     });
   });
 };

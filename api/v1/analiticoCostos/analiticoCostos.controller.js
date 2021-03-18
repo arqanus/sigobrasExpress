@@ -12,9 +12,17 @@ function asignarCostosObra(data) {
 function predecirCostos(data) {
   return Model.predecirCostos(data);
 }
+function eliminarCosto(data) {
+  return Model.eliminarCosto(data);
+}
+function obtenerCostosAnalitico(data) {
+  return Model.obtenerCostosAnalitico(data);
+}
 module.exports = {
   obtenerCostos,
   guardarCostos,
   asignarCostosObra,
   predecirCostos,
+  eliminarCosto,
+  obtenerCostosAnalitico,
 };
