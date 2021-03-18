@@ -1,7 +1,7 @@
 const express = require("express");
 
 const Controller = require("./analitico.controller");
-const ControllerAccesos = require("../accesos/accesos.controller");
+const ControllerPresupuestosAprobados = require("../presupuestosAprobados/presupuestosAprobados.controller");
 const procesarErrores = require("../../libs/errorHandler").procesarErrores;
 
 const obrasRouter = express.Router();
@@ -61,31 +61,42 @@ obrasRouter.put(
 obrasRouter.get(
   "/",
   procesarErrores(async (req, res) => {
-    var response = await Controller.obtenerPresupuestAnalitico(req.query);
+    var response = await ControllerPresupuestosAprobados.obtenerPresupuestosAprobados(
+      req.query
+    );
+    var response2 = await Controller.obtenerPresupuestAnalitico({
+      presupuestosAprobados: response,
+      ...req.query,
+    });
     //calculando avance anual
-    var response2 = await Controller.obtenerPresupuestAnaliticoAnyos(req.query);
-    if (response2.length > 0) {
-      var response3 = await Controller.obtenerPresupuestAnaliticoAvanceAnual({
+    var response3 = await Controller.obtenerPresupuestAnaliticoAnyos(req.query);
+    if (response3.length > 0) {
+      var response4 = await Controller.obtenerPresupuestAnaliticoAvanceAnual({
         ...req.query,
-        anyos: response2,
+        anyos: response3,
       });
     }
     // calculando avance mensual
-    var response4 = await Controller.obtenerPresupuestAnaliticoAvanceMensual(
+    var response5 = await Controller.obtenerPresupuestAnaliticoAvanceMensual(
       req.query
     );
-    //calculando pim asignado
-    var response5 = await Controller.obtenerPresupuestAnaliticoPimAsignado(
-      req.query
-    );
-    // res.json(response5);
-    for (let i = 0; i < response.length; i++) {
-      if (response2.length > 0) {
-        response[i] = { ...response[i], ...response3[i] };
+    // //calculando pim asignado
+    // var response6 = await Controller.obtenerPresupuestAnaliticoPimAsignado(
+    //   req.query
+    // );
+    for (let i = 0; i < response2.length; i++) {
+      if (response3.length > 0) {
+        response2[i] = { ...response2[i], ...response4[i] };
       }
-      response[i] = { ...response[i], ...response4[i] };
-      response[i] = { ...response[i], ...response5[i] };
+      response2[i] = { ...response2[i], ...response5[i] };
     }
+    res.json(response2);
+  })
+);
+obrasRouter.delete(
+  "/:id",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.eliminarEspecifica(req.params);
     res.json(response);
   })
 );
@@ -99,10 +110,7 @@ obrasRouter.get(
 obrasRouter.put(
   "/",
   procesarErrores(async (req, res) => {
-    for (let index = 0; index < req.body.length; index++) {
-      const element = req.body[index];
-      var response = await Controller.actualizarPresupuestAnalitico([element]);
-    }
+    var response = await Controller.actualizarPresupuestAnalitico(req.body);
     res.json("Resgistros exitosos");
   })
 );
@@ -140,6 +148,13 @@ obrasRouter.get(
   "/especifica",
   procesarErrores(async (req, res) => {
     var response = await Controller.getDataEspecifica(req.query);
+    res.json(response);
+  })
+);
+obrasRouter.get(
+  "/anyosEjecutados",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.obtenerPresupuestAnaliticoAnyos(req.query);
     res.json(response);
   })
 );

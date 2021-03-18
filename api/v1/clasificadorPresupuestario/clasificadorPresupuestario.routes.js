@@ -14,4 +14,18 @@ obrasRouter.get(
     res.json(response);
   })
 );
+obrasRouter.get(
+  "/analitico",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.obtenerDatosAnalitico(req.query);
+    res.json(response);
+  })
+);
+obrasRouter.get(
+  "/analitico/predecir",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.predecirDatosAnalitico(req.query);
+    res.json(response);
+  })
+);
 module.exports = obrasRouter;

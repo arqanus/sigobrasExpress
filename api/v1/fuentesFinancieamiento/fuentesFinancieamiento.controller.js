@@ -63,6 +63,9 @@ function getDataParaActualizarAvanceMensual(data) {
 function getMontoParaActualizarAvanceMensual(data) {
   return Model.getMontoParaActualizarAvanceMensual(data);
 }
+function predecirFuenteFinanciamiento(data) {
+  return Model.predecirFuenteFinanciamiento(data);
+}
 module.exports = {
   obtenerTodos,
   actualizarDatosLista,
@@ -85,4 +88,5 @@ module.exports = {
   asignarCosto,
   getDataParaActualizarAvanceMensual,
   getMontoParaActualizarAvanceMensual,
+  predecirFuenteFinanciamiento,
 };
