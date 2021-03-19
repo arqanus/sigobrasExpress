@@ -1,4 +1,5 @@
 const BaseModel = require("../../libs/baseModel");
+const queryBuilder = require("../../libs/queryBuilder");
 const DB = {};
 
 DB.obtenerPresupuestosAprobados = ({ id_ficha, fecha }) => {
@@ -64,6 +65,21 @@ DB.actualizarPresupuestoAprobado = ({
       },
       [`id = ${id}`]
     );
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
+      resolve(res);
+    });
+  });
+};
+DB.eliminarPresupuesto = ({ id }) => {
+  return new Promise((resolve, reject) => {
+    var query = new queryBuilder("presupuestos_aprobados")
+      .del()
+      .where(`id = ${id}`)
+      .toString();
     pool.query(query, (error, res) => {
       if (error) {
         console.log(error);

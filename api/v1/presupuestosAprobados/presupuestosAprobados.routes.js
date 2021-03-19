@@ -65,4 +65,11 @@ obrasRouter.put(
     res.json({ message: "Registro exitoso" });
   })
 );
+obrasRouter.delete(
+  "/:id",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.eliminarPresupuesto(req.params);
+    res.json(response);
+  })
+);
 module.exports = obrasRouter;

@@ -132,9 +132,30 @@ obrasRouter.put(
         mes: req.body.mes,
         monto: response4.avance,
       });
+      //obtiene monto avance anual
+      var response6 = await Controller.getMontoParaActualizarAvanceMensual({
+        id_ficha: response2.fichas_id_ficha,
+        id_costo: response2.presupuestoanalitico_costos_id,
+        id_clasificador: response2.clasificadores_presupuestarios_id,
+        anyo: req.body.anyo,
+      });
+      var response7 = await ControllerAnalitico.actualizarAvanceAnualMonto({
+        presupuesto_analitico_id: response3.id,
+        anyo: req.body.anyo,
+        monto: response6.avance,
+      });
     }
 
     res.json({ message: "exito" });
+  })
+);
+obrasRouter.get(
+  "/getavance",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.getMontoParaActualizarAvanceMensual(
+      req.query
+    );
+    res.json(response);
   })
 );
 
