@@ -158,4 +158,13 @@ obrasRouter.get(
     res.json(response);
   })
 );
+obrasRouter.delete(
+  "/anyosEjecutados/:anyo",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.eliminarPresupuestAnaliticoAnyos(
+      req.params
+    );
+    res.json(response);
+  })
+);
 module.exports = obrasRouter;

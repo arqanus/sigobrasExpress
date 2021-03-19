@@ -401,6 +401,10 @@ DB.getMontoParaActualizarAvanceMensual = ({
   mes,
 }) => {
   return new Promise((resolve, reject) => {
+    var condiciones = [];
+    if (mes) {
+      condiciones.push(`mes = ${mes}`);
+    }
     var query = new queryBuilder("fuentesfinanciamiento_asignados")
       .select([[" SUM(fuentesfinanciamiento_avancemensual.monto) ", "avance"]])
       .leftJoin(
@@ -410,13 +414,14 @@ DB.getMontoParaActualizarAvanceMensual = ({
         LEFT JOIN
     fuentesfinanciamiento_avancemensual ON fuentesfinanciamiento_avancemensual.fuentesfinanciamiento_costoasignado_id = fuentesfinanciamiento_costoasignado.id`
       )
-      .where([
-        `fichas_id_ficha = ${id_ficha}`,
-        `fuentesfinanciamiento_avancemensual.anyo = ${anyo}`,
-        `presupuestoanalitico_costos_id = ${id_costo}`,
-        `clasificadores_presupuestarios_id = ${id_clasificador}`,
-        `mes = ${mes}`,
-      ])
+      .where(
+        [
+          `fichas_id_ficha = ${id_ficha}`,
+          `fuentesfinanciamiento_avancemensual.anyo = ${anyo}`,
+          `presupuestoanalitico_costos_id = ${id_costo}`,
+          `clasificadores_presupuestarios_id = ${id_clasificador}`,
+        ].concat(condiciones)
+      )
       .toString();
     // resolve(query);
     // return;

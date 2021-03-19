@@ -200,7 +200,7 @@ DB.obtenerPresupuestAnaliticoAnyos = ({ anyo, id_ficha }) => {
         presupuestoanalitico_costosasignados ON presupuestoanalitico_costosasignados.id = presupuesto_analitico.presupuestoanalitico_costosasignados_id
     WHERE
         presupuestoanalitico_costosasignados.fichas_id_ficha = ${id_ficha}
-            AND anyo < ${anyo}
+            AND anyo <= ${anyo}
     GROUP BY anyo
     `;
     pool.query(query, (error, res) => {
@@ -404,6 +404,21 @@ DB.eliminarEspecifica = ({ id }) => {
         reject(error);
       }
       resolve(res ? res[0] : {});
+    });
+  });
+};
+DB.eliminarPresupuestAnaliticoAnyos = ({ anyo }) => {
+  return new Promise((resolve, reject) => {
+    var query = new queryBuilder("presupuestoanalitico_avanceanual")
+      .del()
+      .where(`anyo = ${anyo}`)
+      .toString();
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
+      resolve(res);
     });
   });
 };

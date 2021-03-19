@@ -54,6 +54,9 @@ function getDataEspecifica(data) {
 function eliminarEspecifica(data) {
   return Model.eliminarEspecifica(data);
 }
+function eliminarPresupuestAnaliticoAnyos(data) {
+  return Model.eliminarPresupuestAnaliticoAnyos(data);
+}
 module.exports = {
   obtenerResumen,
   actualizarResumen,
@@ -73,4 +76,5 @@ module.exports = {
   actualizarPim,
   getDataEspecifica,
   eliminarEspecifica,
+  eliminarPresupuestAnaliticoAnyos,
 };
