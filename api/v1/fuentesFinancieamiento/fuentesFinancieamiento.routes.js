@@ -173,7 +173,7 @@ obrasRouter.post(
   "/variacionesPim",
   procesarErrores(async (req, res) => {
     var response = await Controller.guardarVariacionesPim(req.body);
-    res.json(response);
+    res.json({ id: response.insertId, message: "registro exitoso" });
   })
 );
 obrasRouter.put(
