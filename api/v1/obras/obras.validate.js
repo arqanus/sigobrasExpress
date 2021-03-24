@@ -7,6 +7,7 @@ const blueprintObrasPublicas = Joi.object().keys({
   id_acceso: Joi.string(),
   id_Estado: Joi.string(),
   sort_by: Joi.string().allow(""),
+  textoBuscado: Joi.string().allow(""),
 });
 
 let validarEstructura = (req, res, next) => {
