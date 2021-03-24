@@ -2,10 +2,75 @@ const express = require("express");
 
 const Controller = require("./fuentesFinancieamiento.controller");
 const ControllerAnalitico = require("../analitico/analitico.controller");
+const ControllerPresupuestosAprobados = require("../presupuestosAprobados/presupuestosAprobados.controller");
 const procesarErrores = require("../../libs/errorHandler").procesarErrores;
 
 const obrasRouter = express.Router();
+async function actualizarPresupuestAnalitico(id_ficha, anyo) {
+  // se obtiene los id analiticos
+  var analitico = ControllerAnalitico.obtenerPresupuestAnalitico({
+    presupuestosAprobados: [],
+    id_ficha: id_ficha,
+  });
+  //se obtiene los avances de las fuentes de financiamiento
+  var avanceMensual = Controller.obtenerAvancesMensuales({
+    id_ficha: id_ficha,
+    anyo: anyo,
+  });
+  var [analitico, avanceMensual] = await Promise.all([
+    analitico,
+    avanceMensual,
+  ]);
+  //se genera la data para ingreso ade avance mensual de presupeusto analitico
+  var dataProcesada_avanceMensual = [];
+  var dataProcesada_avanceAnual = [];
+  var actualId = 0;
+  var avanceAnual = 0;
+  var analiticoEspecifica = 0;
+  for (let index = 0; index < avanceMensual.length; index++) {
+    const avance = avanceMensual[index];
+    analiticoEspecifica = analitico.find(
+      (item) =>
+        item.id_costo_real == avance.id_costo &&
+        item.id_clasificador == avance.id_clasificador
+    );
+    if (analiticoEspecifica) {
+      dataProcesada_avanceMensual.push({
+        anyo,
+        mes: avance.mes,
+        monto: avance.monto,
+        presupuesto_analitico_id: analiticoEspecifica.id,
+      });
 
+      //avance anual
+      if (actualId != analiticoEspecifica.id) {
+        if (actualId != 0) {
+          //guarda
+          dataProcesada_avanceAnual.push({
+            anyo,
+            monto: avanceAnual,
+            presupuesto_analitico_id: actualId,
+          });
+          avanceAnual = 0;
+        }
+        actualId = analiticoEspecifica.id;
+      }
+      avanceAnual += avance.monto;
+    }
+  }
+  if (analiticoEspecifica) {
+    dataProcesada_avanceAnual.push({
+      anyo,
+      monto: avanceAnual,
+      presupuesto_analitico_id: actualId,
+    });
+  }
+  console.log(
+    "========================================================guardando"
+  );
+  ControllerAnalitico.actualizarAvanceMensualMonto(dataProcesada_avanceMensual);
+  ControllerAnalitico.actualizarAvanceAnualMonto(dataProcesada_avanceAnual);
+}
 obrasRouter.get(
   "/",
   procesarErrores(async (req, res) => {
@@ -23,8 +88,13 @@ obrasRouter.put(
 obrasRouter.delete(
   "/:id",
   procesarErrores(async (req, res) => {
-    var response = await Controller.eliminarById(req.params);
-    res.json(response);
+    var response1 = await Controller.obtenerDataById({
+      id_fuente: req.params.id,
+    });
+    var response2 = await Controller.eliminarById(req.params);
+    //actualizando prespuepsuesto analitico
+    actualizarPresupuestAnalitico(response1.fichas_id_ficha, response1.anyo);
+    res.json(response2);
   })
 );
 //costos
@@ -38,7 +108,12 @@ obrasRouter.get(
 obrasRouter.put(
   "/costos",
   procesarErrores(async (req, res) => {
+    var id_costo = req.body.id;
+    var response1 = await Controller.obtenerDataById({
+      id_costo,
+    });
     var response = await Controller.actualizarCostos(req.body);
+    actualizarPresupuestAnalitico(response1.fichas_id_ficha, response1.anyo);
     res.json(response);
   })
 );
@@ -49,11 +124,18 @@ obrasRouter.post(
     res.json(response);
   })
 );
+
 obrasRouter.delete(
   "/costos/:id",
   procesarErrores(async (req, res) => {
-    var response = await Controller.eliminarCostosById(req.params);
-    res.json(response);
+    //se obtiene id_ficha y anyo eliminado
+    var response1 = await Controller.obtenerDataById({
+      id_costo: req.params.id,
+    });
+    var response2 = await Controller.eliminarCostosById(req.params);
+    //actualizando prespuepsuesto analitico
+    actualizarPresupuestAnalitico(response1.fichas_id_ficha, response1.anyo);
+    res.json(response2);
   })
 );
 //especificias
@@ -85,18 +167,28 @@ obrasRouter.post(
 obrasRouter.put(
   "/especificas/:id",
   procesarErrores(async (req, res) => {
+    var id_especifica = req.params.id;
+    var response1 = await Controller.obtenerDataById({
+      id_especifica,
+    });
     var response = await Controller.actualizarEspecificaById({
       ...req.body,
       ...req.params,
     });
+    actualizarPresupuestAnalitico(response1.fichas_id_ficha, response1.anyo);
     res.json(response);
   })
 );
 obrasRouter.delete(
   "/especificas/:id",
   procesarErrores(async (req, res) => {
-    var response = await Controller.eliminarEspecificaById(req.params);
-    res.json(response);
+    var response1 = await Controller.obtenerDataById({
+      id_especifica: req.params.id,
+    });
+    var response2 = await Controller.eliminarEspecificaById(req.params);
+    //actualizando prespuepsuesto analitico
+    actualizarPresupuestAnalitico(response1.fichas_id_ficha, response1.anyo);
+    res.json(response2);
   })
 );
 //avancemensual

@@ -130,6 +130,7 @@ DB.obtenerPresupuestAnalitico = ({ id_ficha, presupuestosAprobados }) => {
           "presupuestos_aprobados_id",
           "clasificador",
           "descripcion",
+          ["presupuestoanalitico_costos_id", "id_costo_real"],
         ].concat(cols)
       )
       .innerJoin(
@@ -137,7 +138,8 @@ DB.obtenerPresupuestAnalitico = ({ id_ficha, presupuestosAprobados }) => {
         LEFT JOIN
     clasificadores_presupuestarios ON clasificadores_presupuestarios.id = presupuesto_analitico.clasificadores_presupuestarios_id
         LEFT JOIN
-    presupuestoanalitico_presupuestosaprobados ON presupuestoanalitico_presupuestosaprobados.presupuesto_analitico_id = presupuesto_analitico.id`
+    presupuestoanalitico_presupuestosaprobados ON presupuestoanalitico_presupuestosaprobados.presupuesto_analitico_id = presupuesto_analitico.id
+    `
       )
       .where(
         `presupuestoanalitico_costosasignados.fichas_id_ficha = ${id_ficha}`
