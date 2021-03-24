@@ -72,6 +72,7 @@ DB.obtenerTodos = ({
   id_acceso,
   sort_by,
   id,
+  textoBuscado,
 }) => {
   return new Promise((resolve, reject) => {
     if (sort_by) {
@@ -130,10 +131,17 @@ DB.obtenerTodos = ({
                 LEFT JOIN
             sectores ON sectores.idsectores = fichas.sectores_idsectores
         WHERE
-            Accesos_id_acceso = ${id_acceso}
-            AND fichas_has_accesos.habilitado
+            fichas_has_accesos.habilitado
     `;
     var condiciones = [];
+    if (textoBuscado != "" && textoBuscado != undefined) {
+      condiciones.push(
+        `(g_meta like \'%${textoBuscado}%\') || (fichas.codigo like \'%${textoBuscado}%\')`
+      );
+    }
+    if (id_acceso != 0) {
+      condiciones.push(`Accesos_id_acceso = ${id_acceso}`);
+    }
     if (id != 0 && id != undefined) {
       condiciones.push(`(fichas.id_ficha = ${id})`);
     }
