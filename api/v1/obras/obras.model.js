@@ -102,6 +102,7 @@ DB.obtenerTodos = ({
             estados.nombre estadoobra_nombre,
             estados.color estadoobra_color,
             datos_anuales.pim pim_anyoactual,
+            datos_anuales.meta meta_anyoactual,
             DATE_FORMAT(MAX(curva_s.fecha_inicial), '%Y-%m-%d') programado_ultima_fecha,
             DATE_FORMAT(MAX(curva_s.financiero_fecha_update),
                 '%Y-%m-%d') financiero_ultima_fecha
