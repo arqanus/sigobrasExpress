@@ -174,7 +174,12 @@ DB.obtenerTodos = ({
     });
   });
 };
-DB.obtenerTodosResumen = ({ id_acceso }) => {
+DB.obtenerTodosResumen = ({
+  id_acceso,
+  id_unidadEjecutora,
+  idsectores,
+  id_Estado,
+}) => {
   return new Promise((resolve, reject) => {
     var query = `
         SELECT
@@ -205,9 +210,26 @@ DB.obtenerTodosResumen = ({ id_acceso }) => {
             historialestados ON historialestados.id_historialEstado = fichas_datosautomaticos.estado_obra
                 LEFT JOIN
             estados ON estados.id_Estado = historialestados.Estados_id_Estado
+                LEFT JOIN
+            unidadejecutoras ON unidadejecutoras.id_unidadEjecutora = fichas.unidadEjecutoras_id_unidadEjecutora
+                LEFT JOIN
+            sectores ON sectores.idsectores = fichas.sectores_idsectores
         WHERE
             Accesos_id_acceso = ${id_acceso}
     `;
+    var condiciones = [];
+    if (id_unidadEjecutora != 0 && id_unidadEjecutora != undefined) {
+      condiciones.push(`(id_unidadEjecutora = ${id_unidadEjecutora})`);
+    }
+    if (idsectores != 0 && idsectores != undefined) {
+      condiciones.push(`(idsectores = ${idsectores})`);
+    }
+    if (id_Estado != 0 && id_Estado != undefined) {
+      condiciones.push(`(id_Estado = ${id_Estado})`);
+    }
+    if (condiciones.length > 0) {
+      query += " AND " + condiciones.join(" AND ");
+    }
     pool.query(query, (err, res) => {
       if (err) {
         reject(err);
