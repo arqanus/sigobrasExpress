@@ -94,6 +94,13 @@ obrasRouter.get(
   })
 );
 obrasRouter.delete(
+  "/avanceMensual",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.eliminarAvanceMensualMonto(req.query);
+    res.json(response);
+  })
+);
+obrasRouter.delete(
   "/:id",
   procesarErrores(async (req, res) => {
     var response = await Controller.eliminarEspecifica(req.params);

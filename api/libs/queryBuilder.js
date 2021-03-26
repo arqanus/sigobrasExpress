@@ -78,7 +78,8 @@ function queryBuilder(tabla) {
     this.tipoNullQuery = tipoNull;
     return this;
   };
-  this.del = () => {
+  this.del = (deleteData) => {
+    this.deleteData = deleteData;
     this.delEstado = true;
     return this;
   };
@@ -217,7 +218,14 @@ function queryBuilder(tabla) {
     if (this.condiciones.length == 0) {
       this.query = "";
     } else {
-      var query = `DELETE FROM ${this.tabla}`;
+      var query = "";
+      if (this.deleteData) {
+        query += `DELETE ${this.deleteData} FROM ${this.tabla}`;
+      } else {
+        query += `DELETE FROM ${this.tabla}`;
+      }
+      if (this.leftJoinQuery) query += " LEFT JOIN " + this.leftJoinQuery;
+      if (this.innerJoinQuery) query += " INNER JOIN " + this.innerJoinQuery;
       query += " WHERE " + this.condiciones;
     }
     this.query = query;
