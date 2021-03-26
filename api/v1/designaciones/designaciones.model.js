@@ -1,4 +1,5 @@
 const BaseModel = require("../../libs/baseModel");
+const queryBuilder = require("../../libs/queryBuilder");
 const DB = {};
 
 DB.obtenerTodosByCargo = ({ id_ficha, id_cargo }) => {
@@ -43,17 +44,18 @@ DB.obtenerTodosByCargo = ({ id_ficha, id_cargo }) => {
     });
   });
 };
-DB.actualizarById = ({ id, fecha_inicio, fecha_final }) => {
+DB.actualizarById = ({ id, fecha_inicio, fecha_final, tipoUndefined }) => {
   return new Promise((resolve, reject) => {
-    var query = BaseModel.update(
-      "designaciones",
-      {
+    var query = new queryBuilder("designaciones")
+      .update({
         fecha_inicio,
         fecha_final,
-      },
-      [`id = ${id}`],
-      true
-    );
+      })
+      .where(`id = ${id}`)
+      .tipoNull(tipoUndefined)
+      .toString();
+    // resolve(query);
+    // return;
     pool.query(query, (error, res) => {
       if (error) {
         console.log(error);
