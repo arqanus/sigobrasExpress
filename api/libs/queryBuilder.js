@@ -12,6 +12,8 @@ function queryBuilder(tabla) {
   this.updateData;
   this.groupByQuery;
   this.innerJoinQuery;
+  this.offsetQuery;
+  this.tipoNull;
   this.select = (columnas) => {
     this.columnas = columnas;
     return this;
@@ -56,6 +58,10 @@ function queryBuilder(tabla) {
     this.limitQuery = limitQuery;
     return this;
   };
+  this.offset = (offsetQuery) => {
+    this.offsetQuery = offsetQuery;
+    return this;
+  };
   this.insert = (insertData) => {
     this.insertData = insertData;
     return this;
@@ -66,6 +72,10 @@ function queryBuilder(tabla) {
   };
   this.merge = () => {
     this.mergeEstado = true;
+    return this;
+  };
+  this.tipoNull = (tipoNull) => {
+    this.tipoNull = tipoNull;
     return this;
   };
   this.del = () => {
@@ -111,7 +121,13 @@ function queryBuilder(tabla) {
     }
     if (this.groupByQuery) query += " GROUP BY " + this.groupByQuery;
     if (this.orderByQuery) query += " ORDER BY " + this.orderByQuery;
-    if (this.limitQuery) query += " LIMIT " + this.limitQuery;
+    if (this.limitQuery) {
+      if (this.offsetQuery) {
+        query += ` LIMIT ${this.offsetQuery},${this.limitQuery}`;
+      } else {
+        query += " LIMIT " + this.limitQuery;
+      }
+    }
     this.query = query;
   };
   this.insertFuction = () => {
@@ -213,11 +229,19 @@ function queryBuilder(tabla) {
     } else {
       var query = ` UPDATE ${this.tabla} SET `;
       for (columna in this.updateData) {
-        if (
-          this.updateData[columna] != undefined &&
-          this.updateData[columna] != ""
-        ) {
-          query += `${columna} = '${this.updateData[columna]}',`;
+        if (this.tipoNull && this.updateData[columna] != "") {
+          if (this.updateData[columna] == null) {
+            query += `${columna} = ${this.updateData[columna]},`;
+          } else {
+            query += `${columna} = '${this.updateData[columna]}',`;
+          }
+        } else {
+          if (
+            this.updateData[columna] != undefined &&
+            this.updateData[columna] != ""
+          ) {
+            query += `${columna} = '${this.updateData[columna]}',`;
+          }
         }
       }
       query = query.slice(0, -1);
