@@ -335,6 +335,46 @@ DB.actualizarAvanceMensualMonto = (data) => {
     });
   });
 };
+DB.eliminarAvanceMensualMonto = ({ id_ficha, anyo }) => {
+  return new Promise((resolve, reject) => {
+    var query = new queryBuilder("presupuestoanalitico_avancemensual")
+      .del("presupuestoanalitico_avancemensual")
+      .leftJoin(
+        `presupuesto_analitico ON presupuesto_analitico.id = presupuestoanalitico_avancemensual.presupuesto_analitico_id
+        LEFT JOIN
+    presupuestoanalitico_costosasignados ON presupuestoanalitico_costosasignados.id = presupuesto_analitico.presupuestoanalitico_costosasignados_id `
+      )
+      .where([`fichas_id_ficha = ${id_ficha}`, `anyo = ${anyo}`])
+      .toString();
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
+      resolve(res);
+    });
+  });
+};
+DB.eliminarAvanceAnualMonto = ({ id_ficha, anyo }) => {
+  return new Promise((resolve, reject) => {
+    var query = new queryBuilder("presupuestoanalitico_avanceanual")
+      .del("presupuestoanalitico_avanceanual")
+      .leftJoin(
+        `presupuesto_analitico ON presupuesto_analitico.id = presupuestoanalitico_avanceanual.presupuesto_analitico_id
+        LEFT JOIN
+    presupuestoanalitico_costosasignados ON presupuestoanalitico_costosasignados.id = presupuesto_analitico.presupuestoanalitico_costosasignados_id `
+      )
+      .where([`fichas_id_ficha = ${id_ficha}`, `anyo = ${anyo}`])
+      .toString();
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
+      resolve(res);
+    });
+  });
+};
 DB.getAllidsByObra = ({ id_ficha }) => {
   return new Promise((resolve, reject) => {
     var query = `

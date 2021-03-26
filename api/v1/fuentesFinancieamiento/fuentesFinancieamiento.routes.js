@@ -65,11 +65,22 @@ async function actualizarPresupuestAnalitico(id_ficha, anyo) {
       presupuesto_analitico_id: actualId,
     });
   }
-  console.log(
-    "========================================================guardando"
-  );
-  ControllerAnalitico.actualizarAvanceMensualMonto(dataProcesada_avanceMensual);
-  ControllerAnalitico.actualizarAvanceAnualMonto(dataProcesada_avanceAnual);
+  const p1 = new Promise(async (resolve, reject) => {
+    await ControllerAnalitico.eliminarAvanceMensualMonto({
+      id_ficha,
+      anyo,
+    });
+    ControllerAnalitico.actualizarAvanceMensualMonto(
+      dataProcesada_avanceMensual
+    );
+  });
+  const p2 = new Promise(async (resolve, reject) => {
+    await ControllerAnalitico.eliminarAvanceAnualMonto({
+      id_ficha,
+      anyo,
+    });
+    ControllerAnalitico.actualizarAvanceAnualMonto(dataProcesada_avanceAnual);
+  });
 }
 obrasRouter.get(
   "/",
