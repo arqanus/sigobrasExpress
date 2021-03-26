@@ -13,7 +13,7 @@ function queryBuilder(tabla) {
   this.groupByQuery;
   this.innerJoinQuery;
   this.offsetQuery;
-  this.tipoNull;
+  this.tipoNullQuery;
   this.select = (columnas) => {
     this.columnas = columnas;
     return this;
@@ -75,7 +75,7 @@ function queryBuilder(tabla) {
     return this;
   };
   this.tipoNull = (tipoNull) => {
-    this.tipoNull = tipoNull;
+    this.tipoNullQuery = tipoNull;
     return this;
   };
   this.del = () => {
@@ -229,7 +229,7 @@ function queryBuilder(tabla) {
     } else {
       var query = ` UPDATE ${this.tabla} SET `;
       for (columna in this.updateData) {
-        if (this.tipoNull && this.updateData[columna] != "") {
+        if (this.tipoNullQuery && this.updateData[columna] != "") {
           if (this.updateData[columna] == null) {
             query += `${columna} = ${this.updateData[columna]},`;
           } else {
