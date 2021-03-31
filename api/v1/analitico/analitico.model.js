@@ -449,19 +449,4 @@ DB.eliminarEspecifica = ({ id }) => {
     });
   });
 };
-DB.eliminarPresupuestAnaliticoAnyos = ({ anyo }) => {
-  return new Promise((resolve, reject) => {
-    var query = new queryBuilder("presupuestoanalitico_avanceanual")
-      .del()
-      .where(`anyo = ${anyo}`)
-      .toString();
-    pool.query(query, (error, res) => {
-      if (error) {
-        console.log(error);
-        reject(error);
-      }
-      resolve(res);
-    });
-  });
-};
 module.exports = DB;

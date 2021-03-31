@@ -101,6 +101,13 @@ obrasRouter.delete(
   })
 );
 obrasRouter.delete(
+  "/anyosEjecutados",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.eliminarAvanceAnualMonto(req.query);
+    res.json(response);
+  })
+);
+obrasRouter.delete(
   "/:id",
   procesarErrores(async (req, res) => {
     var response = await Controller.eliminarEspecifica(req.params);
@@ -165,13 +172,5 @@ obrasRouter.get(
     res.json(response);
   })
 );
-obrasRouter.delete(
-  "/anyosEjecutados/:anyo",
-  procesarErrores(async (req, res) => {
-    var response = await Controller.eliminarPresupuestAnaliticoAnyos(
-      req.params
-    );
-    res.json(response);
-  })
-);
+
 module.exports = obrasRouter;

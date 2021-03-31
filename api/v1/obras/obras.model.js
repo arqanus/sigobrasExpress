@@ -180,8 +180,12 @@ DB.obtenerTodosResumen = ({
   id_unidadEjecutora,
   idsectores,
   id_Estado,
+  sort_by,
 }) => {
   return new Promise((resolve, reject) => {
+    if (sort_by) {
+      var sort_byData = sort_by.split("-");
+    }
     var query = `
         SELECT
             id_ficha,
@@ -200,7 +204,9 @@ DB.obtenerTodosResumen = ({
             fecha_inaguracion,
             presupuesto_costodirecto,
             avancefisico_acumulado,
-            avancefinanciero_acumulado
+            avancefinanciero_acumulado,
+            unidadejecutoras.nombre unidad_ejecutora_nombre,
+            sectores.nombre sector_nombre
         FROM
             fichas
                 LEFT JOIN
@@ -230,6 +236,10 @@ DB.obtenerTodosResumen = ({
     }
     if (condiciones.length > 0) {
       query += " AND " + condiciones.join(" AND ");
+    }
+    if (sort_by) {
+      var orderBy = ` ORDER BY ${sort_byData[0]} ${sort_byData[1]}`;
+      query += orderBy;
     }
     pool.query(query, (err, res) => {
       if (err) {
