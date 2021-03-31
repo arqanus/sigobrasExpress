@@ -75,10 +75,10 @@ async function actualizarPresupuestAnalitico(id_ficha, anyo) {
     );
   });
   const p2 = new Promise(async (resolve, reject) => {
-    // await ControllerAnalitico.eliminarAvanceAnualMonto({
-    //   id_ficha,
-    //   anyo,
-    // });
+    await ControllerAnalitico.eliminarAvanceAnualMonto({
+      id_ficha,
+      anyo,
+    });
     ControllerAnalitico.actualizarAvanceAnualMonto(dataProcesada_avanceAnual);
   });
 }
