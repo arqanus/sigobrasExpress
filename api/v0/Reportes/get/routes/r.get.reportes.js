@@ -36,12 +36,12 @@ module.exports = function (app) {
       );
       var residente = await User3.getCargoPersonal(
         req.body.id_ficha,
-        "residente",
+        ["residente"],
         req.body.fecha_inicial
       );
       var supervisor = await User3.getCargoPersonal(
         req.body.id_ficha,
-        "supervisor",
+        ["supervisor", "inspector"],
         req.body.fecha_inicial
       );
       var res_costodirecto = await User.getCostoDirecto(req.body);
@@ -54,8 +54,9 @@ module.exports = function (app) {
         (res_avanceActual.valor / res_costodirecto.presupuesto) * 100;
       InformeDataGeneral.porcentaje_avance_acumulado =
         (res_avanceTotal.valor / res_costodirecto.presupuesto) * 100;
-      InformeDataGeneral.residente = residente;
-      InformeDataGeneral.supervisor = supervisor;
+      InformeDataGeneral.residente = residente.usuario;
+      InformeDataGeneral.supervisor = supervisor.usuario;
+      InformeDataGeneral.cargo_nombre = supervisor.cargo_nombre;
       res.json(InformeDataGeneral);
       //res.json(avances)
     } catch (error) {

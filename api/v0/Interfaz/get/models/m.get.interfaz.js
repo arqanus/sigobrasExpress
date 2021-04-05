@@ -292,39 +292,43 @@ module.exports = {
   },
   getCargoPersonal(id_ficha, cargo_nombre, fecha_inicial) {
     return new Promise((resolve, reject) => {
-      pool.query(
-        `
+      var cargos = [];
+      for (let i = 0; i < cargo_nombre.length; i++) {
+        const cargo = cargo_nombre[i];
+        cargos.push(`cargos.nombre = "${cargo}" `);
+      }
+      var cargos_procesado = cargos.join(" OR ");
+      var query = `
         SELECT
-    CONCAT(accesos.nombre,
-            ' ',
-            accesos.apellido_paterno,
-            ' ',
-            accesos.apellido_materno) usuario,
-    designaciones.fecha_inicio
-FROM
-    fichas_has_accesos
-        LEFT JOIN
-    accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso
-        LEFT JOIN
-    cargos ON cargos.id_Cargo = fichas_has_accesos.Cargos_id_Cargo
-        LEFT JOIN
-    designaciones ON designaciones.fichas_has_accesos_id = fichas_has_accesos.id
-WHERE
-    fichas_has_accesos.Fichas_id_ficha = ${id_ficha}
-        AND cargos.nombre = '${cargo_nombre}'
-           AND DATE_FORMAT(designaciones.fecha_inicio, '%Y-%m-01') <= '${fecha_inicial}'
-ORDER BY designaciones.fecha_inicio desc
-        `,
-        (error, res) => {
-          if (error) {
-            reject(error.code);
-          } else {
-            res = res[0] || {};
-            res.usuario = res.usuario || "";
-            resolve(res.usuario);
-          }
+            CONCAT(accesos.nombre,
+                    ' ',
+                    accesos.apellido_paterno,
+                    ' ',
+                    accesos.apellido_materno) usuario,
+            designaciones.fecha_inicio,
+            cargos.nombre cargo_nombre
+        FROM
+            fichas_has_accesos
+                LEFT JOIN
+            accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso
+                LEFT JOIN
+            cargos ON cargos.id_Cargo = fichas_has_accesos.Cargos_id_Cargo
+                LEFT JOIN
+            designaciones ON designaciones.fichas_has_accesos_id = fichas_has_accesos.id
+        WHERE
+            fichas_has_accesos.Fichas_id_ficha = ${id_ficha}
+                AND (${cargos_procesado})
+                  AND DATE_FORMAT(designaciones.fecha_inicio, '%Y-%m-01') <= '${fecha_inicial}'
+        ORDER BY designaciones.fecha_inicio desc
+        `;
+      console.log(query);
+      pool.query(query, (error, res) => {
+        if (error) {
+          reject(error.code);
+        } else {
+          resolve(res ? res[0] : "");
         }
-      );
+      });
     });
   },
   getIdUsuarioIdAcceso(id_acceso) {
