@@ -9,8 +9,12 @@ function obtenerAvanceResumenAnual(data) {
 function obtenerAvanceAcumuladoAnual(data) {
   return Model.obtenerAvanceAcumuladoAnual(data);
 }
+function obtenerValorizacionPartidas(data) {
+  return Model.obtenerValorizacionPartidas(data);
+}
 module.exports = {
   obtenerAvanceByComponente,
   obtenerAvanceResumenAnual,
   obtenerAvanceAcumuladoAnual,
+  obtenerValorizacionPartidas,
 };
