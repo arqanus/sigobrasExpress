@@ -36,11 +36,13 @@ module.exports = function (app) {
       );
       var residente = await User3.getCargoPersonal(
         req.body.id_ficha,
-        "residente"
+        "residente",
+        req.body.fecha_inicial
       );
       var supervisor = await User3.getCargoPersonal(
         req.body.id_ficha,
-        "supervisor"
+        "supervisor",
+        req.body.fecha_inicial
       );
       var res_costodirecto = await User.getCostoDirecto(req.body);
       var res_avanceAnterior = await User.getAvanceAnterior(req.body);

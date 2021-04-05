@@ -290,29 +290,31 @@ module.exports = {
       );
     });
   },
-  getCargoPersonal(id_ficha, cargo_nombre) {
+  getCargoPersonal(id_ficha, cargo_nombre, fecha_inicial) {
     return new Promise((resolve, reject) => {
       pool.query(
         `
         SELECT
-            CONCAT(accesos.nombre,
-                    ' ',
-                    accesos.apellido_paterno,
-                    ' ',
-                    accesos.apellido_materno) usuario
-        FROM
-            fichas_has_accesos
-                LEFT JOIN
-            accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso
-                LEFT JOIN
-            cargos ON cargos.id_Cargo = fichas_has_accesos.Cargos_id_Cargo
-        WHERE
-            fichas_has_accesos.Fichas_id_ficha = ?
-                AND cargos.nombre = ?
-                AND fichas_has_accesos.habilitado
-        ORDER BY accesos.id_acceso DESC
+    CONCAT(accesos.nombre,
+            ' ',
+            accesos.apellido_paterno,
+            ' ',
+            accesos.apellido_materno) usuario,
+    designaciones.fecha_inicio
+FROM
+    fichas_has_accesos
+        LEFT JOIN
+    accesos ON accesos.id_acceso = fichas_has_accesos.Accesos_id_acceso
+        LEFT JOIN
+    cargos ON cargos.id_Cargo = fichas_has_accesos.Cargos_id_Cargo
+        LEFT JOIN
+    designaciones ON designaciones.fichas_has_accesos_id = fichas_has_accesos.id
+WHERE
+    fichas_has_accesos.Fichas_id_ficha = ${id_ficha}
+        AND cargos.nombre = '${cargo_nombre}'
+           AND DATE_FORMAT(designaciones.fecha_inicio, '%Y-%m-01') <= '${fecha_inicial}'
+ORDER BY designaciones.fecha_inicio desc
         `,
-        [id_ficha, cargo_nombre],
         (error, res) => {
           if (error) {
             reject(error.code);
