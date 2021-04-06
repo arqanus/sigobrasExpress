@@ -524,4 +524,81 @@ DB.obtenerAvancesMensuales = ({ id_ficha, anyo }) => {
     });
   });
 };
+//pim
+DB.maxIdPim = ({ id_fuente }) => {
+  return new Promise((resolve, reject) => {
+    var query = new queryBuilder("variacionespim")
+      .select("MAX(id) id")
+      .where([
+        `variacionespim.fuentesfinanciamiento_asignados_id = ${id_fuente}`,
+      ])
+      .toString();
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
+      resolve(res ? res[0] : {});
+    });
+  });
+};
+DB.obtenerPim = ({ variacionespim_id }) => {
+  return new Promise((resolve, reject) => {
+    var query = new queryBuilder("variacionespim_monto")
+      .select("SUM(monto) pim")
+      .where(`variacionespim_id = ${variacionespim_id}`)
+      .toString();
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
+      resolve(res ? res[0] : {});
+    });
+  });
+};
+DB.obtenerPia = ({ id_fuente }) => {
+  return new Promise((resolve, reject) => {
+    var query = new queryBuilder("fuentesfinanciamiento_analitico")
+      .select("SUM(pia) pia")
+      .where(
+        `fuentesfinanciamiento_analitico.fuentesfinanciamiento_asignados_id = ${id_fuente}`
+      )
+      .toString();
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
+      resolve(res ? res[0] : {});
+    });
+  });
+};
+DB.obtenerProgramadoAcumulado = ({ id_ficha, anyo }) => {
+  return new Promise((resolve, reject) => {
+    var query = new queryBuilder("fuentesfinanciamiento_asignados")
+      .select("SUM(programado) programado")
+      .leftJoin(
+        `
+      fuentesfinanciamiento_analitico ON fuentesfinanciamiento_analitico.fuentesfinanciamiento_asignados_id = fuentesfinanciamiento_asignados.id
+        LEFT JOIN
+    fuentesfinanciamiento_costoasignado ON fuentesfinanciamiento_costoasignado.fuentesfinanciamiento_analitico_id = fuentesfinanciamiento_analitico.id
+        INNER JOIN
+    fuentesfinanciamiento_avancemensual ON fuentesfinanciamiento_avancemensual.fuentesfinanciamiento_costoasignado_id = fuentesfinanciamiento_costoasignado.id
+      `
+      )
+      .where([
+        `fichas_id_ficha = ${id_ficha}`,
+        `fuentesfinanciamiento_asignados.anyo = ${anyo}`,
+      ])
+      .toString();
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
+      resolve(res ? res[0] : {});
+    });
+  });
+};
 module.exports = DB;

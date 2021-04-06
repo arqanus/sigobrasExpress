@@ -318,4 +318,40 @@ obrasRouter.get(
     res.json(response);
   })
 );
+//pim
+obrasRouter.get(
+  "/pim",
+  procesarErrores(async (req, res) => {
+    var fuenteAsignacion = await Controller.obtenerTodos(req.query);
+    var pimTotal = 0;
+    for (let i = 0; i < fuenteAsignacion.length; i++) {
+      const fuente = fuenteAsignacion[i];
+      var maxIdPim = await Controller.maxIdPim({ id_fuente: fuente.id });
+      var pim = 0;
+      if (maxIdPim.id) {
+        pim = (
+          await Controller.obtenerPim({
+            variacionespim_id: maxIdPim.id,
+          })
+        ).pim;
+      } else {
+        pim =
+          (
+            await Controller.obtenerPia({
+              id_fuente: fuente.id,
+            })
+          ).pia || 0;
+      }
+      pimTotal += pim;
+    }
+    res.json({ pim: pimTotal });
+  })
+);
+obrasRouter.get(
+  "/pim/programado",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.obtenerProgramadoAcumulado(req.query);
+    res.json(response);
+  })
+);
 module.exports = obrasRouter;

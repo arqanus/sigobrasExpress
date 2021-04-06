@@ -92,26 +92,30 @@ function queryBuilder(tabla) {
     ) {
       columnas = "*";
     } else {
-      for (let i = 0; i < this.columnas.length; i++) {
-        var element = this.columnas[i];
-        if (Array.isArray(element)) {
-          if (element.length == 2) {
-            var columna = element[0];
-            var nombre = element[1];
-            columnas += `${columna} ${nombre},`;
-          } else if (element.length == 3) {
-            if (element[2] == "date") {
+      if (Array.isArray(this.columnas)) {
+        for (let i = 0; i < this.columnas.length; i++) {
+          var element = this.columnas[i];
+          if (Array.isArray(element)) {
+            if (element.length == 2) {
               var columna = element[0];
               var nombre = element[1];
-              columnas += `DATE_FORMAT(${columna}, '%Y-%m-%d') ${nombre},`;
+              columnas += `${columna} ${nombre},`;
+            } else if (element.length == 3) {
+              if (element[2] == "date") {
+                var columna = element[0];
+                var nombre = element[1];
+                columnas += `DATE_FORMAT(${columna}, '%Y-%m-%d') ${nombre},`;
+              }
             }
+          } else {
+            var columna = element;
+            columnas += `${columna},`;
           }
-        } else {
-          var columna = element;
-          columnas += `${columna},`;
         }
+        columnas = columnas.slice(0, -1);
+      } else {
+        columnas = this.columnas;
       }
-      columnas = columnas.slice(0, -1);
     }
 
     var query = `select  ${columnas} FROM ${this.tabla}`;

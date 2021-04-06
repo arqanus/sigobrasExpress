@@ -72,6 +72,18 @@ function obtenerDataById(data) {
 function obtenerAvancesMensuales(data) {
   return Model.obtenerAvancesMensuales(data);
 }
+function maxIdPim(data) {
+  return Model.maxIdPim(data);
+}
+function obtenerPim(data) {
+  return Model.obtenerPim(data);
+}
+function obtenerPia(data) {
+  return Model.obtenerPia(data);
+}
+function obtenerProgramadoAcumulado(data) {
+  return Model.obtenerProgramadoAcumulado(data);
+}
 module.exports = {
   obtenerTodos,
   actualizarDatosLista,
@@ -97,4 +109,8 @@ module.exports = {
   predecirFuenteFinanciamiento,
   obtenerDataById,
   obtenerAvancesMensuales,
+  maxIdPim,
+  obtenerPim,
+  obtenerPia,
+  obtenerProgramadoAcumulado,
 };

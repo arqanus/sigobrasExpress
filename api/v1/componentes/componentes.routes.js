@@ -18,5 +18,12 @@ obrasRouter.get(
     res.json(response);
   })
 );
+obrasRouter.get(
+  "/costoDirecto",
+  procesarErrores(async (req, res) => {
+    var response = await obrasController.costoDirecto(req.query);
+    res.json(response);
+  })
+);
 
 module.exports = obrasRouter;
