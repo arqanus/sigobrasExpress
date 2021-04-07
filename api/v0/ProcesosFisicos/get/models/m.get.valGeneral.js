@@ -1,4 +1,5 @@
 const tools = require("../../../../../utils/format");
+const BigNumber = require("bignumber.js");
 // let userModel = {}; (SE CAMBIÓ EL LET USERMODEL POR EXPORTAR A TODO)
 //val general principal
 module.exports = {
@@ -225,7 +226,8 @@ module.exports = {
       WHERE
           componentes.fichas_id_ficha = ${id_ficha}
               AND historialcomponentes.estado IS NULL
-      GROUP BY componentes.id_componente
+      GROUP BY partidas.id_partida
+      ORDER BY componentes.id_componente
       `;
       pool.query(query, (err, res) => {
         if (err) {
@@ -251,19 +253,18 @@ module.exports = {
           } else if (res.length == 0) {
             return resolve("VACIO");
           } else {
-            var valor_anterior = 0;
-            var valor_actual = 0;
-            var valor_total = 0;
-            var valor_saldo = 0;
+            var valor_anterior = BigNumber(0);
+            var valor_actual = BigNumber(0);
+            var valor_total = BigNumber(0);
+            var valor_saldo = BigNumber(0);
             var precio_parcial = 0;
 
             for (let i = 0; i < res.length; i++) {
               const fila = res[i];
-              valor_anterior += fila.valor_anterior;
-              valor_actual += fila.valor_actual;
-              valor_total += fila.valor_total;
-              valor_saldo += fila.valor_saldo;
-
+              valor_anterior = valor_anterior.plus(fila.valor_anterior||0);
+              valor_actual = valor_actual.plus(fila.valor_actual||0);
+              valor_total = valor_total.plus(fila.valor_total||0);
+              valor_saldo = valor_saldo.plus(fila.valor_saldo || 0);
               precio_parcial += fila.precio_parcial;
 
               if (fila.tipo == "titulo") {
@@ -303,42 +304,32 @@ module.exports = {
                 fila.porcentaje_total = tools.formatoSoles(
                   fila.porcentaje_total
                 );
-                fila.metrado_saldo = tools.formatoSoles(fila.metrado_saldo,2,true);
-                fila.valor_saldo = tools.formatoSoles(fila.valor_saldo,2,true);
+                fila.metrado_saldo = tools.formatoSoles(
+                  fila.metrado_saldo,
+                  2,
+                  true
+                );
+                fila.valor_saldo = tools.formatoSoles(
+                  fila.valor_saldo,
+                  2,
+                  true
+                );
                 fila.porcentaje_saldo = tools.formatoSoles(
-                  fila.porcentaje_saldo,2,true
+                  fila.porcentaje_saldo,
+                  2,
+                  true
                 );
               }
             }
-            if (formato) {
-              valor_anterior = tools.formatoSoles(valor_anterior);
-              valor_actual = tools.formatoSoles(valor_actual);
-              valor_total = tools.formatoSoles(valor_total);
-              valor_saldo = tools.formatoSoles(valor_saldo,2,true);
-              precio_parcial = tools.formatoSoles(precio_parcial);
-              porcentaje_anterior = tools.formatoSoles(
-                (valor_anterior / precio_parcial) * 100
-              );
-              porcentaje_actual = tools.formatoSoles(
-                (valor_actual / precio_parcial) * 100
-              );
-              porcentaje_total = tools.formatoSoles(
-                (valor_total / precio_parcial) * 100
-              );
-              porcentaje_saldo = tools.formatoSoles(
-                (valor_saldo / precio_parcial) * 100,2,true
-              );
-            } else {
-              valor_anterior = valor_anterior;
-              valor_actual = valor_actual;
-              valor_total = valor_total;
-              valor_saldo = valor_saldo;
-              precio_parcial = precio_parcial;
-              porcentaje_anterior = (valor_anterior / precio_parcial) * 100;
-              porcentaje_actual = (valor_actual / precio_parcial) * 100;
-              porcentaje_total = (valor_total / precio_parcial) * 100;
-              porcentaje_saldo = (valor_saldo / precio_parcial) * 100;
-            }
+             valor_anterior = valor_anterior.toNumber();
+             valor_actual = valor_actual.toNumber();
+             valor_total = valor_total.toNumber();
+             valor_saldo = valor_saldo.toNumber();
+             precio_parcial = precio_parcial;
+             porcentaje_anterior = (valor_anterior / precio_parcial) * 100;
+             porcentaje_actual = (valor_actual / precio_parcial) * 100;
+             porcentaje_total = (valor_total / precio_parcial) * 100;
+             porcentaje_saldo = (valor_saldo / precio_parcial) * 100;
             return resolve({
               valor_anterior: valor_anterior,
               valor_actual: valor_actual,
