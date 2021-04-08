@@ -1,3 +1,4 @@
+const { FechaActualCompleta } = require("../../../../../utils/format");
 const User = require("../models/m.post.pFisicos");
 const User2 = require("../../get/models/m.get.pFisicos");
 var formidable = require("formidable");
@@ -531,11 +532,6 @@ module.exports = function (app) {
     //se configura la ruta de guardar
     form.uploadDir = dir;
     form.parse(req, function (err, fields, files) {
-      console.log("accesos_id_acceso :", fields.accesos_id_acceso);
-      console.log("codigo_obra :", fields.codigo_obra);
-      console.log("Partidas_id_partida :", fields.Partidas_id_partida);
-      console.log("descripcionObservacion :", fields.descripcionObservacion);
-      console.log("foto :", fields.foto);
       if (err) {
         res.json(err);
       }
@@ -567,13 +563,17 @@ module.exports = function (app) {
             accesos_id_acceso: fields.accesos_id_acceso,
             fecha: fields.fecha,
           };
-          User.postavancePartidaImagen(avancePartida, (err, data) => {
-            if (err) {
-              res.status(204).json(err);
-            } else {
-              res.json("exito");
-            }
-          });
+          if (fields.fecha <= FechaActualCompleta()) {
+            User.postavancePartidaImagen(avancePartida, (err, data) => {
+              if (err) {
+                res.status(204).json(err);
+              } else {
+                res.json("exito");
+              }
+            });
+          } else {
+            res.status(400).json({ message: "fecha_no_permitida" });
+          }
         });
       } else {
         res.json("vacio");
