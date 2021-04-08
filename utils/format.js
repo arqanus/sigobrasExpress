@@ -181,6 +181,22 @@ userModel.fechaActual = () => {
   }
   return yyyy + "-" + mm;
 };
+userModel.FechaActualCompleta = () => {
+  var fecha = new Date();
+
+  var anio = fecha.getFullYear();
+  var mes = fecha.getMonth() + 1;
+  var dia = fecha.getDate();
+
+  if (dia < 10) {
+    dia = "0" + dia;
+  }
+  if (mes < 10) {
+    mes = "0" + mes;
+  }
+
+  return anio + "-" + mes + "-" + dia;
+};
 userModel.datetime = () => {
   var today = new Date();
   var date =
