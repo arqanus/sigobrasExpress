@@ -23,6 +23,13 @@ obrasRouter.get(
   })
 );
 obrasRouter.get(
+  "/cuadroMetradosResumen",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.obtenerCuadroMetradosResumen(req.query);
+    res.json(response);
+  })
+);
+obrasRouter.get(
   "/resumenAnual",
   procesarErrores(async (req, res) => {
     var response = await Controller.obtenerAvanceResumenAnual(req.query);

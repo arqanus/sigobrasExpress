@@ -15,10 +15,14 @@ function obtenerValorizacionPartidas(data) {
 function obtenerCuadroMetrados(data) {
   return Model.obtenerCuadroMetrados(data);
 }
+function obtenerCuadroMetradosResumen(data) {
+  return Model.obtenerCuadroMetradosResumen(data);
+}
 module.exports = {
   obtenerAvanceByComponente,
   obtenerAvanceResumenAnual,
   obtenerAvanceAcumuladoAnual,
   obtenerValorizacionPartidas,
   obtenerCuadroMetrados,
+  obtenerCuadroMetradosResumen,
 };
