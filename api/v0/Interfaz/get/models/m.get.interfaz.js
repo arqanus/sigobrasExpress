@@ -321,7 +321,6 @@ module.exports = {
                   AND DATE_FORMAT(designaciones.fecha_inicio, '%Y-%m-01') <= '${fecha_inicial}'
         ORDER BY designaciones.fecha_inicio desc
         `;
-      console.log(query);
       pool.query(query, (error, res) => {
         if (error) {
           reject(error.code);

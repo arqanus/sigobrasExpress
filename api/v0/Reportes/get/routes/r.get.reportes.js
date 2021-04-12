@@ -54,12 +54,17 @@ module.exports = function (app) {
         (res_avanceActual.valor / res_costodirecto.presupuesto) * 100;
       InformeDataGeneral.porcentaje_avance_acumulado =
         (res_avanceTotal.valor / res_costodirecto.presupuesto) * 100;
-      InformeDataGeneral.residente = residente.usuario;
-      InformeDataGeneral.supervisor = supervisor.usuario;
-      InformeDataGeneral.cargo_nombre = supervisor.cargo_nombre;
+      InformeDataGeneral.residente = residente ? residente.usuario : "";
+      InformeDataGeneral.supervisor = supervisor
+        ? supervisor.usuario
+        : "supervisor";
+      InformeDataGeneral.cargo_nombre = supervisor
+        ? supervisor.cargo_nombre
+        : "supervisor";
       res.json(InformeDataGeneral);
       //res.json(avances)
     } catch (error) {
+      console.log(error);
       res.json(error);
     }
   });
