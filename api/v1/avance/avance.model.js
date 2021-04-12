@@ -1,4 +1,5 @@
 const DB = {};
+const queryBuilder = require("../../libs/queryBuilder");
 DB.obtenerAvanceByComponente = ({ id_componente }) => {
   return new Promise((resolve, reject) => {
     var query = `
@@ -78,6 +79,82 @@ DB.obtenerValorizacionPartidas = ({ id_ficha, anyo }) => {
         return;
       }
       resolve(res ? res[0] : {});
+    });
+  });
+};
+DB.obtenerCuadroMetrados = ({ id_componente, anyo, mes }) => {
+  return new Promise((resolve, reject) => {
+    var date = new Date(anyo, mes, 0);
+    var ultimoDia = date.getDate();
+    var cols = [];
+    for (let index = 1; index <= ultimoDia; index++) {
+      cols.push(
+        `SUM(IF(DAY(avanceactividades.fecha) = ${index},
+        valor,
+        0)) dia_${index}`
+      );
+    }
+    var query = new queryBuilder("partidas")
+      .select([`partidas.item`, `partidas.descripcion`].concat(cols))
+      .leftJoin(
+        `actividades ON actividades.Partidas_id_partida = partidas.id_partida
+        LEFT JOIN
+    avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad
+        AND YEAR(avanceactividades.fecha) = ${anyo}
+        AND MONTH(avanceactividades.fecha) = ${mes}
+    `
+      )
+      .where([`componentes_id_componente = ${id_componente}`])
+      .groupBy(`partidas.id_partida`)
+      .toString();
+    // resolve(query);
+    // return;
+    pool.query(query, (err, res) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve(res);
+    });
+  });
+};
+DB.obtenerCuadroMetradosResumen = ({ id_componente, anyo, mes }) => {
+  return new Promise((resolve, reject) => {
+    var date = new Date(anyo, mes, 0);
+    var ultimoDia = date.getDate();
+    var cols = [];
+    for (let index = 1; index <= ultimoDia; index++) {
+      cols.push(
+        `SUM(IF(DAY(avanceactividades.fecha) = ${index},
+        valor,
+        0)) dia_${index}`
+      );
+    }
+    var query = new queryBuilder("partidas")
+      .select([`partidas.item`, `partidas.descripcion`].concat(cols))
+      .leftJoin(
+        `actividades ON actividades.Partidas_id_partida = partidas.id_partida
+        inner JOIN
+    avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad
+    `
+      )
+      .where([
+        `componentes_id_componente = ${id_componente}`,
+        `YEAR(avanceactividades.fecha) = ${anyo}`,
+        `MONTH(avanceactividades.fecha) = ${mes}`,
+        `avanceactividades.fecha > 0`,
+        `avanceactividades.valor is not null`,
+      ])
+      .groupBy(`partidas.id_partida`)
+      .toString();
+    // resolve(query);
+    // return;
+    pool.query(query, (err, res) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve(res);
     });
   });
 };
