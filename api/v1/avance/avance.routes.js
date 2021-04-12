@@ -9,13 +9,23 @@ const ControllerPartidas = require("../partidas/partidas.controller");
 const obrasRouter = express.Router();
 
 obrasRouter.get(
-  "/fisico/componente",
-  [
-    // jwtAuthenticate
-    validarEstructura,
-  ],
+  "/componente",
   procesarErrores(async (req, res) => {
     var response = await Controller.obtenerAvanceByComponente(req.query);
+    res.json(response);
+  })
+);
+obrasRouter.get(
+  "/cuadroMetrados",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.obtenerCuadroMetrados(req.query);
+    res.json(response);
+  })
+);
+obrasRouter.get(
+  "/cuadroMetradosResumen",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.obtenerCuadroMetradosResumen(req.query);
     res.json(response);
   })
 );
