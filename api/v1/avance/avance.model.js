@@ -82,6 +82,40 @@ DB.obtenerValorizacionPartidas = ({ id_ficha, anyo }) => {
     });
   });
 };
+DB.avanceMetrados = ({ id_componente, anyo, mes, id_partidas }) => {
+  return new Promise((resolve, reject) => {
+    var condiciones = [];
+    if (id_partidas) {
+      condiciones.push(`partidas.id_partida in (${id_partidas})`);
+    }
+    var query = new queryBuilder("partidas")
+      .select([
+        `partidas.item`,
+        `partidas.descripcion`,
+        `SUM(avanceactividades.valor) metrado`,
+        `partidas.unidad_medida`,
+      ])
+      .leftJoin(
+        `actividades ON actividades.Partidas_id_partida = partidas.id_partida
+        LEFT JOIN
+    avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad
+        AND avanceactividades.fecha < "${anyo}-${mes}-01"
+    `
+      )
+      .where(
+        [`componentes_id_componente = ${id_componente}`].concat(condiciones)
+      )
+      .groupBy(`partidas.id_partida`)
+      .toString();
+    pool.query(query, (err, res) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve(res);
+    });
+  });
+};
 DB.obtenerCuadroMetrados = ({ id_componente, anyo, mes }) => {
   return new Promise((resolve, reject) => {
     var date = new Date(anyo, mes, 0);
@@ -97,9 +131,9 @@ DB.obtenerCuadroMetrados = ({ id_componente, anyo, mes }) => {
     var query = new queryBuilder("partidas")
       .select(
         [
+          `partidas.id_partida`,
           `partidas.item`,
           `partidas.descripcion`,
-          `partidas.metrado`,
           `partidas.unidad_medida`,
         ].concat(cols)
       )
@@ -140,9 +174,9 @@ DB.obtenerCuadroMetradosResumen = ({ id_componente, anyo, mes }) => {
     var query = new queryBuilder("partidas")
       .select(
         [
+          `partidas.id_partida`,
           `partidas.item`,
           `partidas.descripcion`,
-          `partidas.metrado`,
           `partidas.unidad_medida`,
         ].concat(cols)
       )

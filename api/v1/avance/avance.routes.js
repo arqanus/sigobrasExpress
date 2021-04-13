@@ -18,15 +18,26 @@ obrasRouter.get(
 obrasRouter.get(
   "/cuadroMetrados",
   procesarErrores(async (req, res) => {
-    var response = await Controller.obtenerCuadroMetrados(req.query);
-    res.json(response);
+    var response1 = Controller.avanceMetrados(req.query);
+    var response2 = Controller.obtenerCuadroMetrados(req.query);
+    var [response1, response2] = await Promise.all([response1, response2]);
+    for (let index = 0; index < response1.length; index++) {
+      response1[index] = { ...response1[index], ...response2[index] };
+    }
+    res.json(response1);
   })
 );
 obrasRouter.get(
   "/cuadroMetradosResumen",
   procesarErrores(async (req, res) => {
-    var response = await Controller.obtenerCuadroMetradosResumen(req.query);
-    res.json(response);
+    var response1 = await Controller.obtenerCuadroMetradosResumen(req.query);
+    var id_partidas = response1.map((item) => item.id_partida).join(",");
+    var tempData = { id_partidas, ...req.query };
+    var response2 = await Controller.avanceMetrados(tempData);
+    for (let index = 0; index < response1.length; index++) {
+      response1[index] = { ...response1[index], ...response2[index] };
+    }
+    res.json(response1);
   })
 );
 obrasRouter.get(
