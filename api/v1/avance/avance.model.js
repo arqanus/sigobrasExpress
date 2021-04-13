@@ -95,7 +95,14 @@ DB.obtenerCuadroMetrados = ({ id_componente, anyo, mes }) => {
       );
     }
     var query = new queryBuilder("partidas")
-      .select([`partidas.item`, `partidas.descripcion`].concat(cols))
+      .select(
+        [
+          `partidas.item`,
+          `partidas.descripcion`,
+          `partidas.metrado`,
+          `partidas.unidad_medida`,
+        ].concat(cols)
+      )
       .leftJoin(
         `actividades ON actividades.Partidas_id_partida = partidas.id_partida
         LEFT JOIN
@@ -131,7 +138,14 @@ DB.obtenerCuadroMetradosResumen = ({ id_componente, anyo, mes }) => {
       );
     }
     var query = new queryBuilder("partidas")
-      .select([`partidas.item`, `partidas.descripcion`].concat(cols))
+      .select(
+        [
+          `partidas.item`,
+          `partidas.descripcion`,
+          `partidas.metrado`,
+          `partidas.unidad_medida`,
+        ].concat(cols)
+      )
       .leftJoin(
         `actividades ON actividades.Partidas_id_partida = partidas.id_partida
         inner JOIN
