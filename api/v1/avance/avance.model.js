@@ -89,12 +89,7 @@ DB.avanceMetrados = ({ id_componente, anyo, mes, id_partidas }) => {
       condiciones.push(`partidas.id_partida in (${id_partidas})`);
     }
     var query = new queryBuilder("partidas")
-      .select([
-        `partidas.item`,
-        `partidas.descripcion`,
-        `SUM(avanceactividades.valor) metrado`,
-        `partidas.unidad_medida`,
-      ])
+      .select([`SUM(avanceactividades.valor) metrado_anterior`])
       .leftJoin(
         `actividades ON actividades.Partidas_id_partida = partidas.id_partida
         LEFT JOIN
@@ -135,6 +130,7 @@ DB.obtenerCuadroMetrados = ({ id_componente, anyo, mes }) => {
           `partidas.item`,
           `partidas.descripcion`,
           `partidas.unidad_medida`,
+          `partidas.metrado`,
         ].concat(cols)
       )
       .leftJoin(
@@ -178,6 +174,7 @@ DB.obtenerCuadroMetradosResumen = ({ id_componente, anyo, mes }) => {
           `partidas.item`,
           `partidas.descripcion`,
           `partidas.unidad_medida`,
+          `partidas.metrado`,
         ].concat(cols)
       )
       .leftJoin(
