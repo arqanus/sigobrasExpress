@@ -29,6 +29,12 @@ DB.obtenerTodosCostos = ({ id, anyo }) => {
         fuentesfinanciamiento_avancemensual.programado,
         0)) programadoMensual_${mes}`
       );
+      avanceMensual.push(
+        `IF(fuentesfinanciamiento_avancemensual.anyo = ${anyo}
+            AND fuentesfinanciamiento_avancemensual.mes = ${mes},
+        fuentesfinanciamiento_avancemensual.id,
+        0) idAvanceMensual_${mes}`
+      );
     }
     var query = new queryBuilder("fuentesfinanciamiento_analitico")
 
