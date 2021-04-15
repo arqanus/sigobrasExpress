@@ -25,6 +25,9 @@ const infobras = require("./infobras/infobras.routes.js");
 const informesUbicaciones = require("./informesUbicaciones/informesUbicaciones.routes.js");
 const reporteGeneral = require("./reporteGeneral/reporteGeneral.routes.js");
 const interfazPermisos = require("./interfazPermisos/interfazPermisos.routes.js");
+const tiposComprobantes = require("./tiposComprobantes/tiposComprobantes.routes.js");
+const tiposComprobantesAsignados = require("./tiposComprobantesAsignados/tiposComprobantesAsignados.routes.js");
+const comprobantesAsignados = require("./comprobantesAsignados/comprobantesAsignados.routes.js");
 
 const express = require("express");
 const router = express.Router();
@@ -56,5 +59,7 @@ router.use("/infobras", infobras);
 router.use("/informesUbicaciones", informesUbicaciones);
 router.use("/reporteGeneral", reporteGeneral);
 router.use("/interfazPermisos", interfazPermisos);
-
+router.use("/tiposComprobantes", tiposComprobantes);
+router.use("/tiposComprobantesAsignados", tiposComprobantesAsignados);
+router.use("/comprobantesAsignados", comprobantesAsignados);
 module.exports = router;
