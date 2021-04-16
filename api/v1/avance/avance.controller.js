@@ -21,6 +21,12 @@ function obtenerCuadroMetradosResumen(data) {
 function avanceMetrados(data) {
   return Model.avanceMetrados(data);
 }
+function obtenerRecursosNombres(data) {
+  return Model.obtenerRecursosNombres(data);
+}
+function recursosParcial(data) {
+  return Model.recursosParcial(data);
+}
 module.exports = {
   obtenerAvanceByComponente,
   obtenerAvanceResumenAnual,
@@ -29,4 +35,6 @@ module.exports = {
   obtenerCuadroMetrados,
   obtenerCuadroMetradosResumen,
   avanceMetrados,
+  obtenerRecursosNombres,
+  recursosParcial,
 };

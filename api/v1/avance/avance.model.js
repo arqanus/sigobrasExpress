@@ -111,6 +111,59 @@ DB.avanceMetrados = ({ id_componente, anyo, mes, id_partidas }) => {
     });
   });
 };
+DB.obtenerRecursosNombres = ({ id_componente, anyo, mes, id_partidas }) => {
+  return new Promise((resolve, reject) => {
+    var query = new queryBuilder("partidas")
+      .select([`recursos.descripcion`])
+      .innerJoin(
+        `recursos ON recursos.Partidas_id_partida = partidas.id_partida
+        AND recursos.tipo = 'Mano de Obra' `
+      )
+      .where([`partidas.id_partida in (${id_partidas})`])
+      .groupBy(`recursos.descripcion`)
+      .toString();
+    pool.query(query, (err, res) => {
+      if (err) {
+        console.log(err);
+        reject(err);
+        return;
+      }
+      resolve(res);
+    });
+  });
+};
+DB.recursosParcial = ({ id_partidas, recursos_nombres }) => {
+  return new Promise((resolve, reject) => {
+    var condiciones = [];
+    for (let i = 0; i < recursos_nombres.length; i++) {
+      const element = recursos_nombres[i];
+      condiciones.push(`
+      SUM( IF(recursos.descripcion = '${element.descripcion}',
+        recursos.parcial,
+        0)) recurso_${element.descripcion}
+      `);
+    }
+    var query = new queryBuilder("partidas")
+      .select(condiciones)
+      .leftJoin(
+        `recursos ON recursos.Partidas_id_partida = partidas.id_partida`
+      )
+      .where([`partidas.id_partida in (${id_partidas})`])
+      .groupBy(`partidas.id_partida`)
+      .toString();
+    // resolve(query);
+    // return;
+    pool.query(query, (err, res) => {
+      if (err) {
+        console.log(err);
+        reject(err);
+        return;
+      }
+      resolve(res);
+    });
+  });
+};
+
 DB.obtenerCuadroMetrados = ({ id_componente, anyo, mes }) => {
   return new Promise((resolve, reject) => {
     var date = new Date(anyo, mes, 0);
@@ -131,6 +184,7 @@ DB.obtenerCuadroMetrados = ({ id_componente, anyo, mes }) => {
           `partidas.descripcion`,
           `partidas.unidad_medida`,
           `partidas.metrado`,
+          `partidas.tipo`,
         ].concat(cols)
       )
       .leftJoin(
@@ -175,6 +229,7 @@ DB.obtenerCuadroMetradosResumen = ({ id_componente, anyo, mes }) => {
           `partidas.descripcion`,
           `partidas.unidad_medida`,
           `partidas.metrado`,
+          `partidas.tipo`,
         ].concat(cols)
       )
       .leftJoin(
