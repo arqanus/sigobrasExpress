@@ -21,8 +21,15 @@ obrasRouter.get(
     var response1 = Controller.avanceMetrados(req.query);
     var response2 = Controller.obtenerCuadroMetrados(req.query);
     var [response1, response2] = await Promise.all([response1, response2]);
+    var id_partidas = response2.map((item) => item.id_partida).join(",");
+    var response3 = await Controller.obtenerRecursosNombres({ id_partidas });
+    var response4 = await Controller.recursosParcial({
+      id_partidas,
+      recursos_nombres: response3,
+    });
     for (let index = 0; index < response1.length; index++) {
       response1[index] = { ...response1[index], ...response2[index] };
+      response1[index] = { ...response1[index], ...response4[index] };
     }
     res.json(response1);
   })
@@ -34,8 +41,14 @@ obrasRouter.get(
     var id_partidas = response1.map((item) => item.id_partida).join(",");
     var tempData = { id_partidas, ...req.query };
     var response2 = await Controller.avanceMetrados(tempData);
+    var response3 = await Controller.obtenerRecursosNombres({ id_partidas });
+    var response4 = await Controller.recursosParcial({
+      id_partidas,
+      recursos_nombres: response3,
+    });
     for (let index = 0; index < response1.length; index++) {
       response1[index] = { ...response1[index], ...response2[index] };
+      response1[index] = { ...response1[index], ...response4[index] };
     }
     res.json(response1);
   })
