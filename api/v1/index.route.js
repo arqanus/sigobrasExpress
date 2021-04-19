@@ -28,6 +28,7 @@ const interfazPermisos = require("./interfazPermisos/interfazPermisos.routes.js"
 const tiposComprobantes = require("./tiposComprobantes/tiposComprobantes.routes.js");
 const tiposComprobantesAsignados = require("./tiposComprobantesAsignados/tiposComprobantesAsignados.routes.js");
 const comprobantesAsignados = require("./comprobantesAsignados/comprobantesAsignados.routes.js");
+const partidasImagenes = require("./partidasImagenes/partidasImagenes.routes.js");
 
 const express = require("express");
 const router = express.Router();
@@ -62,4 +63,5 @@ router.use("/interfazPermisos", interfazPermisos);
 router.use("/tiposComprobantes", tiposComprobantes);
 router.use("/tiposComprobantesAsignados", tiposComprobantesAsignados);
 router.use("/comprobantesAsignados", comprobantesAsignados);
+router.use("/partidasImagenes", partidasImagenes);
 module.exports = router;
