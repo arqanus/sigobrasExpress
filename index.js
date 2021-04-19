@@ -68,7 +68,7 @@ const PORT = process.env.PORT || 9000;
 //static
 // app.use("/static", express.static("public"));
 app.use("/static", async (req, res) => {
-  var imagePath = "./public/" + req.path;
+  var imagePath = decodeURIComponent("./public/" + req.path);
   if (!fs.existsSync(imagePath)) {
     imagePath = "./public/images/image-not-found.jpg";
   }
