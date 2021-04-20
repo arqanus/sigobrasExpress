@@ -30,10 +30,10 @@ DB.obtenerTodosCostos = ({ id, anyo }) => {
         0)) programadoMensual_${mes}`
       );
       avanceMensual.push(
-        `IF(fuentesfinanciamiento_avancemensual.anyo = ${anyo}
+        `SUM(IF(fuentesfinanciamiento_avancemensual.anyo = ${anyo}
             AND fuentesfinanciamiento_avancemensual.mes = ${mes},
         fuentesfinanciamiento_avancemensual.id,
-        0) idAvanceMensual_${mes}`
+        0)) idAvanceMensual_${mes}`
       );
     }
     var query = new queryBuilder("fuentesfinanciamiento_analitico")
