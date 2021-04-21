@@ -20,13 +20,17 @@ DB.obtenerTodosAnyoMeses = ({ id_ficha, anyo }) => {
         partidasimagenes.fecha,
             partidasimagenes.imagen,
             partidasimagenes.descripcionObservacion observacion,
-            partidas_id_partida
+            partidas_id_partida,
+            id_partidaImagen id,
+            'partidaImagen' tipo
     FROM
         partidasimagenes UNION ALL SELECT
         fecha,
             imagen,
             avanceactividades.observacion,
-            partidas_id_partida
+            partidas_id_partida,
+            id_AvanceActividades id,
+            'avanceActividades' tipo
     FROM
         actividades
     INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad
@@ -74,13 +78,17 @@ DB.obtenerComponentes = ({ id_ficha, anyo, mes }) => {
         partidasimagenes.fecha,
             partidasimagenes.imagen,
             partidasimagenes.descripcionObservacion observacion,
-            partidas_id_partida
+            partidas_id_partida,
+            id_partidaImagen id,
+            'partidaImagen' tipo
     FROM
         partidasimagenes UNION ALL SELECT
         fecha,
             imagen,
             avanceactividades.observacion,
-            partidas_id_partida
+            partidas_id_partida,
+            id_AvanceActividades id,
+            'avanceActividades' tipo
     FROM
         actividades
     INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad
@@ -129,13 +137,17 @@ DB.obtenerTodos = ({ anyo, mes, id_componente, id_ficha, resumen }) => {
         partidasimagenes.fecha,
             partidasimagenes.imagen,
             partidasimagenes.descripcionObservacion observacion,
-            partidas_id_partida
+            partidas_id_partida,
+            id_partidaImagen id,
+            'partidaImagen' tipo
     FROM
         partidasimagenes UNION ALL SELECT
         fecha,
             imagen,
             avanceactividades.observacion,
-            partidas_id_partida
+            partidas_id_partida,
+            id_AvanceActividades id,
+            'avanceActividades' tipo
     FROM
         actividades
     INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad
@@ -179,13 +191,17 @@ DB.obtenerTodosTotalFechas = ({ id_componente, id_ficha }) => {
         partidasimagenes.fecha,
             partidasimagenes.imagen,
             partidasimagenes.descripcionObservacion observacion,
-            partidas_id_partida
+            partidas_id_partida,
+            id_partidaImagen id,
+            'partidaImagen' tipo
     FROM
         partidasimagenes UNION ALL SELECT
         fecha,
             imagen,
             avanceactividades.observacion,
-            partidas_id_partida
+            partidas_id_partida,
+            id_AvanceActividades id,
+            'avanceActividades' tipo
     FROM
         actividades
     INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad
@@ -269,19 +285,24 @@ DB.dataById = ({ id }) => {
         partidasimagenes.fecha,
             partidasimagenes.imagen,
             partidasimagenes.descripcionObservacion observacion,
-            partidas_id_partida
+            partidas_id_partida,
+            id_partidaImagen id,
+            'partidaImagen' tipo
     FROM
         partidasimagenes UNION ALL SELECT
         fecha,
             imagen,
             avanceactividades.observacion,
-            partidas_id_partida
+            partidas_id_partida,
+            id_AvanceActividades id,
+            'avanceActividades' tipo
     FROM
         actividades
     INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad
     WHERE
         imagen IS NOT NULL) imagenesObra
     `)
+      .select(["imagenesObra.*", ["fecha", "fecha", "date"]])
       .where([`partidas_id_partida = ${id}	`])
       .toString();
     // resolve(query);

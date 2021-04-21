@@ -29,7 +29,8 @@ const tiposComprobantes = require("./tiposComprobantes/tiposComprobantes.routes.
 const tiposComprobantesAsignados = require("./tiposComprobantesAsignados/tiposComprobantesAsignados.routes.js");
 const comprobantesAsignados = require("./comprobantesAsignados/comprobantesAsignados.routes.js");
 const partidasImagenes = require("./partidasImagenes/partidasImagenes.routes.js");
-
+const imagenesLabels = require("./imagenesLabels/imagenesLabels.routes.js");
+const imagenesLabelsAsignadas = require("./imagenesLabelsAsignadas/imagenesLabelsAsignadas.routes.js");
 const express = require("express");
 const router = express.Router();
 
@@ -64,4 +65,7 @@ router.use("/tiposComprobantes", tiposComprobantes);
 router.use("/tiposComprobantesAsignados", tiposComprobantesAsignados);
 router.use("/comprobantesAsignados", comprobantesAsignados);
 router.use("/partidasImagenes", partidasImagenes);
+router.use("/imagenesLabels", imagenesLabels);
+router.use("/imagenesLabelsAsignadas", imagenesLabelsAsignadas);
+
 module.exports = router;
