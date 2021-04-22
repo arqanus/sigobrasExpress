@@ -353,4 +353,21 @@ DB.dataById = ({ id, anyo, mes }) => {
     });
   });
 };
+DB.eliminarImagen = ({ id }) => {
+  return new Promise((resolve, reject) => {
+    var query = new queryBuilder(`partidasimagenes`)
+      .del()
+      .where(`id_partidaImagen = ${id}`)
+      .toString();
+    // resolve(query);
+    // return;
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
+      resolve(res);
+    });
+  });
+};
 module.exports = DB;

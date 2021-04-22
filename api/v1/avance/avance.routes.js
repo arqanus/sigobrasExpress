@@ -74,4 +74,11 @@ obrasRouter.get(
     res.json(response);
   })
 );
+obrasRouter.delete(
+  "/imagen/:id",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.eliminarImagen(req.params);
+    res.json(response);
+  })
+);
 module.exports = obrasRouter;
