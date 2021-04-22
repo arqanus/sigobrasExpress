@@ -305,7 +305,7 @@ DB.obtenerTodosTotal = ({
     });
   });
 };
-DB.dataById = ({ id, anyo, mes }) => {
+DB.dataById = ({ id, anyo, mes, imagenes_labels_id }) => {
   var condiciones = [];
   if (id) {
     condiciones.push(`partidas_id_partida = ${id}`);
@@ -316,6 +316,9 @@ DB.dataById = ({ id, anyo, mes }) => {
   if (mes) {
     condiciones.push(`MONTH(fecha) = ${mes}`);
   }
+  if (imagenes_labels_id) {
+    condiciones.push(`imagenes_labels_id = ${imagenes_labels_id}`);
+  }
   return new Promise((resolve, reject) => {
     var query = new queryBuilder(`
     (SELECT
@@ -324,18 +327,21 @@ DB.dataById = ({ id, anyo, mes }) => {
             partidasimagenes.descripcionObservacion observacion,
             partidas_id_partida,
             id_partidaImagen id,
-            'partidaImagen' tipo
+            'partidaImagen' tipo,
+            imagenes_labels_id
     FROM
-        partidasimagenes UNION ALL SELECT
+        partidasimagenes LEFT JOIN imagenes_labels_asignadas ON imagenes_labels_asignadas.partidasimagenes_id_partidaImagen = partidasimagenes.id_partidaImagen UNION ALL SELECT
         fecha,
             imagen,
             avanceactividades.observacion,
             partidas_id_partida,
             id_AvanceActividades id,
-            'avanceActividades' tipo
+            'avanceActividades' tipo,
+            imagenes_labels_id
     FROM
         actividades
     INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad
+    LEFT JOIN imagenes_labels_asignadas ON imagenes_labels_asignadas.avanceactividades_id_AvanceActividades = avanceactividades.id_AvanceActividades
     WHERE
         imagen IS NOT NULL) imagenesObra
     `)
