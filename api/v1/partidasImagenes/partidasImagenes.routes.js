@@ -46,7 +46,7 @@ obrasRouter.get(
 obrasRouter.get(
   "/:id",
   procesarErrores(async (req, res) => {
-    var response = await Controller.dataById(req.params);
+    var response = await Controller.dataById({ ...req.params, ...req.query });
     res.json(response);
   })
 );

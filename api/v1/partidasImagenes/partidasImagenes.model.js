@@ -110,7 +110,14 @@ DB.obtenerComponentes = ({ id_ficha, anyo, mes }) => {
     });
   });
 };
-DB.obtenerTodos = ({ anyo, mes, id_componente, id_ficha, resumen }) => {
+DB.obtenerTodos = ({
+  anyo,
+  mes,
+  id_componente,
+  id_ficha,
+  resumen,
+  imagenes_labels_id,
+}) => {
   return new Promise((resolve, reject) => {
     //para anyo mes
     var date = new Date(anyo, mes, 0);
@@ -127,6 +134,9 @@ DB.obtenerTodos = ({ anyo, mes, id_componente, id_ficha, resumen }) => {
       condiciones.push(`YEAR(imagenesObra.fecha) = ${anyo}`);
       condiciones.push(`MONTH(imagenesObra.fecha) = ${mes}`);
     }
+    if (imagenes_labels_id) {
+      condiciones.push(`imagenes_labels_id = ${imagenes_labels_id}`);
+    }
     var query = new queryBuilder("componentes")
       .select([`id_partida`, `item`, `descripcion`].concat(cols))
       .leftJoin(
@@ -138,19 +148,19 @@ DB.obtenerTodos = ({ anyo, mes, id_componente, id_ficha, resumen }) => {
             partidasimagenes.imagen,
             partidasimagenes.descripcionObservacion observacion,
             partidas_id_partida,
-            id_partidaImagen id,
-            'partidaImagen' tipo
+            imagenes_labels_id
     FROM
-        partidasimagenes UNION ALL SELECT
+        partidasimagenes
+    LEFT JOIN imagenes_labels_asignadas ON imagenes_labels_asignadas.partidasimagenes_id_partidaImagen = partidasimagenes.id_partidaImagen UNION ALL SELECT
         fecha,
             imagen,
             avanceactividades.observacion,
             partidas_id_partida,
-            id_AvanceActividades id,
-            'avanceActividades' tipo
+            imagenes_labels_id
     FROM
         actividades
     INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad
+    LEFT JOIN imagenes_labels_asignadas ON imagenes_labels_asignadas.avanceactividades_id_AvanceActividades = avanceactividades.id_AvanceActividades
     WHERE
         imagen IS NOT NULL) imagenesObra ON imagenesObra.partidas_id_partida = partidas.id_partida
         ` +
@@ -227,7 +237,13 @@ DB.obtenerTodosTotalFechas = ({ id_componente, id_ficha }) => {
     });
   });
 };
-DB.obtenerTodosTotal = ({ id_componente, id_ficha, resumen, fechas }) => {
+DB.obtenerTodosTotal = ({
+  id_componente,
+  id_ficha,
+  resumen,
+  fechas,
+  imagenes_labels_id,
+}) => {
   return new Promise((resolve, reject) => {
     var cols = [];
     for (let index = 0; index < fechas.length; index++) {
@@ -236,6 +252,11 @@ DB.obtenerTodosTotal = ({ id_componente, id_ficha, resumen, fechas }) => {
             AND MONTH(imagenesObra.fecha) = ${fecha.mes},
         1,
         0)) fecha_${fecha.anyo}_${fecha.mes}`);
+    }
+    //condiciones
+    var condiciones = [];
+    if (imagenes_labels_id) {
+      condiciones.push(`imagenes_labels_id = ${imagenes_labels_id}`);
     }
     var query = new queryBuilder("componentes")
       .select([`id_partida`, `item`, `descripcion`].concat(cols))
@@ -247,24 +268,30 @@ DB.obtenerTodosTotal = ({ id_componente, id_ficha, resumen, fechas }) => {
         partidasimagenes.fecha,
             partidasimagenes.imagen,
             partidasimagenes.descripcionObservacion observacion,
-            partidas_id_partida
+            partidas_id_partida,
+            imagenes_labels_id
     FROM
-        partidasimagenes UNION ALL SELECT
+        partidasimagenes
+    LEFT JOIN imagenes_labels_asignadas ON imagenes_labels_asignadas.partidasimagenes_id_partidaImagen = partidasimagenes.id_partidaImagen UNION ALL SELECT
         fecha,
             imagen,
             avanceactividades.observacion,
-            partidas_id_partida
+            partidas_id_partida,
+            imagenes_labels_id
     FROM
         actividades
     INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad
+    LEFT JOIN imagenes_labels_asignadas ON imagenes_labels_asignadas.avanceactividades_id_AvanceActividades = avanceactividades.id_AvanceActividades
     WHERE
         imagen IS NOT NULL) imagenesObra ON imagenesObra.partidas_id_partida = partidas.id_partida
         `
       )
-      .where([
-        `id_componente = ${id_componente}`,
-        `fichas_id_ficha = ${id_ficha}`,
-      ])
+      .where(
+        [
+          `id_componente = ${id_componente}`,
+          `fichas_id_ficha = ${id_ficha}`,
+        ].concat(condiciones)
+      )
       .groupBy(`id_partida`)
       .toString();
     // resolve(query);
@@ -278,7 +305,17 @@ DB.obtenerTodosTotal = ({ id_componente, id_ficha, resumen, fechas }) => {
     });
   });
 };
-DB.dataById = ({ id }) => {
+DB.dataById = ({ id, anyo, mes }) => {
+  var condiciones = [];
+  if (id) {
+    condiciones.push(`partidas_id_partida = ${id}`);
+  }
+  if (anyo) {
+    condiciones.push(`YEAR(fecha) = ${anyo}`);
+  }
+  if (mes) {
+    condiciones.push(`MONTH(fecha) = ${mes}`);
+  }
   return new Promise((resolve, reject) => {
     var query = new queryBuilder(`
     (SELECT
@@ -303,7 +340,7 @@ DB.dataById = ({ id }) => {
         imagen IS NOT NULL) imagenesObra
     `)
       .select(["imagenesObra.*", ["fecha", "fecha", "date"]])
-      .where([`partidas_id_partida = ${id}	`])
+      .where(condiciones)
       .toString();
     // resolve(query);
     // return;
