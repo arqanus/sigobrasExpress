@@ -25,7 +25,12 @@ DB.obtenerTodos = ({
       condiciones.push(`id_componente = ${id_componente}`);
     }
     var query = new queryBuilder("componentes")
-      .select(`imagenes_labels.*`)
+      .select([
+        `imagenes_labels.*`,
+        `accesos.nombre usuario_nombre`,
+        `accesos.apellido_paterno usuario_apellido_paterno`,
+        `cargos.nombre cargo_nombre`,
+      ])
       .leftJoin(
         `partidas ON partidas.componentes_id_componente = componentes.id_componente
         LEFT JOIN
@@ -34,7 +39,8 @@ DB.obtenerTodos = ({
             partidasimagenes.imagen,
             partidasimagenes.descripcionObservacion observacion,
             partidas_id_partida,
-            imagenes_labels_id
+            imagenes_labels_id,
+            accesos_id
     FROM
         partidasimagenes
     LEFT JOIN imagenes_labels_asignadas ON imagenes_labels_asignadas.partidasimagenes_id_partidaImagen = partidasimagenes.id_partidaImagen
@@ -51,7 +57,8 @@ DB.obtenerTodos = ({
             imagen,
             avanceactividades.observacion,
             partidas_id_partida,
-            imagenes_labels_id
+            imagenes_labels_id,
+            accesos_id
     FROM
         actividades
     INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad
@@ -66,6 +73,12 @@ DB.obtenerTodos = ({
                : ""
            }
         ) imagenesObra ON imagenesObra.partidas_id_partida = partidas.id_partida
+        LEFT JOIN
+    accesos ON accesos.id_acceso = imagenesObra.accesos_id
+        LEFT JOIN
+    fichas_has_accesos ON fichas_has_accesos.Accesos_id_acceso = accesos.id_acceso
+        LEFT JOIN
+    cargos ON cargos.id_Cargo = fichas_has_accesos.cargos_id_Cargo
         INNER JOIN
     imagenes_labels ON imagenes_labels.id = imagenesObra.imagenes_labels_id`
       )
