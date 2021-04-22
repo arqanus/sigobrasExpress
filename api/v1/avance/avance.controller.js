@@ -27,6 +27,9 @@ function obtenerRecursosNombres(data) {
 function recursosParcial(data) {
   return Model.recursosParcial(data);
 }
+function eliminarImagen(data) {
+  return Model.eliminarImagen(data);
+}
 module.exports = {
   obtenerAvanceByComponente,
   obtenerAvanceResumenAnual,
@@ -37,4 +40,5 @@ module.exports = {
   avanceMetrados,
   obtenerRecursosNombres,
   recursosParcial,
+  eliminarImagen,
 };

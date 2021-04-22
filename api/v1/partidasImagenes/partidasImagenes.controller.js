@@ -19,6 +19,9 @@ function obtenerComponentes(data) {
 function dataById(data) {
   return Model.dataById(data);
 }
+function eliminarImagen(data) {
+  return Model.eliminarImagen(data);
+}
 
 module.exports = {
   obtenerTodos,
@@ -27,4 +30,5 @@ module.exports = {
   obtenerTodosAnyoMeses,
   obtenerComponentes,
   dataById,
+  eliminarImagen,
 };

@@ -258,4 +258,24 @@ DB.obtenerCuadroMetradosResumen = ({ id_componente, anyo, mes }) => {
     });
   });
 };
+DB.eliminarImagen = ({ id }) => {
+  return new Promise((resolve, reject) => {
+    var query = new queryBuilder("avanceactividades")
+      .update({
+        imagen: null,
+      })
+      .tipoNull(true)
+      .where([`id_AvanceActividades = ${id}`])
+      .toString();
+    // resolve(query);
+    // return;
+    pool.query(query, (err, res) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve(res);
+    });
+  });
+};
 module.exports = DB;
