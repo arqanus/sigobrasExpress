@@ -151,7 +151,9 @@ DB.obtenerTodos = ({
             imagenes_labels_id
     FROM
         partidasimagenes
-    LEFT JOIN imagenes_labels_asignadas ON imagenes_labels_asignadas.partidasimagenes_id_partidaImagen = partidasimagenes.id_partidaImagen UNION ALL SELECT
+    LEFT JOIN imagenes_labels_asignadas ON imagenes_labels_asignadas.partidasimagenes_id_partidaImagen = partidasimagenes.id_partidaImagen
+    GROUP BY partidasimagenes.id_partidaImagen
+    UNION ALL SELECT
         fecha,
             imagen,
             avanceactividades.observacion,
@@ -162,7 +164,9 @@ DB.obtenerTodos = ({
     INNER JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad
     LEFT JOIN imagenes_labels_asignadas ON imagenes_labels_asignadas.avanceactividades_id_AvanceActividades = avanceactividades.id_AvanceActividades
     WHERE
-        imagen IS NOT NULL) imagenesObra ON imagenesObra.partidas_id_partida = partidas.id_partida
+        imagen IS NOT NULL
+        GROUP BY avanceactividades.id_AvanceActividades
+        ) imagenesObra ON imagenesObra.partidas_id_partida = partidas.id_partida
         ` +
           (anyo ? ` AND YEAR(imagenesObra.fecha) = ${anyo} ` : "") +
           (mes ? ` AND MONTH(imagenesObra.fecha) = ${mes} ` : "")
@@ -347,6 +351,7 @@ DB.dataById = ({ id, anyo, mes, imagenes_labels_id }) => {
     `)
       .select(["imagenesObra.*", ["fecha", "fecha", "date"]])
       .where(condiciones)
+      .groupBy("id")
       .toString();
     // resolve(query);
     // return;
