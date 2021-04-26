@@ -7,11 +7,9 @@ DB.obtenerTodosByCargo = ({ id_ficha, id_cargo }) => {
     var query = `
             SELECT
                 designaciones.id,
-                CONCAT(accesos.apellido_paterno,
-                        ' ',
-                        accesos.apellido_materno,
-                        ' ',
-                        accesos.nombre) nombre,
+                accesos.apellido_paterno,
+                accesos.apellido_materno,
+                accesos.nombre,
                 DATE_FORMAT(fecha_inicio, '%Y-%m-%d') fecha_inicio,
                 DATE_FORMAT(fecha_final, '%Y-%m-%d') fecha_final,
                 designaciones.memorandum,

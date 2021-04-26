@@ -452,24 +452,48 @@ module.exports = {
   },
   getHistorialDias(id_componente, fecha) {
     return new Promise((resolve, reject) => {
-      pool.query(
-        "/*COALESCE(parcial_negativo / parcial_positivo, 0) + 1 porcentaje_negatividad_ajustado*/ SELECT partidas.item, partidas.descripcion descripcion_partida, TRIM(BOTH '/DIA' FROM partidas.unidad_medida) unidad_medida, actividades.nombre nombre_actividad, avanceactividades.descripcion descripcion_actividad, avanceactividades.observacion, (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) * avanceactividades.valor valor, partidas.costo_unitario, (COALESCE(parcial_negativo / parcial_positivo, 0) + 1) * avanceactividades.valor * partidas.costo_unitario parcial FROM fichas LEFT JOIN (SELECT componentes.fichas_id_ficha id_ficha, SUM(presupuesto) presupuesto FROM componentes GROUP BY componentes.fichas_id_ficha) tb_presupuesto ON tb_presupuesto.id_ficha = fichas.id_ficha LEFT JOIN componentes ON componentes.fichas_id_ficha = fichas.id_ficha LEFT JOIN partidas ON partidas.componentes_id_componente = componentes.id_componente LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_positivo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE actividades.parcial > 0 GROUP BY partidas.id_partida) p1 ON p1.id_partida = partidas.id_partida LEFT JOIN (SELECT partidas.id_partida, SUM(actividades.parcial) parcial_negativo FROM partidas LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida WHERE actividades.parcial < 0 GROUP BY partidas.id_partida) p2 ON p2.id_partida = partidas.id_partida LEFT JOIN actividades ON actividades.Partidas_id_partida = partidas.id_partida LEFT JOIN avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad LEFT JOIN historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad WHERE historialactividades.estado IS NULL AND COALESCE(avanceactividades.valor, 0) != 0 AND componentes.id_componente = ? AND DATE_FORMAT(avanceactividades.fecha, '%Y-%m-%d') = DATE_FORMAT(?, '%Y-%m-%d')",
-        [id_componente, fecha],
-        (err, res) => {
-          if (err) {
-            reject(err.code);
-          } else if (res.length == 0) {
-            reject("vacio");
-          } else {
-            for (let i = 0; i < res.length; i++) {
-              const dia = res[i];
-              dia.valor = formato(dia.valor);
-              dia.parcial = formato(dia.parcial);
-            }
-            resolve(res);
-          }
+      var query = `
+      SELECT
+    partidas.item,
+    partidas.descripcion descripcion_partida,
+    TRIM(BOTH '/DIA' FROM partidas.unidad_medida) unidad_medida,
+    actividades.nombre nombre_actividad,
+    avanceactividades.descripcion descripcion_actividad,
+    avanceactividades.observacion,
+    avanceactividades.valor valor,
+    partidas.costo_unitario,
+    avanceactividades.valor * partidas.costo_unitario parcial
+FROM
+    fichas
+        LEFT JOIN
+    (SELECT
+        componentes.fichas_id_ficha id_ficha,
+            SUM(presupuesto) presupuesto
+    FROM
+        componentes
+    GROUP BY componentes.fichas_id_ficha) tb_presupuesto ON tb_presupuesto.id_ficha = fichas.id_ficha
+        LEFT JOIN
+    componentes ON componentes.fichas_id_ficha = fichas.id_ficha
+        LEFT JOIN
+    partidas ON partidas.componentes_id_componente = componentes.id_componente
+        LEFT JOIN
+    actividades ON actividades.Partidas_id_partida = partidas.id_partida
+        LEFT JOIN
+    avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad
+        LEFT JOIN
+    historialactividades ON historialactividades.actividades_id_actividad = actividades.id_actividad
+WHERE
+    historialactividades.estado IS NULL
+        AND COALESCE(avanceactividades.valor, 0) != 0
+        AND componentes.id_componente = ${id_componente}
+        AND DATE_FORMAT(avanceactividades.fecha, '%Y-%m-%d') = DATE_FORMAT("${fecha}", '%Y-%m-%d')`;
+      pool.query(query, [id_componente, fecha], (err, res) => {
+        if (err) {
+          reject(err.code);
+        } else {
+          resolve(res);
         }
-      );
+      });
     });
   },
   getHistorialDias2(id_componente, fecha) {
