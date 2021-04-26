@@ -140,7 +140,7 @@ DB.recursosParcial = ({ id_partidas, recursos_nombres }) => {
       condiciones.push(`
       SUM( IF(recursos.descripcion = '${element.descripcion}',
         recursos.parcial,
-        0)) recurso_${element.descripcion}
+        0)) recurso_${element.descripcion.replace(/ /g, "_")}
       `);
     }
     var query = new queryBuilder("partidas")

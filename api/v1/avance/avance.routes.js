@@ -42,13 +42,17 @@ obrasRouter.get(
     var tempData = { id_partidas, ...req.query };
     var response2 = await Controller.avanceMetrados(tempData);
     var response3 = await Controller.obtenerRecursosNombres({ id_partidas });
-    var response4 = await Controller.recursosParcial({
-      id_partidas,
-      recursos_nombres: response3,
-    });
+    if (response3.length) {
+      var response4 = await Controller.recursosParcial({
+        id_partidas,
+        recursos_nombres: response3,
+      });
+    }
     for (let index = 0; index < response1.length; index++) {
       response1[index] = { ...response1[index], ...response2[index] };
-      response1[index] = { ...response1[index], ...response4[index] };
+      if (response3.length) {
+        response1[index] = { ...response1[index], ...response4[index] };
+      }
     }
     res.json(response1);
   })
