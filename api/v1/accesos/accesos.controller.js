@@ -21,6 +21,9 @@ function asignarObra(data) {
 function obtenerLastId(data) {
   return Accesos.obtenerLastId(data);
 }
+function getDataAsignacion(data) {
+  return Accesos.getDataAsignacion(data);
+}
 module.exports = {
   obtenerTodos,
   existe,
@@ -29,4 +32,5 @@ module.exports = {
   obtenerById,
   asignarObra,
   obtenerLastId,
+  getDataAsignacion,
 };
