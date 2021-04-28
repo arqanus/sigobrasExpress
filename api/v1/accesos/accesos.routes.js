@@ -115,22 +115,26 @@ accesosRouter.post(
   procesarErrores(async (req, res) => {
     var fecha_inicio = req.body.fecha_inicio;
     delete req.body.fecha_inicio;
-    var response = await accesoController.asignarObra(req.body);
-    if (response.affectedRows > 0) {
-      if (fecha_inicio) {
-        var objectDesignacion = {
-          fecha_inicio,
-          fichas_has_accesos_id: response.insertId,
-        };
-        var response2 = await ControllerDesignaciones.guardarDesignacion(
-          objectDesignacion
-        );
-        console.log("response2", response2);
-      }
-      res.json({ message: "exito" });
+    //se revisa si hay asignacion ya registrada
+    var dataAsignacion = await accesoController.getDataAsignacion(req.body);
+    var id = 0;
+    if (dataAsignacion.id) {
+      id = dataAsignacion.id;
     } else {
-      res.status(404).json("error");
+      var response = await accesoController.asignarObra(req.body);
+      id = response.insertId;
     }
+    if (id) {
+      var objectDesignacion = {
+        fecha_inicio,
+        fichas_has_accesos_id: id,
+      };
+      var response2 = await ControllerDesignaciones.guardarDesignacion(
+        objectDesignacion
+      );
+      console.log("response2", response2);
+    }
+    res.json({ message: "exito" });
   })
 );
 module.exports = accesosRouter;

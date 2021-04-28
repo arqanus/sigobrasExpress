@@ -1,4 +1,5 @@
 const BaseModel = require("../../libs/baseModel");
+const queryBuilder = require("../../libs/queryBuilder");
 const DB = {};
 DB.obtenerTodos = () => {
   return new Promise((resolve, reject) => {
@@ -107,6 +108,28 @@ DB.obtenerLastId = () => {
     const query = `
       select id_acceso id from accesos order by id_acceso desc limit 1
     `;
+    pool.query(query, (err, res) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve(res ? res[0] : {});
+    });
+  });
+};
+DB.getDataAsignacion = ({
+  Fichas_id_ficha,
+  Accesos_id_acceso,
+  cargos_id_Cargo,
+}) => {
+  return new Promise((resolve, reject) => {
+    const query = new queryBuilder("fichas_has_accesos")
+      .where([
+        `Fichas_id_ficha = ${Fichas_id_ficha}`,
+        `Accesos_id_acceso = ${Accesos_id_acceso}`,
+        `cargos_id_Cargo = ${cargos_id_Cargo}`,
+      ])
+      .toString();
     pool.query(query, (err, res) => {
       if (err) {
         reject(err);
