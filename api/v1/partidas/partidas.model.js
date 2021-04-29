@@ -1,4 +1,5 @@
 const DB = {};
+const queryBuilder = require("../../libs/queryBuilder");
 
 DB.obtenerByComponente = ({
   id_componente,
@@ -85,6 +86,21 @@ DB.obtenerById = ({ id }) => {
         reject(error);
       }
       resolve(res ? res[0] : {});
+    });
+  });
+};
+DB.actualizar = ({ id, costo_unitario }) => {
+  return new Promise((resolve, reject) => {
+    var query = new queryBuilder("partidas")
+      .update({ costo_unitario })
+      .where(`id_partida = ${id}`)
+      .toString();
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
+      resolve(res);
     });
   });
 };
