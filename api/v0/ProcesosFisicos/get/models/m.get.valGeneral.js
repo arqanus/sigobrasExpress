@@ -261,9 +261,9 @@ module.exports = {
 
             for (let i = 0; i < res.length; i++) {
               const fila = res[i];
-              valor_anterior = valor_anterior.plus(fila.valor_anterior||0);
-              valor_actual = valor_actual.plus(fila.valor_actual||0);
-              valor_total = valor_total.plus(fila.valor_total||0);
+              valor_anterior = valor_anterior.plus(fila.valor_anterior || 0);
+              valor_actual = valor_actual.plus(fila.valor_actual || 0);
+              valor_total = valor_total.plus(fila.valor_total || 0);
               valor_saldo = valor_saldo.plus(fila.valor_saldo || 0);
               precio_parcial += fila.precio_parcial;
 
@@ -321,15 +321,15 @@ module.exports = {
                 );
               }
             }
-             valor_anterior = valor_anterior.toNumber();
-             valor_actual = valor_actual.toNumber();
-             valor_total = valor_total.toNumber();
-             valor_saldo = valor_saldo.toNumber();
-             precio_parcial = precio_parcial;
-             porcentaje_anterior = (valor_anterior / precio_parcial) * 100;
-             porcentaje_actual = (valor_actual / precio_parcial) * 100;
-             porcentaje_total = (valor_total / precio_parcial) * 100;
-             porcentaje_saldo = (valor_saldo / precio_parcial) * 100;
+            valor_anterior = valor_anterior.toNumber();
+            valor_actual = valor_actual.toNumber();
+            valor_total = valor_total.toNumber();
+            valor_saldo = valor_saldo.toNumber();
+            precio_parcial = precio_parcial;
+            porcentaje_anterior = (valor_anterior / precio_parcial) * 100;
+            porcentaje_actual = (valor_actual / precio_parcial) * 100;
+            porcentaje_total = (valor_total / precio_parcial) * 100;
+            porcentaje_saldo = (valor_saldo / precio_parcial) * 100;
             return resolve({
               valor_anterior: valor_anterior,
               valor_actual: valor_actual,
@@ -351,6 +351,7 @@ module.exports = {
     return new Promise((resolve, reject) => {
       var query = `
       SELECT
+          partidas.id_partida,
           partidas.tipo,
           partidas.item,
           partidas.descripcion,

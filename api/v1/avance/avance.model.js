@@ -278,4 +278,45 @@ DB.eliminarImagen = ({ id }) => {
     });
   });
 };
+DB.obtenerData = ({ id }) => {
+  return new Promise((resolve, reject) => {
+    var query = new queryBuilder("actividades")
+      .select([
+        "avanceactividades.*",
+        ["fecha", "fecha", "date"],
+        ["fecha_registro", "fecha_registro", "date"],
+      ])
+      .leftJoin(
+        `avanceactividades ON avanceactividades.Actividades_id_actividad = actividades.id_actividad`
+      )
+      .where([`Partidas_id_partida = ${id}`])
+      .toString();
+    // resolve(query);
+    // return;
+    pool.query(query, (err, res) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve(res);
+    });
+  });
+};
+DB.actualizar = ({ id, valor }) => {
+  return new Promise((resolve, reject) => {
+    var query = new queryBuilder("avanceactividades")
+      .update({ valor })
+      .where([`id_AvanceActividades = ${id}`])
+      .toString();
+    // resolve(query);
+    // return;
+    pool.query(query, (err, res) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve(res);
+    });
+  });
+};
 module.exports = DB;
