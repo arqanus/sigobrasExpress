@@ -6,6 +6,13 @@ const procesarErrores = require("../../libs/errorHandler").procesarErrores;
 const obrasRouter = express.Router();
 
 obrasRouter.get(
+  "/total",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.obtenerTotalPartidas(req.query);
+    res.json(response);
+  })
+);
+obrasRouter.get(
   "/",
   procesarErrores(async (req, res) => {
     var response = await Controller.obtenerByComponente(req.query);
@@ -19,12 +26,14 @@ obrasRouter.get(
     res.json(response);
   })
 );
-obrasRouter.get(
-  "/total",
+obrasRouter.put(
+  "/:id",
   procesarErrores(async (req, res) => {
-    var response = await Controller.obtenerTotalPartidas(req.query);
+    var response = await Controller.actualizar({
+      ...req.body,
+      ...req.params,
+    });
     res.json(response);
   })
 );
-
 module.exports = obrasRouter;

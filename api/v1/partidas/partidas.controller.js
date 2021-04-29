@@ -9,8 +9,12 @@ function obtenerTotalPartidas(data) {
 function obtenerById(data) {
   return Model.obtenerById(data);
 }
+function actualizar(data) {
+  return Model.actualizar(data);
+}
 module.exports = {
   obtenerByComponente,
   obtenerTotalPartidas,
   obtenerById,
+  actualizar,
 };
