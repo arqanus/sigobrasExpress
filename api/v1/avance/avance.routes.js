@@ -85,4 +85,21 @@ obrasRouter.delete(
     res.json(response);
   })
 );
+obrasRouter.get(
+  "/partida",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.obtenerData(req.query);
+    res.json(response);
+  })
+);
+obrasRouter.put(
+  "/:id",
+  procesarErrores(async (req, res) => {
+    var response = await Controller.actualizar({
+      ...req.params,
+      ...req.body,
+    });
+    res.json(response);
+  })
+);
 module.exports = obrasRouter;
