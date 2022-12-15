@@ -2,10 +2,10 @@
   "name": "modelo",
   "version": "1.0.0",
   "description": "",
-  "main": "App.js",
+  "main": "index.js",
   "scripts": {
-    "dev": "nodemon App.js",
-    "start": "node App.js",
+    "dev": "nodemon index.js",
+    "start": "node index.js",
     "test": "cross-env NODE_ENV=test PORT=4000 jest --forceExit --runInBand --verbose --coverage"
   },
   "keywords": [],
