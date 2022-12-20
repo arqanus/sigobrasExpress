@@ -1,5 +1,5 @@
 let request = require("supertest");
-let bcrypt = require("bcrypt");
+let bcrypt = require("bcryptjs");
 let jwt = require("jsonwebtoken");
 
 let Accesos = require("./accesos.model");
