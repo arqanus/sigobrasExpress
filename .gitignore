@@ -7,3 +7,4 @@ coverage/
 logs/*
 !logs/.gitkeep
 *.zip
+yarn.lock
