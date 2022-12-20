@@ -4,8 +4,8 @@ const User3 = require("../../../Interfaz/get/models/m.get.interfaz");
 const User4 = require("../../../ProcesosFisicos/get/models/m.get.historial");
 const User5 = require("../../../Inicio/get/models/m.get.Inicio");
 const tools = require("../../../../../utils/format");
-var fs = require("fs");
-var request = require("request").defaults({ encoding: null });
+// var fs = require("fs");
+// var request = require("request").defaults({ encoding: null });
 module.exports = function (app) {
   //cabecera
   app.post("/getAnyoReportes", async (req, res) => {
