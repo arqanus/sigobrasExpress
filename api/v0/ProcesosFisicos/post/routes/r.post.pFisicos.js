@@ -1,8 +1,24 @@
 const { FechaActualCompleta } = require("../../../../../utils/format");
 const User = require("../models/m.post.pFisicos");
 const User2 = require("../../get/models/m.get.pFisicos");
+const { uploadFileToS3 } = require("../../../../../utils/s3");
+
 var formidable = require("formidable");
 var fs = require("fs");
+const { v4: uuidv4 } = require("uuid");
+const multer = require("multer");
+
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
+    cb(null, true);
+  } else {
+    cb(new Error("Invalid file type, only JPEG and PNG is allowed!"), false);
+  }
+};
+const uploadPartidaImagen = multer({
+  fileFilter,
+  storage: multer.memoryStorage(),
+});
 function datetime() {
   var today = new Date();
   var date =
@@ -11,6 +27,7 @@ function datetime() {
     today.getHours() + "-" + today.getMinutes() + "-" + today.getSeconds();
   return date + "_" + time;
 }
+const path = require("path");
 module.exports = function (app) {
   app.post("/postNuevaActividadMayorMetrado", (req, res) => {
     if (req.body.partidas_id_partida == null) {
@@ -521,65 +538,45 @@ module.exports = function (app) {
       }
     });
   });
-  app.post("/avancePartidaImagen", (req, res) => {
-    //ruta de la carpeta public de imagenes
-    var dir = publicFolder;
-    //crear ruta si no existe
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir);
-    }
-    var form = new formidable.IncomingForm();
-    //se configura la ruta de guardar
-    form.uploadDir = dir;
-    form.parse(req, function (err, fields, files) {
-      if (err) {
-        res.json(err);
-      }
-      //folder de la obra
-      var obraFolder = dir + "/" + fields.codigo_obra;
-      if (!fs.existsSync(obraFolder)) {
-        fs.mkdirSync(obraFolder);
-      } // TODO: make sure my_file and project_id exist
-      var ruta =
-        "/" +
-        fields.accesos_id_acceso +
-        "_" +
-        "P" +
-        fields.Partidas_id_partida +
-        "_" +
-        datetime() +
-        ".jpg";
-      //files foto
-      if (files.foto) {
-        fs.rename(files.foto.path, obraFolder + ruta, function (err) {
-          if (err) {
-            res.json(err);
-          }
-          var avancePartida = {
-            Partidas_id_partida: fields.Partidas_id_partida,
-            imagen: "/static/" + fields.codigo_obra + ruta,
-            imagenAlt: fields.codigo_obra,
-            descripcionObservacion: fields.descripcionObservacion,
-            accesos_id_acceso: fields.accesos_id_acceso,
-            fecha: fields.fecha,
-          };
-          if (fields.fecha <= FechaActualCompleta()) {
-            User.postavancePartidaImagen(avancePartida, (err, data) => {
-              if (err) {
-                res.status(204).json(err);
-              } else {
-                res.json("exito");
-              }
-            });
-          } else {
-            res.status(400).json({ message: "fecha_no_permitida" });
-          }
+  app.post(
+    "/avancePartidaImagen",
+    uploadPartidaImagen.single("foto"),
+    async (req, res) => {
+      const {
+        file,
+        body: {
+          Partidas_id_partida,
+          codigo_obra,
+          descripcionObservacion,
+          accesos_id_acceso,
+          fecha,
+        },
+      } = req;
+      const fileName = file.originalname;
+      const fileType = file.mimetype;
+      const extension = path.extname(file.originalname);
+      const uniqueID = uuidv4();
+      const ruta = `${codigo_obra}/${uniqueID}${extension}`;
+      try {
+        const fileURL = await uploadFileToS3(file.buffer, ruta, fileType);
+        const response = await User.postavancePartidaImagen({
+          Partidas_id_partida,
+          imagen: fileURL,
+          imagenAlt: codigo_obra,
+          descripcionObservacion,
+          accesos_id_acceso,
+          fecha,
         });
-      } else {
-        res.json("vacio");
+        res.status(200).json({
+          fileName,
+          fileURL,
+          response,
+        });
+      } catch (err) {
+        return res.status(500).send(err);
       }
-    });
-  });
+    }
+  );
   app.post("/postrecursosEjecucionreal", async (req, res) => {
     try {
       var data = "";

@@ -2,17 +2,17 @@
   "name": "modelo",
   "version": "1.0.0",
   "description": "",
-  "main": "App.js",
+  "main": "index.js",
   "scripts": {
-    "dev": "nodemon App.js",
-    "start": "node App.js",
+    "dev": "nodemon index.js",
+    "start": "node index.js",
     "test": "cross-env NODE_ENV=test PORT=4000 jest --forceExit --runInBand --verbose --coverage"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bcrypt": "^5.0.0",
+    "bcryptjs": "^2.4.3",
     "bignumber.js": "^9.0.1",
     "body-parser": "^1.19.0",
     "compression": "^1.7.4",

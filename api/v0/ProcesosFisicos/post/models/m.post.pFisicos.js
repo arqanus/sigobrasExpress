@@ -1,3 +1,4 @@
+const queryBuilder = require("../../../../libs/queryBuilder");
 let userModel = {};
 userModel.postAvanceActividad = (data, callback) => {
   pool.getConnection(function (err, conn) {
@@ -57,22 +58,16 @@ userModel.posthistorialActividades = (data, callback) => {
     }
   });
 };
-userModel.postavancePartidaImagen = (data, callback) => {
-  pool.getConnection(function (err, conn) {
-    if (err) {
-      callback(err);
-    } else {
-      conn.query("INSERT INTO partidasImagenes set ?", data, (error, res) => {
-        if (error) {
-          callback(error);
-          conn.destroy();
-        } else {
-          console.log("affectedRows", res);
-          callback(null, res);
-          conn.destroy();
-        }
-      });
-    }
+userModel.postavancePartidaImagen = (data) => {
+  return new Promise((resolve, reject) => {
+    const query = new queryBuilder("partidasimagenes").insert(data).toString();
+    pool.query(query, (error, res) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      }
+      resolve(res);
+    });
   });
 };
 userModel.postrecursosEjecucionrealCantidad = (data) => {
